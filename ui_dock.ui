@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>m_arkPlanDockWidget</class>
+ <widget class="QDockWidget" name="m_arkPlanDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>286</width>
+    <height>665</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ArkPlan</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGroupBox" name="m_newContextGroup">
+      <property name="title">
+       <string>New Context</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="m_contextLabel">
+         <property name="text">
+          <string>Context:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_contextSpin</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="m_contextSpin">
+         <property name="toolTip">
+          <string>Context Number</string>
+         </property>
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="m_sourceLabel">
+         <property name="text">
+          <string>Source:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_sourceEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="m_sourceEdit">
+         <property name="toolTip">
+          <string>Source</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="m_editModeGroup">
+         <property name="title">
+          <string>Edit mode</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QToolButton" name="m_extentTool">
+            <property name="toolTip">
+             <string>Extent of context</string>
+            </property>
+            <property name="text">
+             <string>ext</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QToolButton" name="m_verticalEdgeTool">
+            <property name="toolTip">
+             <string>Vertical Edge</string>
+            </property>
+            <property name="text">
+             <string>Veg</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QToolButton" name="m_uncertainEdgeTool">
+            <property name="toolTip">
+             <string>Uncertain Edge</string>
+            </property>
+            <property name="text">
+             <string>ueg</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QToolButton" name="m_limitOfExcavationTool">
+            <property name="toolTip">
+             <string>Limit of Excavation</string>
+            </property>
+            <property name="text">
+             <string>loe</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QToolButton" name="m_verticalTruncationTool">
+            <property name="toolTip">
+             <string>Vertical Truncation</string>
+            </property>
+            <property name="text">
+             <string>Vtr</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QToolButton" name="m_truncationTool">
+            <property name="toolTip">
+             <string>Truncation</string>
+            </property>
+            <property name="text">
+             <string>Trn</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QToolButton" name="m_breakOfSlopeTool">
+            <property name="toolTip">
+             <string>Break of Slope</string>
+            </property>
+            <property name="text">
+             <string>bos</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
+            <property name="toolTip">
+             <string>Vertical Break of Slope</string>
+            </property>
+            <property name="text">
+             <string>vbs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QToolButton" name="m_hachureTool">
+            <property name="toolTip">
+             <string>Hachure</string>
+            </property>
+            <property name="text">
+             <string>hch</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QToolButton" name="m_undercutTool">
+            <property name="toolTip">
+             <string>Undercut</string>
+            </property>
+            <property name="text">
+             <string>unc</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QToolButton" name="m_returnOfSlopeTool">
+            <property name="toolTip">
+             <string>Return of Slope</string>
+            </property>
+            <property name="text">
+             <string>ros</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QToolButton" name="m_cbmTool">
+            <property name="toolTip">
+             <string>CBM</string>
+            </property>
+            <property name="text">
+             <string>cbm</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QToolButton" name="m_brickTool">
+            <property name="toolTip">
+             <string>Brick</string>
+            </property>
+            <property name="text">
+             <string>brk</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QToolButton" name="m_tileTool">
+            <property name="toolTip">
+             <string>Tile</string>
+            </property>
+            <property name="text">
+             <string>til</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QToolButton" name="m_mortarTool">
+            <property name="toolTip">
+             <string>Mortar</string>
+            </property>
+            <property name="text">
+             <string>mtr</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QToolButton" name="m_charcoalTool">
+            <property name="toolTip">
+             <string>Charcoal</string>
+            </property>
+            <property name="text">
+             <string>cha</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QToolButton" name="m_stoneTool">
+            <property name="toolTip">
+             <string>Stone</string>
+            </property>
+            <property name="text">
+             <string>sto</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QToolButton" name="m_potTool">
+            <property name="toolTip">
+             <string>Pot</string>
+            </property>
+            <property name="text">
+             <string>pot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QToolButton" name="m_flintTool">
+            <property name="toolTip">
+             <string>Flint</string>
+            </property>
+            <property name="text">
+             <string>fli</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QToolButton" name="m_levelTool">
+            <property name="toolTip">
+             <string>Level</string>
+            </property>
+            <property name="text">
+             <string>lvl</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QToolButton" name="m_schematicTool">
+            <property name="toolTip">
+             <string>Schematic</string>
+            </property>
+            <property name="text">
+             <string>sch</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="m_saveButton">
+           <property name="toolTip">
+            <string>Save edits to work layers</string>
+           </property>
+           <property name="text">
+            <string>Save</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_clearButton">
+           <property name="toolTip">
+            <string>Clear unsaved changes from work layers</string>
+           </property>
+           <property name="text">
+            <string>Clear</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_mergeButton">
+           <property name="toolTip">
+            <string>Move new context to main layers</string>
+           </property>
+           <property name="text">
+            <string>Merge</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="m_existingContextsGroup">
+      <property name="title">
+       <string>Existing Contexts</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="m_hideAllCheck">
+         <property name="toolTip">
+          <string>Hide all existing context details.</string>
+         </property>
+         <property name="text">
+          <string>Hide All</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Show</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Snap</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Lines:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="m_showLinesCheck">
+           <property name="toolTip">
+            <string>Show existing lines</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QCheckBox" name="m_snapLinesCheck">
+           <property name="toolTip">
+            <string>Snap to existing lines</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Polygons:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="m_showPolygonsCheck">
+           <property name="toolTip">
+            <string>Show existing polygons</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QCheckBox" name="m_snapPolygonsCheck">
+           <property name="toolTip">
+            <string>Snap to existing polygons</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Schematics:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="m_showSchematicsCheck">
+           <property name="toolTip">
+            <string>Show existing schematics</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QCheckBox" name="m_snapSchematicsCheck">
+           <property name="toolTip">
+            <string>Snap to existing schematics</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Levels:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QCheckBox" name="m_showLevelsCheck">
+           <property name="toolTip">
+            <string>Show existing levels</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QCheckBox" name="m_snapLevelsCheck">
+           <property name="toolTip">
+            <string>Snap to existing levels</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Context Filter:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_contextFilter</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="m_contextFilter">
+         <property name="toolTip">
+          <string>Only show selected contexts</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Source Filter:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_contextFilter</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="m_sourceFilter">
+         <property name="toolTip">
+          <string>Only show selected sources</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -22,23 +22,15 @@
 """
 
 import os
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from PyQt4 import uic
-from qgis.core import *
+from PyQt4.QtCore import Qt, QObject
+from PyQt4.QtGui import QDockWidget
 
-class ArkPlanDock(QObject):
-    """This class controls all plugin-related GUI elements."""
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_dock.ui'))
 
-    def __init__ (self,iface):
-        """initialize the GUI control"""
-        QObject.__init__(self)
+class ArkPlanDock(QDockWidget, FORM_CLASS):
+
+    def __init__(self, iface):
+        QDockWidget.__init__(self)
+        self.setupUi(self)
         self.iface = iface
-
-        # load the form
-        path = os.path.dirname(os.path.abspath( __file__ ))
-        self.dock = uic.loadUi(os.path.join( path, "ui_dock.ui" ))
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
-
-        # connect to gui signals
-        #QObject.connect(self.dock,

@@ -20,15 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtGui import QAction, QIcon, QDockWidget
+from qgis.core import *
 # Initialize Qt resources from file resources.py
 import resources_rc
 # Import the code for the dialog
-from ark_plan_dialog import ArkPlanDialog
+
 from ark_plan_dock import ArkPlanDock
 import os.path
-
 
 class ArkPlan:
     """QGIS Plugin Implementation."""
@@ -59,8 +59,6 @@ class ArkPlan:
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
-        # Create the dialog (after translation) and keep reference
-        self.dlg = ArkPlanDialog()
 
         # Declare instance attributes
         self.actions = []
@@ -180,17 +178,8 @@ class ArkPlan:
             self.iface.removeToolBarIcon(action)
 
         # Unload the dock
-        self.dock.close()
+        self.iface.removeDockWidget(self.dock)
         self.dock.deleteLater()
 
     def run(self):
-        """Run method that performs all the real work"""
-        # show the dialog
-        self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            pass
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)

@@ -59,13 +59,22 @@ class ArkPlan:
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
-
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&ArkPlan')
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'ArkPlan')
         self.toolbar.setObjectName(u'ArkPlan')
+
+        # Setup the in-memory editing layers
+        self.levelsBuffer = createLevelsLayer("cxt_levels_mem", "memory")
+        self.levelsBuffer.startEditing()
+        self.linesBuffer = createLinesLayer("cxt_levels_mem", "memory")
+        self.linesBuffer.startEditing()
+        self.polygonsBuffer = createPolygonsLayer("cxt_levels_mem", "memory")
+        self.polygonsBuffer.startEditing()
+        self.schematicBuffer = createPolygonsLayer("cxt_levels_mem", "memory")
+        self.schematicBuffer.startEditing()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -183,3 +192,40 @@ class ArkPlan:
 
     def run(self):
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+
+    def createLevelsLayer(name, provider):
+        levels = QgsVectorLayer("Point", name, provider)
+        pr = vl.dataProvider()
+        pr.addAttributes([QgsField("context", QVariant.Int),
+                          QgsField("source",  QVariant.String),
+                          QgsField("elevation", QVariant.Double)])
+        #TODO set symbols
+        return levels
+
+    def createLinesLayer(name, provider):
+        levels = QgsVectorLayer("Line", name, provider)
+        pr = vl.dataProvider()
+        pr.addAttributes([QgsField("context", QVariant.Int),
+                          QgsField("source",  QVariant.String),
+                          QgsField("type", QVariant.String)])
+        #TODO set symbols
+        return levels
+
+    def createPolygonLayer(name, provider):
+        levels = QgsVectorLayer("Polygon", name, provider)
+        pr = vl.dataProvider()
+        pr.addAttributes([QgsField("context", QVariant.Int),
+                          QgsField("source",  QVariant.String),
+                          QgsField("type", QVariant.String)])
+        #TODO set symbols
+        return levels
+
+    def mergeBuffers():
+        #TODO copy from buffers to master
+        clearBuffers()
+
+    def clearBuffers():
+        self.levelsBuffer.rollback()
+        self.linesBuffer.rollback()
+        self.polygonsBuffer.rollback()
+        self.schematicBuffer.rollback()

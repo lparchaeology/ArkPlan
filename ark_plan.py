@@ -73,6 +73,9 @@ class ArkPlan:
         self.polygonsBuffer = None
         self.schematicBuffer = None
 
+        self.setContext(0)
+        self.setSource('0')
+
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -249,6 +252,18 @@ class ArkPlan:
         self.linesBuffer.rollback()
         self.polygonsBuffer.rollback()
         self.schematicBuffer.rollback()
+
+    def setContext(self, context):
+        self.context = context
+
+    def setSource(self, source):
+        self.source = source
+
+    def addLevel(self, point, elevation):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPoint(point))
+        feature.setAttributes([self.context, self.source, elevation])
+        self.levelsBuffer.addFeature(feature, true)
 
     def enableLevelsMode(self):
         #TODO switch to levels layer, disable all snapping, on mouse click add point, ask for level, update attribute

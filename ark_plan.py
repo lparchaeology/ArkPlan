@@ -20,9 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL
 from PyQt4.QtGui import QAction, QIcon, QDockWidget
 from qgis.core import *
+from qgis.gui import QgsMapToolEmitPoint
 # Initialize Qt resources from file resources.py
 import resources_rc
 # Import the code for the dialog
@@ -66,15 +67,11 @@ class ArkPlan:
         self.toolbar = self.iface.addToolBar(u'ArkPlan')
         self.toolbar.setObjectName(u'ArkPlan')
 
-        # Setup the in-memory editing layers
-        self.levelsBuffer = createLevelsLayer("cxt_levels_mem", "memory")
-        self.levelsBuffer.startEditing()
-        self.linesBuffer = createLinesLayer("cxt_levels_mem", "memory")
-        self.linesBuffer.startEditing()
-        self.polygonsBuffer = createPolygonsLayer("cxt_levels_mem", "memory")
-        self.polygonsBuffer.startEditing()
-        self.schematicBuffer = createPolygonsLayer("cxt_levels_mem", "memory")
-        self.schematicBuffer.startEditing()
+        # Define the in-memory editing layers
+        self.levelsBuffer = None
+        self.linesBuffer = None
+        self.polygonsBuffer = None
+        self.schematicBuffer = None
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -176,6 +173,7 @@ class ArkPlan:
             parent=self.iface.mainWindow())
 
         self.dock = ArkPlanDock(self.iface)
+        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
 
 
     def unload(self):
@@ -191,41 +189,78 @@ class ArkPlan:
         self.dock.deleteLater()
 
     def run(self):
+        # Setup the in-memory editing layers
+        if self.levelsBuffer is None:
+            self.levelsBuffer = self.createLevelsLayer('cxt_levels_mem', 'memory')
+            self.levelsBuffer.startEditing()
+        if self.linesBuffer is None:
+            self.linesBuffer = self.createLinesLayer('cxt_lines_mem', 'memory')
+            self.linesBuffer.startEditing()
+        if self.polygonsBuffer is None:
+            self.polygonsBuffer = self.createPolygonLayer('cxt_polygons_mem', 'memory')
+            self.polygonsBuffer.startEditing()
+        if self.schematicBuffer is None:
+            self.schematicBuffer = self.createPolygonLayer('cxt_schematics_mem', 'memory')
+            self.schematicBuffer.startEditing()
+
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
 
-    def createLevelsLayer(name, provider):
-        levels = QgsVectorLayer("Point", name, provider)
+    def createLevelsLayer(self, name, provider):
+        #TODO see why this doesn't work!
+        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+        print 'Project CRS is: ' + unicode(projectCRS)
+        #vl = QgsVectorLayer("Point?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
+        vl = QgsVectorLayer("Point?crs=EPSG:27700&index=yes", name, provider)
         pr = vl.dataProvider()
         pr.addAttributes([QgsField("context", QVariant.Int),
                           QgsField("source",  QVariant.String),
                           QgsField("elevation", QVariant.Double)])
         #TODO set symbols
-        return levels
+        return vl
 
-    def createLinesLayer(name, provider):
-        levels = QgsVectorLayer("Line", name, provider)
+    def createLinesLayer(self, name, provider):
+        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+        #vl = QgsVectorLayer("Line?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
+        vl = QgsVectorLayer("Line?crs=EPSG:27700&index=yes", name, provider)
         pr = vl.dataProvider()
         pr.addAttributes([QgsField("context", QVariant.Int),
                           QgsField("source",  QVariant.String),
                           QgsField("type", QVariant.String)])
         #TODO set symbols
-        return levels
+        return vl
 
-    def createPolygonLayer(name, provider):
-        levels = QgsVectorLayer("Polygon", name, provider)
+    def createPolygonLayer(self, name, provider):
+        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+        #vl = QgsVectorLayer("Polygon?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
+        vl = QgsVectorLayer("Polygon?crs=EPSG:27700&index=yes", name, provider)
         pr = vl.dataProvider()
         pr.addAttributes([QgsField("context", QVariant.Int),
                           QgsField("source",  QVariant.String),
                           QgsField("type", QVariant.String)])
         #TODO set symbols
-        return levels
+        return vl
 
-    def mergeBuffers():
+    def mergeBuffers(self):
         #TODO copy from buffers to master
-        clearBuffers()
+        self.clearBuffers()
 
-    def clearBuffers():
+    def clearBuffers(self):
         self.levelsBuffer.rollback()
         self.linesBuffer.rollback()
         self.polygonsBuffer.rollback()
         self.schematicBuffer.rollback()
+
+    def enableLevelsMode(self):
+        #TODO switch to levels layer, disable all snapping, on mouse click add point, ask for level, update attribute
+        #self.canvas.setMapTool(self.levelsMapTool)
+        return
+
+class LevelsMapTool(QgsMapToolEmitPoint):
+
+    def __init__(self, canvas):
+        self.canvas = canvas
+        QgsMapToolEmitPoint.__init__(self, canvas)
+
+    def canvasPressEvent(self, e):
+        return
+        

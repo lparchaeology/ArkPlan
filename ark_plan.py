@@ -177,6 +177,7 @@ class ArkPlan:
 
         self.dock = ArkPlanDock(self.iface)
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
+        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.setContext())
 
 
     def unload(self):

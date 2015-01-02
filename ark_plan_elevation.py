@@ -28,7 +28,6 @@ from PyQt4 import QtGui, uic
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ark_plan_elevation_base.ui'))
 
-
 class ArkPlanElevation(QtGui.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""

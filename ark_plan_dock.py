@@ -23,8 +23,8 @@
 
 import os
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QObject
-from PyQt4.QtGui import QDockWidget
+from PyQt4.QtCore import Qt, QObject, SIGNAL
+from PyQt4.QtGui import QDockWidget, QMessageBox
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_dock.ui'))
 
@@ -34,3 +34,12 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         QDockWidget.__init__(self)
         self.setupUi(self)
         self.iface = iface
+        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+        QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
+        QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
+
+    def setContext(self, context):
+        self.m_contextSpin.setValue(context)
+
+    def setSource(self, source):
+        self.m_sourceEdit.setText(source)

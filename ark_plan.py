@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL
-from PyQt4.QtGui import QAction, QIcon, QDockWidget
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QMessageBox, QInputDialog
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint
 # Initialize Qt resources from file resources.py
@@ -67,14 +67,17 @@ class ArkPlan:
         self.toolbar = self.iface.addToolBar(u'ArkPlan')
         self.toolbar.setObjectName(u'ArkPlan')
 
+        self.initialised = False
         # Define the in-memory editing layers
         self.levelsBuffer = None
         self.linesBuffer = None
         self.polygonsBuffer = None
         self.schematicBuffer = None
 
+        self.levelsMapTool = None
+
         self.setContext(0)
-        self.setSource('0')
+        self.setSource('No Source')
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -176,11 +179,17 @@ class ArkPlan:
             parent=self.iface.mainWindow())
 
         self.dock = ArkPlanDock(self.iface)
-        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
-        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.setContext())
-
 
     def unload(self):
+
+        # Remove the levels form the legend
+        if self.initialised:
+            QgsMapLayerRegistry.instance().removeMapLayer(self.levelsBuffer.id())
+            QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
+            QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
+            QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
+            self.iface.legendInterface().removeGroup(self.legendGroup)
+
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
@@ -193,21 +202,44 @@ class ArkPlan:
         self.dock.deleteLater()
 
     def run(self):
+        if not self.initialised:
+            self.initialise()
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        self.dock.setContext(self.context)
+        self.dock.setSource(self.source)
+
+    def initialise(self):
+        # Init gui stuff
+        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
+        QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
+        QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
+        self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
         # Setup the in-memory editing layers
         if self.levelsBuffer is None:
             self.levelsBuffer = self.createLevelsLayer('cxt_levels_mem', 'memory')
             self.levelsBuffer.startEditing()
+            QgsMapLayerRegistry.instance().addMapLayer(self.levelsBuffer)
+            self.iface.legendInterface().moveLayer(self.levelsBuffer, self.legendGroup)
         if self.linesBuffer is None:
             self.linesBuffer = self.createLinesLayer('cxt_lines_mem', 'memory')
             self.linesBuffer.startEditing()
+            QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
+            self.iface.legendInterface().moveLayer(self.linesBuffer, self.legendGroup)
         if self.polygonsBuffer is None:
             self.polygonsBuffer = self.createPolygonLayer('cxt_polygons_mem', 'memory')
             self.polygonsBuffer.startEditing()
+            QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
+            self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.legendGroup)
         if self.schematicBuffer is None:
             self.schematicBuffer = self.createPolygonLayer('cxt_schematics_mem', 'memory')
             self.schematicBuffer.startEditing()
-
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+            QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
+            self.iface.legendInterface().moveLayer(self.schematicBuffer, self.legendGroup)
+        # Setup the map tools
+        if self.levelsMapTool is None:
+            self.levelsMapTool = QgsMapToolEmitPoint(self.iface.mapCanvas())
+            self.levelsMapTool.canvasClicked.connect(self.levelsToolClicked)
+        self.initialised = True
 
     def createLevelsLayer(self, name, provider):
         #TODO see why this doesn't work!
@@ -225,7 +257,7 @@ class ArkPlan:
     def createLinesLayer(self, name, provider):
         projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
         #vl = QgsVectorLayer("Line?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
-        vl = QgsVectorLayer("Line?crs=EPSG:27700&index=yes", name, provider)
+        vl = QgsVectorLayer("LineString?crs=EPSG:27700&index=yes", name, provider)
         pr = vl.dataProvider()
         pr.addAttributes([QgsField("context", QVariant.Int),
                           QgsField("source",  QVariant.String),
@@ -256,20 +288,31 @@ class ArkPlan:
 
     def setContext(self, context):
         self.context = context
+        QMessageBox.information(None, 'Set Context', 'Context set to %d' %self.context)
 
     def setSource(self, source):
         self.source = source
+        QMessageBox.information(None, 'Set Source', 'Source set to %s' %self.source)
 
     def addLevel(self, point, elevation):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPoint(point))
         feature.setAttributes([self.context, self.source, elevation])
-        self.levelsBuffer.addFeature(feature, true)
+        self.levelsBuffer.addFeature(feature, True)
 
     def enableLevelsMode(self):
-        #TODO switch to levels layer, disable all snapping, on mouse click add point, ask for level, update attribute
-        #self.canvas.setMapTool(self.levelsMapTool)
-        return
+        #TODO disable all snapping, custom tool
+        self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
+        self.iface.mapCanvas().setMapTool(self.levelsMapTool)
+        QMessageBox.information(None, 'Set Levels Mode', 'Set Levels Mode')
+
+    def levelsToolClicked(self, point, button):
+        # TODO Check left click
+        elevation, ok = QInputDialog.getDouble(None, 'Add Level', 'Please enter the elevation in meters (m):',
+                                               0, -100, 100, 2)
+        if ok:
+            self.addLevel(point, elevation)
+            self.iface.mapCanvas().refresh()
 
 class LevelsMapTool(QgsMapToolEmitPoint):
 

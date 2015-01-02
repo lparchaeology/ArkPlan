@@ -20,10 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QMessageBox, QInputDialog
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QMessageBox, QInputDialog, QColor
 from qgis.core import *
-from qgis.gui import QgsMapToolEmitPoint
+from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 # Initialize Qt resources from file resources.py
 import resources_rc
 # Import the code for the dialog
@@ -75,6 +75,7 @@ class ArkPlan:
         self.schematicBuffer = None
 
         self.levelsMapTool = None
+        self.hachureMapTool = None
 
         self.setContext(0)
         self.setSource('No Source')
@@ -211,6 +212,7 @@ class ArkPlan:
     def initialise(self):
         # Init gui stuff
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
+        QObject.connect(self.dock,  SIGNAL("selectedHachureMode()"),  self.enableHachureMode)
         QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
         QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
         self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
@@ -218,27 +220,38 @@ class ArkPlan:
         if self.levelsBuffer is None:
             self.levelsBuffer = self.createLevelsLayer('cxt_levels_mem', 'memory')
             self.levelsBuffer.startEditing()
+            self.levelsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_levels_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.levelsBuffer)
             self.iface.legendInterface().moveLayer(self.levelsBuffer, self.legendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.levelsBuffer)
         if self.linesBuffer is None:
             self.linesBuffer = self.createLinesLayer('cxt_lines_mem', 'memory')
             self.linesBuffer.startEditing()
+            self.linesBuffer.loadNamedStyle(self.plugin_dir + '/cxt_line_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
             self.iface.legendInterface().moveLayer(self.linesBuffer, self.legendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)
         if self.polygonsBuffer is None:
             self.polygonsBuffer = self.createPolygonLayer('cxt_polygons_mem', 'memory')
             self.polygonsBuffer.startEditing()
+            self.polygonsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
             self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.legendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.polygonsBuffer)
         if self.schematicBuffer is None:
             self.schematicBuffer = self.createPolygonLayer('cxt_schematics_mem', 'memory')
             self.schematicBuffer.startEditing()
+            self.schematicBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
             self.iface.legendInterface().moveLayer(self.schematicBuffer, self.legendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.schematicBuffer)
         # Setup the map tools
         if self.levelsMapTool is None:
             self.levelsMapTool = QgsMapToolEmitPoint(self.iface.mapCanvas())
             self.levelsMapTool.canvasClicked.connect(self.levelsToolClicked)
+        if self.hachureMapTool is None:
+            self.hachureMapTool = HacureMapTool(self.iface.mapCanvas())
+            self.hachureMapTool.hachureAdded.connect(self.addHachure)
         self.initialised = True
 
     def createLevelsLayer(self, name, provider):
@@ -303,8 +316,8 @@ class ArkPlan:
     def enableLevelsMode(self):
         #TODO disable all snapping, custom tool
         self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
+        self.iface.legendInterface().setCurrentLayer(self.levelsBuffer)
         self.iface.mapCanvas().setMapTool(self.levelsMapTool)
-        QMessageBox.information(None, 'Set Levels Mode', 'Set Levels Mode')
 
     def levelsToolClicked(self, point, button):
         # TODO Check left click
@@ -314,6 +327,21 @@ class ArkPlan:
             self.addLevel(point, elevation)
             self.iface.mapCanvas().refresh()
 
+    # Hachure Tool Methods
+
+    def enableHachureMode(self):
+        #TODO disable all snapping, custom tool
+        self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
+        self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
+        self.iface.mapCanvas().setMapTool(self.hachureMapTool)
+
+    def addHachure(self, point1, point2):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPolyline([point1, point2]))
+        feature.setAttributes([self.context, self.source, 'hch'])
+        self.linesBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
+
 class LevelsMapTool(QgsMapToolEmitPoint):
 
     def __init__(self, canvas):
@@ -322,4 +350,36 @@ class LevelsMapTool(QgsMapToolEmitPoint):
 
     def canvasPressEvent(self, e):
         return
-        
+
+# Map Tool to take two points and draw a hachure
+class HacureMapTool(QgsMapToolEmitPoint):
+
+    hachureAdded = pyqtSignal(QgsPoint, QgsPoint)
+    startPoint = None
+    endPoint = None
+    rubberBand = None
+
+    def __init__(self, canvas):
+        self.canvas = canvas
+        QgsMapToolEmitPoint.__init__(self, canvas)
+
+    def canvasMoveEvent(self, e):
+        if self.startPoint:
+            toPoint = self.toMapCoordinates(e.pos())
+            if self.rubberBand:
+                self.rubberBand.reset()
+            else:
+                self.rubberBand = QgsRubberBand(self.canvas, False)
+                self.rubberBand.setColor(QColor(Qt.red))
+            points  = [self.startPoint, toPoint]
+            self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
+
+    def canvasPressEvent(self, e):
+        if self.startPoint is None:
+            self.startPoint = self.toMapCoordinates(e.pos())
+        else:
+            self.endPoint = self.toMapCoordinates(e.pos())
+            self.rubberBand.reset()
+            self.hachureAdded.emit(self.startPoint, self.endPoint)
+            self.startPoint = None
+            self.endPoint = None

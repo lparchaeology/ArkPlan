@@ -35,6 +35,7 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         self.setupUi(self)
         self.iface = iface
         QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+        QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self, SIGNAL("selectedHachureMode()"))
         QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
         QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
 

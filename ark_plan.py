@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QMessageBox, QInputDialog, QColor
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 # Initialize Qt resources from file resources.py
@@ -227,28 +227,28 @@ class ArkPlan:
         if self.linesBuffer is None:
             self.linesBuffer = self.createLinesLayer('cxt_lines_mem', 'memory')
             self.linesBuffer.startEditing()
-            self.linesBuffer.loadNamedStyle(self.plugin_dir + '/cxt_line_style.qml')
+            self.linesBuffer.loadNamedStyle(self.plugin_dir + '/cxt_line_type_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
             self.iface.legendInterface().moveLayer(self.linesBuffer, self.legendGroup)
             self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)
         if self.polygonsBuffer is None:
             self.polygonsBuffer = self.createPolygonLayer('cxt_polygons_mem', 'memory')
             self.polygonsBuffer.startEditing()
-            self.polygonsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_style.qml')
+            self.polygonsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_type_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
             self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.legendGroup)
             self.iface.legendInterface().refreshLayerSymbology(self.polygonsBuffer)
         if self.schematicBuffer is None:
             self.schematicBuffer = self.createPolygonLayer('cxt_schematics_mem', 'memory')
             self.schematicBuffer.startEditing()
-            self.schematicBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_style.qml')
+            self.schematicBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_type_style.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
             self.iface.legendInterface().moveLayer(self.schematicBuffer, self.legendGroup)
             self.iface.legendInterface().refreshLayerSymbology(self.schematicBuffer)
         # Setup the map tools
         if self.levelsMapTool is None:
-            self.levelsMapTool = QgsMapToolEmitPoint(self.iface.mapCanvas())
-            self.levelsMapTool.canvasClicked.connect(self.levelsToolClicked)
+            self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
+            self.levelsMapTool.levelAdded.connect(self.addLevel)
         if self.hachureMapTool is None:
             self.hachureMapTool = HacureMapTool(self.iface.mapCanvas())
             self.hachureMapTool.hachureAdded.connect(self.addHachure)
@@ -301,31 +301,22 @@ class ArkPlan:
 
     def setContext(self, context):
         self.context = context
-        QMessageBox.information(None, 'Set Context', 'Context set to %d' %self.context)
 
     def setSource(self, source):
         self.source = source
-        QMessageBox.information(None, 'Set Source', 'Source set to %s' %self.source)
 
     def addLevel(self, point, elevation):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPoint(point))
         feature.setAttributes([self.context, self.source, elevation])
         self.levelsBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
 
     def enableLevelsMode(self):
         #TODO disable all snapping, custom tool
         self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
         self.iface.legendInterface().setCurrentLayer(self.levelsBuffer)
         self.iface.mapCanvas().setMapTool(self.levelsMapTool)
-
-    def levelsToolClicked(self, point, button):
-        # TODO Check left click
-        elevation, ok = QInputDialog.getDouble(None, 'Add Level', 'Please enter the elevation in meters (m):',
-                                               0, -100, 100, 2)
-        if ok:
-            self.addLevel(point, elevation)
-            self.iface.mapCanvas().refresh()
 
     # Hachure Tool Methods
 
@@ -344,12 +335,20 @@ class ArkPlan:
 
 class LevelsMapTool(QgsMapToolEmitPoint):
 
+    levelAdded = pyqtSignal(QgsPoint, float)
+
     def __init__(self, canvas):
         self.canvas = canvas
         QgsMapToolEmitPoint.__init__(self, canvas)
 
     def canvasPressEvent(self, e):
-        return
+        if e.button() != Qt.LeftButton:
+            return
+        elevation, ok = QInputDialog.getDouble(None, 'Add Level', 'Please enter the elevation in meters (m):',
+                                               0, -100, 100, 2)
+        if ok:
+            point = self.toMapCoordinates(e.pos())
+            self.levelAdded.emit(point, elevation)
 
 # Map Tool to take two points and draw a hachure
 class HacureMapTool(QgsMapToolEmitPoint):
@@ -358,6 +357,7 @@ class HacureMapTool(QgsMapToolEmitPoint):
     startPoint = None
     endPoint = None
     rubberBand = None
+    type = u'hch'
 
     def __init__(self, canvas):
         self.canvas = canvas
@@ -375,6 +375,8 @@ class HacureMapTool(QgsMapToolEmitPoint):
             self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
 
     def canvasPressEvent(self, e):
+        if e.button() != Qt.LeftButton:
+            return
         if self.startPoint is None:
             self.startPoint = self.toMapCoordinates(e.pos())
         else:
@@ -383,3 +385,10 @@ class HacureMapTool(QgsMapToolEmitPoint):
             self.hachureAdded.emit(self.startPoint, self.endPoint)
             self.startPoint = None
             self.endPoint = None
+
+    def type(self, type):
+        return self.type
+
+    def setType(self, type):
+        self.type = type
+

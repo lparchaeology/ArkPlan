@@ -212,7 +212,7 @@ class ArkPlan:
     def initialise(self):
         # Init gui stuff
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
-        QObject.connect(self.dock,  SIGNAL("selectedHachureMode()"),  self.enableHachureMode)
+        QObject.connect(self.dock,  SIGNAL("selectedHachureMode(QString)"),  self.enableHachureMode)
         QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
         QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
         self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
@@ -313,23 +313,24 @@ class ArkPlan:
         self.iface.mapCanvas().refresh()
 
     def enableLevelsMode(self):
-        #TODO disable all snapping, custom tool
+        #TODO disable all snapping
         self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
         self.iface.legendInterface().setCurrentLayer(self.levelsBuffer)
         self.iface.mapCanvas().setMapTool(self.levelsMapTool)
 
     # Hachure Tool Methods
 
-    def enableHachureMode(self):
-        #TODO disable all snapping, custom tool
+    def enableHachureMode(self, type):
+        #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
         self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
+        self.hachureMapTool.setType(type)
         self.iface.mapCanvas().setMapTool(self.hachureMapTool)
 
-    def addHachure(self, point1, point2):
+    def addHachure(self, point1, point2, type):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline([point1, point2]))
-        feature.setAttributes([self.context, self.source, 'hch'])
+        feature.setAttributes([self.context, self.source, type])
         self.linesBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
@@ -353,14 +354,15 @@ class LevelsMapTool(QgsMapToolEmitPoint):
 # Map Tool to take two points and draw a hachure
 class HacureMapTool(QgsMapToolEmitPoint):
 
-    hachureAdded = pyqtSignal(QgsPoint, QgsPoint)
+    hachureAdded = pyqtSignal(QgsPoint, QgsPoint, 'QString')
     startPoint = None
     endPoint = None
     rubberBand = None
-    type = u'hch'
+    hachureType = 'hch'
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, type='hch'):
         self.canvas = canvas
+        self.type = type
         QgsMapToolEmitPoint.__init__(self, canvas)
 
     def canvasMoveEvent(self, e):
@@ -376,19 +378,21 @@ class HacureMapTool(QgsMapToolEmitPoint):
 
     def canvasPressEvent(self, e):
         if e.button() != Qt.LeftButton:
+            self.rubberBand.reset()
+            self.startPoint = None
+            self.endPoint = None
             return
         if self.startPoint is None:
             self.startPoint = self.toMapCoordinates(e.pos())
         else:
             self.endPoint = self.toMapCoordinates(e.pos())
             self.rubberBand.reset()
-            self.hachureAdded.emit(self.startPoint, self.endPoint)
+            self.hachureAdded.emit(self.startPoint, self.endPoint, self.hachureType)
             self.startPoint = None
             self.endPoint = None
 
-    def type(self, type):
-        return self.type
+    def type(self):
+        return self.hachureType
 
     def setType(self, type):
-        self.type = type
-
+        self.hachureType = type

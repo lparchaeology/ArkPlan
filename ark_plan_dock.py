@@ -34,13 +34,26 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         QDockWidget.__init__(self)
         self.setupUi(self)
         self.iface = iface
-        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
-        QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self, SIGNAL("selectedHachureMode()"))
+
         QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
         QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
+
+        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+        QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self.hachureSelected)
+        QObject.connect(self.m_undercutTool,  SIGNAL("clicked()"), self.undercutSelected)
+        QObject.connect(self.m_returnOfSlopeTool,  SIGNAL("clicked()"), self.returnOfSlopeSelected)
 
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
+
+    def hachureSelected(self):
+        self.emit(SIGNAL("selectedHachureMode(QString)"), "hch")
+
+    def undercutSelected(self):
+        self.emit(SIGNAL("selectedHachureMode(QString)"), "unc")
+
+    def returnOfSlopeSelected(self):
+        self.emit(SIGNAL("selectedHachureMode(QString)"), "ros")

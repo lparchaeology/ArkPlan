@@ -38,16 +38,50 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
         QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
 
-        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+        QObject.connect(self.m_extentTool,  SIGNAL("clicked()"), self.extentSelected)
+        QObject.connect(self.m_breakOfSlopeTool,  SIGNAL("clicked()"), self.breakOfSlopeSelected)
+        QObject.connect(self.m_limitOfExcavationTool,  SIGNAL("clicked()"), self.limitOfExcavationSelected)
+        QObject.connect(self.m_truncationTool,  SIGNAL("clicked()"), self.truncationSelected)
+        QObject.connect(self.m_uncertainEdgeTool,  SIGNAL("clicked()"), self.uncertainEdgeSelected)
+        QObject.connect(self.m_verticalBreakOfSlopeTool,  SIGNAL("clicked()"), self.verticalBreakOfSlopeSelected)
+        QObject.connect(self.m_verticalEdgeTool,  SIGNAL("clicked()"), self.verticalEdgeSelected)
+        QObject.connect(self.m_verticalTruncationTool,  SIGNAL("clicked()"), self.verticalTruncationSelected)
+
         QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self.hachureSelected)
         QObject.connect(self.m_undercutTool,  SIGNAL("clicked()"), self.undercutSelected)
         QObject.connect(self.m_returnOfSlopeTool,  SIGNAL("clicked()"), self.returnOfSlopeSelected)
+
+        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
 
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
+
+    def extentSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "ext")
+
+    def breakOfSlopeSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "bos")
+
+    def limitOfExcavationSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "loe")
+
+    def truncationSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "trn")
+
+    def uncertainEdgeSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "ueg")
+
+    def verticalBreakOfSlopeSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "vbs")
+
+    def verticalEdgeSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "veg")
+
+    def verticalTruncationSelected(self):
+        self.emit(SIGNAL("selectedLineMode(QString)"), "vtr")
 
     def hachureSelected(self):
         self.emit(SIGNAL("selectedHachureMode(QString)"), "hch")

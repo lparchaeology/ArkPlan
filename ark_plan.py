@@ -76,6 +76,7 @@ class ArkPlan:
 
         self.levelsMapTool = None
         self.hachureMapTool = None
+        self.lineMapTool = None
 
         self.setContext(0)
         self.setSource('No Source')
@@ -212,6 +213,7 @@ class ArkPlan:
     def initialise(self):
         # Init gui stuff
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
+        QObject.connect(self.dock,  SIGNAL("selectedLineMode(QString)"),  self.enableLineMode)
         QObject.connect(self.dock,  SIGNAL("selectedHachureMode(QString)"),  self.enableHachureMode)
         QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
         QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
@@ -252,6 +254,9 @@ class ArkPlan:
         if self.hachureMapTool is None:
             self.hachureMapTool = HacureMapTool(self.iface.mapCanvas())
             self.hachureMapTool.hachureAdded.connect(self.addHachure)
+        if self.lineMapTool is None:
+            self.lineMapTool = LineMapTool(self.iface.mapCanvas())
+            self.lineMapTool.lineAdded.connect(self.addLine)
         self.initialised = True
 
     def createLevelsLayer(self, name, provider):
@@ -334,6 +339,22 @@ class ArkPlan:
         self.linesBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
+    # Line Tool Methods
+
+    def enableLineMode(self, type):
+        #TODO configure snapping
+        self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
+        self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
+        self.lineMapTool.setType(type)
+        self.iface.mapCanvas().setMapTool(self.lineMapTool)
+
+    def addLine(self, points, type):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPolyline(points))
+        feature.setAttributes([self.context, self.source, type])
+        self.linesBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
+
 class LevelsMapTool(QgsMapToolEmitPoint):
 
     levelAdded = pyqtSignal(QgsPoint, float)
@@ -362,7 +383,7 @@ class HacureMapTool(QgsMapToolEmitPoint):
 
     def __init__(self, canvas, type='hch'):
         self.canvas = canvas
-        self.type = type
+        self.hachureType = type
         QgsMapToolEmitPoint.__init__(self, canvas)
 
     def canvasMoveEvent(self, e):
@@ -396,3 +417,46 @@ class HacureMapTool(QgsMapToolEmitPoint):
 
     def setType(self, type):
         self.hachureType = type
+
+# Map Tool to take mulitple points and draw a line
+class LineMapTool(QgsMapToolEmitPoint):
+
+    lineAdded = pyqtSignal(list, 'QString')
+    points = []
+    rubberBand = None
+    lineType = 'ext'
+
+    def __init__(self, canvas, type='ext'):
+        self.canvas = canvas
+        self.lineType = type
+        QgsMapToolEmitPoint.__init__(self, canvas)
+
+    def canvasMoveEvent(self, e):
+        if len(self.points) > 0:
+            rbPoints = list(self.points)
+            toPoint = self.toMapCoordinates(e.pos())
+            rbPoints.append(toPoint)
+            if self.rubberBand:
+                self.rubberBand.reset()
+            else:
+                self.rubberBand = QgsRubberBand(self.canvas, False)
+                self.rubberBand.setColor(QColor(Qt.red))
+            self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
+
+    def canvasPressEvent(self, e):
+        if e.button() == Qt.LeftButton:
+            point = self.toMapCoordinates(e.pos())
+            self.points.append(point)
+        elif e.button() == Qt.RightButton:
+            self.rubberBand.reset()
+            self.lineAdded.emit(self.points, self.lineType)
+            self.points = []
+        else:
+            self.rubberBand.reset()
+            self.points = []
+
+    def type(self):
+        return self.lineType
+
+    def setType(self, type):
+        self.lineType = type

@@ -77,6 +77,8 @@ class ArkPlan:
         self.levelsMapTool = None
         self.hachureMapTool = None
         self.lineMapTool = None
+        self.polygonMapTool = None
+        self.schematicMapTool = None
 
         self.setContext(0)
         self.setSource('No Source')
@@ -215,6 +217,8 @@ class ArkPlan:
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
         QObject.connect(self.dock,  SIGNAL("selectedLineMode(QString)"),  self.enableLineMode)
         QObject.connect(self.dock,  SIGNAL("selectedHachureMode(QString)"),  self.enableHachureMode)
+        QObject.connect(self.dock,  SIGNAL("selectedPolygonMode(QString)"),  self.enablePolygonMode)
+        QObject.connect(self.dock,  SIGNAL("selectedSchematicMode(QString)"),  self.enableSchematicMode)
         QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
         QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
         self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
@@ -257,6 +261,12 @@ class ArkPlan:
         if self.lineMapTool is None:
             self.lineMapTool = LineMapTool(self.iface.mapCanvas())
             self.lineMapTool.lineAdded.connect(self.addLine)
+        if self.polygonMapTool is None:
+            self.polygonMapTool = PolygonMapTool(self.iface.mapCanvas())
+            self.polygonMapTool.polygonAdded.connect(self.addPolygon)
+        if self.schematicMapTool is None:
+            self.schematicMapTool = PolygonMapTool(self.iface.mapCanvas())
+            self.schematicMapTool.polygonAdded.connect(self.addSchematic)
         self.initialised = True
 
     def createLevelsLayer(self, name, provider):
@@ -310,6 +320,8 @@ class ArkPlan:
     def setSource(self, source):
         self.source = source
 
+    # Levels Tool Methods
+
     def addLevel(self, point, elevation):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPoint(point))
@@ -353,6 +365,38 @@ class ArkPlan:
         feature.setGeometry(QgsGeometry.fromPolyline(points))
         feature.setAttributes([self.context, self.source, type])
         self.linesBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
+
+    # Polygon Tool Methods
+
+    def enablePolygonMode(self, type):
+        #TODO configure snapping
+        self.iface.mapCanvas().setCurrentLayer(self.polygonsBuffer)
+        self.iface.legendInterface().setCurrentLayer(self.polygonsBuffer)
+        self.polygonMapTool.setType(type)
+        self.iface.mapCanvas().setMapTool(self.polygonMapTool)
+
+    def addPolygon(self, points, type):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPolygon([points]))
+        feature.setAttributes([self.context, self.source, type])
+        self.polygonsBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
+
+    # Schematic Tool Methods
+
+    def enableSchematicMode(self, type):
+        #TODO configure snapping
+        self.iface.mapCanvas().setCurrentLayer(self.schematicBuffer)
+        self.iface.legendInterface().setCurrentLayer(self.schematicBuffer)
+        self.schematicMapTool.setType(type)
+        self.iface.mapCanvas().setMapTool(self.schematicMapTool)
+
+    def addSchematic(self, points, type):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPolygon([points]))
+        feature.setAttributes([self.context, self.source, type])
+        self.schematicBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
 class LevelsMapTool(QgsMapToolEmitPoint):
@@ -460,3 +504,49 @@ class LineMapTool(QgsMapToolEmitPoint):
 
     def setType(self, type):
         self.lineType = type
+
+# Map Tool to take mulitple points and draw a line
+class PolygonMapTool(QgsMapToolEmitPoint):
+
+    polygonAdded = pyqtSignal(list, 'QString')
+    points = []
+    rubberBand = None
+    polygonType = 'ext'
+
+    def __init__(self, canvas, type='ext'):
+        self.canvas = canvas
+        self.lineType = type
+        QgsMapToolEmitPoint.__init__(self, canvas)
+
+    def canvasMoveEvent(self, e):
+        if len(self.points) > 0:
+            rbPoints = list(self.points)
+            toPoint = self.toMapCoordinates(e.pos())
+            rbPoints.append(toPoint)
+            if self.rubberBand:
+                self.rubberBand.reset()
+            else:
+                self.rubberBand = QgsRubberBand(self.canvas, False)
+                self.rubberBand.setColor(QColor(Qt.red))
+            if len(self.points) == 1:
+                self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
+            else:
+                self.rubberBand.setToGeometry(QgsGeometry.fromPolygon([rbPoints]), None)
+
+    def canvasPressEvent(self, e):
+        if e.button() == Qt.LeftButton:
+            point = self.toMapCoordinates(e.pos())
+            self.points.append(point)
+        elif e.button() == Qt.RightButton:
+            self.rubberBand.reset()
+            self.polygonAdded.emit(self.points, self.polygonType)
+            self.points = []
+        else:
+            self.rubberBand.reset()
+            self.points = []
+
+    def type(self):
+        return self.polygonType
+
+    def setType(self, type):
+        self.polygonType = type

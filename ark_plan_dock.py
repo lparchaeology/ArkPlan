@@ -47,11 +47,22 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         QObject.connect(self.m_verticalEdgeTool,  SIGNAL("clicked()"), self.verticalEdgeSelected)
         QObject.connect(self.m_verticalTruncationTool,  SIGNAL("clicked()"), self.verticalTruncationSelected)
 
+        QObject.connect(self.m_brickTool,  SIGNAL("clicked()"), self.brickSelected)
+        QObject.connect(self.m_cbmTool,  SIGNAL("clicked()"), self.cbmSelected)
+        QObject.connect(self.m_charcoalTool,  SIGNAL("clicked()"), self.charcoalSelected)
+        QObject.connect(self.m_flintTool,  SIGNAL("clicked()"), self.flintSelected)
+        QObject.connect(self.m_mortarTool,  SIGNAL("clicked()"), self.mortarSelected)
+        QObject.connect(self.m_potTool,  SIGNAL("clicked()"), self.potSelected)
+        QObject.connect(self.m_tileTool,  SIGNAL("clicked()"), self.tileSelected)
+        QObject.connect(self.m_stoneTool,  SIGNAL("clicked()"), self.stoneSelected)
+
         QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self.hachureSelected)
         QObject.connect(self.m_undercutTool,  SIGNAL("clicked()"), self.undercutSelected)
         QObject.connect(self.m_returnOfSlopeTool,  SIGNAL("clicked()"), self.returnOfSlopeSelected)
 
         QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+
+        QObject.connect(self.m_schematicTool,  SIGNAL("clicked()"), self.schematicSelected)
 
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
@@ -83,6 +94,30 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     def verticalTruncationSelected(self):
         self.emit(SIGNAL("selectedLineMode(QString)"), "vtr")
 
+    def brickSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "brk")
+
+    def cbmSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "cbm")
+
+    def charcoalSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "cha")
+
+    def flintSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "fli")
+
+    def mortarSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "mtr")
+
+    def potSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "pot")
+
+    def stoneSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "sto")
+
+    def tileSelected(self):
+        self.emit(SIGNAL("selectedPolygonMode(QString)"), "til")
+
     def hachureSelected(self):
         self.emit(SIGNAL("selectedHachureMode(QString)"), "hch")
 
@@ -91,3 +126,7 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
 
     def returnOfSlopeSelected(self):
         self.emit(SIGNAL("selectedHachureMode(QString)"), "ros")
+
+    def schematicSelected(self):
+        self.emit(SIGNAL("selectedSchematicMode(QString)"), "sch")
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
-    <height>665</height>
+    <width>299</width>
+    <height>816</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,14 +20,38 @@
    <string>ArkPlan</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QGroupBox" name="m_newContextGroup">
+     <widget class="QGroupBox" name="m_planGroup">
       <property name="title">
-       <string>New Context</string>
+       <string>Plan</string>
       </property>
       <layout class="QFormLayout" name="formLayout">
        <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Source file:</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLineEdit" name="lineEdit"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
         <widget class="QLabel" name="m_contextLabel">
          <property name="text">
           <string>Context:</string>
@@ -37,7 +61,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="1" column="1">
         <widget class="QSpinBox" name="m_contextSpin">
          <property name="toolTip">
           <string>Context Number</string>
@@ -47,7 +71,27 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Grid Ref:</string>
+         </property>
+         <property name="buddy">
+          <cstring>spinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QSpinBox" name="spinBox"/>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_2"/>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
         <widget class="QLabel" name="m_sourceLabel">
          <property name="text">
           <string>Source:</string>
@@ -57,233 +101,244 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="3" column="1">
         <widget class="QLineEdit" name="m_sourceEdit">
          <property name="toolTip">
           <string>Source</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QGroupBox" name="m_editModeGroup">
-         <property name="title">
-          <string>Edit mode</string>
+       <item row="4" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Georeference</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QToolButton" name="m_extentTool">
-            <property name="toolTip">
-             <string>Extent of context</string>
-            </property>
-            <property name="text">
-             <string>ext</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QToolButton" name="m_verticalEdgeTool">
-            <property name="toolTip">
-             <string>Vertical Edge</string>
-            </property>
-            <property name="text">
-             <string>Veg</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QToolButton" name="m_uncertainEdgeTool">
-            <property name="toolTip">
-             <string>Uncertain Edge</string>
-            </property>
-            <property name="text">
-             <string>ueg</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QToolButton" name="m_limitOfExcavationTool">
-            <property name="toolTip">
-             <string>Limit of Excavation</string>
-            </property>
-            <property name="text">
-             <string>loe</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QToolButton" name="m_verticalTruncationTool">
-            <property name="toolTip">
-             <string>Vertical Truncation</string>
-            </property>
-            <property name="text">
-             <string>Vtr</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QToolButton" name="m_truncationTool">
-            <property name="toolTip">
-             <string>Truncation</string>
-            </property>
-            <property name="text">
-             <string>Trn</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QToolButton" name="m_breakOfSlopeTool">
-            <property name="toolTip">
-             <string>Break of Slope</string>
-            </property>
-            <property name="text">
-             <string>bos</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
-            <property name="toolTip">
-             <string>Vertical Break of Slope</string>
-            </property>
-            <property name="text">
-             <string>vbs</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QToolButton" name="m_hachureTool">
-            <property name="toolTip">
-             <string>Hachure</string>
-            </property>
-            <property name="text">
-             <string>hch</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QToolButton" name="m_undercutTool">
-            <property name="toolTip">
-             <string>Undercut</string>
-            </property>
-            <property name="text">
-             <string>unc</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QToolButton" name="m_returnOfSlopeTool">
-            <property name="toolTip">
-             <string>Return of Slope</string>
-            </property>
-            <property name="text">
-             <string>ros</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QToolButton" name="m_cbmTool">
-            <property name="toolTip">
-             <string>CBM</string>
-            </property>
-            <property name="text">
-             <string>cbm</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QToolButton" name="m_brickTool">
-            <property name="toolTip">
-             <string>Brick</string>
-            </property>
-            <property name="text">
-             <string>brk</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QToolButton" name="m_tileTool">
-            <property name="toolTip">
-             <string>Tile</string>
-            </property>
-            <property name="text">
-             <string>til</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QToolButton" name="m_mortarTool">
-            <property name="toolTip">
-             <string>Mortar</string>
-            </property>
-            <property name="text">
-             <string>mtr</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QToolButton" name="m_charcoalTool">
-            <property name="toolTip">
-             <string>Charcoal</string>
-            </property>
-            <property name="text">
-             <string>cha</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QToolButton" name="m_stoneTool">
-            <property name="toolTip">
-             <string>Stone</string>
-            </property>
-            <property name="text">
-             <string>sto</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QToolButton" name="m_potTool">
-            <property name="toolTip">
-             <string>Pot</string>
-            </property>
-            <property name="text">
-             <string>pot</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="3">
-           <widget class="QToolButton" name="m_flintTool">
-            <property name="toolTip">
-             <string>Flint</string>
-            </property>
-            <property name="text">
-             <string>fli</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QToolButton" name="m_levelTool">
-            <property name="toolTip">
-             <string>Level</string>
-            </property>
-            <property name="text">
-             <string>lvl</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QToolButton" name="m_schematicTool">
-            <property name="toolTip">
-             <string>Schematic</string>
-            </property>
-            <property name="text">
-             <string>sch</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2">
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="m_drawingToolsGroup">
+      <property name="title">
+       <string>Drawing Tools</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QToolButton" name="m_extentTool">
+           <property name="toolTip">
+            <string>Extent of context</string>
+           </property>
+           <property name="text">
+            <string>ext</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QToolButton" name="m_verticalEdgeTool">
+           <property name="toolTip">
+            <string>Vertical Edge</string>
+           </property>
+           <property name="text">
+            <string>Veg</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QToolButton" name="m_uncertainEdgeTool">
+           <property name="toolTip">
+            <string>Uncertain Edge</string>
+           </property>
+           <property name="text">
+            <string>ueg</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QToolButton" name="m_limitOfExcavationTool">
+           <property name="toolTip">
+            <string>Limit of Excavation</string>
+           </property>
+           <property name="text">
+            <string>loe</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QToolButton" name="m_verticalTruncationTool">
+           <property name="toolTip">
+            <string>Vertical Truncation</string>
+           </property>
+           <property name="text">
+            <string>Vtr</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QToolButton" name="m_truncationTool">
+           <property name="toolTip">
+            <string>Truncation</string>
+           </property>
+           <property name="text">
+            <string>Trn</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QToolButton" name="m_breakOfSlopeTool">
+           <property name="toolTip">
+            <string>Break of Slope</string>
+           </property>
+           <property name="text">
+            <string>bos</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
+           <property name="toolTip">
+            <string>Vertical Break of Slope</string>
+           </property>
+           <property name="text">
+            <string>vbs</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QToolButton" name="m_hachureTool">
+           <property name="toolTip">
+            <string>Hachure</string>
+           </property>
+           <property name="text">
+            <string>hch</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QToolButton" name="m_undercutTool">
+           <property name="toolTip">
+            <string>Undercut</string>
+           </property>
+           <property name="text">
+            <string>unc</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QToolButton" name="m_returnOfSlopeTool">
+           <property name="toolTip">
+            <string>Return of Slope</string>
+           </property>
+           <property name="text">
+            <string>ros</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QToolButton" name="m_cbmTool">
+           <property name="toolTip">
+            <string>CBM</string>
+           </property>
+           <property name="text">
+            <string>cbm</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QToolButton" name="m_brickTool">
+           <property name="toolTip">
+            <string>Brick</string>
+           </property>
+           <property name="text">
+            <string>brk</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QToolButton" name="m_tileTool">
+           <property name="toolTip">
+            <string>Tile</string>
+           </property>
+           <property name="text">
+            <string>til</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QToolButton" name="m_mortarTool">
+           <property name="toolTip">
+            <string>Mortar</string>
+           </property>
+           <property name="text">
+            <string>mtr</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QToolButton" name="m_charcoalTool">
+           <property name="toolTip">
+            <string>Charcoal</string>
+           </property>
+           <property name="text">
+            <string>cha</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QToolButton" name="m_stoneTool">
+           <property name="toolTip">
+            <string>Stone</string>
+           </property>
+           <property name="text">
+            <string>sto</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QToolButton" name="m_potTool">
+           <property name="toolTip">
+            <string>Pot</string>
+           </property>
+           <property name="text">
+            <string>pot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QToolButton" name="m_flintTool">
+           <property name="toolTip">
+            <string>Flint</string>
+           </property>
+           <property name="text">
+            <string>fli</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QToolButton" name="m_levelTool">
+           <property name="toolTip">
+            <string>Level</string>
+           </property>
+           <property name="text">
+            <string>lvl</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QToolButton" name="m_schematicTool">
+           <property name="toolTip">
+            <string>Schematic</string>
+           </property>
+           <property name="text">
+            <string>sch</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QPushButton" name="m_saveButton">

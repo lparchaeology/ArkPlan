@@ -22,13 +22,17 @@
 """
 from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor
+
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
+
 # Initialize Qt resources from file resources.py
 import resources_rc
-# Import the code for the dialog
 
+# Import the code for the dialog
 from ark_plan_dock import ArkPlanDock
+from ark_georef_dialog import ArkGeorefDialog
+
 import os.path
 
 class ArkPlan:
@@ -221,6 +225,7 @@ class ArkPlan:
         QObject.connect(self.dock,  SIGNAL("selectedSchematicMode(QString)"),  self.enableSchematicMode)
         QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
         QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
+        QObject.connect(self.dock,  SIGNAL("georefSelected()"),  self.georeferencePlan)
         self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
         # Setup the in-memory editing layers
         if self.levelsBuffer is None:
@@ -319,6 +324,12 @@ class ArkPlan:
 
     def setSource(self, source):
         self.source = source
+
+    # Georeference Tools
+
+    def georeferencePlan(self):
+        georefDialog = ArkGeorefDialog()
+        georefDialog.exec_()
 
     # Levels Tool Methods
 

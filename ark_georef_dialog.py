@@ -5,9 +5,9 @@
                                  A QGIS plugin
  Plugin to assist in digitising of Archaeological plans.
                              -------------------
-        begin                : 2014-12-07
+        begin                : 2015-01-10
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by John Layt
+        copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,18 +24,9 @@
 import os
 
 from PyQt4 import QtGui, uic
+import ark_georef_dialog_base
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ark_plan_dialog_base.ui'))
-
-
-class ArkPlanDialog(QtGui.QDialog, FORM_CLASS):
+class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBase):
     def __init__(self, parent=None):
-        """Constructor."""
-        super(ArkPlanDialog, self).__init__(parent)
-        # Set up the user interface from Designer.
-        # After setupUI you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
+        super(ArkGeorefDialog, self).__init__(parent)
         self.setupUi(self)

@@ -37,6 +37,7 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
 
         QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
         QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
+        QObject.connect(self.m_georefButton,  SIGNAL("clicked()"), self, SIGNAL("georefSelected()"))
 
         QObject.connect(self.m_extentTool,  SIGNAL("clicked()"), self.extentSelected)
         QObject.connect(self.m_breakOfSlopeTool,  SIGNAL("clicked()"), self.breakOfSlopeSelected)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
-    <height>816</height>
+    <width>304</width>
+    <height>875</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -109,7 +109,7 @@
         </widget>
        </item>
        <item row="4" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="m_georefButton">
          <property name="text">
           <string>Georeference</string>
          </property>

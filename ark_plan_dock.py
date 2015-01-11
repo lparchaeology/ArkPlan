@@ -35,9 +35,13 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         self.setupUi(self)
         self.iface = iface
 
-        QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
-        QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
+        QObject.connect(self.m_loadRawButton,  SIGNAL("clicked()"), self, SIGNAL("loadRawFileSelected()"))
         QObject.connect(self.m_georefButton,  SIGNAL("clicked()"), self, SIGNAL("georefSelected()"))
+        QObject.connect(self.m_loadGeoButton,  SIGNAL("clicked()"), self, SIGNAL("loadGeoFileSelected()"))
+        QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
+        QObject.connect(self.m_eastSpin,  SIGNAL("valueChanged(int)"), self.changedGridReference)
+        QObject.connect(self.m_northSpin,  SIGNAL("valueChanged(int)"), self.changedGridReference)
+        QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
 
         QObject.connect(self.m_extentTool,  SIGNAL("clicked()"), self.extentSelected)
         QObject.connect(self.m_breakOfSlopeTool,  SIGNAL("clicked()"), self.breakOfSlopeSelected)
@@ -65,11 +69,25 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
 
         QObject.connect(self.m_schematicTool,  SIGNAL("clicked()"), self.schematicSelected)
 
+    # Plan Tools
+
+    def setFile(self, name):
+        self.m_fileEdit.setText(name)
+
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
 
+    def setGridReference(self, easting, northing):
+        self.m_eastSpin.setValue(easting)
+        self.m_northSpin.setValue(northing)
+
+    def changedGridReference(self):
+        self.emit(SIGNAL("gridReferenceChanged(int, int)"), self.m_eastSpin.value(), self.m_northSpin.value())
+
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
+
+    # Drawing Tools
 
     def extentSelected(self):
         self.emit(SIGNAL("selectedLineMode(QString)"), "ext")

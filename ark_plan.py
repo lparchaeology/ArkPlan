@@ -20,8 +20,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal, QFileInfo, QPoint
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor, QFileDialog
 
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
@@ -34,6 +34,7 @@ from ark_plan_dock import ArkPlanDock
 from ark_georef_dialog import ArkGeorefDialog
 
 import os.path
+import string
 
 class ArkPlan:
     """QGIS Plugin Implementation."""
@@ -84,8 +85,13 @@ class ArkPlan:
         self.polygonMapTool = None
         self.schematicMapTool = None
 
-        self.setContext(0)
-        self.setSource('No Source')
+        self.rawPlanFolder = '/media/build/ark'
+        self.geoPlanFolder = '/media/build/ark'
+        self.rawFile = QFileInfo()
+        self.geoFile = QFileInfo()
+        self.context = 0
+        self.gridReference = QPoint(0, 0)
+        self.source = 'No Source'
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -213,21 +219,26 @@ class ArkPlan:
         if not self.initialised:
             self.initialise()
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
-        self.dock.setContext(self.context)
-        self.dock.setSource(self.source)
+        self.populatePlanMetadata()
 
     def initialise(self):
         # Init gui stuff
+
+        QObject.connect(self.dock,  SIGNAL("loadRawFileSelected()"),  self.loadRawPlan)
+        QObject.connect(self.dock,  SIGNAL("georefSelected()"),  self.georeferencePlan)
+        QObject.connect(self.dock,  SIGNAL("loadGeoFileSelected()"),  self.loadGeoPlan)
+        QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
+        QObject.connect(self.dock,  SIGNAL("gridReferenceChanged(int, int)"),  self.setGridReference)
+        QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
+
         QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
         QObject.connect(self.dock,  SIGNAL("selectedLineMode(QString)"),  self.enableLineMode)
         QObject.connect(self.dock,  SIGNAL("selectedHachureMode(QString)"),  self.enableHachureMode)
         QObject.connect(self.dock,  SIGNAL("selectedPolygonMode(QString)"),  self.enablePolygonMode)
         QObject.connect(self.dock,  SIGNAL("selectedSchematicMode(QString)"),  self.enableSchematicMode)
-        QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
-        QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
-        QObject.connect(self.dock,  SIGNAL("georefSelected()"),  self.georeferencePlan)
-        self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
+
         # Setup the in-memory editing layers
+        self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
         if self.levelsBuffer is None:
             self.levelsBuffer = self.createLevelsLayer('cxt_levels_mem', 'memory')
             self.levelsBuffer.startEditing()
@@ -319,8 +330,47 @@ class ArkPlan:
         self.polygonsBuffer.rollback()
         self.schematicBuffer.rollback()
 
+    # Plan Tools
+
+    def populatePlanMetadata(self):
+        filename = self.rawFile.baseName()
+        if not filename:
+            filename = self.geoFile.baseName()
+        if filename:
+            elements = string.split(filename, '_')
+            self.dock.setFile(filename)
+            self.dock.setContext(int(elements[0]))
+            self.dock.setGridReference(int(elements[1]), int(elements[2]))
+            self.dock.setSource(elements[0])
+        else:
+            self.dock.setFile(self.tr('No file loaded'))
+            self.dock.setContext(0)
+            self.dock.setGridReference(0, 0)
+            self.dock.setSource(self.tr('No source selected'))
+
+    def loadRawPlan(self):
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.rawPlanFolder,
+                                                       self.tr('Image Files (*.png *.tif *.tiff)')))
+        if fileName:
+            self.rawFile = QFileInfo(fileName)
+            self.geoFile = QFileInfo()
+            #TODO check if geo file already exists?
+            self.populatePlanMetadata()
+
+    def loadGeoPlan(self):
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load GeoReferenced Plan'), self.geoPlanFolder,
+                                                       self.tr('GeoTiff Files (*.tif *.tiff)')))
+        if fileName:
+            self.rawFile = QFileInfo()
+            self.geoFile = QFileInfo(fileName)
+            #TODO load raw file if exists?
+            self.populatePlanMetadata()
+
     def setContext(self, context):
         self.context = context
+
+    def setGridReference(self, easting, northing):
+        self.gridReference = QPoint(easting, northing)
 
     def setSource(self, source):
         self.source = source
@@ -328,7 +378,7 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self):
-        georefDialog = ArkGeorefDialog()
+        georefDialog = ArkGeorefDialog(self.rawFile, self.gridReference, 'gridlayer', 'localX', 'localY')
         georefDialog.exec_()
 
     # Levels Tool Methods

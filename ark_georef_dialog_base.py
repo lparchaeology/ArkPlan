@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'ark_georef_dialog_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.2
+# Created: Mon Jan 12 12:49:09 2015
+#      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,7 +26,12 @@ except AttributeError:
 class Ui_ArkGeorefDialogBase(object):
     def setupUi(self, ArkGeorefDialogBase):
         ArkGeorefDialogBase.setObjectName(_fromUtf8("ArkGeorefDialogBase"))
-        ArkGeorefDialogBase.resize(713, 612)
+        ArkGeorefDialogBase.resize(1089, 906)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(ArkGeorefDialogBase.sizePolicy().hasHeightForWidth())
+        ArkGeorefDialogBase.setSizePolicy(sizePolicy)
         self.gridLayout = QtGui.QGridLayout(ArkGeorefDialogBase)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.verticalLayout = QtGui.QVBoxLayout()
@@ -130,6 +136,8 @@ class Ui_ArkGeorefDialogBase(object):
         self.m_gcpTable.setItem(2, 4, item)
         item = QtGui.QTableWidgetItem()
         self.m_gcpTable.setItem(2, 5, item)
+        self.m_gcpTable.horizontalHeader().setDefaultSectionSize(70)
+        self.m_gcpTable.verticalHeader().setDefaultSectionSize(20)
         self.verticalLayout_4.addWidget(self.m_gcpTable)
         self.gridLayout.addLayout(self.verticalLayout_4, 0, 1, 1, 1)
         self.verticalLayout_2 = QtGui.QVBoxLayout()

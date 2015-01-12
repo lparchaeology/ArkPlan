@@ -85,8 +85,11 @@ class ArkPlan:
         self.polygonMapTool = None
         self.schematicMapTool = None
 
-        self.rawPlanFolder = '/media/build/ark'
-        self.geoPlanFolder = '/media/build/ark'
+        self.gridLayer = 'MNO12_grid_pt'
+        self.gridLayerX = 'x'
+        self.gridLayerY = 'y'
+        self.rawPlanFolder = '/filebin/1120L - 100 Minories/GIS/rasters/Context Plans/Incoming/2. Raw'
+        self.geoPlanFolder = '/filebin/1120L - 100 Minories/GIS/rasters/Context Plans/Incoming/3. Processed'
         self.rawFile = QFileInfo()
         self.geoFile = QFileInfo()
         self.context = 0
@@ -378,7 +381,7 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self):
-        georefDialog = ArkGeorefDialog(self.rawFile, self.gridReference, 'gridlayer', 'localX', 'localY')
+        georefDialog = ArkGeorefDialog(self.rawFile, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
         georefDialog.exec_()
 
     # Levels Tool Methods

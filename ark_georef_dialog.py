@@ -110,8 +110,6 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gcpTable.item(2, 4).setText(str(self.geo3.x()))
         self.m_gcpTable.item(2, 5).setText(str(self.geo3.y()))
 
-        osgeo.gdal.ContourGenerate()
-
     def setGcp1(self, point):
         self.gcp1 = point
         self.gridItem1.setPos(point)
@@ -134,4 +132,4 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gcpTable.item(2, 1).setText(str(point.y()))
 
     def runGeoreference(self):
-        return
+        osgeo.gdal.ContourGenerate()

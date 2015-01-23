@@ -132,4 +132,5 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gcpTable.item(2, 1).setText(str(point.y()))
 
     def runGeoreference(self):
-        osgeo.gdal.ContourGenerate()
+        #osgeo.gdal.ContourGenerate()
+        return

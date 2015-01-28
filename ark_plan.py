@@ -88,8 +88,8 @@ class ArkPlan:
         self.gridLayer = 'MNO12_grid_pt'
         self.gridLayerX = 'x'
         self.gridLayerY = 'y'
-        self.rawPlanFolder = '/filebin/1120L - 100 Minories/GIS/rasters/Context Plans/Incoming/2. Raw'
-        self.geoPlanFolder = '/filebin/1120L - 100 Minories/GIS/rasters/Context Plans/Incoming/3. Processed'
+        self.rawPlanFolder = '/filebin/1120L - 100 Minories/GIS/plans/incoming/raw'
+        self.geoPlanFolder = '/filebin/1120L - 100 Minories/GIS/plans/incoming/processed'
         self.rawFile = QFileInfo()
         self.geoFile = QFileInfo()
         self.context = 0
@@ -342,11 +342,13 @@ class ArkPlan:
         if filename:
             elements = string.split(filename, '_')
             self.dock.setFile(filename)
-            self.dock.setContext(int(elements[0]))
-            self.dock.setGridReference(int(elements[1]), int(elements[2]))
-            self.dock.setSource(elements[0])
+            self.dock.setSite(elements[0])
+            self.dock.setContext(int(elements[1][1:]))
+            self.dock.setGridReference(int(elements[2][1:]), int(elements[3][1:]))
+            self.dock.setSource(elements[1][1:])
         else:
             self.dock.setFile(self.tr('No file loaded'))
+            self.dock.setSite('')
             self.dock.setContext(0)
             self.dock.setGridReference(0, 0)
             self.dock.setSource(self.tr('No source selected'))
@@ -381,7 +383,7 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self):
-        georefDialog = ArkGeorefDialog(self.rawFile, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
+        georefDialog = ArkGeorefDialog(self.rawFile, self.geoPlanFolder, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
         georefDialog.exec_()
 
     # Levels Tool Methods

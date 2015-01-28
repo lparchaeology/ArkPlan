@@ -23,14 +23,16 @@
 
 import os
 
-from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, SIGNAL, qDebug
+from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, SIGNAL, qDebug, QProcess, QFileInfo
 from PyQt4 import QtGui, uic
 from qgis.core import QgsPoint, QgsMapLayerRegistry
-import osgeo
 import ark_georef_dialog_base
 import ark_georef_graphics_view
 
 class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBase):
+
+    crt = 'EPSG:27700'
+    geoSuffix = '_r'
 
     gridPoint1 = QPoint()
     gridPoint2 = QPoint()
@@ -44,10 +46,11 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     gcp2 = QPointF()
     gcp3 = QPointF()
 
-    def __init__(self, rawFile, gridReference, gridLayerId, gridX, gridY, parent=None):
+    def __init__(self, rawFile, geoPath, gridReference, gridLayerId, gridX, gridY, parent=None):
         super(ArkGeorefDialog, self).__init__(parent)
         self.setupUi(self)
         self.rawFile = rawFile
+        self.geoPath = geoPath
         self.gridReference = gridReference
         self.rawPixmap = QtGui.QPixmap(self.rawFile.absoluteFilePath())
         self.scene = QtGui.QGraphicsScene(self)
@@ -132,5 +135,18 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gcpTable.item(2, 1).setText(str(point.y()))
 
     def runGeoreference(self):
-        #osgeo.gdal.ContourGenerate()
+        command = 'gdal_translate -of GTiff -a_srs %s -gcp %d %d %d %d -gcp %d %d %d %d -gcp %d %d %d %d %s temp.tiff' % (self.crt, self.gcp1.x(), self.gcp1.y(), self.geo1.x(), self.geo1.y(), self.gcp2.x(), self.gcp2.y(), self.geo2.x(), self.geo2.y(), self.gcp3.x(), self.gcp3.y(), self.geo3.x(), self.geo3.y(), self.rawFile.absoluteFilePath())
+        process = QProcess()
+        process.start(command)
+        process.waitForStarted(-1)
+        process.waitForFinished(-1)
+        geoFile = self.geoPath + self.rawFile.completeBaseName() + self.geoSuffix + '.tif'
+        command = 'gdalwarp -r cubic -order 1 -dstalpha -of GTiff -co COMPRESS=LZW -t_srs %s temp.tiff %s' % (self.crt, geoFile)
+        process.start(command)
+        process.waitForStarted(-1)
+        process.waitForFinished(-1)
+
+    def saveGCP(self):
         return
+        #mapX,mapY,pixelX,pixelY,enable
+        #533644.60565788438543677,180830.22766559349838644,252.66769640998938939,-95.42251994450202801,1

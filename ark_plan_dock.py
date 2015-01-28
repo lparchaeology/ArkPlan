@@ -74,6 +74,9 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     def setFile(self, name):
         self.m_fileEdit.setText(name)
 
+    def setSite(self, name):
+        self.m_siteEdit.setText(name)
+
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
 

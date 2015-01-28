@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>312</width>
+    <width>319</width>
     <height>909</height>
    </rect>
   </property>
@@ -52,23 +52,6 @@
        <string>Current Plan</string>
       </property>
       <layout class="QFormLayout" name="formLayout">
-       <item row="1" column="0">
-        <widget class="QLabel" name="m_fileLabel">
-         <property name="text">
-          <string>Plan file:</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_fileEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="m_fileEdit">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="m_contextLabel">
          <property name="text">
@@ -131,6 +114,37 @@
         <widget class="QLineEdit" name="m_sourceEdit">
          <property name="toolTip">
           <string>Source</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="m_fileLabel">
+         <property name="text">
+          <string>Plan file:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_fileEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="m_fileEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="m_siteLabel">
+         <property name="text">
+          <string>Site Code</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="m_siteEdit">
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

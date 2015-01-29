@@ -20,8 +20,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal, QFileInfo, QPoint
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor, QFileDialog
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal, QFileInfo, QPoint, QDir
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor, QFileDialog, QMessageBox
 
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
@@ -38,6 +38,19 @@ import string
 
 class ArkPlan:
     """QGIS Plugin Implementation."""
+
+    # User settings
+    #TODO get from QSettings
+    crt = 'EPSG:27700'
+    geoSuffix = '_r'
+    rawDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/raw')
+    geoDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/processed')
+    geoLayerOpacity = 0.5
+
+    # Internal variables
+    rawFile = QFileInfo()
+    geoFile = QFileInfo()
+    geoLayer = QgsRasterLayer()
 
     def __init__(self, iface):
         """Constructor.
@@ -88,10 +101,6 @@ class ArkPlan:
         self.gridLayer = 'MNO12_grid_pt'
         self.gridLayerX = 'x'
         self.gridLayerY = 'y'
-        self.rawPlanFolder = '/filebin/1120L - 100 Minories/GIS/plans/incoming/raw'
-        self.geoPlanFolder = '/filebin/1120L - 100 Minories/GIS/plans/incoming/processed'
-        self.rawFile = QFileInfo()
-        self.geoFile = QFileInfo()
         self.context = 0
         self.gridReference = QPoint(0, 0)
         self.source = 'No Source'
@@ -354,22 +363,24 @@ class ArkPlan:
             self.dock.setSource(self.tr('No source selected'))
 
     def loadRawPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.rawPlanFolder,
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.rawDir.absolutePath(),
                                                        self.tr('Image Files (*.png *.tif *.tiff)')))
         if fileName:
             self.rawFile = QFileInfo(fileName)
-            self.geoFile = QFileInfo()
+            self.geoFile = QFileInfo(self.geoDir, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
             #TODO check if geo file already exists?
             self.populatePlanMetadata()
+            self.georeferencePlan()
 
     def loadGeoPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load GeoReferenced Plan'), self.geoPlanFolder,
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.geoDir.absolutePath(),
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
-            self.rawFile = QFileInfo()
             self.geoFile = QFileInfo(fileName)
-            #TODO load raw file if exists?
+            #TODO set raw file
+            self.rawFile = QFileInfo()
             self.populatePlanMetadata()
+            self.loadGeoLayer()
 
     def setContext(self, context):
         self.context = context
@@ -383,8 +394,18 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self):
-        georefDialog = ArkGeorefDialog(self.rawFile, self.geoPlanFolder, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
-        georefDialog.exec_()
+        georefDialog = ArkGeorefDialog(self.rawFile, self.geoFile, self.crt, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
+        if (georefDialog.exec_()):
+            self.loadGeoLayer()
+
+    def loadGeoLayer(self):
+        #TODO Check if already loaded, remove old one?
+        self.geoLayer = QgsRasterLayer(self.geoFile.absoluteFilePath(), self.geoFile.completeBaseName())
+        self.geoLayer.renderer().setOpacity(self.geoLayerOpacity)
+        QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
+        #TODO Add to own group?
+        self.iface.legendInterface().moveLayer(self.geoLayer, self.legendGroup)
+        self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
     # Levels Tool Methods
 

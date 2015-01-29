@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1089</width>
-    <height>906</height>
+    <height>930</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -46,6 +46,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="m_autoButton1">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Auto</string>
          </property>
@@ -66,11 +69,14 @@
     </layout>
    </item>
    <item row="0" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="m_autoAllButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Auto All</string>
          </property>
@@ -83,34 +89,42 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QPushButton" name="m_closeButton">
          <property name="text">
-          <string>Grid Square:</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEdit</cstring>
+          <string>Close</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit">
-         <property name="readOnly">
+        <widget class="QPushButton" name="m_runCloseButton">
+         <property name="text">
+          <string>Run and Close</string>
+         </property>
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <item>
+     <item row="1" column="0">
       <widget class="QTableWidget" name="m_gcpTable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>192</height>
+        </size>
+       </property>
        <property name="font">
         <font>
-         <pointsize>8</pointsize>
+         <pointsize>10</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -263,6 +277,25 @@
        </item>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QTextEdit" name="m_outputText">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QTextEdit::NoWrap</enum>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QProgressBar" name="m_progressBar"/>
+     </item>
     </layout>
    </item>
    <item row="1" column="0">
@@ -291,6 +324,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="m_autoButton2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Auto</string>
          </property>
@@ -336,6 +372,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="m_autoButton3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Auto</string>
          </property>
@@ -364,6 +403,20 @@
    <header>ark_georef_graphics_view.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>m_gridView1</tabstop>
+  <tabstop>m_gridView2</tabstop>
+  <tabstop>m_gridView3</tabstop>
+  <tabstop>m_runCloseButton</tabstop>
+  <tabstop>m_autoAllButton</tabstop>
+  <tabstop>m_runButton</tabstop>
+  <tabstop>m_closeButton</tabstop>
+  <tabstop>m_autoButton1</tabstop>
+  <tabstop>m_autoButton2</tabstop>
+  <tabstop>m_autoButton3</tabstop>
+  <tabstop>m_gcpTable</tabstop>
+  <tabstop>m_outputText</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

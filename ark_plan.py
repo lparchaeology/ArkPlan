@@ -41,16 +41,78 @@ class ArkPlan:
 
     # User settings
     #TODO get from QSettings
-    crt = 'EPSG:27700'
+    crs = 'EPSG:27700'
     geoSuffix = '_r'
     rawDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/raw')
     geoDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/processed')
     geoLayerOpacity = 0.5
 
+    contextLayerGroupName = 'Context Data'
+    levelsLayerName = 'MNO12_cxt_levels_pt'
+    linesLayerName = 'MNO12_cxt_pl'
+    polygonsLayerName = 'MNO12_cxt_pg'
+    schematicLayerName = 'MNO12_cxt_schm_pg'
+    gridLayerName = 'MNO12_grid_pt'
+    gridLayerX = 'x'
+    gridLayerY = 'y'
+
+    contextLayerDir = QDir('/filebin/1120L - 100 Minories/GIS/vector/context_data')
+    layerGroupName = 'Context Data'
+    levelsLayerName = 'MNO12_cxt_levels_pt'
+    linesLayerName = 'MNO12_cxt_pl'
+    polygonsLayerName = 'MNO12_cxt_pg'
+    schematicLayerName = 'MNO12_cxt_schm_pg'
+
+    bufferGroupName = 'ArkPlan Contexts'
+    levelsBufferName = levelsLayerName + '_mem'
+    linesBufferName = linesLayerName + '_mem'
+    polygonsBufferName = polygonsLayerName + '_mem'
+    schematicBufferName = schematicLayerName + '_mem'
+
+    stylesDir = contextLayerDir
+    levelsStyleName = 'cxt_levels_type_style'
+    linesStyleName = 'cxt_line_type_style'
+    polygonsStyleName = 'cxt_poly_type_style'
+    schematicStyleName = 'cxt_schm_type_style'
+
+    contextAttributeName = 'cxt_no'
+    contextAttributeSize = 5
+    sourceAttributeName = 'source'
+    sourceAttributeSize = 20
+    typeAttributeName = 'type'
+    typeAttributeSize = 10
+    commentAttributeName = 'comment'
+    commentAttributeSize = 100
+    elevationAttributeName = 'elevation'
+    elevationAttributeSize = 5
+    elevationAttributePrecision = 5
+
     # Internal variables
+    initialised = False
+    context = 0
+    gridReference = QPoint(0, 0)
+    source = 'No Source'
     rawFile = QFileInfo()
     geoFile = QFileInfo()
     geoLayer = QgsRasterLayer()
+
+    layerGroupIndex = -1
+    levelsLayer = None
+    linesLayer = None
+    polygonsLayer = None
+    schematicLayer = None
+
+    bufferGroupIndex = -1
+    levelsBuffer = None
+    linesBuffer = None
+    polygonsBuffer = None
+    schematicBuffer = None
+
+    levelsMapTool = None
+    hachureMapTool = None
+    lineMapTool = None
+    polygonMapTool = None
+    schematicMapTool = None
 
     def __init__(self, iface):
         """Constructor.
@@ -84,26 +146,6 @@ class ArkPlan:
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'ArkPlan')
         self.toolbar.setObjectName(u'ArkPlan')
-
-        self.initialised = False
-        # Define the in-memory editing layers
-        self.levelsBuffer = None
-        self.linesBuffer = None
-        self.polygonsBuffer = None
-        self.schematicBuffer = None
-
-        self.levelsMapTool = None
-        self.hachureMapTool = None
-        self.lineMapTool = None
-        self.polygonMapTool = None
-        self.schematicMapTool = None
-
-        self.gridLayer = 'MNO12_grid_pt'
-        self.gridLayerX = 'x'
-        self.gridLayerY = 'y'
-        self.context = 0
-        self.gridReference = QPoint(0, 0)
-        self.source = 'No Source'
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -214,7 +256,7 @@ class ArkPlan:
             QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
             QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
-            self.iface.legendInterface().removeGroup(self.legendGroup)
+            self.iface.legendInterface().removeGroup(self.bufferLegendGroup)
 
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -233,52 +275,100 @@ class ArkPlan:
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
         self.populatePlanMetadata()
 
+    def groupIndexChanged(self, oldIndex, newIndex):
+        if (oldIndex == self.layerGroupIndex):
+            self.layerGroupIndex = newIndex
+        elif (oldIndex == self.bufferGroupIndex):
+            self.bufferGroupIndex = newIndex
+
+    def getLayerByName(self, dir, name, styleName, groupIndex):
+        # If the layer is already loaded, use it and return
+        layerList = QgsMapLayerRegistry.instance().mapLayersByName(name)
+        if (len(layerList) > 0):
+            return layerList[0]
+        #TODO Check if exists, if not then create!
+        # Otherwise load the layer and add it to the legend
+        layer = QgsVectorLayer(dir + '/' + name + '.shp', name, "ogr")
+        if (layer.isValid()):
+            layer.loadNamedStyle(self.stylesDir + '/' + styleName + '.qml')
+            QgsMapLayerRegistry.instance().addMapLayer(layer)
+            self.iface.legendInterface().moveLayer(layer, groupIndex)
+            self.iface.legendInterface().refreshLayerSymbology(layer)
+            return layer
+        return None
+
     def initialise(self):
+
         # Init gui stuff
+        self.dock.loadRawFileSelected.connect(self.loadRawPlan)
+        self.dock.georefSelected.connect(self.georeferencePlan)
+        self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
+        self.dock.contextChanged.connect(self.setContext)
+        self.dock.gridReferenceChanged.connect(self.setGridReference)
+        self.dock.sourceChanged.connect(self.setSource)
 
-        QObject.connect(self.dock,  SIGNAL("loadRawFileSelected()"),  self.loadRawPlan)
-        QObject.connect(self.dock,  SIGNAL("georefSelected()"),  self.georeferencePlan)
-        QObject.connect(self.dock,  SIGNAL("loadGeoFileSelected()"),  self.loadGeoPlan)
-        QObject.connect(self.dock,  SIGNAL("contextChanged(int)"),  self.setContext)
-        QObject.connect(self.dock,  SIGNAL("gridReferenceChanged(int, int)"),  self.setGridReference)
-        QObject.connect(self.dock,  SIGNAL("sourceChanged(QString)"),  self.setSource)
+        self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
+        self.dock.selectedLineMode.connect(self.enableLineMode)
+        self.dock.selectedHachureMode.connect(self.enableHachureMode)
+        self.dock.selectedPolygonMode.connect(self.enablePolygonMode)
+        self.dock.selectedSchematicMode.connect(self.enableSchematicMode)
 
-        QObject.connect(self.dock,  SIGNAL("selectedLevelsMode()"),  self.enableLevelsMode)
-        QObject.connect(self.dock,  SIGNAL("selectedLineMode(QString)"),  self.enableLineMode)
-        QObject.connect(self.dock,  SIGNAL("selectedHachureMode(QString)"),  self.enableHachureMode)
-        QObject.connect(self.dock,  SIGNAL("selectedPolygonMode(QString)"),  self.enablePolygonMode)
-        QObject.connect(self.dock,  SIGNAL("selectedSchematicMode(QString)"),  self.enableSchematicMode)
+        # If the legend indexes change make sure we stay updated
+        self.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
 
-        # Setup the in-memory editing layers
-        self.legendGroup = self.iface.legendInterface().addGroup('ArkPlan Contexts')
-        if self.levelsBuffer is None:
-            self.levelsBuffer = self.createLevelsLayer('cxt_levels_mem', 'memory')
-            self.levelsBuffer.startEditing()
-            self.levelsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_levels_style.qml')
-            QgsMapLayerRegistry.instance().addMapLayer(self.levelsBuffer)
-            self.iface.legendInterface().moveLayer(self.levelsBuffer, self.legendGroup)
-            self.iface.legendInterface().refreshLayerSymbology(self.levelsBuffer)
-        if self.linesBuffer is None:
-            self.linesBuffer = self.createLinesLayer('cxt_lines_mem', 'memory')
-            self.linesBuffer.startEditing()
-            self.linesBuffer.loadNamedStyle(self.plugin_dir + '/cxt_line_type_style.qml')
-            QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
-            self.iface.legendInterface().moveLayer(self.linesBuffer, self.legendGroup)
-            self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)
-        if self.polygonsBuffer is None:
-            self.polygonsBuffer = self.createPolygonLayer('cxt_polygons_mem', 'memory')
-            self.polygonsBuffer.startEditing()
-            self.polygonsBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_type_style.qml')
-            QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
-            self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.legendGroup)
-            self.iface.legendInterface().refreshLayerSymbology(self.polygonsBuffer)
+        # TODO Find why this doesn't work!
+        projectCRS = unicode(QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String"))
+
+        # Load the context layers if not already loaded
+        haveLayerGroup = False
+        index = 0
+        for groupName in self.iface.legendInterface().groups():
+            if (groupName == self.layerGroupName)
+                haveLayerGroup = True
+                self.layerGroupIndex = index
+        if (not haveLayerGroup
+        if (self.gridLayer is None):
+            self.gridLayer = getLayerByName(self.contextLayerDir, self.gridLayerName, self.stylesDir, self.gridStyleName, self.layerGroupIndex)
+        if (self.schematicLayer is None):
+            self.schematicLayer = getLayerByName(self.contextLayerDir, self.schematicLayerName, self.stylesDir, self.schematicStyleName, self.layerGroupIndex)
+        if (self.polygonsLayer is None):
+            self.polygonsLayer = getLayerByName(self.contextLayerDir, self.polygonsLayerName, self.stylesDir, self.polygonsStyleName, self.layerGroupIndex)
+        if (self.linesLayer is None):
+            self.linesLayer = getLayerByName(self.contextLayerDir, self.polygonsLayerName, self.stylesDir, self.linesStyleName, self.layerGroupIndex)
+        if (self.levelsLayer is None):
+            self.levelsLayer = getLayerByName(self.contextLayerDir, self.levelsLayerName, self.stylesDir, self.levelsStyleName, self.layerGroupIndex)
+
+        # Setup the in-memory buffer layers
+        self.bufferLegendGroup = self.iface.legendInterface().addGroup(self.contextBufferGroupName)
         if self.schematicBuffer is None:
-            self.schematicBuffer = self.createPolygonLayer('cxt_schematics_mem', 'memory')
+            self.schematicBuffer = self.createPolygonLayer(self.schematicBufferName, 'memory')
             self.schematicBuffer.startEditing()
-            self.schematicBuffer.loadNamedStyle(self.plugin_dir + '/cxt_poly_type_style.qml')
+            self.schematicBuffer.loadNamedStyle(self.stylesDir + '/' + self.schematicStyleName + '.qml')
             QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
-            self.iface.legendInterface().moveLayer(self.schematicBuffer, self.legendGroup)
+            self.iface.legendInterface().moveLayer(self.schematicBuffer, self.bufferLegendGroup)
             self.iface.legendInterface().refreshLayerSymbology(self.schematicBuffer)
+        if self.polygonsBuffer is None:
+            self.polygonsBuffer = self.createPolygonLayer(self.polygonsBufferName, 'memory')
+            self.polygonsBuffer.startEditing()
+            self.polygonsBuffer.loadNamedStyle(self.stylesDir + '/' + self.polygonsStyleName + '.qml')
+            QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
+            self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.bufferLegendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.polygonsBuffer)
+        if self.linesBuffer is None:
+            self.linesBuffer = self.createLinesLayer(self.linesBufferName, 'memory')
+            self.linesBuffer.startEditing()
+            self.linesBuffer.loadNamedStyle(self.stylesDir + '/' + self.linesStyleName + '.qml')
+            QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
+            self.iface.legendInterface().moveLayer(self.linesBuffer, self.bufferLegendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)
+        if self.levelsBuffer is None:
+            self.levelsBuffer = self.createLevelsLayer(self.levelsBufferName, 'memory')
+            self.levelsBuffer.startEditing()
+            self.levelsBuffer.loadNamedStyle(self.stylesDir + '/' + self.levelsStyleName + '.qml')
+            QgsMapLayerRegistry.instance().addMapLayer(self.levelsBuffer)
+            self.iface.legendInterface().moveLayer(self.levelsBuffer, self.bufferLegendGroup)
+            self.iface.legendInterface().refreshLayerSymbology(self.levelsBuffer)
+
         # Setup the map tools
         if self.levelsMapTool is None:
             self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
@@ -298,37 +388,33 @@ class ArkPlan:
         self.initialised = True
 
     def createLevelsLayer(self, name, provider):
-        #TODO see why this doesn't work!
-        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
-        print 'Project CRS is: ' + unicode(projectCRS)
-        #vl = QgsVectorLayer("Point?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
-        vl = QgsVectorLayer("Point?crs=EPSG:27700&index=yes", name, provider)
+        vl = QgsVectorLayer("Point?crs=" + self.crs + "&index=yes", name, provider)
         pr = vl.dataProvider()
-        pr.addAttributes([QgsField("context", QVariant.Int),
-                          QgsField("source",  QVariant.String),
-                          QgsField("elevation", QVariant.Double)])
+        pr.addAttributes([QgsField(self.contextAttributeName, QVariant.Int, '', self.contextAttributeSize),
+                          QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
+                          QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
+                          QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize),
+                          QgsField(self.elevationAttributeName, QVariant.Double, '', self.elevationAttributeSize, self.elevationAttributePrecision)])
         #TODO set symbols
         return vl
 
     def createLinesLayer(self, name, provider):
-        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
-        #vl = QgsVectorLayer("Line?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
-        vl = QgsVectorLayer("LineString?crs=EPSG:27700&index=yes", name, provider)
+        vl = QgsVectorLayer("Line?crs=" + self.crs + "&index=yes", name, provider)
         pr = vl.dataProvider()
-        pr.addAttributes([QgsField("context", QVariant.Int),
-                          QgsField("source",  QVariant.String),
-                          QgsField("type", QVariant.String)])
+        pr.addAttributes([QgsField(self.contextAttributeName, QVariant.Int, '', self.contextAttributeSize),
+                          QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
+                          QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
+                          QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize)])
         #TODO set symbols
         return vl
 
     def createPolygonLayer(self, name, provider):
-        projectCRS = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
-        #vl = QgsVectorLayer("Polygon?crs=" + unicode(projectCRS) + "&index=yes", name, provider)
-        vl = QgsVectorLayer("Polygon?crs=EPSG:27700&index=yes", name, provider)
+        vl = QgsVectorLayer("Polygon?crs=" + self.crs + "&index=yes", name, provider)
         pr = vl.dataProvider()
-        pr.addAttributes([QgsField("context", QVariant.Int),
-                          QgsField("source",  QVariant.String),
-                          QgsField("type", QVariant.String)])
+        pr.addAttributes([QgsField(self.contextAttributeName, QVariant.Int, '', self.contextAttributeSize),
+                          QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
+                          QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
+                          QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize)])
         #TODO set symbols
         return vl
 
@@ -394,7 +480,7 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self):
-        georefDialog = ArkGeorefDialog(self.rawFile, self.geoFile, self.crt, self.gridReference, self.gridLayer, self.gridLayerX, self.gridLayerY)
+        georefDialog = ArkGeorefDialog(self.rawFile, self.geoFile, self.crs, self.gridReference, self.gridLayerName, self.gridLayerX, self.gridLayerY)
         if (georefDialog.exec_()):
             self.loadGeoLayer()
 
@@ -404,7 +490,7 @@ class ArkPlan:
         self.geoLayer.renderer().setOpacity(self.geoLayerOpacity)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         #TODO Add to own group?
-        self.iface.legendInterface().moveLayer(self.geoLayer, self.legendGroup)
+        self.iface.legendInterface().moveLayer(self.geoLayer, self.bufferLegendGroup)
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
     # Levels Tool Methods

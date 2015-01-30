@@ -49,10 +49,27 @@
     <item>
      <widget class="QGroupBox" name="m_planGroup">
       <property name="title">
-       <string>Current Plan</string>
+       <string>Attributes</string>
       </property>
       <layout class="QFormLayout" name="formLayout">
-       <item row="2" column="0">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="m_siteLabel">
+         <property name="text">
+          <string>Site Code</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="m_siteEdit">
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <widget class="QLabel" name="m_contextLabel">
          <property name="text">
           <string>Context:</string>
@@ -62,7 +79,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="1">
         <widget class="QSpinBox" name="m_contextSpin">
          <property name="toolTip">
           <string>Context Number</string>
@@ -72,35 +89,14 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="m_gridLabel">
-         <property name="text">
-          <string>Grid Ref:</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_eastSpin</cstring>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="m_sourceEdit">
+         <property name="toolTip">
+          <string>Source</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QSpinBox" name="m_eastSpin">
-           <property name="maximum">
-            <number>9999</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="m_northSpin">
-           <property name="maximum">
-            <number>9999</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="m_sourceLabel">
          <property name="text">
           <string>Source:</string>
@@ -110,41 +106,20 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="m_sourceEdit">
-         <property name="toolTip">
-          <string>Source</string>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="m_fileEdit">
+         <property name="readOnly">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="m_fileLabel">
+       <item row="3" column="0">
+        <widget class="QLabel" name="m_commentLabel">
          <property name="text">
-          <string>Plan file:</string>
+          <string>Comment</string>
          </property>
          <property name="buddy">
           <cstring>m_fileEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="m_fileEdit">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="m_siteLabel">
-         <property name="text">
-          <string>Site Code</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="m_siteEdit">
-         <property name="readOnly">
-          <bool>true</bool>
          </property>
         </widget>
        </item>

@@ -23,56 +23,73 @@
 
 import os
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QObject, SIGNAL
-from PyQt4.QtGui import QDockWidget, QMessageBox
+from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtGui import QDockWidget
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_dock.ui'))
 
 class ArkPlanDock(QDockWidget, FORM_CLASS):
+
+    loadRawFileSelected = pyqtSignal()
+    loadGeoFileSelected = pyqtSignal()
+
+    siteChanged = pyqtSignal('QString')
+    contextChanged = pyqtSignal(int)
+    sourceChanged = pyqtSignal('QString')
+    commentChanged = pyqtSignal('QString')
+
+    selectedLineMode = pyqtSignal('QString')
+    selectedPolygonMode = pyqtSignal('QString')
+    selectedHachureMode = pyqtSignal('QString')
+    selectedSchematicMode = pyqtSignal('QString')
+    selectedLevelsMode = pyqtSignal()
+
+    clearSelected = pyqtSignal()
+    mergeSelected = pyqtSignal()
 
     def __init__(self, iface):
         QDockWidget.__init__(self)
         self.setupUi(self)
         self.iface = iface
 
-        QObject.connect(self.m_loadRawButton,  SIGNAL("clicked()"), self, SIGNAL("loadRawFileSelected()"))
-        QObject.connect(self.m_georefButton,  SIGNAL("clicked()"), self, SIGNAL("georefSelected()"))
-        QObject.connect(self.m_loadGeoButton,  SIGNAL("clicked()"), self, SIGNAL("loadGeoFileSelected()"))
-        QObject.connect(self.m_contextSpin,  SIGNAL("valueChanged(int)"), self, SIGNAL("contextChanged(int)"))
-        QObject.connect(self.m_eastSpin,  SIGNAL("valueChanged(int)"), self.changedGridReference)
-        QObject.connect(self.m_northSpin,  SIGNAL("valueChanged(int)"), self.changedGridReference)
-        QObject.connect(self.m_sourceEdit,  SIGNAL("textChanged(QString)"), self, SIGNAL("sourceChanged(QString)"))
+        self.m_loadRawButton.clicked.connect(self.loadRawFileSelected)
+        self.m_loadGeoButton.clicked.connect(self.loadGeoFileSelected)
 
-        QObject.connect(self.m_extentTool,  SIGNAL("clicked()"), self.extentSelected)
-        QObject.connect(self.m_breakOfSlopeTool,  SIGNAL("clicked()"), self.breakOfSlopeSelected)
-        QObject.connect(self.m_limitOfExcavationTool,  SIGNAL("clicked()"), self.limitOfExcavationSelected)
-        QObject.connect(self.m_truncationTool,  SIGNAL("clicked()"), self.truncationSelected)
-        QObject.connect(self.m_uncertainEdgeTool,  SIGNAL("clicked()"), self.uncertainEdgeSelected)
-        QObject.connect(self.m_verticalBreakOfSlopeTool,  SIGNAL("clicked()"), self.verticalBreakOfSlopeSelected)
-        QObject.connect(self.m_verticalEdgeTool,  SIGNAL("clicked()"), self.verticalEdgeSelected)
-        QObject.connect(self.m_verticalTruncationTool,  SIGNAL("clicked()"), self.verticalTruncationSelected)
+        self.m_siteEdit.textChanged.connect(self.siteChanged)
+        self.m_contextSpin.valueChanged.connect(self.contextChanged)
+        self.m_sourceEdit.textChanged.connect(self.sourceChanged)
+        self.m_commentEdit.textChanged.connect(self.commentChanged)
 
-        QObject.connect(self.m_brickTool,  SIGNAL("clicked()"), self.brickSelected)
-        QObject.connect(self.m_cbmTool,  SIGNAL("clicked()"), self.cbmSelected)
-        QObject.connect(self.m_charcoalTool,  SIGNAL("clicked()"), self.charcoalSelected)
-        QObject.connect(self.m_flintTool,  SIGNAL("clicked()"), self.flintSelected)
-        QObject.connect(self.m_mortarTool,  SIGNAL("clicked()"), self.mortarSelected)
-        QObject.connect(self.m_potTool,  SIGNAL("clicked()"), self.potSelected)
-        QObject.connect(self.m_tileTool,  SIGNAL("clicked()"), self.tileSelected)
-        QObject.connect(self.m_stoneTool,  SIGNAL("clicked()"), self.stoneSelected)
+        self.m_extentTool.clicked.connect(self.extentSelected)
+        self.m_breakOfSlopeTool.clicked.connect(self.breakOfSlopeSelected)
+        self.m_limitOfExcavationTool.clicked.connect(self.limitOfExcavationSelected)
+        self.m_truncationTool.clicked.connect(self.truncationSelected)
+        self.m_uncertainEdgeTool.clicked.connect(self.uncertainEdgeSelected)
+        self.m_verticalBreakOfSlopeTool.clicked.connect(self.verticalBreakOfSlopeSelected)
+        self.m_verticalEdgeTool.clicked.connect(self.verticalEdgeSelected)
+        self.m_verticalTruncationTool.clicked.connect(self.verticalTruncationSelected)
 
-        QObject.connect(self.m_hachureTool,  SIGNAL("clicked()"), self.hachureSelected)
-        QObject.connect(self.m_undercutTool,  SIGNAL("clicked()"), self.undercutSelected)
-        QObject.connect(self.m_returnOfSlopeTool,  SIGNAL("clicked()"), self.returnOfSlopeSelected)
+        self.m_brickTool.clicked.connect(self.brickSelected)
+        self.m_cbmTool.clicked.connect(self.cbmSelected)
+        self.m_charcoalTool.clicked.connect(self.charcoalSelected)
+        self.m_flintTool.clicked.connect(self.flintSelected)
+        self.m_mortarTool.clicked.connect(self.mortarSelected)
+        self.m_potTool.clicked.connect(self.potSelected)
+        self.m_tileTool.clicked.connect(self.tileSelected)
+        self.m_stoneTool.clicked.connect(self.stoneSelected)
 
-        QObject.connect(self.m_levelTool,  SIGNAL("clicked()"), self, SIGNAL("selectedLevelsMode()"))
+        self.m_hachureTool.clicked.connect(self.hachureSelected)
+        self.m_undercutTool.clicked.connect(self.undercutSelected)
+        self.m_returnOfSlopeTool.clicked.connect(self.returnOfSlopeSelected)
 
-        QObject.connect(self.m_schematicTool,  SIGNAL("clicked()"), self.schematicSelected)
+        self.m_levelTool.clicked.connect(self.selectedLevelsMode)
+
+        self.m_schematicTool.clicked.connect(self.schematicSelected)
+
+        self.m_clearButton.clicked.connect(self.clearSelected)
+        self.m_mergeButton.clicked.connect(self.mergeSelected)
 
     # Plan Tools
-
-    def setFile(self, name):
-        self.m_fileEdit.setText(name)
 
     def setSite(self, name):
         self.m_siteEdit.setText(name)
@@ -80,75 +97,71 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     def setContext(self, context):
         self.m_contextSpin.setValue(context)
 
-    def setGridReference(self, easting, northing):
-        self.m_eastSpin.setValue(easting)
-        self.m_northSpin.setValue(northing)
-
-    def changedGridReference(self):
-        self.emit(SIGNAL("gridReferenceChanged(int, int)"), self.m_eastSpin.value(), self.m_northSpin.value())
-
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
+
+    def setComment(self, comment):
+        self.m_commentEdit.setText(comment)
 
     # Drawing Tools
 
     def extentSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "ext")
+        self.selectedLineMode("ext")
 
     def breakOfSlopeSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "bos")
+        self.selectedLineMode("bos")
 
     def limitOfExcavationSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "loe")
+        self.selectedLineMode("loe")
 
     def truncationSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "trn")
+        self.selectedLineMode("trn")
 
     def uncertainEdgeSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "ueg")
+        self.selectedLineMode("ueg")
 
     def verticalBreakOfSlopeSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "vbs")
+        self.selectedLineMode("vbs")
 
     def verticalEdgeSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "veg")
+        self.selectedLineMode("veg")
 
     def verticalTruncationSelected(self):
-        self.emit(SIGNAL("selectedLineMode(QString)"), "vtr")
+        self.selectedLineMode("vtr")
 
     def brickSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "brk")
+        self.selectedPolygonMode("brk")
 
     def cbmSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "cbm")
+        self.selectedPolygonMode("cbm")
 
     def charcoalSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "cha")
+        self.selectedPolygonMode("cha")
 
     def flintSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "fli")
+        self.selectedPolygonMode("fli")
 
     def mortarSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "mtr")
+        self.selectedPolygonMode("mtr")
 
     def potSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "pot")
+        self.selectedPolygonMode("pot")
 
     def stoneSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "sto")
+        self.selectedPolygonMode("sto")
 
     def tileSelected(self):
-        self.emit(SIGNAL("selectedPolygonMode(QString)"), "til")
+        self.selectedPolygonMode("til")
 
     def hachureSelected(self):
-        self.emit(SIGNAL("selectedHachureMode(QString)"), "hch")
+        self.selectedHachureMode("hch")
 
     def undercutSelected(self):
-        self.emit(SIGNAL("selectedHachureMode(QString)"), "unc")
+        self.selectedHachureMode("unc")
 
     def returnOfSlopeSelected(self):
-        self.emit(SIGNAL("selectedHachureMode(QString)"), "ros")
+        self.selectedHachureMode("ros")
 
     def schematicSelected(self):
-        self.emit(SIGNAL("selectedSchematicMode(QString)"), "sch")
+        self.selectedSchematicMode("sch")
 

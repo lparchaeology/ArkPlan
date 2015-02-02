@@ -31,13 +31,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_georefButton">
-        <property name="text">
-         <string>GeoRef</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="m_loadGeoButton">
         <property name="text">
          <string>Load Geo</string>
@@ -53,7 +46,7 @@
       </property>
       <layout class="QFormLayout" name="formLayout">
        <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="m_siteLabel">
@@ -107,7 +100,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="m_fileEdit">
+        <widget class="QLineEdit" name="m_commentEdit">
          <property name="readOnly">
           <bool>false</bool>
          </property>
@@ -119,7 +112,7 @@
           <string>Comment</string>
          </property>
          <property name="buddy">
-          <cstring>m_fileEdit</cstring>
+          <cstring>m_commentEdit</cstring>
          </property>
         </widget>
        </item>
@@ -148,7 +141,7 @@
           <string>Vertical Edge</string>
          </property>
          <property name="text">
-          <string>Veg</string>
+          <string>veg</string>
          </property>
         </widget>
        </item>
@@ -178,7 +171,7 @@
           <string>Vertical Truncation</string>
          </property>
          <property name="text">
-          <string>Vtr</string>
+          <string>vtr</string>
          </property>
         </widget>
        </item>
@@ -188,7 +181,7 @@
           <string>Truncation</string>
          </property>
          <property name="text">
-          <string>Trn</string>
+          <string>trn</string>
          </property>
         </widget>
        </item>
@@ -348,16 +341,6 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="m_saveButton">
-        <property name="toolTip">
-         <string>Save edits to work layers</string>
-        </property>
-        <property name="text">
-         <string>Save</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="m_clearButton">
         <property name="toolTip">
          <string>Clear unsaved changes from work layers</string>
@@ -385,6 +368,9 @@
        <string>Existing Contexts</string>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       </property>
        <item row="0" column="0">
         <widget class="QCheckBox" name="m_hideAllCheck">
          <property name="toolTip">

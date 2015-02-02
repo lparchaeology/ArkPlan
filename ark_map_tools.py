@@ -20,10 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication, QVariant, QObject, SIGNAL, pyqtSignal, QFileInfo, QPoint
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QInputDialog, QColor, QFileDialog
+from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtGui import QInputDialog, QColor
 
-from qgis.core import *
+from qgis.core import QgsGeometry, QgsPoint
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 
 class LevelsMapTool(QgsMapToolEmitPoint):

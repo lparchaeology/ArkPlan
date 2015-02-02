@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1274</width>
-    <height>925</height>
+    <height>923</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,6 +20,54 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="2">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="m_gridLabel3">
+         <property name="text">
+          <string>000 / 000 :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_autoButton3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Auto</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="ArkGeorefGraphicsView" name="m_gridView3">
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+       <property name="dragMode">
+        <enum>QGraphicsView::NoDrag</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
@@ -52,6 +100,9 @@
      </item>
      <item>
       <layout class="QFormLayout" name="formLayout">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       </property>
        <item row="0" column="0">
         <widget class="QLabel" name="m_fileLabel">
          <property name="text">
@@ -72,193 +123,161 @@
        <item row="1" column="0">
         <widget class="QLabel" name="m_siteLabel">
          <property name="text">
-          <string>Site Code</string>
+          <string>Site:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="m_siteEdit">
          <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="m_contextLabel">
-         <property name="text">
-          <string>Context:</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_contextSpin</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QSpinBox" name="m_contextSpin">
-         <property name="toolTip">
-          <string>Context Number</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="maximum">
-          <number>9999</number>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
+        <widget class="QLabel" name="m_contextLabel">
+         <property name="text">
+          <string>Number:</string>
+         </property>
+         <property name="buddy">
+          <cstring>m_numberSpin</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
         <widget class="QLabel" name="m_gridLabel">
          <property name="text">
-          <string>Grid Ref:</string>
+          <string>Grid:</string>
          </property>
          <property name="buddy">
           <cstring>m_eastSpin</cstring>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="5" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QSpinBox" name="m_eastSpin_2">
+          <widget class="QSpinBox" name="m_eastSpin">
            <property name="readOnly">
             <bool>true</bool>
            </property>
            <property name="maximum">
             <number>9999</number>
+           </property>
+           <property name="singleStep">
+            <number>5</number>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="m_northSpin_2">
+          <widget class="QSpinBox" name="m_northSpin">
            <property name="readOnly">
             <bool>true</bool>
            </property>
            <property name="maximum">
             <number>9999</number>
            </property>
+           <property name="singleStep">
+            <number>5</number>
+           </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="m_gridLabel1">
+       <item row="2" column="1">
+        <widget class="QComboBox" name="m_typeCombo">
+         <item>
+          <property name="text">
+           <string>Context</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Plan</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Section</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Matrix</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="m_typeLabel">
          <property name="text">
-          <string>000 / 000 :</string>
+          <string>Type:</string>
          </property>
         </widget>
        </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QSpinBox" name="m_numberSpin">
+           <property name="toolTip">
+            <string>Context Number</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
-       <item>
-        <widget class="QPushButton" name="m_autoButton1">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Auto</string>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="m_suffixEdit">
+         <property name="maxLength">
+          <number>1</number>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="ArkGeorefGraphicsView" name="m_gridView1">
-       <property name="interactive">
-        <bool>false</bool>
-       </property>
-       <property name="dragMode">
-        <enum>QGraphicsView::NoDrag</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="2">
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QLabel" name="m_fullPlanLabel">
+       <item row="4" column="0">
+        <widget class="QLabel" name="m_suffixLabel">
          <property name="text">
-          <string>Full Plan</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="m_autoAllButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Auto All</string>
+          <string>Suffix:</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <item>
-      <widget class="ArkGeorefGraphicsView" name="m_planView">
-       <property name="interactive">
-        <bool>false</bool>
-       </property>
-       <property name="dragMode">
-        <enum>QGraphicsView::NoDrag</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
       <widget class="QTableWidget" name="m_gcpTable">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -266,7 +285,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>192</height>
+         <height>100</height>
         </size>
        </property>
        <property name="font">
@@ -425,6 +444,122 @@
       </widget>
      </item>
      <item>
+      <widget class="QProgressBar" name="m_progressBar"/>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="m_gridLabel1">
+         <property name="text">
+          <string>000 / 000 :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_autoButton1">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Auto</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="ArkGeorefGraphicsView" name="m_gridView1">
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+       <property name="dragMode">
+        <enum>QGraphicsView::NoDrag</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="2">
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QLabel" name="m_fullPlanLabel">
+         <property name="text">
+          <string>Full Plan</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_autoAllButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Auto All</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="ArkGeorefGraphicsView" name="m_planView">
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+       <property name="dragMode">
+        <enum>QGraphicsView::NoDrag</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
       <widget class="QTextEdit" name="m_outputText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -439,9 +574,6 @@
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QProgressBar" name="m_progressBar"/>
      </item>
     </layout>
    </item>
@@ -493,54 +625,6 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="2">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="m_gridLabel3">
-         <property name="text">
-          <string>000 / 000 :</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="m_autoButton3">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Auto</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="ArkGeorefGraphicsView" name="m_gridView3">
-       <property name="interactive">
-        <bool>false</bool>
-       </property>
-       <property name="dragMode">
-        <enum>QGraphicsView::NoDrag</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -560,7 +644,6 @@
   <tabstop>m_autoButton1</tabstop>
   <tabstop>m_autoButton2</tabstop>
   <tabstop>m_autoButton3</tabstop>
-  <tabstop>m_gcpTable</tabstop>
   <tabstop>m_outputText</tabstop>
  </tabstops>
  <resources/>

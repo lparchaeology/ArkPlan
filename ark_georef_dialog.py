@@ -23,11 +23,12 @@
 
 import os
 
-from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, SIGNAL, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice
+from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice
 from PyQt4 import QtGui, uic
-from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer
+from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer
 import ark_georef_dialog_base
 import ark_georef_graphics_view
+from ark_plan_util import *
 
 class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBase):
 
@@ -53,6 +54,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     rawFile = QFileInfo()
     pointFile = QFileInfo()
     geoFile = QFileInfo()
+    geoSuffix = '_r'
 
     gdalPath = ''
     gdal_translate = QFileInfo()
@@ -61,7 +63,11 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     gdalArgs = ''
     gdalProcess = QProcess()
 
-    def __init__(self, rawFile, geoFile, crt, gridReference, gridLayerId, gridX, gridY, parent=None):
+    gridLayer = QgsVectorLayer()
+    gridXField = ''
+    gridYField = ''
+
+    def __init__(self, rawFile, geoDir, crt, gridLayerName, gridX, gridY, parent=None):
         super(ArkGeorefDialog, self).__init__(parent)
         self.setupUi(self)
 
@@ -85,28 +91,38 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.showText('GCP File: \'' + self.pointFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.showText('GCP file found, will be used for default ground control points')
-        self.geoFile = geoFile
+        self.geoFile = QFileInfo(geoDir, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
         self.showText('Geo File: \'' + self.geoFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.showText('Warning: Georeferenced file found, will be overwritten with new file!')
         self.showText('')
 
-        self.gridReference = gridReference
-        self.rawPixmap = QtGui.QPixmap(self.rawFile.absoluteFilePath())
-        self.scene = QtGui.QGraphicsScene(self)
-        self.rawItem = self.scene.addPixmap(self.rawPixmap)
-
-        self.m_runButton.clicked.connect(self.run)
-        self.m_runCloseButton.clicked.connect(self.runClose)
-        self.m_closeButton.clicked.connect(self.closeDialog)
+        self.gridLayer = QgsMapLayerRegistry.instance().mapLayersByName(gridLayerName)[0]
+        self.gridXField = self.gridLayer.fieldNameIndex(gridX)
+        self.gridYField = self.gridLayer.fieldNameIndex(gridY)
 
         self.gdalProcess.started.connect(self.gdalProcessStarted)
         self.gdalProcess.finished.connect(self.gdalProcessFinished)
         self.gdalProcess.error.connect(self.gdalProcessError)
         self.gdalProcess.readyReadStandardError.connect(self.gdalProcessError)
 
-        self.gridPoint1 = QPoint(self.gridReference.x(), self.gridReference.y() + 5)
-        self.m_gridLabel1.setText('%d / %d' % (self.gridPoint1.x(), self.gridPoint1.y()))
+        # Init the gui
+        self.m_runButton.clicked.connect(self.run)
+        self.m_runCloseButton.clicked.connect(self.runClose)
+        self.m_closeButton.clicked.connect(self.closeDialog)
+        self.m_siteEdit.textChanged.connect(self.updateGeoFile)
+        self.m_typeCombo.currentIndexChanged.connect(self.updateGeoFile)
+        self.m_numberSpin.valueChanged.connect(self.updateGeoFile)
+        self.m_suffixEdit.textChanged.connect(self.updateGeoFile)
+        self.m_eastSpin.valueChanged.connect(self.updateGeoFile)
+        self.m_northSpin.valueChanged.connect(self.updateGeoFile)
+        self.m_eastSpin.valueChanged.connect(self.updateGridPoints)
+        self.m_northSpin.valueChanged.connect(self.updateGridPoints)
+
+        self.rawPixmap = QtGui.QPixmap(self.rawFile.absoluteFilePath())
+        self.scene = QtGui.QGraphicsScene(self)
+        self.rawItem = self.scene.addPixmap(self.rawPixmap)
+
         self.m_gridView1.setScene(self.scene)
         self.m_gridView1.centerOn(250, 100)
         self.m_gridView1.scale(2, 2)
@@ -114,8 +130,6 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gridItem1.setVisible(False)
         self.m_gridView1.pointSelected.connect(self.setGcp1)
 
-        self.gridPoint2 = QPoint(self.gridReference.x(), self.gridReference.y())
-        self.m_gridLabel2.setText('%d / %d' % (self.gridPoint2.x(), self.gridPoint2.y()))
         self.m_gridView2.setScene(self.scene)
         self.m_gridView2.centerOn(250, 3050)
         self.m_gridView2.scale(2, 2)
@@ -123,8 +137,6 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gridItem2.setVisible(False)
         self.m_gridView2.pointSelected.connect(self.setGcp2)
 
-        self.gridPoint3 = QPoint(self.gridReference.x() + 5, self.gridReference.y())
-        self.m_gridLabel3.setText('%d / %d' % (self.gridPoint3.x(), self.gridPoint3.y()))
         self.m_gridView3.setScene(self.scene)
         self.m_gridView3.centerOn(3200, 3050)
         self.m_gridView3.scale(2, 2)
@@ -132,35 +144,15 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gridItem3.setVisible(False)
         self.m_gridView3.pointSelected.connect(self.setGcp3)
 
-        # Find the geo points for the grid points
-        gridLayer = QgsMapLayerRegistry.instance().mapLayersByName(gridLayerId)[0]
-        iX = gridLayer.fieldNameIndex(gridX)
-        iY = gridLayer.fieldNameIndex(gridY)
-        features = gridLayer.getFeatures()
-        for feature in features:
-            if feature.attributes()[iX] == self.gridPoint1.x() and feature.attributes()[iY] == self.gridPoint1.y():
-                   self.geo1 = feature.geometry().asPoint()
-            if feature.attributes()[iX] == self.gridPoint2.x() and feature.attributes()[iY] == self.gridPoint2.y():
-                   self.geo2 = feature.geometry().asPoint()
-            if feature.attributes()[iX] == self.gridPoint3.x() and feature.attributes()[iY] == self.gridPoint3.y():
-                   self.geo3 = feature.geometry().asPoint()
+        self.m_planView.setScene(self.scene)
+        self.m_planView.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        #TODO Make clicks set focus of other views
 
-        self.m_gcpTable.item(0, 2).setText(str(self.gridPoint1.x()))
-        self.m_gcpTable.item(0, 3).setText(str(self.gridPoint1.y()))
-        self.m_gcpTable.item(0, 4).setText(str(self.geo1.x()))
-        self.m_gcpTable.item(0, 5).setText(str(self.geo1.y()))
-
-        self.m_gcpTable.item(1, 2).setText(str(self.gridPoint2.x()))
-        self.m_gcpTable.item(1, 3).setText(str(self.gridPoint2.y()))
-        self.m_gcpTable.item(1, 4).setText(str(self.geo2.x()))
-        self.m_gcpTable.item(1, 5).setText(str(self.geo2.y()))
-
-        self.m_gcpTable.item(2, 2).setText(str(self.gridPoint3.x()))
-        self.m_gcpTable.item(2, 3).setText(str(self.gridPoint3.y()))
-        self.m_gcpTable.item(2, 4).setText(str(self.geo3.x()))
-        self.m_gcpTable.item(2, 5).setText(str(self.geo3.y()))
-        self.resizeGcpTable()
-
+        self.m_fileEdit.setText(self.rawFile.baseName())
+        md = planMetadata(self.rawFile.baseName())
+        self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
+        self.updateGridPoints()
+        self.updateGeoPoints()
         if (self.pointFile.exists()):
             self.loadGcpFile()
             self.showText('')
@@ -169,19 +161,89 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gcpTable.resizeColumnsToContents()
         self.m_gcpTable.resizeRowsToContents()
 
+    def updateGridPoints(self):
+        self.gridPoint1 = QPoint(self.m_eastSpin.value(), self.m_northSpin.value() + 5)
+        self.m_gridLabel1.setText('%d / %d' % (self.gridPoint1.x(), self.gridPoint1.y()))
+        self.m_gcpTable.item(0, 2).setText(str(self.gridPoint1.x()))
+        self.m_gcpTable.item(0, 3).setText(str(self.gridPoint1.y()))
+
+        self.gridPoint2 = QPoint(self.m_eastSpin.value(), self.m_northSpin.value())
+        self.m_gridLabel2.setText('%d / %d' % (self.gridPoint2.x(), self.gridPoint2.y()))
+        self.m_gcpTable.item(1, 2).setText(str(self.gridPoint2.x()))
+        self.m_gcpTable.item(1, 3).setText(str(self.gridPoint2.y()))
+
+        self.gridPoint3 = QPoint(self.m_eastSpin.value() + 5, self.m_northSpin.value())
+        self.m_gridLabel3.setText('%d / %d' % (self.gridPoint3.x(), self.gridPoint3.y()))
+        self.m_gcpTable.item(2, 2).setText(str(self.gridPoint3.x()))
+        self.m_gcpTable.item(2, 3).setText(str(self.gridPoint3.y()))
+
+        self.resizeGcpTable()
+
+    def updateGeoPoints(self):
+        # Find the geo points for the grid points
+        features = self.gridLayer.getFeatures()
+        for feature in features:
+            if feature.attributes()[self.gridXField] == self.gridPoint1.x() and feature.attributes()[self.gridYField] == self.gridPoint1.y():
+                   self.geo1 = feature.geometry().asPoint()
+            if feature.attributes()[self.gridXField] == self.gridPoint2.x() and feature.attributes()[self.gridYField] == self.gridPoint2.y():
+                   self.geo2 = feature.geometry().asPoint()
+            if feature.attributes()[self.gridXField] == self.gridPoint3.x() and feature.attributes()[self.gridYField] == self.gridPoint3.y():
+                   self.geo3 = feature.geometry().asPoint()
+
+        self.m_gcpTable.item(0, 4).setText(str(self.geo1.x()))
+        self.m_gcpTable.item(0, 5).setText(str(self.geo1.y()))
+        self.m_gcpTable.item(1, 4).setText(str(self.geo2.x()))
+        self.m_gcpTable.item(1, 5).setText(str(self.geo2.y()))
+        self.m_gcpTable.item(2, 4).setText(str(self.geo3.x()))
+        self.m_gcpTable.item(2, 5).setText(str(self.geo3.y()))
+        self.resizeGcpTable()
+
+    def updateGeoFile(self):
+        md = self.metadata()
+        name = planName(md[0], md[1], md[2], md[3], md[4], md[5])
+        self.geoFile = QFileInfo(self.geoFile.absoluteDir(), name + self.geoSuffix + '.tif')
+
     def enableUi(self, status):
         self.m_runButton.setEnabled(status)
         self.m_closeButton.setEnabled(status)
         self.m_runCloseButton.setEnabled(status)
+        self.m_siteEdit.setEnabled(status)
+        self.m_typeCombo.setEnabled(status)
+        self.m_numberSpin.setEnabled(status)
+        self.m_suffixEdit.setEnabled(status)
+        self.m_eastSpin.setEnabled(status)
+        self.m_northSpin.setEnabled(status)
         self.m_gridView1.setEnabled(status)
         self.m_gridView2.setEnabled(status)
         self.m_gridView3.setEnabled(status)
+        self.m_planView.setEnabled(status)
         self.m_gcpTable.setEnabled(status)
         self.m_outputText.setEnabled(status)
         if (status):
             self.m_progressBar.setRange(0, 100)
         else:
             self.m_progressBar.setRange(0, 0)
+
+    def setMetadata(self, siteCode, type, number, suffix, easting, northing):
+        self.m_siteEdit.setText(siteCode)
+        if (type == 'Context'):
+            self.m_typeCombo.setCurrentIndex(0)
+        elif (type == 'Plan'):
+            self.m_typeCombo.setCurrentIndex(1)
+        elif (type == 'Section'):
+            self.m_typeCombo.setCurrentIndex(2)
+        elif (type == 'Matrix'):
+            self.m_typeCombo.setCurrentIndex(3)
+        self.m_numberSpin.setValue(number)
+        self.m_suffixEdit.setText(suffix)
+        self.m_eastSpin.setValue(easting)
+        self.m_northSpin.setValue(northing)
+
+    def metadata(self):
+        return self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_suffixEdit.text(), self.m_eastSpin.value(), self.m_northSpin.value()
+
+    def geoRefFile(self):
+        return self.geoFile
 
     def showText(self, text):
         self.m_outputText.append(text)

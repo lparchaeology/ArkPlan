@@ -29,6 +29,7 @@ from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 class LevelsMapTool(QgsMapToolEmitPoint):
 
     levelAdded = pyqtSignal(QgsPoint, float)
+    levelType = 'lvl'
 
     def __init__(self, canvas):
         self.canvas = canvas
@@ -43,18 +44,24 @@ class LevelsMapTool(QgsMapToolEmitPoint):
             point = self.toMapCoordinates(e.pos())
             self.levelAdded.emit(point, elevation)
 
-# Map Tool to take two points and draw a hachure
-class HacureMapTool(QgsMapToolEmitPoint):
+    def type(self):
+        return self.levelType
 
-    hachureAdded = pyqtSignal(QgsPoint, QgsPoint, 'QString')
+    def setType(self, type):
+        self.levelType = type
+
+# Map Tool to take two points and draw a line segment, e.g. hachures
+class LineSegmentMapTool(QgsMapToolEmitPoint):
+
+    lineSegmentAdded = pyqtSignal(QgsPoint, QgsPoint, 'QString')
     startPoint = None
     endPoint = None
     rubberBand = None
-    hachureType = 'hch'
+    segmentType = 'hch'
 
     def __init__(self, canvas, type='hch'):
         self.canvas = canvas
-        self.hachureType = type
+        self.segmentType = type
         QgsMapToolEmitPoint.__init__(self, canvas)
 
     def canvasMoveEvent(self, e):
@@ -79,15 +86,15 @@ class HacureMapTool(QgsMapToolEmitPoint):
         else:
             self.endPoint = self.toMapCoordinates(e.pos())
             self.rubberBand.reset()
-            self.hachureAdded.emit(self.startPoint, self.endPoint, self.hachureType)
+            self.lineSegmentAdded.emit(self.startPoint, self.endPoint, self.segmentType)
             self.startPoint = None
             self.endPoint = None
 
     def type(self):
-        return self.hachureType
+        return self.segmentType
 
     def setType(self, type):
-        self.hachureType = type
+        self.segmentType = type
 
 # Map Tool to take mulitple points and draw a line
 class LineMapTool(QgsMapToolEmitPoint):

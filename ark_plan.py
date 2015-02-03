@@ -110,7 +110,7 @@ class ArkPlan:
     schematicBuffer = None
 
     levelsMapTool = None
-    hachureMapTool = None
+    lineSegmentMapTool = None
     lineMapTool = None
     polygonMapTool = None
     schematicMapTool = None
@@ -309,7 +309,7 @@ class ArkPlan:
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
-        self.dock.selectedHachureMode.connect(self.enableHachureMode)
+        self.dock.selectedLineSegmentMode.connect(self.enableLineSegmentMode)
         self.dock.selectedPolygonMode.connect(self.enablePolygonMode)
         self.dock.selectedSchematicMode.connect(self.enableSchematicMode)
 
@@ -373,9 +373,9 @@ class ArkPlan:
         if self.levelsMapTool is None:
             self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
             self.levelsMapTool.levelAdded.connect(self.addLevel)
-        if self.hachureMapTool is None:
-            self.hachureMapTool = HacureMapTool(self.iface.mapCanvas())
-            self.hachureMapTool.hachureAdded.connect(self.addHachure)
+        if self.lineSegmentMapTool is None:
+            self.lineSegmentMapTool = LineSegmentMapTool(self.iface.mapCanvas())
+            self.lineSegmentMapTool.lineSegmentAdded.connect(self.addLineSegment)
         if self.lineMapTool is None:
             self.lineMapTool = LineMapTool(self.iface.mapCanvas())
             self.lineMapTool.lineAdded.connect(self.addLine)
@@ -482,32 +482,33 @@ class ArkPlan:
 
     # Levels Tool Methods
 
-    def addLevel(self, point, elevation):
-        feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPoint(point))
-        feature.setAttributes([self.context, self.source, elevation])
-        self.levelsBuffer.addFeature(feature, True)
-        self.iface.mapCanvas().refresh()
-
-    def enableLevelsMode(self):
+    def enableLevelsMode(self, type):
         #TODO disable all snapping
         self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
         self.iface.legendInterface().setCurrentLayer(self.levelsBuffer)
+        self.levelsMapTool.setType(type)
         self.iface.mapCanvas().setMapTool(self.levelsMapTool)
 
-    # Hachure Tool Methods
+    def addLevel(self, point, elevation):
+        feature = QgsFeature()
+        feature.setGeometry(QgsGeometry.fromPoint(point))
+        feature.setAttributes([self.context, self.source, type, self.comment, elevation])
+        self.levelsBuffer.addFeature(feature, True)
+        self.iface.mapCanvas().refresh()
 
-    def enableHachureMode(self, type):
+    # Line Segment Tool Methods
+
+    def enableLineSegmentMode(self, type):
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
         self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
-        self.hachureMapTool.setType(type)
-        self.iface.mapCanvas().setMapTool(self.hachureMapTool)
+        self.lineSegmentMapTool.setType(type)
+        self.iface.mapCanvas().setMapTool(self.lineSegmentMapTool)
 
-    def addHachure(self, point1, point2, type):
+    def addLineSegment(self, point1, point2, type):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline([point1, point2]))
-        feature.setAttributes([self.context, self.source, type])
+        feature.setAttributes([self.context, self.source, type, self.comment])
         self.linesBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
@@ -523,7 +524,7 @@ class ArkPlan:
     def addLine(self, points, type):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline(points))
-        feature.setAttributes([self.context, self.source, type])
+        feature.setAttributes([self.context, self.source, type, self.comment])
         self.linesBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
@@ -539,7 +540,7 @@ class ArkPlan:
     def addPolygon(self, points, type):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolygon([points]))
-        feature.setAttributes([self.context, self.source, type])
+        feature.setAttributes([self.context, self.source, type, self.comment])
         self.polygonsBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()
 
@@ -555,6 +556,6 @@ class ArkPlan:
     def addSchematic(self, points, type):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolygon([points]))
-        feature.setAttributes([self.context, self.source, type])
+        feature.setAttributes([self.context, self.source, type, self.comment])
         self.schematicBuffer.addFeature(feature, True)
         self.iface.mapCanvas().refresh()

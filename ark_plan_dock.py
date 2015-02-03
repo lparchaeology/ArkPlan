@@ -40,9 +40,9 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
 
     selectedLineMode = pyqtSignal('QString')
     selectedPolygonMode = pyqtSignal('QString')
-    selectedHachureMode = pyqtSignal('QString')
+    selectedLineSegmentMode = pyqtSignal('QString')
     selectedSchematicMode = pyqtSignal('QString')
-    selectedLevelsMode = pyqtSignal()
+    selectedLevelsMode = pyqtSignal('QString')
 
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
@@ -82,7 +82,7 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         self.m_undercutTool.clicked.connect(self.undercutSelected)
         self.m_returnOfSlopeTool.clicked.connect(self.returnOfSlopeSelected)
 
-        self.m_levelTool.clicked.connect(self.selectedLevelsMode)
+        self.m_levelTool.clicked.connect(self.levelsSelected)
 
         self.m_schematicTool.clicked.connect(self.schematicSelected)
 
@@ -106,62 +106,65 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     # Drawing Tools
 
     def extentSelected(self):
-        self.selectedLineMode("ext")
+        self.selectedLineMode.emit("ext")
 
     def breakOfSlopeSelected(self):
-        self.selectedLineMode("bos")
+        self.selectedLineMode.emit("bos")
 
     def limitOfExcavationSelected(self):
-        self.selectedLineMode("loe")
+        self.selectedLineMode.emit("loe")
 
     def truncationSelected(self):
-        self.selectedLineMode("trn")
+        self.selectedLineMode.emit("trn")
 
     def uncertainEdgeSelected(self):
-        self.selectedLineMode("ueg")
+        self.selectedLineMode.emit("ueg")
 
     def verticalBreakOfSlopeSelected(self):
-        self.selectedLineMode("vbs")
+        self.selectedLineMode.emit("vbs")
 
     def verticalEdgeSelected(self):
-        self.selectedLineMode("veg")
+        self.selectedLineMode.emit("veg")
 
     def verticalTruncationSelected(self):
-        self.selectedLineMode("vtr")
+        self.selectedLineMode.emit("vtr")
 
     def brickSelected(self):
-        self.selectedPolygonMode("brk")
+        self.selectedPolygonMode.emit("brk")
 
     def cbmSelected(self):
-        self.selectedPolygonMode("cbm")
+        self.selectedPolygonMode.emit("cbm")
 
     def charcoalSelected(self):
-        self.selectedPolygonMode("cha")
+        self.selectedPolygonMode.emit("cha")
 
     def flintSelected(self):
-        self.selectedPolygonMode("fli")
+        self.selectedPolygonMode.emit("fli")
 
     def mortarSelected(self):
-        self.selectedPolygonMode("mtr")
+        self.selectedPolygonMode.emit("mtr")
 
     def potSelected(self):
-        self.selectedPolygonMode("pot")
+        self.selectedPolygonMode.emit("pot")
 
     def stoneSelected(self):
-        self.selectedPolygonMode("sto")
+        self.selectedPolygonMode.emit("sto")
 
     def tileSelected(self):
-        self.selectedPolygonMode("til")
+        self.selectedPolygonMode.emit("til")
 
     def hachureSelected(self):
-        self.selectedHachureMode("hch")
+        self.selectedLineSegmentMode.emit("hch")
 
     def undercutSelected(self):
-        self.selectedHachureMode("unc")
+        self.selectedLineSegmentMode.emit("unc")
 
     def returnOfSlopeSelected(self):
-        self.selectedHachureMode("ros")
+        self.selectedLineSegmentMode.emit("ros")
+
+    def levelsSelected(self):
+        self.selectedLevelsMode.emit("lvl")
 
     def schematicSelected(self):
-        self.selectedSchematicMode("sch")
+        self.selectedSchematicMode.emit("sch")
 

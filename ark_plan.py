@@ -259,6 +259,16 @@ class ArkPlan:
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
+        self.dock.showLevelsChanged.connect(self.showLevels)
+        self.dock.showLinesChanged.connect(self.showLines)
+        self.dock.showPolygonsChanged.connect(self.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.showSchematics)
+
+        self.dock.snapLevelsChanged.connect(self.snapLevels)
+        self.dock.snapLinesChanged.connect(self.snapLines)
+        self.dock.snapPolygonsChanged.connect(self.snapPolygons)
+        self.dock.snapSchematicsChanged.connect(self.snapSchematics)
+
     def unload(self):
 
         # Remove the levels form the legend
@@ -509,6 +519,57 @@ class ArkPlan:
         #TODO Add to own group?
         self.iface.legendInterface().moveLayer(self.geoLayer, self.bufferGroupIndex)
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
+
+    # Layers Management Methods
+
+    def showLevels(self, status):
+        self.iface.legendInterface().setLayerVisible(self.levelsLayer, status)
+
+    def showLines(self, status):
+        self.iface.legendInterface().setLayerVisible(self.linesLayer, status)
+
+    def showPolygons(self, status):
+        self.iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
+
+    def showSchematics(self, status):
+        self.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
+
+    def snapLayer(self, layer, status):
+        proj = QgsProject.instance()
+        layerSnappingList = proj.readListEntry("Digitizing", "/LayerSnappingList")[0]
+        layerSnappingEnabledList = proj.readListEntry("Digitizing", "/LayerSnappingEnabledList")[0]
+        layerSnappingToleranceList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceList")[0]
+        layerSnappingToleranceUnitList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceUnitList")[0]
+        layerSnapToList = proj.readListEntry("Digitizing", "/LayerSnapToList")[0]
+        avoidIntersectionsList = proj.readListEntry("Digitizing", "/AvoidIntersectionsList")[0]
+        if not layer.id() in layerSnappingList:
+            return
+        snapId = layerSnappingList.index(layer.id())
+        if status:
+            layerSnappingEnabledList[snapId] = u'enabled'
+        else:
+            layerSnappingEnabledList[snapId] = u'disabled'
+        layerSnapToList[snapId] = u'to_vertex'
+        layerSnappingToleranceUnitList[snapId] = u'1'
+        layerSnappingToleranceList[snapId] = u'10.0'
+        proj.writeEntry("Digitizing", "/LayerSnappingList", layerSnappingList)
+        proj.writeEntry("Digitizing", "/LayerSnappingEnabledList", layerSnappingEnabledList)
+        proj.writeEntry("Digitizing", "/LayerSnappingToleranceList", layerSnappingToleranceList)
+        proj.writeEntry("Digitizing", "/LayerSnappingToleranceUnitList", layerSnappingToleranceUnitList)
+        proj.writeEntry("Digitizing", "/LayerSnapToList", layerSnapToList)
+        proj.writeEntry("Digitizing", "/AvoidIntersectionsList", avoidIntersectionsList)
+
+    def snapLevels(self, status):
+        self.snapLayer(self.levelsLayer, status)
+
+    def snapLines(self, status):
+        self.snapLayer(self.linesLayer, status)
+
+    def snapPolygons(self, status):
+        self.snapLayer(self.polygonsLayer, status)
+
+    def snapSchematics(self, status):
+        self.snapLayer(self.schematicLayer, status)
 
     # Levels Tool Methods
 

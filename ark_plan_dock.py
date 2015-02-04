@@ -47,6 +47,16 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
+    showLevelsChanged = pyqtSignal(int)
+    showLinesChanged = pyqtSignal(int)
+    showPolygonsChanged = pyqtSignal(int)
+    showSchematicsChanged = pyqtSignal(int)
+
+    snapLevelsChanged = pyqtSignal(int)
+    snapLinesChanged = pyqtSignal(int)
+    snapPolygonsChanged = pyqtSignal(int)
+    snapSchematicsChanged = pyqtSignal(int)
+
     def __init__(self, iface):
         QDockWidget.__init__(self)
         self.setupUi(self)
@@ -88,6 +98,16 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
 
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
+
+        self.m_showLevelsCheck.stateChanged.connect(self.showLevelsChanged)
+        self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
+        self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
+        self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
+
+        self.m_snapLevelsCheck.stateChanged.connect(self.snapLevelsChanged)
+        self.m_snapLinesCheck.stateChanged.connect(self.snapLinesChanged)
+        self.m_snapPolygonsCheck.stateChanged.connect(self.snapPolygonsChanged)
+        self.m_snapSchematicsCheck.stateChanged.connect(self.snapSchematicsChanged)
 
     # Plan Tools
 

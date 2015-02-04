@@ -28,7 +28,7 @@ from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 
 class LevelsMapTool(QgsMapToolEmitPoint):
 
-    levelAdded = pyqtSignal(QgsPoint, float)
+    levelAdded = pyqtSignal(QgsPoint, 'QString', float)
     levelType = 'lvl'
 
     def __init__(self, canvas):
@@ -42,7 +42,7 @@ class LevelsMapTool(QgsMapToolEmitPoint):
                                                0, -100, 100, 2)
         if ok:
             point = self.toMapCoordinates(e.pos())
-            self.levelAdded.emit(point, elevation)
+            self.levelAdded.emit(point, self.levelType, elevation)
 
     def type(self):
         return self.levelType
@@ -53,7 +53,7 @@ class LevelsMapTool(QgsMapToolEmitPoint):
 # Map Tool to take two points and draw a line segment, e.g. hachures
 class LineSegmentMapTool(QgsMapToolEmitPoint):
 
-    lineSegmentAdded = pyqtSignal(QgsPoint, QgsPoint, 'QString')
+    lineSegmentAdded = pyqtSignal(list, 'QString')
     startPoint = None
     endPoint = None
     rubberBand = None
@@ -86,7 +86,7 @@ class LineSegmentMapTool(QgsMapToolEmitPoint):
         else:
             self.endPoint = self.toMapCoordinates(e.pos())
             self.rubberBand.reset()
-            self.lineSegmentAdded.emit(self.startPoint, self.endPoint, self.segmentType)
+            self.lineSegmentAdded.emit([self.startPoint, self.endPoint], self.segmentType)
             self.startPoint = None
             self.endPoint = None
 

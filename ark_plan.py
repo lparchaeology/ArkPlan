@@ -264,15 +264,14 @@ class ArkPlan:
         self.dock.showPolygonsChanged.connect(self.showPolygons)
         self.dock.showSchematicsChanged.connect(self.showSchematics)
 
-        self.dock.snapLevelsChanged.connect(self.snapLevels)
-        self.dock.snapLinesChanged.connect(self.snapLines)
-        self.dock.snapPolygonsChanged.connect(self.snapPolygons)
-        self.dock.snapSchematicsChanged.connect(self.snapSchematics)
+        self.dock.snapLinesLayerChanged.connect(self.snapLinesLayer)
+        self.dock.snapPolygonsLayerChanged.connect(self.snapPolygonsLayer)
+        self.dock.snapSchematicsLayerChanged.connect(self.snapSchematicsLayer)
 
     def unload(self):
 
         # Remove the levels form the legend
-        if self.levelsBuffer is not None:
+        if (self.levelsBuffer is not None and self.levelsBuffer.isValid()):
             QgsMapLayerRegistry.instance().removeMapLayer(self.levelsBuffer.id())
         if self.linesBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
@@ -534,7 +533,7 @@ class ArkPlan:
     def showSchematics(self, status):
         self.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
 
-    def snapLayer(self, layer, status):
+    def snapLayer(self, layer, status, geometry, tolerance, unit):
         proj = QgsProject.instance()
         layerSnappingList = proj.readListEntry("Digitizing", "/LayerSnappingList")[0]
         layerSnappingEnabledList = proj.readListEntry("Digitizing", "/LayerSnappingEnabledList")[0]
@@ -549,9 +548,17 @@ class ArkPlan:
             layerSnappingEnabledList[snapId] = u'enabled'
         else:
             layerSnappingEnabledList[snapId] = u'disabled'
-        layerSnapToList[snapId] = u'to_vertex'
-        layerSnappingToleranceUnitList[snapId] = u'1'
-        layerSnappingToleranceList[snapId] = u'10.0'
+        if (geometry == 'segment'):
+            layerSnapToList[snapId] = u'to_segment'
+        elif (geometry == 'vertex_and_segment'):
+            layerSnapToList[snapId] = u'to_vertex_and_segment'
+        else:
+            layerSnapToList[snapId] = u'to_vertex'
+        layerSnappingToleranceList[snapId] = unicode(tolerance)
+        if (unit == 'map'):
+            layerSnappingToleranceUnitList[snapId] = u'0'
+        else:
+            layerSnappingToleranceUnitList[snapId] = u'1' #Pixels
         proj.writeEntry("Digitizing", "/LayerSnappingList", layerSnappingList)
         proj.writeEntry("Digitizing", "/LayerSnappingEnabledList", layerSnappingEnabledList)
         proj.writeEntry("Digitizing", "/LayerSnappingToleranceList", layerSnappingToleranceList)
@@ -559,17 +566,14 @@ class ArkPlan:
         proj.writeEntry("Digitizing", "/LayerSnapToList", layerSnapToList)
         proj.writeEntry("Digitizing", "/AvoidIntersectionsList", avoidIntersectionsList)
 
-    def snapLevels(self, status):
-        self.snapLayer(self.levelsLayer, status)
+    def snapLinesLayer(self, status, geometry, tolerance, unit):
+        self.snapLayer(self.linesLayer, status, geometry, tolerance, unit)
 
-    def snapLines(self, status):
-        self.snapLayer(self.linesLayer, status)
+    def snapPolygonsLayer(self, status, geometry, tolerance, unit):
+        self.snapLayer(self.polygonsLayer, status, geometry, tolerance, unit)
 
-    def snapPolygons(self, status):
-        self.snapLayer(self.polygonsLayer, status)
-
-    def snapSchematics(self, status):
-        self.snapLayer(self.schematicLayer, status)
+    def snapSchematicsLayer(self, status, geometry, tolerance, unit):
+        self.snapLayer(self.schematicLayer, status, geometry, tolerance, unit)
 
     # Levels Tool Methods
 

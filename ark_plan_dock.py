@@ -24,11 +24,11 @@
 import os
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget
+from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
+import ui_dock
+import ark_plan_snap_button
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_dock.ui'))
-
-class ArkPlanDock(QDockWidget, FORM_CLASS):
+class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
@@ -52,13 +52,16 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
     showPolygonsChanged = pyqtSignal(int)
     showSchematicsChanged = pyqtSignal(int)
 
-    snapLevelsChanged = pyqtSignal(int)
-    snapLinesChanged = pyqtSignal(int)
-    snapPolygonsChanged = pyqtSignal(int)
-    snapSchematicsChanged = pyqtSignal(int)
+    snapLinesBufferChanged = pyqtSignal(bool, str, float, str)
+    snapPolygonsBufferChanged = pyqtSignal(bool, str, float, str)
+    snapSchematicsBufferChanged = pyqtSignal(bool, str, float, str)
 
-    def __init__(self, iface):
-        QDockWidget.__init__(self)
+    snapLinesLayerChanged = pyqtSignal(bool, str, float, str)
+    snapPolygonsLayerChanged = pyqtSignal(bool, str, float, str)
+    snapSchematicsLayerChanged = pyqtSignal(bool, str, float, str)
+
+    def __init__(self, iface, parent=None):
+        super(ArkPlanDock, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
 
@@ -104,10 +107,13 @@ class ArkPlanDock(QDockWidget, FORM_CLASS):
         self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
         self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
 
-        self.m_snapLevelsCheck.stateChanged.connect(self.snapLevelsChanged)
-        self.m_snapLinesCheck.stateChanged.connect(self.snapLinesChanged)
-        self.m_snapPolygonsCheck.stateChanged.connect(self.snapPolygonsChanged)
-        self.m_snapSchematicsCheck.stateChanged.connect(self.snapSchematicsChanged)
+        self.m_snapLinesBufferTool.snappingChanged.connect(self.snapLinesBufferChanged)
+        self.m_snapPolygonsBufferTool.snappingChanged.connect(self.snapPolygonsBufferChanged)
+        self.m_snapSchematicsBufferTool.snappingChanged.connect(self.snapSchematicsBufferChanged)
+
+        self.m_snapLinesLayerTool.snappingChanged.connect(self.snapLinesLayerChanged)
+        self.m_snapPolygonsLayerTool.snappingChanged.connect(self.snapPolygonsLayerChanged)
+        self.m_snapSchematicsLayerTool.snappingChanged.connect(self.snapSchematicsLayerChanged)
 
     # Plan Tools
 

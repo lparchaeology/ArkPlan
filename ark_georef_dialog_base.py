@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark_georef_dialog_base.ui'
 #
-# Created: Mon Feb  2 15:43:12 2015
+# Created: Thu Feb  5 13:43:12 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

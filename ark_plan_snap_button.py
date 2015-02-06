@@ -26,24 +26,31 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon
 
+from qgis.core import QgsTolerance, QgsProject, QgsSnapper
+
 class ArkPlanSnapButton(QToolButton):
 
-    snappingChanged = pyqtSignal(bool, str, float, str)
+    snapSettingsChanged = pyqtSignal(bool, str, float, str)
 
-    #TODO get defaults from QGIS settings?
-    status = False
-    geometry = 'vertex'
+    project = None
+    layerId = ''
+    enabled = False
+    snappingType = QgsSnapper.SnapToVertex
+    unit = QgsTolerance.Pixels
     tolerance = 10.0
-    unit = 'pixel'
+    avoidIntersections = False
 
     def __init__(self, parent=0):
         QToolButton.__init__(self, parent=None)
 
-        self.vertexIcon = QIcon()
+        #Disable until we have a layerId
+        self.setEnabled(False)
+
+        self.vertexIcon = QIcon(':/plugins/ArkPlan/iconSnapVertex.png')
         self.vertexAction = QAction(self.vertexIcon, 'Vertex', self)
         self.vertexAction.setStatusTip('Snap to vertex')
 
-        self.segmentIcon = QIcon()
+        self.segmentIcon = QIcon(':/plugins/ArkPlan/iconSnapSegment.png')
         self.segmentAction = QAction(self.segmentIcon, 'Segment', self)
         self.segmentAction.setStatusTip('Snap to segment')
 
@@ -62,24 +69,47 @@ class ArkPlanSnapButton(QToolButton):
         self.segmentAction.triggered.connect(self.snapToSegment)
         self.vertexSegmentAction.triggered.connect(self.snapToVertexSegment)
 
-    def snapToggled(self, status):
-        self.status = bool(status)
-        self.emitState()
+        # Make sure we catch changes in the main snapping dialog
+        # TODO This respods to all updates, make it only respond to our layer changing
+        # TODO Respond to project changing?
+        self.project = QgsProject.instance()
+        self.project.snapSettingsChanged.connect(self.updateButtonSettings)
+
+    def updateSnapSettings(self):
+        self.project.setSnapSettingsForLayer(self.layerId, self.enabled, self.snappingType, self.unit, self.tolerance, self.avoidIntersections)
+        self.refreshButton()
+
+    def updateButtonSettings(self):
+        ok, self.enabled, self.snappingType, self.unit, self.tolerance, self.avoidIntersections = self.project.snapSettingsForLayer(self.layerId)
+        self.refreshButton()
+
+    def refreshButton(self):
+        self.setChecked(self.enabled)
+        if (self.snappingType == QgsSnapper.SnapToVertex):
+            self.setIcon(self.vertexIcon)
+        elif (self.snappingType == QgsSnapper.SnapToSegment):
+            self.setIcon(self.segmentIcon)
+        elif (self.snappingType == QgsSnapper.SnapToVertexAndSegment):
+            self.setIcon(self.vertexSegmentIcon)
+
+    def setLayerId(self, layerId):
+        if (layerId):
+            self.layerId = layerId
+            self.setEnabled(True)
+            self.updateButtonSettings()
+
+    def snapToggled(self, enabled):
+        self.enabled = bool(enabled)
+        self.updateSnapSettings()
 
     def snapToVertex(self):
-        self.setIcon(self.vertexIcon)
-        self.geometry = 'vertex'
-        self.emitState()
+        self.snappingType = QgsSnapper.SnapToVertex
+        self.updateSnapSettings()
 
     def snapToSegment(self):
-        self.setIcon(self.segmentIcon)
-        self.geometry = 'segment'
-        self.emitState()
+        self.snappingType = QgsSnapper.SnapToSegment
+        self.updateSnapSettings()
 
     def snapToVertexSegment(self):
-        self.setIcon(self.vertexSegmentIcon)
-        self.geometry = 'vertex_and_segment'
-        self.emitState()
-
-    def emitState(self):
-        self.snappingChanged.emit(self.status, self.geometry, self.tolerance, self.unit)
+        self.snappingType = QgsSnapper.SnapToVertexAndSegment
+        self.updateSnapSettings()

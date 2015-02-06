@@ -52,14 +52,6 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
     showPolygonsChanged = pyqtSignal(int)
     showSchematicsChanged = pyqtSignal(int)
 
-    snapLinesBufferChanged = pyqtSignal(bool, str, float, str)
-    snapPolygonsBufferChanged = pyqtSignal(bool, str, float, str)
-    snapSchematicsBufferChanged = pyqtSignal(bool, str, float, str)
-
-    snapLinesLayerChanged = pyqtSignal(bool, str, float, str)
-    snapPolygonsLayerChanged = pyqtSignal(bool, str, float, str)
-    snapSchematicsLayerChanged = pyqtSignal(bool, str, float, str)
-
     def __init__(self, iface, parent=None):
         super(ArkPlanDock, self).__init__(parent)
         self.setupUi(self)
@@ -106,14 +98,6 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
         self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
         self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
-
-        self.m_snapLinesBufferTool.snappingChanged.connect(self.snapLinesBufferChanged)
-        self.m_snapPolygonsBufferTool.snappingChanged.connect(self.snapPolygonsBufferChanged)
-        self.m_snapSchematicsBufferTool.snappingChanged.connect(self.snapSchematicsBufferChanged)
-
-        self.m_snapLinesLayerTool.snappingChanged.connect(self.snapLinesLayerChanged)
-        self.m_snapPolygonsLayerTool.snappingChanged.connect(self.snapPolygonsLayerChanged)
-        self.m_snapSchematicsLayerTool.snappingChanged.connect(self.snapSchematicsLayerChanged)
 
     # Plan Tools
 
@@ -194,3 +178,22 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
     def schematicSelected(self):
         self.selectedSchematicMode.emit("sch")
 
+    # Snapping Tools
+
+    def setLinesBufferId(self, layerId):
+        self.m_snapLinesBufferTool.setLayerId(layerId)
+
+    def setPolygonsBufferId(self, layerId):
+        self.m_snapPolygonsBufferTool.setLayerId(layerId)
+
+    def setSchematicsBufferId(self, layerId):
+        self.m_snapSchematicsBufferTool.setLayerId(layerId)
+
+    def setLinesLayerId(self, layerId):
+        self.m_snapLinesLayerTool.setLayerId(layerId)
+
+    def setPolygonsLayerId(self, layerId):
+        self.m_snapPolygonsLayerTool.setLayerId(layerId)
+
+    def setSchematicsLayerId(self, layerId):
+        self.m_snapSchematicsLayerTool.setLayerId(layerId)

@@ -2,4 +2,10 @@
     <qresource prefix="/plugins/ArkPlan" >
         <file>icon.png</file>
     </qresource>
+    <qresource prefix="/plugins/ArkPlan" >
+        <file>iconSnapVertex.png</file>
+    </qresource>
+    <qresource prefix="/plugins/ArkPlan" >
+        <file>iconSnapSegment.png</file>
+    </qresource>
 </RCC>

@@ -24,16 +24,31 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QInputDialog, QColor
 
 from qgis.core import QgsGeometry, QgsPoint
-from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
+from qgis.gui import QgsMapTool, QgsRubberBand
 
-class LevelsMapTool(QgsMapToolEmitPoint):
+class SnapMapTool(QgsMapTool):
+
+    toolType = ''
+    points = []
+    rubberBand = None
+
+    def __init__(self, canvas, type):
+        self.canvas = canvas
+        self.toolType = type
+        QgsMapTool.__init__(self, canvas)
+
+    def type(self):
+        return self.toolType
+
+    def setType(self, toolType):
+        self.toolType = toolType
+
+class LevelsMapTool(SnapMapTool):
 
     levelAdded = pyqtSignal(QgsPoint, 'QString', float)
-    levelType = 'lvl'
 
-    def __init__(self, canvas):
-        self.canvas = canvas
-        QgsMapToolEmitPoint.__init__(self, canvas)
+    def __init__(self, canvas, type='lvl'):
+        SnapMapTool.__init__(self, canvas, type)
 
     def canvasPressEvent(self, e):
         if e.button() != Qt.LeftButton:
@@ -42,27 +57,17 @@ class LevelsMapTool(QgsMapToolEmitPoint):
                                                0, -100, 100, 2)
         if ok:
             point = self.toMapCoordinates(e.pos())
-            self.levelAdded.emit(point, self.levelType, elevation)
-
-    def type(self):
-        return self.levelType
-
-    def setType(self, type):
-        self.levelType = type
+            self.levelAdded.emit(point, self.toolType, elevation)
 
 # Map Tool to take two points and draw a line segment, e.g. hachures
-class LineSegmentMapTool(QgsMapToolEmitPoint):
+class LineSegmentMapTool(SnapMapTool):
 
     lineSegmentAdded = pyqtSignal(list, 'QString')
     startPoint = None
     endPoint = None
-    rubberBand = None
-    segmentType = 'hch'
 
     def __init__(self, canvas, type='hch'):
-        self.canvas = canvas
-        self.segmentType = type
-        QgsMapToolEmitPoint.__init__(self, canvas)
+        SnapMapTool.__init__(self, canvas, type)
 
     def canvasMoveEvent(self, e):
         if self.startPoint:
@@ -72,7 +77,7 @@ class LineSegmentMapTool(QgsMapToolEmitPoint):
             else:
                 self.rubberBand = QgsRubberBand(self.canvas, False)
                 self.rubberBand.setColor(QColor(Qt.red))
-            points  = [self.startPoint, toPoint]
+            points = [self.startPoint, toPoint]
             self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
 
     def canvasPressEvent(self, e):
@@ -84,30 +89,19 @@ class LineSegmentMapTool(QgsMapToolEmitPoint):
         if self.startPoint is None:
             self.startPoint = self.toMapCoordinates(e.pos())
         else:
-            self.endPoint = self.toMapCoordinates(e.pos())
+            self.points = [self.startPoint, self.toMapCoordinates(e.pos())]
             self.rubberBand.reset()
-            self.lineSegmentAdded.emit([self.startPoint, self.endPoint], self.segmentType)
+            self.lineSegmentAdded.emit(self.points, self.toolType)
             self.startPoint = None
-            self.endPoint = None
-
-    def type(self):
-        return self.segmentType
-
-    def setType(self, type):
-        self.segmentType = type
+            self.points = []
 
 # Map Tool to take mulitple points and draw a line
-class LineMapTool(QgsMapToolEmitPoint):
+class LineMapTool(SnapMapTool):
 
     lineAdded = pyqtSignal(list, 'QString')
-    points = []
-    rubberBand = None
-    lineType = 'ext'
 
     def __init__(self, canvas, type='ext'):
-        self.canvas = canvas
-        self.lineType = type
-        QgsMapToolEmitPoint.__init__(self, canvas)
+        SnapMapTool.__init__(self, canvas, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -127,30 +121,19 @@ class LineMapTool(QgsMapToolEmitPoint):
             self.points.append(point)
         elif e.button() == Qt.RightButton:
             self.rubberBand.reset()
-            self.lineAdded.emit(self.points, self.lineType)
+            self.lineAdded.emit(self.points, self.toolType)
             self.points = []
         else:
             self.rubberBand.reset()
             self.points = []
 
-    def type(self):
-        return self.lineType
-
-    def setType(self, type):
-        self.lineType = type
-
 # Map Tool to take mulitple points and draw a line
-class PolygonMapTool(QgsMapToolEmitPoint):
+class PolygonMapTool(SnapMapTool):
 
     polygonAdded = pyqtSignal(list, 'QString')
-    points = []
-    rubberBand = None
-    polygonType = 'ext'
 
     def __init__(self, canvas, type='ext'):
-        self.canvas = canvas
-        self.lineType = type
-        QgsMapToolEmitPoint.__init__(self, canvas)
+        SnapMapTool.__init__(self, canvas, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -173,14 +156,8 @@ class PolygonMapTool(QgsMapToolEmitPoint):
             self.points.append(point)
         elif e.button() == Qt.RightButton:
             self.rubberBand.reset()
-            self.polygonAdded.emit(self.points, self.polygonType)
+            self.polygonAdded.emit(self.points, self.toolType)
             self.points = []
         else:
             self.rubberBand.reset()
             self.points = []
-
-    def type(self):
-        return self.polygonType
-
-    def setType(self, type):
-        self.polygonType = type

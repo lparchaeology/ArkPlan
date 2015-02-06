@@ -264,10 +264,6 @@ class ArkPlan:
         self.dock.showPolygonsChanged.connect(self.showPolygons)
         self.dock.showSchematicsChanged.connect(self.showSchematics)
 
-        self.dock.snapLinesLayerChanged.connect(self.snapLinesLayer)
-        self.dock.snapPolygonsLayerChanged.connect(self.snapPolygonsLayer)
-        self.dock.snapSchematicsLayerChanged.connect(self.snapSchematicsLayer)
-
     def unload(self):
 
         # Remove the levels form the legend
@@ -365,10 +361,13 @@ class ArkPlan:
             self.layerGroupIndex = self.iface.legendInterface().addGroup(self.contextLayerGroupName)
         if (self.schematicLayer is None):
             self.schematicLayer = self.loadLayerByName(self.contextLayerDir, self.schematicLayerName, self.stylesDir, self.schematicStyleName, self.layerGroupIndex)
+            self.dock.setSchematicsLayerId(self.schematicLayer.id())
         if (self.polygonsLayer is None):
             self.polygonsLayer = self.loadLayerByName(self.contextLayerDir, self.polygonsLayerName, self.stylesDir, self.polygonsStyleName, self.layerGroupIndex)
+            self.dock.setPolygonsLayerId(self.polygonsLayer.id())
         if (self.linesLayer is None):
             self.linesLayer = self.loadLayerByName(self.contextLayerDir, self.linesLayerName, self.stylesDir, self.linesStyleName, self.layerGroupIndex)
+            self.dock.setLinesLayerId(self.linesLayer.id())
         if (self.levelsLayer is None):
             self.levelsLayer = self.loadLayerByName(self.contextLayerDir, self.levelsLayerName, self.stylesDir, self.levelsStyleName, self.layerGroupIndex)
         if (self.gridPointsLayer is None):
@@ -382,6 +381,7 @@ class ArkPlan:
         if self.schematicBuffer is None:
             self.schematicBuffer = self.createStandardLayer('Polygon', self.schematicBufferName, 'memory')
             QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
+            self.dock.setSchematicsBufferId(self.schematicBuffer.id())
         self.schematicBuffer.startEditing()
         self.schematicBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.schematicStyleName + '.qml')
         self.iface.legendInterface().moveLayer(self.schematicBuffer, self.bufferGroupIndex)
@@ -390,6 +390,7 @@ class ArkPlan:
         if self.polygonsBuffer is None:
             self.polygonsBuffer = self.createStandardLayer('Polygon', self.polygonsBufferName, 'memory')
             QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
+            self.dock.setPolygonsBufferId(self.polygonsBuffer.id())
         self.polygonsBuffer.startEditing()
         self.polygonsBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.polygonsStyleName + '.qml')
         self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.bufferGroupIndex)
@@ -399,6 +400,7 @@ class ArkPlan:
             self.linesBuffer = self.createStandardLayer('LineString', self.linesBufferName, 'memory')
         if self.linesBuffer.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
+            self.dock.setLinesBufferId(self.linesBuffer.id())
             self.linesBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.linesStyleName + '.qml')
             self.iface.legendInterface().moveLayer(self.linesBuffer, self.bufferGroupIndex)
             self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)
@@ -532,48 +534,6 @@ class ArkPlan:
 
     def showSchematics(self, status):
         self.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
-
-    def snapLayer(self, layer, status, geometry, tolerance, unit):
-        proj = QgsProject.instance()
-        layerSnappingList = proj.readListEntry("Digitizing", "/LayerSnappingList")[0]
-        layerSnappingEnabledList = proj.readListEntry("Digitizing", "/LayerSnappingEnabledList")[0]
-        layerSnappingToleranceList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceList")[0]
-        layerSnappingToleranceUnitList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceUnitList")[0]
-        layerSnapToList = proj.readListEntry("Digitizing", "/LayerSnapToList")[0]
-        avoidIntersectionsList = proj.readListEntry("Digitizing", "/AvoidIntersectionsList")[0]
-        if not layer.id() in layerSnappingList:
-            return
-        snapId = layerSnappingList.index(layer.id())
-        if status:
-            layerSnappingEnabledList[snapId] = u'enabled'
-        else:
-            layerSnappingEnabledList[snapId] = u'disabled'
-        if (geometry == 'segment'):
-            layerSnapToList[snapId] = u'to_segment'
-        elif (geometry == 'vertex_and_segment'):
-            layerSnapToList[snapId] = u'to_vertex_and_segment'
-        else:
-            layerSnapToList[snapId] = u'to_vertex'
-        layerSnappingToleranceList[snapId] = unicode(tolerance)
-        if (unit == 'map'):
-            layerSnappingToleranceUnitList[snapId] = u'0'
-        else:
-            layerSnappingToleranceUnitList[snapId] = u'1' #Pixels
-        proj.writeEntry("Digitizing", "/LayerSnappingList", layerSnappingList)
-        proj.writeEntry("Digitizing", "/LayerSnappingEnabledList", layerSnappingEnabledList)
-        proj.writeEntry("Digitizing", "/LayerSnappingToleranceList", layerSnappingToleranceList)
-        proj.writeEntry("Digitizing", "/LayerSnappingToleranceUnitList", layerSnappingToleranceUnitList)
-        proj.writeEntry("Digitizing", "/LayerSnapToList", layerSnapToList)
-        proj.writeEntry("Digitizing", "/AvoidIntersectionsList", avoidIntersectionsList)
-
-    def snapLinesLayer(self, status, geometry, tolerance, unit):
-        self.snapLayer(self.linesLayer, status, geometry, tolerance, unit)
-
-    def snapPolygonsLayer(self, status, geometry, tolerance, unit):
-        self.snapLayer(self.polygonsLayer, status, geometry, tolerance, unit)
-
-    def snapSchematicsLayer(self, status, geometry, tolerance, unit):
-        self.snapLayer(self.schematicLayer, status, geometry, tolerance, unit)
 
     # Levels Tool Methods
 

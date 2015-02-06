@@ -54,7 +54,7 @@ class ArkPlanSnapButton(QToolButton):
         self.segmentAction = QAction(self.segmentIcon, 'Segment', self)
         self.segmentAction.setStatusTip('Snap to segment')
 
-        self.vertexSegmentIcon = QIcon()
+        self.vertexSegmentIcon = QIcon(':/plugins/ArkPlan/iconSnapVertexSegment.png')
         self.vertexSegmentAction = QAction(self.vertexSegmentIcon, 'Vertex and Segment', self)
         self.vertexSegmentAction.setStatusTip('Snap to vertex and segment')
 

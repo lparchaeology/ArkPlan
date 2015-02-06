@@ -24,16 +24,28 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QInputDialog, QColor
 
 from qgis.core import QgsGeometry, QgsPoint
-from qgis.gui import QgsMapTool, QgsRubberBand
+from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker
+
+class SnapVertexMarker(QgsVertexMarker):
+
+    def __init__(self, canvas):
+      QgsVertexMarker.__init__(self, canvas)
+      sel.setIconType(QgsVertexMarker::ICON_CROSS )
+      self.setColor(Qt::magenta)
+      self.setPenWidth(3)
+
 
 class SnapMapTool(QgsMapTool):
 
     toolType = ''
     points = []
-    rubberBand = None
+    snapper = QgsMapCanvasSnapper()
+    pointsRubberBand = None
+    mouseRubberBand = None
 
     def __init__(self, canvas, type):
         self.canvas = canvas
+        self.snapper.setMapCanvas(self.canvas)
         self.toolType = type
         QgsMapTool.__init__(self, canvas)
 
@@ -42,6 +54,28 @@ class SnapMapTool(QgsMapTool):
 
     def setType(self, toolType):
         self.toolType = toolType
+
+    def snapPointFromResults(self, snapResults, screenCoords):
+        if (len(snapResults) < 1):
+            return self.toMapCoordinates(screenCoords)
+        return snapResults[0].snappedVertex
+
+    def canvasMoveEvent(self,  e):
+        QgsPoint mapPoint;
+        QList<QgsSnappingResult> snapResults;
+        res, snapResultList = self.snapper.snapToBackgroundLayers(e->pos())
+        if (res == 0):
+            snapMarkers = []
+            for (snapResult in snapResultList):
+                snapMarker = SnapVertexMarker(self.canvas)
+                snapMarker.setCenter(snapResult.snappedVertex)
+                snapMarkers.append(snapMarker)
+
+        //if ( mCaptureMode != CapturePoint && mTempRubberBand && mCapturing )
+            //mapPoint = snapPointFromResults( snapResults, e->pos() );
+            //mTempRubberBand->movePoint( mapPoint );
+
+
 
 class LevelsMapTool(SnapMapTool):
 
@@ -59,6 +93,7 @@ class LevelsMapTool(SnapMapTool):
             point = self.toMapCoordinates(e.pos())
             self.levelAdded.emit(point, self.toolType, elevation)
 
+
 # Map Tool to take two points and draw a line segment, e.g. hachures
 class LineSegmentMapTool(SnapMapTool):
 
@@ -72,17 +107,17 @@ class LineSegmentMapTool(SnapMapTool):
     def canvasMoveEvent(self, e):
         if self.startPoint:
             toPoint = self.toMapCoordinates(e.pos())
-            if self.rubberBand:
-                self.rubberBand.reset()
+            if self.pointsRubberBand:
+                self.pointsRubberBand.reset()
             else:
-                self.rubberBand = QgsRubberBand(self.canvas, False)
-                self.rubberBand.setColor(QColor(Qt.red))
+                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
+                self.pointsRubberBand.setColor(QColor(Qt.red))
             points = [self.startPoint, toPoint]
-            self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
+            self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
 
     def canvasPressEvent(self, e):
         if e.button() != Qt.LeftButton:
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.startPoint = None
             self.endPoint = None
             return
@@ -90,7 +125,7 @@ class LineSegmentMapTool(SnapMapTool):
             self.startPoint = self.toMapCoordinates(e.pos())
         else:
             self.points = [self.startPoint, self.toMapCoordinates(e.pos())]
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.lineSegmentAdded.emit(self.points, self.toolType)
             self.startPoint = None
             self.points = []
@@ -108,23 +143,23 @@ class LineMapTool(SnapMapTool):
             rbPoints = list(self.points)
             toPoint = self.toMapCoordinates(e.pos())
             rbPoints.append(toPoint)
-            if self.rubberBand:
-                self.rubberBand.reset()
+            if self.pointsRubberBand:
+                self.pointsRubberBand.reset()
             else:
-                self.rubberBand = QgsRubberBand(self.canvas, False)
-                self.rubberBand.setColor(QColor(Qt.red))
-            self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
+                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
+                self.pointsRubberBand.setColor(QColor(Qt.red))
+            self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
 
     def canvasPressEvent(self, e):
         if e.button() == Qt.LeftButton:
             point = self.toMapCoordinates(e.pos())
             self.points.append(point)
         elif e.button() == Qt.RightButton:
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.lineAdded.emit(self.points, self.toolType)
             self.points = []
         else:
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.points = []
 
 # Map Tool to take mulitple points and draw a line
@@ -140,24 +175,24 @@ class PolygonMapTool(SnapMapTool):
             rbPoints = list(self.points)
             toPoint = self.toMapCoordinates(e.pos())
             rbPoints.append(toPoint)
-            if self.rubberBand:
-                self.rubberBand.reset()
+            if self.pointsRubberBand:
+                self.pointsRubberBand.reset()
             else:
-                self.rubberBand = QgsRubberBand(self.canvas, False)
-                self.rubberBand.setColor(QColor(Qt.red))
+                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
+                self.pointsRubberBand.setColor(QColor(Qt.red))
             if len(self.points) == 1:
-                self.rubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
+                self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
             else:
-                self.rubberBand.setToGeometry(QgsGeometry.fromPolygon([rbPoints]), None)
+                self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolygon([rbPoints]), None)
 
     def canvasPressEvent(self, e):
         if e.button() == Qt.LeftButton:
             point = self.toMapCoordinates(e.pos())
             self.points.append(point)
         elif e.button() == Qt.RightButton:
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.polygonAdded.emit(self.points, self.toolType)
             self.points = []
         else:
-            self.rubberBand.reset()
+            self.pointsRubberBand.reset()
             self.points = []

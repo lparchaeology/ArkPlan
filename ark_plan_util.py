@@ -48,7 +48,7 @@ def planMetadata(name):
             type = 'Matrix'
             number = 0
             suffix = ''
-        else (type.lower() == 'c'):
+        else:
             type = 'Context'
             number = int(elements[1][0:4])
             suffix = elements[1][5:]

@@ -50,13 +50,12 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     crt = 'EPSG:27700'
 
     #TODO Get from settings
-    tempFile = QFileInfo('/filebin/Development/arkplan_temp.tiff')
+    tempPath = QDir('/media/build/ark/data')
     rawFile = QFileInfo()
     pointFile = QFileInfo()
     geoFile = QFileInfo()
     geoSuffix = '_r'
 
-    gdalPath = ''
     gdal_translate = QFileInfo()
     gdalwarp = QFileInfo()
     gdalCommand = ''
@@ -274,7 +273,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
 
     def gdalPath(self):
         settings = QSettings()
-        return settings.value('/GdalTools/gdalPath', '')
+        return settings.value('/GdalTools/gdalPath', '/usr/bin')
 
     def run(self):
         self.closeOnDone = False
@@ -295,6 +294,19 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
             self.showText('ERROR: Please set all 3 Ground Control Points!')
             return
         self.enableUi(False)
+        self.runCropStep()
+
+    def runCropStep(self):
+        self.gdalStep = 'crop'
+        self.gdalArgs = []
+        self.gdalArgs.extend(['-crop', '100%x84%+0+0'])
+        self.gdalArgs.append('+repage')
+        self.gdalArgs.append(self.rawFile.absoluteFilePath())
+        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.tiff')
+        self.gdalCommand = 'convert ' + ' '.join(self.gdalArgs)
+        self.gdalProcess.start('convert', self.gdalArgs)
+
+    def runTranslateStep(self):
         self.gdalStep = 'translate'
         self.gdalArgs = []
         self.gdalArgs.extend(['-of', 'GTiff'])
@@ -302,42 +314,52 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gdalArgs.extend(['-gcp', str(self.gcp1.x()), str(self.gcp1.y()), str(self.geo1.x()), str(self.geo1.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp2.x()), str(self.gcp2.y()), str(self.geo2.x()), str(self.geo2.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp3.x()), str(self.gcp3.y()), str(self.geo3.x()), str(self.geo3.y())])
-        self.gdalArgs.append(self.rawFile.absoluteFilePath())
-        self.gdalArgs.append(self.tempFile.absoluteFilePath())
+        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.tiff')
+        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdal_translate.absoluteFilePath(), self.gdalArgs)
 
+    def runWarpStep(self):
+        self.gdalStep = 'warp'
+        self.gdalArgs = []
+        self.gdalArgs.extend(['-order', '1'])
+        self.gdalArgs.extend(['-r', 'cubic'])
+        self.gdalArgs.extend(['-t_srs', self.crt])
+        self.gdalArgs.extend(['-of', 'GTiff'])
+        self.gdalArgs.extend(['-co', 'COMPRESS=LZW'])
+        self.gdalArgs.append('-dstalpha')
+        self.gdalArgs.append('-overwrite')
+        self.gdalArgs.append('\"' + self.tempPath.absolutePath() + '/arkplan_trans.tiff' + '\"')
+        self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
+        self.gdalCommand = self.gdalwarp.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
+        self.gdalProcess.start(self.gdalCommand)
+
     def gdalProcessStarted(self):
-        if (self.gdalStep == 'translate'):
+        if (self.gdalStep == 'crop'):
+            self.showText('Cropping input file to required size...')
+        elif (self.gdalStep == 'translate'):
             self.showText('Running GDAL translate command:')
+            self.showText(self.gdalCommand)
         elif (self.gdalStep == 'warp'):
             self.showText('Running GDAL warp command:')
-        self.showText(self.gdalCommand)
+            self.showText(self.gdalCommand)
         self.showText('')
 
     def gdalProcessFinished(self):
         if (self.gdalProcess.exitCode() != 0):
             self.gdalStep = ''
-            self.showText('GDAL command failed!')
+            self.showText('Process failed!')
             self.showText('')
             self.enableUi(True)
+        elif (self.gdalStep == 'crop'):
+            self.showText('Cropping finished')
+            self.showText('')
+            self.runTranslateStep()
         elif (self.gdalStep == 'translate'):
-            self.gdalStep = 'warp'
             self.showText('GDAL translate finished')
             self.showText('')
-            self.gdalArgs = []
-            self.gdalArgs.extend(['-order', '1'])
-            self.gdalArgs.extend(['-r', 'cubic'])
-            self.gdalArgs.extend(['-t_srs', self.crt])
-            self.gdalArgs.extend(['-of', 'GTiff'])
-            self.gdalArgs.extend(['-co', 'COMPRESS=LZW'])
-            self.gdalArgs.append('-dstalpha')
-            self.gdalArgs.append('-overwrite')
-            self.gdalArgs.append('\"' + self.tempFile.absoluteFilePath() + '\"')
-            self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
-            self.gdalCommand = self.gdalwarp.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
-            self.gdalProcess.start(self.gdalCommand)
-        else:
+            self.runWarpStep()
+        elif (self.gdalStep == 'warp'):
             self.gdalStep = 'done'
             self.showText('GDAL warp finished')
             self.writeGcpFile()

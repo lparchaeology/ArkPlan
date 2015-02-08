@@ -20,10 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings
 from PyQt4.QtGui import QInputDialog, QColor
 
-from qgis.core import QgsGeometry, QgsPoint
+from qgis.core import *
 from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker
 
 class SnapVertexMarker(QgsVertexMarker):
@@ -34,7 +34,7 @@ class SnapVertexMarker(QgsVertexMarker):
       self.setColor(Qt.magenta)
       self.setPenWidth(3)
 
-
+# Code adapted from QGIS QgsMapToolEdit and QgsMapToolCapture classes
 class SnapMapTool(QgsMapTool):
 
     toolType = ''
@@ -60,7 +60,25 @@ class SnapMapTool(QgsMapTool):
             return self.toMapCoordinates(screenCoords)
         return snapResults[0].snappedVertex
 
-    def drawSnapPoints(self)
+    def createRubberBand(self, geometryType, alternativeBand):
+        rb = QgsRubberBand(self.canvas, geometryType)
+        settings = QSettings()
+        rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
+        r = int(settings.value('/qgis/digitizing/line_color_red', 255))
+        g = int(settings.value('/qgis/digitizing/line_color_green', 0))
+        b = int(settings.value('/qgis/digitizing/line_color_green', 0))
+        a = int(settings.value('/qgis/digitizing/line_color_alpha', 0)) / 255.0
+        color = QColor(r, g, b)
+        if alternativeBand:
+            scale = double(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
+            a = a * scale
+            rb.setLineStyle(Qt.DotLine)
+        color.setAlphaF(a)
+        rb.setColor(color)
+        rb.show()
+        return rb
+
+    def drawSnapPoints(self):
         snapResults = []
         res, snapResultList = self.snapper.snapToBackgroundLayers(e.pos())
         if (res == 0):
@@ -113,8 +131,7 @@ class LineSegmentMapTool(SnapMapTool):
             if self.pointsRubberBand:
                 self.pointsRubberBand.reset()
             else:
-                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
-                self.pointsRubberBand.setColor(QColor(Qt.red))
+                self.pointsRubberBand = self.createRubberBand(QGis.Line, False)
             points = [self.startPoint, toPoint]
             self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(points), None)
 
@@ -149,8 +166,7 @@ class LineMapTool(SnapMapTool):
             if self.pointsRubberBand:
                 self.pointsRubberBand.reset()
             else:
-                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
-                self.pointsRubberBand.setColor(QColor(Qt.red))
+                self.pointsRubberBand = self.createRubberBand(QGis.Line, False)
             self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
 
     def canvasPressEvent(self, e):
@@ -181,8 +197,7 @@ class PolygonMapTool(SnapMapTool):
             if self.pointsRubberBand:
                 self.pointsRubberBand.reset()
             else:
-                self.pointsRubberBand = QgsRubberBand(self.canvas, False)
-                self.pointsRubberBand.setColor(QColor(Qt.red))
+                self.pointsRubberBand = self.createRubberBand(QGis.Polygon, False)
             if len(self.points) == 1:
                 self.pointsRubberBand.setToGeometry(QgsGeometry.fromPolyline(rbPoints), None)
             else:

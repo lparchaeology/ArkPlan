@@ -60,8 +60,7 @@ class SnapMapTool(QgsMapTool):
             return self.toMapCoordinates(screenCoords)
         return snapResults[0].snappedVertex
 
-    def canvasMoveEvent(self,  e):
-        mapPoint = QgsPoint()
+    def drawSnapPoints(self)
         snapResults = []
         res, snapResultList = self.snapper.snapToBackgroundLayers(e.pos())
         if (res == 0):
@@ -71,6 +70,8 @@ class SnapMapTool(QgsMapTool):
                 snapMarker.setCenter(snapResult.snappedVertex)
                 snapMarkers.append(snapMarker)
 
+    def canvasMoveEvent(self,  e):
+        mapPoint = QgsPoint()
         #if ( mCaptureMode != CapturePoint && mTempRubberBand && mCapturing )
             #mapPoint = snapPointFromResults( snapResults, e.os() );
             #mTempRubberBand->movePoint( mapPoint );
@@ -93,6 +94,8 @@ class LevelsMapTool(SnapMapTool):
             point = self.toMapCoordinates(e.pos())
             self.levelAdded.emit(point, self.toolType, elevation)
 
+    def canvasMoveEvent(self,  e):
+        pass
 
 # Map Tool to take two points and draw a line segment, e.g. hachures
 class LineSegmentMapTool(SnapMapTool):

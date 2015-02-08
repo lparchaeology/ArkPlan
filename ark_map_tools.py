@@ -30,8 +30,8 @@ class SnapVertexMarker(QgsVertexMarker):
 
     def __init__(self, canvas):
       QgsVertexMarker.__init__(self, canvas)
-      sel.setIconType(QgsVertexMarker::ICON_CROSS )
-      self.setColor(Qt::magenta)
+      sel.setIconType(QgsVertexMarker.ICON_CROSS )
+      self.setColor(Qt.magenta)
       self.setPenWidth(3)
 
 
@@ -61,19 +61,19 @@ class SnapMapTool(QgsMapTool):
         return snapResults[0].snappedVertex
 
     def canvasMoveEvent(self,  e):
-        QgsPoint mapPoint;
-        QList<QgsSnappingResult> snapResults;
-        res, snapResultList = self.snapper.snapToBackgroundLayers(e->pos())
+        mapPoint = QgsPoint()
+        snapResults = []
+        res, snapResultList = self.snapper.snapToBackgroundLayers(e.pos())
         if (res == 0):
             snapMarkers = []
-            for (snapResult in snapResultList):
+            for snapResult in snapResultList:
                 snapMarker = SnapVertexMarker(self.canvas)
                 snapMarker.setCenter(snapResult.snappedVertex)
                 snapMarkers.append(snapMarker)
 
-        //if ( mCaptureMode != CapturePoint && mTempRubberBand && mCapturing )
-            //mapPoint = snapPointFromResults( snapResults, e->pos() );
-            //mTempRubberBand->movePoint( mapPoint );
+        #if ( mCaptureMode != CapturePoint && mTempRubberBand && mCapturing )
+            #mapPoint = snapPointFromResults( snapResults, e.os() );
+            #mTempRubberBand->movePoint( mapPoint );
 
 
 

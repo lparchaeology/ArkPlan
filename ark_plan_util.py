@@ -34,18 +34,23 @@ def planMetadata(name):
         elements = string.split(name, '_')
         site = elements[0]
         type = elements[1][0]
-        if (type.lower() == 'c'):
-            type = 'Context'
-        elif (type.lower() == 'p'):
+        number = int(elements[1][1:5])
+        suffix = elements[1][5:]
+        if (type.lower() == 'p'):
             type = 'Plan'
         elif (type.lower() == 's'):
             type = 'Section'
+        elif (type.lower() == 't'):
+            type = 'Top Plan'
+            number = 0
+            suffix = elements[1][9:]
         elif (type.lower() == 'm'):
             type = 'Matrix'
-        else:
-            type = ''
-        number = int(elements[1][1:5])
-        if (len(elements[1]) > 5):
+            number = 0
+            suffix = ''
+        else (type.lower() == 'c'):
+            type = 'Context'
+            number = int(elements[1][0:4])
             suffix = elements[1][5:]
         easting = int(elements[2][1:])
         northing = int(elements[3][1:])
@@ -57,6 +62,8 @@ def planName(site, type, number, suffix, easting, northing):
         name += 'C'
     elif (type.lower() == 'plan' or type.lower() == 'p'):
         name += 'P'
+    elif (type.lower() == 'top plan' or type.lower() == 'tp'):
+        name += 'TP'
     elif (type.lower() == 'section' or type.lower() == 's'):
         name += 'S'
     elif (type.lower() == 'matrix' or type.lower() == 'm'):

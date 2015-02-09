@@ -24,7 +24,7 @@
 import os
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon
+from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon, QActionGroup
 
 from qgis.core import QgsTolerance, QgsProject, QgsSnapper
 
@@ -58,19 +58,36 @@ class ArkPlanSnapButton(QToolButton):
         self.vertexSegmentAction = QAction(self.vertexSegmentIcon, 'Vertex and Segment', self)
         self.vertexSegmentAction.setStatusTip('Snap to vertex and segment')
 
-        self.menu = QMenu()
-        self.menu.addAction(self.vertexAction)
-        self.menu.addAction(self.segmentAction)
-        self.menu.addAction(self.vertexSegmentAction)
+        self.typeActionGroup = QActionGroup(self)
+        self.typeActionGroup.addAction(self.vertexAction)
+        self.typeActionGroup.addAction(self.segmentAction)
+        self.typeActionGroup.addAction(self.vertexSegmentAction)
+
+        self.pixelUnitsAction = QAction('Pixels', self)
+        self.pixelUnitsAction.setStatusTip('Use Pixels')
+
+        self.mapUnitsAction = QAction('Map Units', self)
+        self.mapUnitsAction.setStatusTip('Use Map Units')
+
+        self.unitActionGroup = QActionGroup(self)
+        self.unitActionGroup.addAction(self.pixelUnitsAction)
+        self.unitActionGroup.addAction(self.mapUnitsAction)
+
+        self.menu = QMenu(self)
+        self.menu.addActions(self.typeActionGroup.actions())
+        self.menu.addSeparator()
+        self.menu.addActions(self.unitActionGroup.actions())
         self.setMenu(self.menu)
 
         self.toggled.connect(self.snapToggled)
         self.vertexAction.triggered.connect(self.snapToVertex)
         self.segmentAction.triggered.connect(self.snapToSegment)
         self.vertexSegmentAction.triggered.connect(self.snapToVertexSegment)
+        self.pixelUnitsAction.triggered.connect(self.usePixelUnits)
+        self.mapUnitsAction.triggered.connect(self.useMapUnits)
 
         # Make sure we catch changes in the main snapping dialog
-        # TODO This respods to all updates, make it only respond to our layer changing
+        # TODO This responds to all updates, make it only respond to our layer changing
         # TODO Respond to project changing?
         self.project = QgsProject.instance()
         self.project.snapSettingsChanged.connect(self.updateButtonSettings)
@@ -84,13 +101,23 @@ class ArkPlanSnapButton(QToolButton):
         self.refreshButton()
 
     def refreshButton(self):
+
         self.setChecked(self.enabled)
+
         if (self.snappingType == QgsSnapper.SnapToVertex):
             self.setIcon(self.vertexIcon)
+            self.vertexAction.setChecked(True)
         elif (self.snappingType == QgsSnapper.SnapToSegment):
             self.setIcon(self.segmentIcon)
+            self.segmentAction.setChecked(True)
         elif (self.snappingType == QgsSnapper.SnapToVertexAndSegment):
             self.setIcon(self.vertexSegmentIcon)
+            self.vertexSegmentAction.setChecked(True)
+
+        if (self.unit == QgsTolerance.Pixels):
+            self.pixelUnitsAction.setEnabled(True)
+        else:
+            self.mapUnitsAction.setEnabled(True)
 
     def setLayerId(self, layerId):
         if (layerId):
@@ -112,4 +139,12 @@ class ArkPlanSnapButton(QToolButton):
 
     def snapToVertexSegment(self):
         self.snappingType = QgsSnapper.SnapToVertexAndSegment
+        self.updateSnapSettings()
+
+    def usePixelUnits(self):
+        self.unit = QgsTolerance.Pixels
+        self.updateSnapSettings()
+
+    def useMapUnits(self):
+        self.unit = QgsTolerance.MapUnits
         self.updateSnapSettings()

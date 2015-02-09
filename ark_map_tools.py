@@ -37,31 +37,44 @@ class SnapVertexMarker(QgsVertexMarker):
 # Code adapted from QGIS QgsMapToolEdit and QgsMapToolCapture classes
 class SnapMapTool(QgsMapTool):
 
-    toolType = ''
+    featureAdded = pyqtSignal(list, QGis.GeometryType, 'QString')
+
+    featureType = ''
+    geometryType = QGis.Point
     points = []
     snapper = QgsMapCanvasSnapper()
     pointsRubberBand = None
     mouseRubberBand = None
 
-    def __init__(self, canvas, type):
+    def __init__(self, canvas, geometryType, featureType):
         self.canvas = canvas
         self.snapper.setMapCanvas(self.canvas)
-        self.toolType = type
+        self.geometryType = geometryType
+        self.featureType = featureType
+        self.pointsRubberBand = createRubberBand(False)
+        self.mouseRubberBand = createRubberBand(True)
         QgsMapTool.__init__(self, canvas)
 
-    def type(self):
-        return self.toolType
+    def featureType(self):
+        return self.featureType
 
-    def setType(self, toolType):
-        self.toolType = toolType
+    def setType(self, featureType):
+        self.featureType = featureType
+
+    def snapPoint(self, canvasPoint):
+        snapResults = []
+        res, snapResults = self.snapper.snapToBackgroundLayers(canvasPoint)
+        if (if res != 0 or len(snapResults) < 1):
+            return self.toMapCoordinates(canvasPoint)
+        return snapResults[0].snappedVertex
 
     def snapPointFromResults(self, snapResults, screenCoords):
         if (len(snapResults) < 1):
             return self.toMapCoordinates(screenCoords)
         return snapResults[0].snappedVertex
 
-    def createRubberBand(self, geometryType, alternativeBand):
-        rb = QgsRubberBand(self.canvas, geometryType)
+    def createRubberBand(self, alternativeBand):
+        rb = QgsRubberBand(self.canvas, self.geometryType)
         settings = QSettings()
         rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
         r = int(settings.value('/qgis/digitizing/line_color_red', 255))
@@ -79,7 +92,7 @@ class SnapMapTool(QgsMapTool):
         return rb
 
     def drawSnapPoints(self):
-        snapResults = []
+        snapResultList = []
         res, snapResultList = self.snapper.snapToBackgroundLayers(e.pos())
         if (res == 0):
             snapMarkers = []
@@ -87,6 +100,50 @@ class SnapMapTool(QgsMapTool):
                 snapMarker = SnapVertexMarker(self.canvas)
                 snapMarker.setCenter(snapResult.snappedVertex)
                 snapMarkers.append(snapMarker)
+
+    # Add a clicked point to the vertices and rubberbands
+    def addPoint(self, canvasPoint):
+        layer = QProject.currentLayer()
+        if layer.type != QgsMapLayer.VectorLayer:
+            return
+
+        # Snap results are in project CRS
+        projectPoint = self.snapPoint(canvasPoint)
+        # Drawing layer may be in different CRS
+        layerPoint = self.toLayerCoordinates(layer, projectPoint)
+
+        self.points.append(layerPoint)
+        if self.geometryType == QGis.Point:
+            return
+        self.pointsRubberBand.addPoint(projectPoint)
+        self.mouseRubberBand.reset(self.geometryType)
+        if (self.geometryType == QGis.Line):
+            self.mouseRubberBand.addPoint(projectPoint)
+        elif (self.geometryType == QGis.Polygon):
+            firstPoint = self.pointsRubberBand.getPoint(0, 0)
+            self.mouseRubberBand.addPoint(firstPoint)
+            self.mouseRubberBand.movePoint(projectPoint)
+            self.mouseRubberBand.addPoint(projectPoint)
+
+        self.validateGeometry()
+
+    def removeLastPoint(self):
+        self.points.pop()
+        if (self.pointsRubberBand.numberOfVertices() > 0):
+            self.pointsRubberBand.removePoint(-1)
+        if (self.mouseRubberBand.numberOfVertices() > 1):
+            point = self.pointsRubberBand.getPoint(0, self.pointsRubberBand.numberOfVertices() - 2)
+            self.mouseRubberBand.movePoint(self.mouseRubberBand.numberOfVertices() - 2, point)
+        else:
+            self.mouseRubberBand.reset(self.geometryType)
+        self.validateGeometry()
+
+    def validateGeometry(self):
+        return
+
+    def keyPressEvent(self,  e):
+        if (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
+            self.removeLastPoint()
 
     def canvasMoveEvent(self,  e):
         mapPoint = QgsPoint()
@@ -101,7 +158,7 @@ class LevelsMapTool(SnapMapTool):
     levelAdded = pyqtSignal(QgsPoint, 'QString', float)
 
     def __init__(self, canvas, type='lvl'):
-        SnapMapTool.__init__(self, canvas, type)
+        SnapMapTool.__init__(self, canvas, Qgis.Point, type)
 
     def canvasPressEvent(self, e):
         if e.button() != Qt.LeftButton:
@@ -110,7 +167,7 @@ class LevelsMapTool(SnapMapTool):
                                                0, -100, 100, 2)
         if ok:
             point = self.toMapCoordinates(e.pos())
-            self.levelAdded.emit(point, self.toolType, elevation)
+            self.levelAdded.emit(point, self.featureType, elevation)
 
     def canvasMoveEvent(self,  e):
         pass
@@ -123,7 +180,7 @@ class LineSegmentMapTool(SnapMapTool):
     endPoint = None
 
     def __init__(self, canvas, type='hch'):
-        SnapMapTool.__init__(self, canvas, type)
+        SnapMapTool.__init__(self, canvas, Qgis.Line, type)
 
     def canvasMoveEvent(self, e):
         if self.startPoint:
@@ -146,7 +203,7 @@ class LineSegmentMapTool(SnapMapTool):
         else:
             self.points = [self.startPoint, self.toMapCoordinates(e.pos())]
             self.pointsRubberBand.reset()
-            self.lineSegmentAdded.emit(self.points, self.toolType)
+            self.lineSegmentAdded.emit(self.points, self.featureType)
             self.startPoint = None
             self.points = []
 
@@ -156,7 +213,7 @@ class LineMapTool(SnapMapTool):
     lineAdded = pyqtSignal(list, 'QString')
 
     def __init__(self, canvas, type='ext'):
-        SnapMapTool.__init__(self, canvas, type)
+        SnapMapTool.__init__(self, canvas, Qgis.Line, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -175,7 +232,7 @@ class LineMapTool(SnapMapTool):
             self.points.append(point)
         elif e.button() == Qt.RightButton:
             self.pointsRubberBand.reset()
-            self.lineAdded.emit(self.points, self.toolType)
+            self.lineAdded.emit(self.points, self.featureType)
             self.points = []
         else:
             self.pointsRubberBand.reset()
@@ -187,7 +244,7 @@ class PolygonMapTool(SnapMapTool):
     polygonAdded = pyqtSignal(list, 'QString')
 
     def __init__(self, canvas, type='ext'):
-        SnapMapTool.__init__(self, canvas, type)
+        SnapMapTool.__init__(self, canvas, Qgis.Polygon, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -209,7 +266,7 @@ class PolygonMapTool(SnapMapTool):
             self.points.append(point)
         elif e.button() == Qt.RightButton:
             self.pointsRubberBand.reset()
-            self.polygonAdded.emit(self.points, self.toolType)
+            self.polygonAdded.emit(self.points, self.featureType)
             self.points = []
         else:
             self.pointsRubberBand.reset()

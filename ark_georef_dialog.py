@@ -50,7 +50,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     crt = 'EPSG:27700'
 
     #TODO Get from settings
-    tempPath = QDir('/media/build/ark/data')
+    tempPath = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming')
     rawFile = QFileInfo()
     pointFile = QFileInfo()
     geoFile = QFileInfo()

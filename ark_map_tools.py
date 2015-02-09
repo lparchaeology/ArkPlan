@@ -51,8 +51,8 @@ class SnapMapTool(QgsMapTool):
         self.snapper.setMapCanvas(self.canvas)
         self.geometryType = geometryType
         self.featureType = featureType
-        self.pointsRubberBand = createRubberBand(False)
-        self.mouseRubberBand = createRubberBand(True)
+        self.pointsRubberBand = self.createRubberBand(False)
+        self.mouseRubberBand = self.createRubberBand(True)
         QgsMapTool.__init__(self, canvas)
 
     def featureType(self):
@@ -64,7 +64,7 @@ class SnapMapTool(QgsMapTool):
     def snapPoint(self, canvasPoint):
         snapResults = []
         res, snapResults = self.snapper.snapToBackgroundLayers(canvasPoint)
-        if (if res != 0 or len(snapResults) < 1):
+        if (res != 0 or len(snapResults) < 1):
             return self.toMapCoordinates(canvasPoint)
         return snapResults[0].snappedVertex
 
@@ -83,7 +83,7 @@ class SnapMapTool(QgsMapTool):
         a = int(settings.value('/qgis/digitizing/line_color_alpha', 0)) / 255.0
         color = QColor(r, g, b)
         if alternativeBand:
-            scale = double(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
+            scale = float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
             a = a * scale
             rb.setLineStyle(Qt.DotLine)
         color.setAlphaF(a)

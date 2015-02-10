@@ -158,7 +158,7 @@ class LevelsMapTool(SnapMapTool):
     levelAdded = pyqtSignal(QgsPoint, 'QString', float)
 
     def __init__(self, canvas, type='lvl'):
-        SnapMapTool.__init__(self, canvas, Qgis.Point, type)
+        SnapMapTool.__init__(self, canvas, QGis.Point, type)
 
     def canvasPressEvent(self, e):
         if e.button() != Qt.LeftButton:
@@ -180,7 +180,7 @@ class LineSegmentMapTool(SnapMapTool):
     endPoint = None
 
     def __init__(self, canvas, type='hch'):
-        SnapMapTool.__init__(self, canvas, Qgis.Line, type)
+        SnapMapTool.__init__(self, canvas, QGis.Line, type)
 
     def canvasMoveEvent(self, e):
         if self.startPoint:
@@ -213,7 +213,7 @@ class LineMapTool(SnapMapTool):
     lineAdded = pyqtSignal(list, 'QString')
 
     def __init__(self, canvas, type='ext'):
-        SnapMapTool.__init__(self, canvas, Qgis.Line, type)
+        SnapMapTool.__init__(self, canvas, QGis.Line, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -244,7 +244,7 @@ class PolygonMapTool(SnapMapTool):
     polygonAdded = pyqtSignal(list, 'QString')
 
     def __init__(self, canvas, type='ext'):
-        SnapMapTool.__init__(self, canvas, Qgis.Polygon, type)
+        SnapMapTool.__init__(self, canvas, QGis.Polygon, type)
 
     def canvasMoveEvent(self, e):
         if len(self.points) > 0:
@@ -262,9 +262,8 @@ class PolygonMapTool(SnapMapTool):
 
     def canvasPressEvent(self, e):
         if e.button() == Qt.LeftButton:
-            point = self.toMapCoordinates(e.pos())
-            self.points.append(point)
-        elif e.button() == Qt.RightButton:
+            self.addPoint(e.pos())
+        elif (e.button() == Qt.RightButton and len(self.points) > 2):
             self.pointsRubberBand.reset()
             self.polygonAdded.emit(self.points, self.featureType)
             self.points = []

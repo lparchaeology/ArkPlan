@@ -24,9 +24,9 @@
 import os
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon, QActionGroup
+from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon, QActionGroup, QWidgetAction, QSpinBox
 
-from qgis.core import QgsTolerance, QgsProject, QgsSnapper
+from qgis.core import QGis, QgsTolerance, QgsProject, QgsSnapper, QgsMapLayer
 
 class TopoEditButton(QToolButton):
 
@@ -75,14 +75,17 @@ class ArkPlanSnapButton(QToolButton):
         self.vertexIcon = QIcon(':/plugins/ArkPlan/iconSnapVertex.png')
         self.vertexAction = QAction(self.vertexIcon, 'Vertex', self)
         self.vertexAction.setStatusTip('Snap to vertex')
+        self.vertexAction.setCheckable(True)
 
         self.segmentIcon = QIcon(':/plugins/ArkPlan/iconSnapSegment.png')
         self.segmentAction = QAction(self.segmentIcon, 'Segment', self)
         self.segmentAction.setStatusTip('Snap to segment')
+        self.segmentAction.setCheckable(True)
 
         self.vertexSegmentIcon = QIcon(':/plugins/ArkPlan/iconSnapVertexSegment.png')
         self.vertexSegmentAction = QAction(self.vertexSegmentIcon, 'Vertex and Segment', self)
         self.vertexSegmentAction.setStatusTip('Snap to vertex and segment')
+        self.vertexSegmentAction.setCheckable(True)
 
         self.typeActionGroup = QActionGroup(self)
         self.typeActionGroup.addAction(self.vertexAction)
@@ -91,18 +94,33 @@ class ArkPlanSnapButton(QToolButton):
 
         self.pixelUnitsAction = QAction('Pixels', self)
         self.pixelUnitsAction.setStatusTip('Use Pixels')
+        self.pixelUnitsAction.setCheckable(True)
 
         self.mapUnitsAction = QAction('Map Units', self)
         self.mapUnitsAction.setStatusTip('Use Map Units')
+        self.mapUnitsAction.setCheckable(True)
 
         self.unitActionGroup = QActionGroup(self)
         self.unitActionGroup.addAction(self.pixelUnitsAction)
         self.unitActionGroup.addAction(self.mapUnitsAction)
 
+        self.avoidAction = QAction('Avoid Intersections', self)
+        self.avoidAction.setStatusTip('Avoid Intersections in Topological editing')
+        self.avoidAction.setCheckable(True)
+
+        self.toleranceSpin = QSpinBox(self)
+        self.toleranceAction = QWidgetAction(self)
+        self.toleranceAction.setDefaultWidget(self.toleranceSpin)
+        #self.toleranceAction = QAction('Tolerance', self)
+        #self.toleranceAction.setStatusTip('Set the snapping tolerance')
+
         self.menu = QMenu(self)
         self.menu.addActions(self.typeActionGroup.actions())
         self.menu.addSeparator()
         self.menu.addActions(self.unitActionGroup.actions())
+        self.menu.addAction(self.toleranceAction)
+        self.menu.addSeparator()
+        self.menu.addAction(self.avoidAction)
         self.setMenu(self.menu)
 
         self.toggled.connect(self.snapToggled)
@@ -111,6 +129,7 @@ class ArkPlanSnapButton(QToolButton):
         self.vertexSegmentAction.triggered.connect(self.snapToVertexSegment)
         self.pixelUnitsAction.triggered.connect(self.usePixelUnits)
         self.mapUnitsAction.triggered.connect(self.useMapUnits)
+        self.avoidAction.toggled.connect(self.avoidToggled)
 
         # Make sure we catch changes in the main snapping dialog
         # TODO This responds to all updates, make it only respond to our layer changing
@@ -141,14 +160,17 @@ class ArkPlanSnapButton(QToolButton):
             self.vertexSegmentAction.setChecked(True)
 
         if (self.unit == QgsTolerance.Pixels):
-            self.pixelUnitsAction.setEnabled(True)
+            self.pixelUnitsAction.setChecked(True)
         else:
-            self.mapUnitsAction.setEnabled(True)
+            self.mapUnitsAction.setChecked(True)
 
-    def setLayerId(self, layerId):
-        if (layerId):
-            self.layerId = layerId
+        self.avoidAction.setChecked(self.avoidIntersections)
+
+    def setLayer(self, layer):
+        if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
+            self.layerId = layer.id()
             self.setEnabled(True)
+            self.avoidAction.setEnabled(layer.geometryType() == QGis.Polygon)
             self.updateButtonSettings()
 
     def snapToggled(self, enabled):
@@ -173,4 +195,8 @@ class ArkPlanSnapButton(QToolButton):
 
     def useMapUnits(self):
         self.unit = QgsTolerance.MapUnits
+        self.updateSnapSettings()
+
+    def avoidToggled(self, status):
+        self.avoidIntersections = status
         self.updateSnapSettings()

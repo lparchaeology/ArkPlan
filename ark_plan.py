@@ -363,13 +363,13 @@ class ArkPlan:
             self.layerGroupIndex = self.iface.legendInterface().addGroup(self.contextLayerGroupName)
         if (self.schematicLayer is None):
             self.schematicLayer = self.loadLayerByName(self.contextLayerDir, self.schematicLayerName, self.stylesDir, self.schematicStyleName, self.layerGroupIndex)
-            self.dock.setSchematicsLayerId(self.schematicLayer.id())
+            self.dock.setSchematicsLayer(self.schematicLayer)
         if (self.polygonsLayer is None):
             self.polygonsLayer = self.loadLayerByName(self.contextLayerDir, self.polygonsLayerName, self.stylesDir, self.polygonsStyleName, self.layerGroupIndex)
-            self.dock.setPolygonsLayerId(self.polygonsLayer.id())
+            self.dock.setPolygonsLayer(self.polygonsLayer)
         if (self.linesLayer is None):
             self.linesLayer = self.loadLayerByName(self.contextLayerDir, self.linesLayerName, self.stylesDir, self.linesStyleName, self.layerGroupIndex)
-            self.dock.setLinesLayerId(self.linesLayer.id())
+            self.dock.setLinesLayer(self.linesLayer)
         if (self.levelsLayer is None):
             self.levelsLayer = self.loadLayerByName(self.contextLayerDir, self.levelsLayerName, self.stylesDir, self.levelsStyleName, self.layerGroupIndex)
         if (self.gridPointsLayer is None):
@@ -383,7 +383,7 @@ class ArkPlan:
         if self.schematicBuffer is None:
             self.schematicBuffer = self.createStandardLayer('Polygon', self.schematicBufferName, 'memory')
             QgsMapLayerRegistry.instance().addMapLayer(self.schematicBuffer)
-            self.dock.setSchematicsBufferId(self.schematicBuffer.id())
+            self.dock.setSchematicsBuffer(self.schematicBuffer)
         self.schematicBuffer.startEditing()
         self.schematicBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.schematicStyleName + '.qml')
         self.iface.legendInterface().moveLayer(self.schematicBuffer, self.bufferGroupIndex)
@@ -392,7 +392,7 @@ class ArkPlan:
         if self.polygonsBuffer is None:
             self.polygonsBuffer = self.createStandardLayer('Polygon', self.polygonsBufferName, 'memory')
             QgsMapLayerRegistry.instance().addMapLayer(self.polygonsBuffer)
-            self.dock.setPolygonsBufferId(self.polygonsBuffer.id())
+            self.dock.setPolygonsBuffer(self.polygonsBuffer)
         self.polygonsBuffer.startEditing()
         self.polygonsBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.polygonsStyleName + '.qml')
         self.iface.legendInterface().moveLayer(self.polygonsBuffer, self.bufferGroupIndex)
@@ -402,7 +402,7 @@ class ArkPlan:
             self.linesBuffer = self.createStandardLayer('LineString', self.linesBufferName, 'memory')
         if self.linesBuffer.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(self.linesBuffer)
-            self.dock.setLinesBufferId(self.linesBuffer.id())
+            self.dock.setLinesBuffer(self.linesBuffer)
             self.linesBuffer.loadNamedStyle(self.stylesDir.absolutePath() + '/' + self.linesStyleName + '.qml')
             self.iface.legendInterface().moveLayer(self.linesBuffer, self.bufferGroupIndex)
             self.iface.legendInterface().refreshLayerSymbology(self.linesBuffer)

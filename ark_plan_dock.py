@@ -186,23 +186,23 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
     # Snapping Tools
 
-    def setLinesBufferId(self, layerId):
-        self.m_snapLinesBufferTool.setLayerId(layerId)
+    def setLinesBuffer(self, layer):
+        self.m_snapLinesBufferTool.setLayer(layer)
 
-    def setPolygonsBufferId(self, layerId):
-        self.m_snapPolygonsBufferTool.setLayerId(layerId)
+    def setPolygonsBuffer(self, layer):
+        self.m_snapPolygonsBufferTool.setLayer(layer)
 
-    def setSchematicsBufferId(self, layerId):
-        self.m_snapSchematicsBufferTool.setLayerId(layerId)
+    def setSchematicsBuffer(self, layer):
+        self.m_snapSchematicsBufferTool.setLayer(layer)
 
-    def setLinesLayerId(self, layerId):
-        self.m_snapLinesLayerTool.setLayerId(layerId)
+    def setLinesLayer(self, layer):
+        self.m_snapLinesLayerTool.setLayer(layer)
 
-    def setPolygonsLayerId(self, layerId):
-        self.m_snapPolygonsLayerTool.setLayerId(layerId)
+    def setPolygonsLayer(self, layer):
+        self.m_snapPolygonsLayerTool.setLayer(layer)
 
-    def setSchematicsLayerId(self, layerId):
-        self.m_snapSchematicsLayerTool.setLayerId(layerId)
+    def setSchematicsLayer(self, layer):
+        self.m_snapSchematicsLayerTool.setLayer(layer)
 
     def contextFilterSelected(self):
         filter = self.m_contextFilterEdit.text()

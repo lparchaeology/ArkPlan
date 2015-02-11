@@ -96,7 +96,9 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
 
+        self.m_contextFilterEdit.returnPressed.connect(self.contextFilterSelected)
         self.m_contextFilterButton.clicked.connect(self.contextFilterSelected)
+        
 
         self.m_showLevelsCheck.stateChanged.connect(self.showLevelsChanged)
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)

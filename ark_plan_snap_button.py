@@ -28,6 +28,32 @@ from PyQt4.QtGui import QToolButton, QMenu, QAction, QIcon, QActionGroup
 
 from qgis.core import QgsTolerance, QgsProject, QgsSnapper
 
+class TopoEditButton(QToolButton):
+
+    topologicalEditingChanged = pyqtSignal(bool)
+
+    _project = None
+
+    def __init__(self, parent=None):
+        QToolButton.__init__(self, parent)
+
+        self._project = QgsProject.instance()
+
+        self._refreshButton()
+        self.toggled.connect(self._topoToggled)
+        self.toggled.connect(self.topologicalEditingChanged)
+
+        # Make sure we catch changes in the main snapping dialog
+        # TODO Respond to project changing?
+        self._project.snapSettingsChanged.connect(self._refreshButton)
+
+    def _topoToggled(self, status):
+        self._project.setTopologicalEditing(status)
+
+    def _refreshButton(self):
+        self.setChecked(self._project.topologicalEditing())
+
+
 class ArkPlanSnapButton(QToolButton):
 
     snapSettingsChanged = pyqtSignal(bool, str, float, str)

@@ -104,7 +104,7 @@ class SnapMapTool(QgsMapTool):
     # Add a clicked point to the vertices and rubberbands
     def addPoint(self, canvasPoint):
         layer = QProject.currentLayer()
-        if layer.type != QgsMapLayer.VectorLayer:
+        if layer.type() != QgsMapLayer.VectorLayer:
             return
 
         # Snap results are in project CRS

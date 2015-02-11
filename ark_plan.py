@@ -264,6 +264,8 @@ class ArkPlan:
         self.dock.showPolygonsChanged.connect(self.showPolygons)
         self.dock.showSchematicsChanged.connect(self.showSchematics)
 
+        self.dock.contextFilterChanged.connect(self.applyContextFilter)
+
     def unload(self):
 
         # Remove the levels form the legend
@@ -534,6 +536,39 @@ class ArkPlan:
 
     def showSchematics(self, status):
         self.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
+
+    def applyContextFilter(self, contextList):
+        clause = '"cxt_no" = %d'
+        filter = ''
+        if (len(contextList) > 0):
+            filter += clause % contextList[0]
+            for context in contextList[1:]:
+                filter += ' or '
+                filter += clause % context
+        self.applyLayerFilter(self.levelsLayer, filter)
+        self.applyLayerFilter(self.linesLayer, filter)
+        self.applyLayerFilter(self.polygonsLayer, filter)
+        self.applyLayerFilter(self.schematicLayer, filter)
+
+    def applyLayerFilter(self, layer, filter):
+        if (self.iface.mapCanvas().isDrawing()):
+            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Canvas is drawing')
+            return
+        if (layer.type() != QgsMapLayer.VectorLayer):
+            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Not a vector layer')
+            return
+        if (layer.isEditable()):
+            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer is in editing mode')
+            return
+        if (not layer.dataProvider().supportsSubsetString()):
+            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Subsets not supported by layer')
+            return
+        if (len(layer.vectorJoins()) > 0):
+            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer has joins')
+            return
+        layer.setSubsetString(filter)
+        self.iface.mapCanvas().refresh()
+        self.iface.legendInterface().refreshLayerSymbology(layer)
 
     # Levels Tool Methods
 

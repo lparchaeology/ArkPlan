@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_dock.ui'
 #
-# Created: Wed Feb 11 12:01:58 2015
+# Created: Wed Feb 11 15:04:55 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -368,7 +368,7 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_schematicTool.setText(_translate("m_arkPlanDockWidget", "sch", None))
         self.groupBox.setTitle(_translate("m_arkPlanDockWidget", "Editing:", None))
         self.m_topologicalLabel.setText(_translate("m_arkPlanDockWidget", "Topological:", None))
-        self.m_topologicalTool.setText(_translate("m_arkPlanDockWidget", "top", None))
+        self.m_topologicalTool.setText(_translate("m_arkPlanDockWidget", "topo", None))
         self.label_2.setText(_translate("m_arkPlanDockWidget", "Snap Layers:", None))
         self.label_11.setText(_translate("m_arkPlanDockWidget", "Lines", None))
         self.label_4.setText(_translate("m_arkPlanDockWidget", "Layers Visible:", None))

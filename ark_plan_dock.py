@@ -47,6 +47,8 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
+    contextFilterChanged = pyqtSignal(list)
+
     showLevelsChanged = pyqtSignal(int)
     showLinesChanged = pyqtSignal(int)
     showPolygonsChanged = pyqtSignal(int)
@@ -93,6 +95,8 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
+
+        self.m_contextFilterButton.clicked.connect(self.contextFilterSelected)
 
         self.m_showLevelsCheck.stateChanged.connect(self.showLevelsChanged)
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
@@ -197,3 +201,9 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
     def setSchematicsLayerId(self, layerId):
         self.m_snapSchematicsLayerTool.setLayerId(layerId)
+
+    def contextFilterSelected(self):
+        filter = self.m_contextFilterEdit.text()
+        filter = filter.replace(',', ' ')
+        contexts = [int(cxtStr) for cxtStr in filter.split()]
+        self.contextFilterChanged.emit(contexts)

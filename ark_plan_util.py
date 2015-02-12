@@ -27,33 +27,33 @@ def planMetadata(name):
     site = ''
     type = ''
     number = 0
-    suffix  = ''
     easting = 0
     northing = 0
-    if name:
-        elements = string.split(name, '_')
+    suffix  = ''
+    elements = string.split(name, '_')
+    if (name and len(elements) >= 2):
         site = elements[0]
         type = elements[1][0]
-        number = int(elements[1][1:5])
-        suffix = elements[1][5:]
         if (type.lower() == 'p'):
             type = 'Plan'
+            number = int(elements[1][1:])
         elif (type.lower() == 's'):
             type = 'Section'
+            number = int(elements[1][1:])
         elif (type.lower() == 't'):
             type = 'Top Plan'
             number = 0
-            suffix = elements[1][9:]
         elif (type.lower() == 'm'):
             type = 'Matrix'
             number = 0
-            suffix = ''
         else:
             type = 'Context'
-            number = int(elements[1][0:4])
-            suffix = elements[1][5:]
-        easting = int(elements[2][1:])
-        northing = int(elements[3][1:])
+            number = int(elements[1])
+        if (len(elements) >= 4):
+            easting = int(elements[2][1:])
+            northing = int(elements[3][1:])
+        if (len(elements) >= 5):
+            suffix = elements[4]
     return site, type, number, suffix, easting, northing
 
 def planName(site, type, number, suffix, easting, northing):
@@ -71,11 +71,13 @@ def planName(site, type, number, suffix, easting, northing):
     if (number > 0):
         #TODO pad to 4
         name += str(number)
-    name += suffix
     if (easting > 0 and northing > 0):
         #TODO Pad to 3
         name += '_E'
         name += str(easting)
         name += '_N'
         name += str(northing)
+    if suffix:
+        name += '_'
+        name += suffix
     return name

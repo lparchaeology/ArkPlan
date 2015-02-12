@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_dock.ui'
 #
-# Created: Thu Feb 12 10:53:10 2015
+# Created: Thu Feb 12 11:52:35 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -285,9 +285,15 @@ class Ui_m_arkPlanDockWidget(object):
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.m_contextFilterEdit = QtGui.QLineEdit(self.m_existingContextsGroup)
-        self.m_contextFilterEdit.setObjectName(_fromUtf8("m_contextFilterEdit"))
-        self.horizontalLayout_2.addWidget(self.m_contextFilterEdit)
+        self.m_contextFilterCombo = QtGui.QComboBox(self.m_existingContextsGroup)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.m_contextFilterCombo.sizePolicy().hasHeightForWidth())
+        self.m_contextFilterCombo.setSizePolicy(sizePolicy)
+        self.m_contextFilterCombo.setEditable(True)
+        self.m_contextFilterCombo.setObjectName(_fromUtf8("m_contextFilterCombo"))
+        self.horizontalLayout_2.addWidget(self.m_contextFilterCombo)
         self.m_contextFilterButton = QtGui.QPushButton(self.m_existingContextsGroup)
         self.m_contextFilterButton.setObjectName(_fromUtf8("m_contextFilterButton"))
         self.horizontalLayout_2.addWidget(self.m_contextFilterButton)
@@ -387,7 +393,6 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_snapLinesLayerTool.setText(_translate("m_arkPlanDockWidget", "...", None))
         self.m_showSchematicsCheck.setToolTip(_translate("m_arkPlanDockWidget", "Show existing schematics", None))
         self.m_existingContextsGroup.setTitle(_translate("m_arkPlanDockWidget", "Filter:", None))
-        self.m_contextFilterEdit.setToolTip(_translate("m_arkPlanDockWidget", "Only show selected contexts", None))
         self.m_contextFilterButton.setText(_translate("m_arkPlanDockWidget", "Apply", None))
         self.m_clearButton.setToolTip(_translate("m_arkPlanDockWidget", "Clear unsaved changes from work layers", None))
         self.m_clearButton.setText(_translate("m_arkPlanDockWidget", "Clear", None))

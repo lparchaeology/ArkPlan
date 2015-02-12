@@ -96,9 +96,10 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
 
-        self.m_contextFilterEdit.returnPressed.connect(self.contextFilterSelected)
+        self.m_contextFilterCombo.activated.connect(self.contextFilterSelected)
+        self.filterLineEdit = self.m_contextFilterCombo.lineEdit()
+        self.filterLineEdit.returnPressed.connect(self.contextFilterSelected)
         self.m_contextFilterButton.clicked.connect(self.contextFilterSelected)
-        
 
         self.m_showLevelsCheck.stateChanged.connect(self.showLevelsChanged)
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
@@ -205,7 +206,7 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.m_snapSchematicsLayerTool.setLayer(layer)
 
     def contextFilterSelected(self):
-        filter = self.m_contextFilterEdit.text()
+        filter = self.m_contextFilterCombo.currentText()
         filter = filter.replace(',', ' ')
         contexts = [int(cxtStr) for cxtStr in filter.split()]
         self.contextFilterChanged.emit(contexts)

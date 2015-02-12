@@ -686,9 +686,15 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="m_contextFilterEdit">
-           <property name="toolTip">
-            <string>Only show selected contexts</string>
+          <widget class="QComboBox" name="m_contextFilterCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="editable">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

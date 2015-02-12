@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_dock.ui'
 #
-# Created: Wed Feb 11 15:04:55 2015
+# Created: Thu Feb 12 10:53:10 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_m_arkPlanDockWidget(object):
     def setupUi(self, m_arkPlanDockWidget):
         m_arkPlanDockWidget.setObjectName(_fromUtf8("m_arkPlanDockWidget"))
-        m_arkPlanDockWidget.resize(359, 835)
+        m_arkPlanDockWidget.resize(359, 825)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -199,7 +199,7 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_topologicalLabel = QtGui.QLabel(self.groupBox)
         self.m_topologicalLabel.setObjectName(_fromUtf8("m_topologicalLabel"))
         self.horizontalLayout_3.addWidget(self.m_topologicalLabel)
-        self.m_topologicalTool = TopoEditButton(self.groupBox)
+        self.m_topologicalTool = TopoEditToolButton(self.groupBox)
         self.m_topologicalTool.setCheckable(True)
         self.m_topologicalTool.setObjectName(_fromUtf8("m_topologicalTool"))
         self.horizontalLayout_3.addWidget(self.m_topologicalTool)
@@ -221,12 +221,12 @@ class Ui_m_arkPlanDockWidget(object):
         self.label = QtGui.QLabel(self.groupBox)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout_3.addWidget(self.label, 2, 0, 1, 1)
-        self.m_snapPolygonsLayerTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapPolygonsLayerTool = SnappingToolButton(self.groupBox)
         self.m_snapPolygonsLayerTool.setCheckable(True)
         self.m_snapPolygonsLayerTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapPolygonsLayerTool.setObjectName(_fromUtf8("m_snapPolygonsLayerTool"))
         self.gridLayout_3.addWidget(self.m_snapPolygonsLayerTool, 3, 3, 1, 1)
-        self.m_snapPolygonsBufferTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapPolygonsBufferTool = SnappingToolButton(self.groupBox)
         self.m_snapPolygonsBufferTool.setCheckable(True)
         self.m_snapPolygonsBufferTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapPolygonsBufferTool.setObjectName(_fromUtf8("m_snapPolygonsBufferTool"))
@@ -249,17 +249,17 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_showLinesCheck.setChecked(True)
         self.m_showLinesCheck.setObjectName(_fromUtf8("m_showLinesCheck"))
         self.gridLayout_3.addWidget(self.m_showLinesCheck, 1, 2, 1, 1, QtCore.Qt.AlignHCenter)
-        self.m_snapLinesBufferTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapLinesBufferTool = SnappingToolButton(self.groupBox)
         self.m_snapLinesBufferTool.setCheckable(True)
         self.m_snapLinesBufferTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapLinesBufferTool.setObjectName(_fromUtf8("m_snapLinesBufferTool"))
         self.gridLayout_3.addWidget(self.m_snapLinesBufferTool, 2, 2, 1, 1)
-        self.m_snapSchematicsLayerTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapSchematicsLayerTool = SnappingToolButton(self.groupBox)
         self.m_snapSchematicsLayerTool.setCheckable(True)
         self.m_snapSchematicsLayerTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapSchematicsLayerTool.setObjectName(_fromUtf8("m_snapSchematicsLayerTool"))
         self.gridLayout_3.addWidget(self.m_snapSchematicsLayerTool, 3, 4, 1, 1)
-        self.m_snapSchematicsBufferTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapSchematicsBufferTool = SnappingToolButton(self.groupBox)
         self.m_snapSchematicsBufferTool.setCheckable(True)
         self.m_snapSchematicsBufferTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapSchematicsBufferTool.setObjectName(_fromUtf8("m_snapSchematicsBufferTool"))
@@ -267,7 +267,7 @@ class Ui_m_arkPlanDockWidget(object):
         self.label_13 = QtGui.QLabel(self.groupBox)
         self.label_13.setObjectName(_fromUtf8("label_13"))
         self.gridLayout_3.addWidget(self.label_13, 0, 4, 1, 1)
-        self.m_snapLinesLayerTool = ArkPlanSnapButton(self.groupBox)
+        self.m_snapLinesLayerTool = SnappingToolButton(self.groupBox)
         self.m_snapLinesLayerTool.setCheckable(True)
         self.m_snapLinesLayerTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.m_snapLinesLayerTool.setObjectName(_fromUtf8("m_snapLinesLayerTool"))
@@ -394,4 +394,4 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_mergeButton.setToolTip(_translate("m_arkPlanDockWidget", "Move new context to main layers", None))
         self.m_mergeButton.setText(_translate("m_arkPlanDockWidget", "Merge", None))
 
-from ark_plan_snap_button import ArkPlanSnapButton, TopoEditButton
+from snapping_widgets import SnappingToolButton, TopoEditToolButton

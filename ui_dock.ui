@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>359</width>
-    <height>835</height>
+    <height>825</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -480,7 +480,7 @@
           </widget>
          </item>
          <item>
-          <widget class="TopoEditButton" name="m_topologicalTool">
+          <widget class="TopoEditToolButton" name="m_topologicalTool">
            <property name="text">
             <string>topo</string>
            </property>
@@ -529,7 +529,7 @@
           </widget>
          </item>
          <item row="3" column="3">
-          <widget class="ArkPlanSnapButton" name="m_snapPolygonsLayerTool">
+          <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -542,7 +542,7 @@
           </widget>
          </item>
          <item row="2" column="3">
-          <widget class="ArkPlanSnapButton" name="m_snapPolygonsBufferTool">
+          <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -601,7 +601,7 @@
           </widget>
          </item>
          <item row="2" column="2">
-          <widget class="ArkPlanSnapButton" name="m_snapLinesBufferTool">
+          <widget class="SnappingToolButton" name="m_snapLinesBufferTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -614,7 +614,7 @@
           </widget>
          </item>
          <item row="3" column="4">
-          <widget class="ArkPlanSnapButton" name="m_snapSchematicsLayerTool">
+          <widget class="SnappingToolButton" name="m_snapSchematicsLayerTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -627,7 +627,7 @@
           </widget>
          </item>
          <item row="2" column="4">
-          <widget class="ArkPlanSnapButton" name="m_snapSchematicsBufferTool">
+          <widget class="SnappingToolButton" name="m_snapSchematicsBufferTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -647,7 +647,7 @@
           </widget>
          </item>
          <item row="3" column="2">
-          <widget class="ArkPlanSnapButton" name="m_snapLinesLayerTool">
+          <widget class="SnappingToolButton" name="m_snapLinesLayerTool">
            <property name="text">
             <string>...</string>
            </property>
@@ -746,14 +746,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ArkPlanSnapButton</class>
+   <class>SnappingToolButton</class>
    <extends>QToolButton</extends>
-   <header>ark_plan_snap_button.h</header>
+   <header>snapping_widgets.h</header>
   </customwidget>
   <customwidget>
-   <class>TopoEditButton</class>
+   <class>TopoEditToolButton</class>
    <extends>QToolButton</extends>
-   <header>ark_plan_snap_button.h</header>
+   <header>snapping_widgets.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

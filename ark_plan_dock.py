@@ -26,7 +26,7 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
 import ui_dock
-import ark_plan_snap_button
+import snapping_widgets
 
 class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 

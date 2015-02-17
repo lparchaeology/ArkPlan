@@ -216,8 +216,6 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.m_gridView2.setEnabled(status)
         self.m_gridView3.setEnabled(status)
         self.m_planView.setEnabled(status)
-        self.m_gcpTable.setEnabled(status)
-        self.m_outputText.setEnabled(status)
         if (status):
             self.m_progressBar.setRange(0, 100)
         else:
@@ -299,12 +297,10 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     def runCropStep(self):
         self.gdalStep = 'crop'
         self.gdalArgs = []
-        self.gdalArgs.extend(['-crop', '100%x84%+0+0'])
-        self.gdalArgs.append('+repage')
-        self.gdalArgs.append(self.rawFile.absoluteFilePath())
-        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.tiff')
-        self.gdalCommand = 'convert ' + ' '.join(self.gdalArgs)
-        self.gdalProcess.start('convert', self.gdalArgs)
+        self.gdalCommand = ''
+        cropped = self.rawPixmap.copy(0, 0, self.rawPixmap.width(), int(self.rawPixmap.height() * 0.83))
+        cropped.save(self.tempPath.absolutePath() + '/arkplan_crop.png')
+        self.runTranslateStep()
 
     def runTranslateStep(self):
         self.gdalStep = 'translate'
@@ -314,7 +310,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gdalArgs.extend(['-gcp', str(self.gcp1.x()), str(self.gcp1.y()), str(self.geo1.x()), str(self.geo1.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp2.x()), str(self.gcp2.y()), str(self.geo2.x()), str(self.geo2.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp3.x()), str(self.gcp3.y()), str(self.geo3.x()), str(self.geo3.y())])
-        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.tiff')
+        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.png')
         self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdal_translate.absoluteFilePath(), self.gdalArgs)

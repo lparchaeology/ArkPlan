@@ -84,6 +84,7 @@ class ArkPlan:
 
     # Internal variables
     initialised = False
+    dockLocation = Qt.RightDockWidgetArea
     siteCode = ''
     context = 0
     source = '0'
@@ -164,6 +165,7 @@ class ArkPlan:
         text,
         callback,
         enabled_flag=True,
+        checkable=False,
         add_to_menu=True,
         add_to_toolbar=True,
         status_tip=None,
@@ -212,6 +214,7 @@ class ArkPlan:
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
+        action.setCheckable(checkable)
 
         if status_tip is not None:
             action.setStatusTip(status_tip)
@@ -235,13 +238,11 @@ class ArkPlan:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = ':/plugins/ArkPlan/icon.png'
-        self.add_action(
-            icon_path,
-            text=self.tr(u'ArkPlan'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
+        self.menuAction = self.add_action(icon_path, text=self.tr(u'ArkPlan'), callback=self.run, checkable=True, parent=self.iface.mainWindow())
 
         self.dock = ArkPlanDock(self.iface)
+        self.dock.visibilityChanged.connect(self.setDockVisibility)
+        self.dock.dockLocationChanged.connect(self.setDockLocation)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
@@ -292,9 +293,18 @@ class ArkPlan:
         self.dock.deleteLater()
 
     def run(self):
-        if not self.initialised:
-            self.initialise()
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        if self.menuAction.isChecked():
+            if not self.initialised:
+                self.initialise()
+            self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        else:
+            self.iface.removeDockWidget(self.dock)
+
+    def setDockLocation(self, location):
+        self.dockLocation = location
+
+    def setDockVisibility(self, visible):
+        self.menuAction.setChecked(visible)
 
     def groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.layerGroupIndex):

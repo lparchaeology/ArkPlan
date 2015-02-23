@@ -26,6 +26,8 @@ from PyQt4.QtGui import QInputDialog, QColor
 from qgis.core import *
 from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker
 
+from snap_map_tools import *
+
 class SnapVertexMarker(QgsVertexMarker):
 
     def __init__(self, canvas):

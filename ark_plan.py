@@ -347,13 +347,13 @@ class ArkPlan:
             self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
             self.levelsMapTool.levelAdded.connect(self.addLevel)
         if self.lineSegmentMapTool is None:
-            self.lineSegmentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CaptureSegment)
+            self.lineSegmentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Segment)
         if self.lineMapTool is None:
-            self.lineMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CaptureLine)
+            self.lineMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Line)
         if self.polygonMapTool is None:
-            self.polygonMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CapturePolygon)
+            self.polygonMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Polygon)
         if self.schematicMapTool is None:
-            self.schematicMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CapturePolygon)
+            self.schematicMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Polygon)
         self.initialised = True
 
     # Load the context layers if not already loaded

@@ -347,17 +347,13 @@ class ArkPlan:
             self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
             self.levelsMapTool.levelAdded.connect(self.addLevel)
         if self.lineSegmentMapTool is None:
-            self.lineSegmentMapTool = LineSegmentMapTool(self.iface.mapCanvas())
-            self.lineSegmentMapTool.lineSegmentAdded.connect(self.addLine)
+            self.lineSegmentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CaptureSegment)
         if self.lineMapTool is None:
             self.lineMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CaptureLine)
-            #self.lineMapTool.lineAdded.connect(self.addLine)
         if self.polygonMapTool is None:
             self.polygonMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CapturePolygon)
-            #self.polygonMapTool.polygonAdded.connect(self.addPolygon)
         if self.schematicMapTool is None:
             self.schematicMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolCapture.CapturePolygon)
-            #self.schematicMapTool.polygonAdded.connect(self.addSchematic)
         self.initialised = True
 
     # Load the context layers if not already loaded
@@ -604,7 +600,7 @@ class ArkPlan:
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
         self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
-        self.lineSegmentMapTool.setType(type)
+        self.lineSegmentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
         self.iface.mapCanvas().setMapTool(self.lineSegmentMapTool)
 
     # Line Tool Methods
@@ -613,7 +609,6 @@ class ArkPlan:
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
         self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
-        #self.lineMapTool.setType(type)
         self.lineMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
         self.iface.mapCanvas().setMapTool(self.lineMapTool)
 
@@ -632,18 +627,8 @@ class ArkPlan:
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.polygonsBuffer)
         self.iface.legendInterface().setCurrentLayer(self.polygonsBuffer)
-        #self.polygonMapTool.setType(type)
         self.polygonMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
         self.iface.mapCanvas().setMapTool(self.polygonMapTool)
-
-    def addPolygon(self, points, type):
-        feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPolygon([points]))
-        feature.setAttributes([self.context, self.source, type, self.comment])
-        self.polygonsBuffer.beginEditCommand('Buffer polygon ' + str(self.context) + type)
-        self.polygonsBuffer.addFeature(feature, True)
-        self.polygonsBuffer.endEditCommand()
-        self.iface.mapCanvas().refresh()
 
     # Schematic Tool Methods
 
@@ -651,15 +636,5 @@ class ArkPlan:
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(self.schematicBuffer)
         self.iface.legendInterface().setCurrentLayer(self.schematicBuffer)
-        #self.schematicMapTool.setType(type)
         self.schematicMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
         self.iface.mapCanvas().setMapTool(self.schematicMapTool)
-
-    def addSchematic(self, points, type):
-        feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPolygon([points]))
-        feature.setAttributes([self.context, self.source, type, self.comment])
-        self.schematicBuffer.beginEditCommand('Buffer schematic ' + str(self.context) + type)
-        self.schematicBuffer.addFeature(feature, True)
-        self.schematicBuffer.endEditCommand()
-        self.iface.mapCanvas().refresh()

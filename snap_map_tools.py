@@ -275,6 +275,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
     _capturing = False
     _useLayerGeometry = True
     _geometryType = QGis.NoGeometry
+    _mapPointList = []  #QList<QgsPoint>
     _rubberBand = None  #QgsRubberBand()
     _moveRubberBand = None  #QgsRubberBand()
     _tip = ''
@@ -315,7 +316,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
     def canvasMoveEvent(self, e):
         super(QgsMapToolCapture, self).canvasMoveEvent(e)
         if (self._moveRubberBand is not None):
-            mapPoint = self._snapCursorPoint(e.pos())
+            mapPoint, snapped = self._snapCursorPoint(e.pos())
             self._moveRubberBand.movePoint(mapPoint)
 
     def canvasPressEvent(self, e):
@@ -329,11 +330,11 @@ class QgsMapToolCapture(QgsMapToolSnap):
     def _createRubberBand(self, geometryType, moveBand=False):
         settings = QSettings()
         rb = QgsRubberBand(self.canvas(), geometryType)
-        rb.setWidth(settings.value('/qgis/digitizing/line_width', 1))
-        color = QColor(settings.value('/qgis/digitizing/line_color_red', 255),
-                       settings.value('/qgis/digitizing/line_color_green', 0),
-                       settings.value('/qgis/digitizing/line_color_blue', 0))
-        myAlpha = settings.value('/qgis/digitizing/line_color_alpha', 200) / 255.0
+        rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
+        color = QColor(int(settings.value('/qgis/digitizing/line_color_red', 255)),
+                       int(settings.value('/qgis/digitizing/line_color_green', 0)),
+                       int(settings.value('/qgis/digitizing/line_color_blue', 0)))
+        myAlpha = int(settings.value('/qgis/digitizing/line_color_alpha', 200)) / 255.0
         if (moveBand):
             myAlpha = myAlpha * float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
             rb.setLineStyle(Qt.DotLine)
@@ -353,7 +354,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
             self.messageEmitted.emit(self.tr('Cannot capture point, unknown geometry'), QgsMessageBar.CRITICAL)
             return 2
 
-        mapPoint = mapPoint = self._snapCursorPoint(pos)
+        mapPoint, snapped = self._snapCursorPoint(pos)
         self._mapPointList.append(mapPoint)
 
         if (geometryType == QGis.Point):
@@ -448,7 +449,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
 
         if (geometryType == QGis.Line):
             geometry = QgsGeometry.fromPolyline(self._mapPointList)
-        elif (self._captureMode == QgsMapToolAddFeature.Polygon):
+        elif (geometryType == QGis.Polygon):
             if (len(self._mapPointList) < 3):
                 return
             closed = list(self._mapPointList)
@@ -521,6 +522,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             toolName = 'Add polygon feature'
         super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
         self.mToolName = self.tr(toolName)
+        self._featureType = featureType
 
     def setDefaultAttributes(self, defaultAttributes):
         self._defaultAttributes = defaultAttributes
@@ -562,6 +564,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         # POINT CAPTURING
         if (self._featureType == QgsMapToolAddFeature.Point):
+            self.messageEmitted.emit(self.tr('DEBUG: button click point'), QgsMessageBar.INFO)
             if (e.button() != Qt.LeftButton):
                 return
 
@@ -586,9 +589,11 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         # LINE AND POLYGON CAPTURING
         elif (self._featureType == QgsMapToolAddFeature.Line or self._featureType == QgsMapToolAddFeature.Segment or self._featureType == QgsMapToolAddFeature.Polygon):
+            self.messageEmitted.emit(self.tr('DEBUG: button click line or poly'), QgsMessageBar.INFO)
 
             #add point to list and to rubber band
             if (e.button() == Qt.LeftButton):
+                self._startCapturing();
                 error = self._addVertex(e.pos())
                 if (error == 1):
                     #current layer is not a vector layer
@@ -598,7 +603,6 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                     #problem with coordinate transformation
                     self.messageEmitted.emit(self.tr('Cannot transform the point to the layers coordinate system'), QgsMessageBar.WARNING)
                     return
-                self._startCapturing();
 
                 if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) == 2):
                     self._captureFeature()

@@ -105,10 +105,7 @@ class ArkPlan:
     schematicBuffer = None
 
     levelsMapTool = None
-    lineSegmentMapTool = None
-    lineMapTool = None
-    polygonMapTool = None
-    schematicMapTool = None
+    currentMapTool = None
 
     def __init__(self, iface):
         """Constructor.
@@ -337,23 +334,8 @@ class ArkPlan:
         # If the legend indexes change make sure we stay updated
         self.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
 
-        self.initMapTools()
         self.createBufferLayers()
         self.loadContextLayers()
-
-    # Setup the map tools
-    def initMapTools(self):
-        if self.levelsMapTool is None:
-            self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
-            self.levelsMapTool.levelAdded.connect(self.addLevel)
-        if self.lineSegmentMapTool is None:
-            self.lineSegmentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Segment)
-        if self.lineMapTool is None:
-            self.lineMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Line)
-        if self.polygonMapTool is None:
-            self.polygonMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Polygon)
-        if self.schematicMapTool is None:
-            self.schematicMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, QgsMapToolAddFeature.Polygon)
         self.initialised = True
 
     # Load the context layers if not already loaded
@@ -582,6 +564,10 @@ class ArkPlan:
         #TODO disable all snapping
         self.iface.mapCanvas().setCurrentLayer(self.levelsBuffer)
         self.iface.legendInterface().setCurrentLayer(self.levelsBuffer)
+        if self.levelsMapTool is not None:
+            del self.levelsMapTool
+        self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
+        self.levelsMapTool.levelAdded.connect(self.addLevel)
         self.levelsMapTool.setType(type)
         self.iface.mapCanvas().setMapTool(self.levelsMapTool)
 
@@ -594,47 +580,32 @@ class ArkPlan:
         self.levelsBuffer.endEditCommand()
         self.iface.mapCanvas().refresh()
 
-    # Line Segment Tool Methods
+    # Map Tool Methods
 
-    def enableLineSegmentMode(self, type):
+    def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
-        self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
-        self.lineSegmentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
-        self.iface.mapCanvas().setMapTool(self.lineSegmentMapTool)
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment)
 
-    # Line Tool Methods
-
-    def enableLineMode(self, type):
+    def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.iface.mapCanvas().setCurrentLayer(self.linesBuffer)
-        self.iface.legendInterface().setCurrentLayer(self.linesBuffer)
-        self.lineMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
-        self.iface.mapCanvas().setMapTool(self.lineMapTool)
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line)
 
-    def addLine(self, points, type):
-        feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPolyline(points))
-        feature.setAttributes([self.context, self.source, type, self.comment])
-        self.linesBuffer.beginEditCommand('Buffer line ' + str(self.context) + type)
-        self.linesBuffer.addFeature(feature, True)
-        self.linesBuffer.endEditCommand()
-        self.iface.mapCanvas().refresh()
-
-    # Polygon Tool Methods
-
-    def enablePolygonMode(self, type):
+    def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.iface.mapCanvas().setCurrentLayer(self.polygonsBuffer)
-        self.iface.legendInterface().setCurrentLayer(self.polygonsBuffer)
-        self.polygonMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
-        self.iface.mapCanvas().setMapTool(self.polygonMapTool)
+        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon)
 
-    # Schematic Tool Methods
-
-    def enableSchematicMode(self, type):
+    def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.iface.mapCanvas().setCurrentLayer(self.schematicBuffer)
-        self.iface.legendInterface().setCurrentLayer(self.schematicBuffer)
-        self.schematicMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : type, 3 : self.comment})
-        self.iface.mapCanvas().setMapTool(self.schematicMapTool)
+        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon)
+
+    def enableMapTool(self, typeAttribute, layer, featureType):
+        #TODO configure snapping
+        self.iface.mapCanvas().setCurrentLayer(layer)
+        self.iface.legendInterface().setCurrentLayer(layer)
+        if self.currentMapTool is not None:
+            self.currentMapTool._stopCapturing()
+            del self.currentMapTool
+            self.currentMapTool = None
+        self.currentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, featureType)
+        self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
+        self.iface.mapCanvas().setMapTool(self.currentMapTool)

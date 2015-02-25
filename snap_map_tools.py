@@ -152,7 +152,6 @@ class QgsFeatureAction(QAction):
 
         settings = QSettings()
         reuseLastValues = settings.value('/qgis/digitizing/reuseLastValues', False)
-        #QgsDebugMsg('reuseLastValues: %1' % reuseLastValues)
 
         fields = self._layer.pendingFields()
         self._feature.initAttributes(fields.count())
@@ -205,7 +204,6 @@ class QgsFeatureAction(QAction):
 
         settings = QSettings()
         reuseLastValues = settings.value('/qgis/digitizing/reuseLastValues', False)
-        #QgsDebugMsg('reuseLastValues: %1' % reuseLastValues)
 
         if (reuseLastValues):
             fields = self._layer.pendingFields()
@@ -213,7 +211,6 @@ class QgsFeatureAction(QAction):
                 newValues = feature.attributes()
                 origValues = self._lastUsedValues[self._layer]
                 if (origValues[idx] != newValues[idx]):
-                    #QgsDebugMsg('saving %s for %s' % (str(self._lastUsedValues[self._layer][idx]), str(idx)))
                     self._lastUsedValues[self._layer][idx] = newValues[idx]
 
 # Tool to show snapping points
@@ -393,8 +390,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
             self._validateGeometry()
 
     def _startCapturing(self):
-        if (self._capturing):
-            return
+        self._stopCapturing()
         geometryType = self.geometryType()
         self._capturing = True
         if (geometryType == QGis.Line or geometryType == QGis.Polygon):
@@ -421,11 +417,13 @@ class QgsMapToolCapture(QgsMapToolSnap):
     def _deleteRubberBand(self):
         if (self._rubberBand is not None):
             self.canvas().scene().removeItem(self._rubberBand)
+            self._rubberBand.reset()
             self._rubberBand = None
 
     def _deleteMoveRubberBand(self):
         if (self._moveRubberBand is not None):
             self.canvas().scene().removeItem(self._moveRubberBand)
+            self._moveRubberBand.reset()
             self._moveRubberBand = None
 
     def _validateGeometry(self):
@@ -564,7 +562,6 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         # POINT CAPTURING
         if (self._featureType == QgsMapToolAddFeature.Point):
-            self.messageEmitted.emit(self.tr('DEBUG: button click point'), QgsMessageBar.INFO)
             if (e.button() != Qt.LeftButton):
                 return
 
@@ -589,11 +586,11 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         # LINE AND POLYGON CAPTURING
         elif (self._featureType == QgsMapToolAddFeature.Line or self._featureType == QgsMapToolAddFeature.Segment or self._featureType == QgsMapToolAddFeature.Polygon):
-            self.messageEmitted.emit(self.tr('DEBUG: button click line or poly'), QgsMessageBar.INFO)
 
             #add point to list and to rubber band
             if (e.button() == Qt.LeftButton):
-                self._startCapturing();
+                if (not self._isCapturing()):
+                    self._startCapturing();
                 error = self._addVertex(e.pos())
                 if (error == 1):
                     #current layer is not a vector layer

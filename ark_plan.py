@@ -334,6 +334,9 @@ class ArkPlan:
         # If the legend indexes change make sure we stay updated
         self.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
 
+        # If the map tool changes make sure we stay updated
+        self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
+
         self.createBufferLayers()
         self.loadContextLayers()
         self.initialised = True
@@ -584,28 +587,32 @@ class ArkPlan:
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment, 'Add line segment feature')
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment, self.tr('Add line segment feature'))
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line, 'Add line feature')
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line, self.tr('Add line feature'))
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon, 'Add polygon feature')
+        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add polygon feature'))
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon, 'Add schematic feature')
+        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add schematic feature'))
 
-    def enableMapTool(self, typeAttribute, layer, featureType):
+    def enableMapTool(self, typeAttribute, layer, featureType, toolName):
         #TODO configure snapping
         self.iface.mapCanvas().setCurrentLayer(layer)
         self.iface.legendInterface().setCurrentLayer(layer)
         if self.currentMapTool is not None:
-            self.currentMapTool._stopCapturing()
-            del self.currentMapTool
+            self.currentMapTool.deactivate()
             self.currentMapTool = None
-        self.currentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, featureType)
+        self.currentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, featureType, toolName)
         self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
         self.iface.mapCanvas().setMapTool(self.currentMapTool)
+
+    def mapToolChanged(self, newMapTool):
+        if (newMapTool != self.currentMapTool):
+            self.dock.clearCheckedToolButton()
+            self.currentMapTool = None

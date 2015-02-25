@@ -291,13 +291,24 @@ class QgsMapToolCapture(QgsMapToolSnap):
         self.setCursor(QCursor(QPixmap(capture_point_cursor), 8, 8))
 
     def __del__(self):
-        self._stopCapturing();
-        if (self._validator is not None):
-            self._validator.deleteLater()
+        self.deactivate();
         super(QgsMapToolCapture, self).__del__()
 
-    def isEditTool(self):
-        return True
+    def activate(self):
+        super(QgsMapToolCapture, self).activate()
+        geometryType = self.geometryType()
+        if (geometryType == QGis.Line or geometryType == QGis.Polygon):
+            self._rubberBand = self._createRubberBand(geometryType)
+            self._moveRubberBand = self._createRubberBand(geometryType, True)
+
+    def deactivate(self):
+        self._resetCapturing()
+        self._rubberBand = None
+        self._moveRubberBand = None
+        if (self._validator is not None):
+            self._validator.deleteLater()
+            self._validator = None
+        super(QgsMapToolCapture, self).deactivate()
 
     def geometryType(self):
         if (self._useLayerGeometry and self._isVectorLayer()):
@@ -389,21 +400,9 @@ class QgsMapToolCapture(QgsMapToolSnap):
             self._mapPointList.pop()
             self._validateGeometry()
 
-    def _startCapturing(self):
-        self._stopCapturing()
-        geometryType = self.geometryType()
-        self._capturing = True
-        if (geometryType == QGis.Line or geometryType == QGis.Polygon):
-            self._rubberBand = self._createRubberBand(geometryType)
-            self._moveRubberBand = self._createRubberBand(geometryType, True)
-
-    def _isCapturing(self):
-        return self._capturing
-
-    def _stopCapturing(self):
-        self._capturing = False
-        self._deleteRubberBand()
-        self._deleteMoveRubberBand()
+    def _resetCapturing(self):
+        self._resetRubberBand()
+        self._resetMoveRubberBand()
         self._deleteErrorMarkers()
         self._geometryErrors = []
         self._mapPointList = []
@@ -414,17 +413,16 @@ class QgsMapToolCapture(QgsMapToolSnap):
             self.canvas().scene().removeItem(errorMarker)
         self._geometryErrorMarkers = []
 
-    def _deleteRubberBand(self):
+    def _resetRubberBand(self):
         if (self._rubberBand is not None):
             self.canvas().scene().removeItem(self._rubberBand)
-            self._rubberBand.reset()
+            self._rubberBand.reset(self.geometryType())
             self._rubberBand = None
 
-    def _deleteMoveRubberBand(self):
+    def _resetMoveRubberBand(self):
         if (self._moveRubberBand is not None):
             self.canvas().scene().removeItem(self._moveRubberBand)
-            self._moveRubberBand.reset()
-            self._moveRubberBand = None
+            self._moveRubberBand.reset(self.geometryType())
 
     def _validateGeometry(self):
         geometryType = self._geometryType
@@ -521,6 +519,9 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             self.mToolName = self.tr('Add feature')
         self._featureType = featureType
 
+    def isEditTool(self):
+        return True
+
     def setDefaultAttributes(self, defaultAttributes):
         self._defaultAttributes = defaultAttributes
 
@@ -588,8 +589,6 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
             #add point to list and to rubber band
             if (e.button() == Qt.LeftButton):
-                if (not self._isCapturing()):
-                    self._startCapturing();
                 error = self._addVertex(e.pos())
                 if (error == 1):
                     #current layer is not a vector layer
@@ -612,7 +611,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         vlayer = self._currentVectorLayer()
         if (vlayer is None):
-            self._stopCapturing()
+            self._resetCapturing()
             self._notifyNotVectorLayer()
             return
 
@@ -620,17 +619,17 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         #segments: bail out if there are not exactly two vertices
         if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) != 2):
-            self._stopCapturing()
+            self._resetCapturing()
             return
 
         #lines: bail out if there are not at least two vertices
         if (self._featureType == QgsMapToolAddFeature.Line and len(self._mapPointList) < 2):
-            self._stopCapturing()
+            self._resetCapturing()
             return
 
         #polygons: bail out if there are not at least three vertices
         if (self._featureType == QgsMapToolAddFeature.Polygon and len(self._mapPointList) < 3):
-            self._stopCapturing()
+            self._resetCapturing()
             return
 
         #create QgsFeature with wkb representation
@@ -646,7 +645,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 g = QgsGeometry.fromMultiPolyline([self._layerPoints()])
             else:
                 self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
-                self._stopCapturing()
+                self._resetCapturing()
                 return #unknown wkbtype
 
             f.setGeometry( g );
@@ -659,11 +658,11 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 g = QgsGeometry.fromMultiPolygon([self._layerPoints()])
             else:
                 self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
-                self._stopCapturing()
+                self._resetCapturing()
                 return #unknown wkbtype
 
             if (g is None):
-                self._stopCapturing()
+                self._resetCapturing()
                 return # invalid geometry; one possibility is from duplicate points
             f.setGeometry(g)
 
@@ -681,7 +680,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 else:
                     reason = self.tr('The feature cannot be added because it\'s geometry collapsed due to intersection avoidance')
                 self.messageEmitted.emit(reason, QgsMessageBar.CRITICAL)
-                self._stopCapturing()
+                self._resetCapturing()
                 return
 
         if (self.addFeature(vlayer, f, False)):
@@ -701,7 +700,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             elif (topologicalEditing):
                 vlayer.self._addTopologicalPoints(f.geometry())
 
-        self._stopCapturing()
+        self._resetCapturing()
 
     def _addTopologicalPoints(self, geom):
         if self.canvas() is None:

@@ -93,6 +93,8 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
         self.m_schematicTool.clicked.connect(self.schematicSelected)
 
+        self.m_clearTool.setVisible(False)
+
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
 
@@ -121,6 +123,10 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.m_commentEdit.setText(comment)
 
     # Drawing Tools
+
+    def clearCheckedToolButton(self):
+        # HACK Find a nice way to uncheck whatever button is currently checked
+        self.m_clearTool.setChecked(True)
 
     def extentSelected(self):
         self.selectedLineMode.emit("ext")

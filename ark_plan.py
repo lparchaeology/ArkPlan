@@ -461,7 +461,7 @@ class ArkPlan:
 
     # Plan Tools
 
-    def setMetadata(self, siteCode, type, number, suffix, easting, northing):
+    def setMetadata(self, siteCode, type, number, easting, northing, suffix):
         self.dock.setSite(siteCode)
         self.dock.setContext(number)
         self.dock.setSource(str(number))

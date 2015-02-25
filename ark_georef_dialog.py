@@ -96,9 +96,16 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
             self.showText('Warning: Georeferenced file found, will be overwritten with new file!')
         self.showText('')
 
-        self.gridLayer = QgsMapLayerRegistry.instance().mapLayersByName(gridLayerName)[0]
-        self.gridXField = self.gridLayer.fieldNameIndex(gridX)
-        self.gridYField = self.gridLayer.fieldNameIndex(gridY)
+        layerList = QgsMapLayerRegistry.instance().mapLayersByName(gridLayerName)
+        if (len(layerList) > 0):
+            self.gridLayer = layerList[0]
+            self.gridXField = self.gridLayer.fieldNameIndex(gridX)
+            self.gridYField = self.gridLayer.fieldNameIndex(gridY)
+        else:
+            self.showText('ERROR: Grid Layer not found, unable to georeference!')
+            self.showText('')
+            self.m_runButton.setEnabled(False)
+            self.m_runCloseButton.setEnabled(False)
 
         self.gdalProcess.started.connect(self.gdalProcessStarted)
         self.gdalProcess.finished.connect(self.gdalProcessFinished)
@@ -221,7 +228,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         else:
             self.m_progressBar.setRange(0, 0)
 
-    def setMetadata(self, siteCode, type, number, suffix, easting, northing):
+    def setMetadata(self, siteCode, type, number, easting, northing, suffix):
         self.m_siteEdit.setText(siteCode)
         if (type == 'Context'):
             self.m_typeCombo.setCurrentIndex(0)
@@ -232,12 +239,12 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         elif (type == 'Matrix'):
             self.m_typeCombo.setCurrentIndex(3)
         self.m_numberSpin.setValue(number)
-        self.m_suffixEdit.setText(suffix)
         self.m_eastSpin.setValue(easting)
         self.m_northSpin.setValue(northing)
+        self.m_suffixEdit.setText(suffix)
 
     def metadata(self):
-        return self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_suffixEdit.text(), self.m_eastSpin.value(), self.m_northSpin.value()
+        return self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text()
 
     def geoRefFile(self):
         return self.geoFile

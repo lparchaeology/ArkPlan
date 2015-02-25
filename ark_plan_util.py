@@ -49,17 +49,24 @@ def planMetadata(name):
         else:
             type = 'Context'
             number = int(elements[1])
+        suffixPos = 3
         if (len(elements) >= 4):
-            easting = int(elements[2][1:])
-            northing = int(elements[3][1:])
-        if (len(elements) >= 5):
-            suffix = elements[4]
-    return site, type, number, suffix, easting, northing
+            if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
+                easting = int(elements[2][1:])
+                northing = int(elements[3][1:])
+                suffixPos = 5
+        if (len(elements) >= suffixPos):
+            suffix = elements[suffixPos]
+            if (suffix.lower() == 'r'):
+                suffix = ''
 
-def planName(site, type, number, suffix, easting, northing):
+    return site, type, number, easting, northing, suffix
+
+def planName(site, type, number, easting, northing, suffix):
     name = site + '_'
+    pad = 0
     if (type.lower() == 'context' or type.lower() == 'c'):
-        name += 'C'
+        pad = 4
     elif (type.lower() == 'plan' or type.lower() == 'p'):
         name += 'P'
     elif (type.lower() == 'top plan' or type.lower() == 'tp'):
@@ -69,14 +76,12 @@ def planName(site, type, number, suffix, easting, northing):
     elif (type.lower() == 'matrix' or type.lower() == 'm'):
         name += 'M'
     if (number > 0):
-        #TODO pad to 4
-        name += str(number)
+        name += str(number).zfill(pad)
     if (easting > 0 and northing > 0):
-        #TODO Pad to 3
         name += '_E'
-        name += str(easting)
+        name += str(easting).zfill(3)
         name += '_N'
-        name += str(northing)
+        name += str(northing).zfill(3)
     if suffix:
         name += '_'
         name += suffix

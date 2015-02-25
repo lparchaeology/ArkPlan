@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
-    <height>825</height>
+    <width>385</width>
+    <height>843</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,732 +20,697 @@
    <string>ArkPlan</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QPushButton" name="m_loadRawButton">
-        <property name="text">
-         <string>Load Raw</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="m_loadGeoButton">
-        <property name="text">
-         <string>Load Geo</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="m_planGroup">
-      <property name="title">
-       <string>Attributes</string>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <layout class="QFormLayout" name="formLayout">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>359</width>
+         <height>791</height>
+        </rect>
        </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="m_siteLabel">
-         <property name="text">
-          <string>Site Code</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="m_siteEdit">
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="m_contextLabel">
-         <property name="text">
-          <string>Context:</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_contextSpin</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="m_contextSpin">
-         <property name="toolTip">
-          <string>Context Number</string>
-         </property>
-         <property name="maximum">
-          <number>9999</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="m_sourceEdit">
-         <property name="toolTip">
-          <string>Source</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="m_sourceLabel">
-         <property name="text">
-          <string>Source:</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_sourceEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="m_commentEdit">
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="m_commentLabel">
-         <property name="text">
-          <string>Comment</string>
-         </property>
-         <property name="buddy">
-          <cstring>m_commentEdit</cstring>
-         </property>
-        </widget>
-       </item>
-      </layout>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="m_loadRawButton">
+            <property name="text">
+             <string>Load Raw</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="m_loadGeoButton">
+            <property name="text">
+             <string>Load Geo</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="m_planGroup">
+          <property name="title">
+           <string>Attributes</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::ExpandingFieldsGrow</enum>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="m_siteLabel">
+             <property name="text">
+              <string>Site Code</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="m_siteEdit">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="m_contextLabel">
+             <property name="text">
+              <string>Context:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_contextSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="m_contextSpin">
+             <property name="toolTip">
+              <string>Context Number</string>
+             </property>
+             <property name="maximum">
+              <number>9999</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="m_sourceEdit">
+             <property name="toolTip">
+              <string>Source</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="m_sourceLabel">
+             <property name="text">
+              <string>Source:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_sourceEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="m_commentEdit">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="m_commentLabel">
+             <property name="text">
+              <string>Comment</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_commentEdit</cstring>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="m_drawingToolsGroup">
+          <property name="title">
+           <string>Drawing Tools</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_extentTool">
+             <property name="toolTip">
+              <string>Extent of context</string>
+             </property>
+             <property name="text">
+              <string>ext</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_verticalEdgeTool">
+             <property name="toolTip">
+              <string>Vertical Edge</string>
+             </property>
+             <property name="text">
+              <string>veg</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_uncertainEdgeTool">
+             <property name="toolTip">
+              <string>Uncertain Edge</string>
+             </property>
+             <property name="text">
+              <string>ueg</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_limitOfExcavationTool">
+             <property name="toolTip">
+              <string>Limit of Excavation</string>
+             </property>
+             <property name="text">
+              <string>loe</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_verticalTruncationTool">
+             <property name="toolTip">
+              <string>Vertical Truncation</string>
+             </property>
+             <property name="text">
+              <string>vtr</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_truncationTool">
+             <property name="toolTip">
+              <string>Truncation</string>
+             </property>
+             <property name="text">
+              <string>trn</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_breakOfSlopeTool">
+             <property name="toolTip">
+              <string>Break of Slope</string>
+             </property>
+             <property name="text">
+              <string>bos</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
+             <property name="toolTip">
+              <string>Vertical Break of Slope</string>
+             </property>
+             <property name="text">
+              <string>vbs</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_hachureTool">
+             <property name="toolTip">
+              <string>Hachure</string>
+             </property>
+             <property name="text">
+              <string>hch</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_undercutTool">
+             <property name="toolTip">
+              <string>Undercut</string>
+             </property>
+             <property name="text">
+              <string>unc</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_returnOfSlopeTool">
+             <property name="toolTip">
+              <string>Return of Slope</string>
+             </property>
+             <property name="text">
+              <string>ros</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_cbmTool">
+             <property name="toolTip">
+              <string>CBM</string>
+             </property>
+             <property name="text">
+              <string>cbm</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_brickTool">
+             <property name="toolTip">
+              <string>Brick</string>
+             </property>
+             <property name="text">
+              <string>brk</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_tileTool">
+             <property name="toolTip">
+              <string>Tile</string>
+             </property>
+             <property name="text">
+              <string>til</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_mortarTool">
+             <property name="toolTip">
+              <string>Mortar</string>
+             </property>
+             <property name="text">
+              <string>mtr</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_charcoalTool">
+             <property name="toolTip">
+              <string>Charcoal</string>
+             </property>
+             <property name="text">
+              <string>cha</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_stoneTool">
+             <property name="toolTip">
+              <string>Stone</string>
+             </property>
+             <property name="text">
+              <string>sto</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_potTool">
+             <property name="toolTip">
+              <string>Pot</string>
+             </property>
+             <property name="text">
+              <string>pot</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_flintTool">
+             <property name="toolTip">
+              <string>Flint</string>
+             </property>
+             <property name="text">
+              <string>fli</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_levelTool">
+             <property name="toolTip">
+              <string>Level</string>
+             </property>
+             <property name="text">
+              <string>lvl</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" alignment="Qt::AlignHCenter">
+            <widget class="QToolButton" name="m_schematicTool">
+             <property name="toolTip">
+              <string>Schematic</string>
+             </property>
+             <property name="text">
+              <string>sch</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Editing:</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="m_topologicalLabel">
+               <property name="text">
+                <string>Topological:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="TopoEditToolButton" name="m_topologicalTool">
+               <property name="text">
+                <string>topo</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Snap Layers:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Lines</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Layers Visible:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Polys</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Snap Buffers:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3" alignment="Qt::AlignHCenter">
+              <widget class="QCheckBox" name="m_showPolygonsCheck">
+               <property name="toolTip">
+                <string>Show existing polygons</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" alignment="Qt::AlignHCenter">
+              <widget class="QCheckBox" name="m_showLevelsCheck">
+               <property name="toolTip">
+                <string>Show existing levels</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Levels</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" alignment="Qt::AlignHCenter">
+              <widget class="QCheckBox" name="m_showLinesCheck">
+               <property name="toolTip">
+                <string>Show existing lines</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="SnappingToolButton" name="m_snapLinesBufferTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="4">
+              <widget class="SnappingToolButton" name="m_snapSchematicsLayerTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="4">
+              <widget class="SnappingToolButton" name="m_snapSchematicsBufferTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Schms</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="SnappingToolButton" name="m_snapLinesLayerTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4" alignment="Qt::AlignHCenter">
+              <widget class="QCheckBox" name="m_showSchematicsCheck">
+               <property name="toolTip">
+                <string>Show existing schematics</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="m_existingContextsGroup">
+          <property name="title">
+           <string>Filter:</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QComboBox" name="m_contextFilterCombo">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="m_contextFilterButton">
+               <property name="text">
+                <string>Apply</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="m_clearButton">
+            <property name="toolTip">
+             <string>Clear unsaved changes from work layers</string>
+            </property>
+            <property name="text">
+             <string>Clear</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="m_mergeButton">
+            <property name="toolTip">
+             <string>Move new context to main layers</string>
+            </property>
+            <property name="text">
+             <string>Merge</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>17</width>
+            <height>1</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="m_drawingToolsGroup">
-      <property name="title">
-       <string>Drawing Tools</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_extentTool">
-         <property name="toolTip">
-          <string>Extent of context</string>
-         </property>
-         <property name="text">
-          <string>ext</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="0" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_verticalEdgeTool">
-         <property name="toolTip">
-          <string>Vertical Edge</string>
-         </property>
-         <property name="text">
-          <string>veg</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="0" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_uncertainEdgeTool">
-         <property name="toolTip">
-          <string>Uncertain Edge</string>
-         </property>
-         <property name="text">
-          <string>ueg</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="0" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_limitOfExcavationTool">
-         <property name="toolTip">
-          <string>Limit of Excavation</string>
-         </property>
-         <property name="text">
-          <string>loe</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="1" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_verticalTruncationTool">
-         <property name="toolTip">
-          <string>Vertical Truncation</string>
-         </property>
-         <property name="text">
-          <string>vtr</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="1" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_truncationTool">
-         <property name="toolTip">
-          <string>Truncation</string>
-         </property>
-         <property name="text">
-          <string>trn</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="1" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_breakOfSlopeTool">
-         <property name="toolTip">
-          <string>Break of Slope</string>
-         </property>
-         <property name="text">
-          <string>bos</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="1" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
-         <property name="toolTip">
-          <string>Vertical Break of Slope</string>
-         </property>
-         <property name="text">
-          <string>vbs</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="2" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_hachureTool">
-         <property name="toolTip">
-          <string>Hachure</string>
-         </property>
-         <property name="text">
-          <string>hch</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="2" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_undercutTool">
-         <property name="toolTip">
-          <string>Undercut</string>
-         </property>
-         <property name="text">
-          <string>unc</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="2" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_returnOfSlopeTool">
-         <property name="toolTip">
-          <string>Return of Slope</string>
-         </property>
-         <property name="text">
-          <string>ros</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="3" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_cbmTool">
-         <property name="toolTip">
-          <string>CBM</string>
-         </property>
-         <property name="text">
-          <string>cbm</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="3" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_brickTool">
-         <property name="toolTip">
-          <string>Brick</string>
-         </property>
-         <property name="text">
-          <string>brk</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="3" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_tileTool">
-         <property name="toolTip">
-          <string>Tile</string>
-         </property>
-         <property name="text">
-          <string>til</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="3" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_mortarTool">
-         <property name="toolTip">
-          <string>Mortar</string>
-         </property>
-         <property name="text">
-          <string>mtr</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="4" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_charcoalTool">
-         <property name="toolTip">
-          <string>Charcoal</string>
-         </property>
-         <property name="text">
-          <string>cha</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="4" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_stoneTool">
-         <property name="toolTip">
-          <string>Stone</string>
-         </property>
-         <property name="text">
-          <string>sto</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="4" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_potTool">
-         <property name="toolTip">
-          <string>Pot</string>
-         </property>
-         <property name="text">
-          <string>pot</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="4" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_flintTool">
-         <property name="toolTip">
-          <string>Flint</string>
-         </property>
-         <property name="text">
-          <string>fli</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="5" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_levelTool">
-         <property name="toolTip">
-          <string>Level</string>
-         </property>
-         <property name="text">
-          <string>lvl</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item row="5" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QToolButton" name="m_schematicTool">
-         <property name="toolTip">
-          <string>Schematic</string>
-         </property>
-         <property name="text">
-          <string>sch</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Editing:</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="m_topologicalLabel">
-           <property name="text">
-            <string>Topological:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="TopoEditToolButton" name="m_topologicalTool">
-           <property name="text">
-            <string>topo</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Snap Layers:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Lines</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Layers Visible:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Polys</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Snap Buffers:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="3">
-          <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3" alignment="Qt::AlignHCenter">
-          <widget class="QCheckBox" name="m_showPolygonsCheck">
-           <property name="toolTip">
-            <string>Show existing polygons</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" alignment="Qt::AlignHCenter">
-          <widget class="QCheckBox" name="m_showLevelsCheck">
-           <property name="toolTip">
-            <string>Show existing levels</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Levels</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2" alignment="Qt::AlignHCenter">
-          <widget class="QCheckBox" name="m_showLinesCheck">
-           <property name="toolTip">
-            <string>Show existing lines</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="SnappingToolButton" name="m_snapLinesBufferTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="4">
-          <widget class="SnappingToolButton" name="m_snapSchematicsLayerTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="4">
-          <widget class="SnappingToolButton" name="m_snapSchematicsBufferTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Schms</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="SnappingToolButton" name="m_snapLinesLayerTool">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::MenuButtonPopup</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4" alignment="Qt::AlignHCenter">
-          <widget class="QCheckBox" name="m_showSchematicsCheck">
-           <property name="toolTip">
-            <string>Show existing schematics</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="m_existingContextsGroup">
-      <property name="title">
-       <string>Filter:</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QComboBox" name="m_contextFilterCombo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="m_contextFilterButton">
-           <property name="text">
-            <string>Apply</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="m_clearButton">
-        <property name="toolTip">
-         <string>Clear unsaved changes from work layers</string>
-        </property>
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="m_mergeButton">
-        <property name="toolTip">
-         <string>Move new context to main layers</string>
-        </property>
-        <property name="text">
-         <string>Merge</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>6</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>

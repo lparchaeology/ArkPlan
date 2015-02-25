@@ -506,20 +506,19 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
     _featureType = 0  # NoFeature
     _defaultAttributes = {}  # QMap<int, QList<QVariant> >
 
-    def __init__(self, canvas, iface, featureType=0):
+    def __init__(self, canvas, iface, featureType=0, toolName=''):
         geometryType = QGis.UnknownGeometry
-        toolName = 'Add feature'
         if (featureType == QgsMapToolAddFeature.Point):
             geometryType = QGis.Point
-            toolName = 'Add point feature'
         elif (featureType == QgsMapToolAddFeature.Segment or featureType == QgsMapToolAddFeature.Line):
             geometryType = QGis.Line
-            toolName = 'Add line feature'
         elif (featureType == QgsMapToolAddFeature.Polygon):
             geometryType = QGis.Polygon
-            toolName = 'Add polygon feature'
         super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
-        self.mToolName = self.tr(toolName)
+        if (toolName):
+            self.mToolName = toolName
+        else:
+            self.mToolName = self.tr('Add feature')
         self._featureType = featureType
 
     def setDefaultAttributes(self, defaultAttributes):

@@ -584,19 +584,19 @@ class ArkPlan:
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment)
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment, 'Add line segment feature')
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line)
+        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line, 'Add line feature')
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon)
+        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon, 'Add polygon feature')
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon)
+        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon, 'Add schematic feature')
 
     def enableMapTool(self, typeAttribute, layer, featureType):
         #TODO configure snapping

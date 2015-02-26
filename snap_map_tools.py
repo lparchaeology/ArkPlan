@@ -323,7 +323,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
 
         self._iface.mainWindow().statusBar().showMessage(error.what())
         if (self._tip != ''):
-            sb.setToolTip(self._tip)
+            self._iface.mainWindow().statusBar().setToolTip(self._tip)
 
     def validationFinished(self):
         self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))

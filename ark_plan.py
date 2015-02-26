@@ -704,5 +704,6 @@ class ArkPlan:
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):
             self.dock.clearCheckedToolButton()
-            self.currentMapTool.deactivate()
-            self.currentMapTool = None
+            if (self.currentMapTool is not None):
+                self.currentMapTool.deactivate()
+                self.currentMapTool = None

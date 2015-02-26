@@ -54,8 +54,8 @@ def planMetadata(name):
             if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
                 easting = int(elements[2][1:])
                 northing = int(elements[3][1:])
-                suffixPos = 5
-        if (len(elements) >= suffixPos):
+                suffixPos = 4
+        if (len(elements) > suffixPos):
             suffix = elements[suffixPos]
             if (suffix.lower() == 'r'):
                 suffix = ''

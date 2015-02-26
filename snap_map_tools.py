@@ -79,11 +79,11 @@ class QgsFeatureAction(QAction):
         self._layer.actions().doAction(self._action, self._feature, self._idx)
 
     def _newDialog(self, cloneFeature):
-        f = QgsFeature()
+        feature = QgsFeature()
         if (cloneFeature):
-            f = QgsFeature(self._feature)
+            feature = QgsFeature(self._feature)
         else:
-            f = self._feature
+            feature = self._feature
 
         context = QgsAttributeEditorContext()
 
@@ -96,7 +96,7 @@ class QgsFeatureAction(QAction):
         context.setDistanceArea(myDa)
         context.setVectorLayerTools(self._iface.vectorLayerTools())
 
-        dialog = QgsAttributeDialog(self._layer, f, cloneFeature, None, True, context)
+        dialog = QgsAttributeDialog(self._layer, feature, cloneFeature, None, True, context)
 
         if (self._layer.actions().size() > 0):
             dialog.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -108,7 +108,7 @@ class QgsFeatureAction(QAction):
             i = 0
             for action in self._layer.actions():
                 if (action.runable()):
-                    a = QgsFeatureAction(action.name(), f, self._layer, i, -1, self._iface, dialog)
+                    a = QgsFeatureAction(action.name(), feature, self._layer, i, -1, self._iface, dialog)
                     dialog.addAction(a)
                     a.triggered.connect(a.execute)
                     pb = dialog.findChild(action.name())
@@ -573,14 +573,14 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 self.messageEmitted.emit(self.tr('Cannot transform the point to the layers coordinate system'), QgsMessageBar.WARNING)
                 return
 
-            f = QgsFeature(vlayer.pendingFields(), 0)
-            g = None
+            feature = QgsFeature(vlayer.pendingFields(), 0)
+            geometry = None
             if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
-                g = QgsGeometry.fromPoint(savePoint)
+                geometry = QgsGeometry.fromPoint(savePoint)
             elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
-                g = QgsGeometry.fromMultiPoint(QgsMultiPoint(savePoint))
-            f.setGeometry(g)
-            self.addFeature(vlayer, f, False)
+                geometry = QgsGeometry.fromMultiPoint(QgsMultiPoint(savePoint))
+            feature.setGeometry(geometry)
+            self.addFeature(vlayer, feature, False)
             self.canvas().refresh()
 
         # LINE AND POLYGON CAPTURING
@@ -605,17 +605,6 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 self._captureFeature()
 
     def _captureFeature(self):
-        # End of string
-        self._resetMoveRubberBand()
-
-        vlayer = self._currentVectorLayer()
-        if (vlayer is None):
-            self._resetCapturing()
-            self._notifyNotVectorLayer()
-            return
-
-        layerWKBType = vlayer.wkbType()
-
         #segments: bail out if there are not exactly two vertices
         if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) != 2):
             self._resetCapturing()
@@ -631,48 +620,56 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             self._resetCapturing()
             return
 
-        #create QgsFeature with wkb representation
-        f = QgsFeature(vlayer.pendingFields(), 0)
+        vlayer = self._currentVectorLayer()
+        if (vlayer is None):
+            self._resetCapturing()
+            self._notifyNotVectorLayer()
+            return
 
-        g = None
+        layerWKBType = vlayer.wkbType()
+
+        #create QgsFeature with wkb representation
+        feature = QgsFeature(vlayer.pendingFields(), 0)
+
+        geometry = None
 
         if (self._featureType == QgsMapToolAddFeature.Line or self._featureType == QgsMapToolAddFeature.Segment):
 
             if (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):
-                g = QgsGeometry.fromPolyline(self._layerPoints())
+                geometry = QgsGeometry.fromPolyline(self._layerPoints())
             elif (layerWKBType == QGis.WKBMultiLineString or layerWKBType == QGis.WKBMultiLineString25D):
-                g = QgsGeometry.fromMultiPolyline([self._layerPoints()])
+                geometry = QgsGeometry.fromMultiPolyline([self._layerPoints()])
             else:
                 self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
                 self._resetCapturing()
                 return #unknown wkbtype
 
-            f.setGeometry( g );
+            feature.setGeometry(geometry)
 
         else: # polygon
 
             if (layerWKBType == QGis.WKBPolygon or  layerWKBType == QGis.WKBPolygon25D):
-                g = QgsGeometry.fromPolygon([self._layerPoints()])
+                geometry = QgsGeometry.fromPolygon([self._layerPoints()])
             elif (layerWKBType == QGis.WKBMultiPolygon or  layerWKBType == QGis.WKBMultiPolygon25D):
-                g = QgsGeometry.fromMultiPolygon([self._layerPoints()])
+                geometry = QgsGeometry.fromMultiPolygon([self._layerPoints()])
             else:
                 self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
                 self._resetCapturing()
                 return #unknown wkbtype
 
-            if (g is None):
+            if (geometry is None):
                 self._resetCapturing()
                 return # invalid geometry; one possibility is from duplicate points
-            f.setGeometry(g)
+            feature.setGeometry(geometry)
 
-            avoidIntersectionsReturn = f.geometry().avoidIntersections()
+            avoidIntersectionsReturn = feature.geometry().avoidIntersections()
             if (avoidIntersectionsReturn == 1):
                 #not a polygon type. Impossible to get there
                 pass
             elif (avoidIntersectionsReturn == 3):
                 self.messageEmitted.emit(self.tr('An error was reported during intersection removal'), QgsMessageBar.CRITICAL)
 
-            if (not f.geometry().asWkb()): #avoid intersection might have removed the whole geometry
+            if (not feature.geometry().asWkb()): #avoid intersection might have removed the whole geometry
                 reason = ''
                 if (avoidIntersectionsReturn != 2):
                     reason = self.tr('The feature cannot be added because it\'s geometry is empty')
@@ -682,7 +679,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 self._resetCapturing()
                 return
 
-        if (self.addFeature(vlayer, f, False)):
+        if (self.addFeature(vlayer, feature, False)):
             #add points to other features to keep topology up-to-date
             topologicalEditing = QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
 
@@ -695,19 +692,19 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                     vl = QgsMapLayerRegistry.instance().mapLayer(str(intersectionLayer))
                     #can only add topological points if background layer is editable...
                     if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
-                        vl.self._addTopologicalPoints(f.geometry())
+                        vl.self._addTopologicalPoints(feature.geometry())
             elif (topologicalEditing):
-                vlayer.self._addTopologicalPoints(f.geometry())
+                vlayer.self._addTopologicalPoints(feature.geometry())
 
         self._resetCapturing()
 
-    def _addTopologicalPoints(self, geom):
+    def _addTopologicalPoints(self, geometry):
         if self.canvas() is None:
             return 1
         vlayer = self._currentVectorLayer()
         if vlayer is None:
             return 2
-        for point in geom:
+        for point in geometry:
             vlayer.self._addTopologicalPoints(point)
         return 0
 

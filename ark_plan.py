@@ -43,8 +43,8 @@ class ArkPlan:
     # User settings
     #TODO get from QSettings
     crs = 'EPSG:27700'
-    rawDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/raw')
-    geoDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming/processed')
+    rawDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/raw')
+    geoDir = QDir('/filebin/1120L - 100 Minories/GIS/plans/processed')
     geoLayerOpacity = 0.5
 
     contextLayerDir = QDir('/filebin/1120L - 100 Minories/GIS/vector/context_data')
@@ -615,4 +615,5 @@ class ArkPlan:
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):
             self.dock.clearCheckedToolButton()
+            self.currentMapTool.deactivate()
             self.currentMapTool = None

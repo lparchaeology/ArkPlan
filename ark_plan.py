@@ -32,6 +32,7 @@ import resources_rc
 from ark_plan_dock import ArkPlanDock
 from ark_georef_dialog import ArkGeorefDialog
 from ark_map_tools import *
+from snap_map_tools import *
 from ark_plan_util import *
 
 import os.path

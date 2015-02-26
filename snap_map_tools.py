@@ -236,7 +236,6 @@ class QgsMapToolSnap(QgsMapTool):
             self._createSnappingMarker(mapPoint)
         else:
             self._deleteSnappingMarker()
-        self.canvas().refresh()
 
     def _snapCursorPoint(self, cursorPoint):
         res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
@@ -607,7 +606,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
     def _captureFeature(self):
         # End of string
-        self._deleteMoveRubberBand()
+        self._resetMoveRubberBand()
 
         vlayer = self._currentVectorLayer()
         if (vlayer is None):

@@ -320,6 +320,7 @@ class ArkPlan:
         # Otherwise load the layer and add it to the legend
         layer = QgsVectorLayer(dir.absolutePath() + '/' + name + '.shp', name, "ogr")
         if (layer.isValid()):
+            self._setDefaultSnapping(layer)
             layer.loadNamedStyle(styleDir.absolutePath() + '/' + styleName + '.qml')
             QgsMapLayerRegistry.instance().addMapLayer(layer)
             self.iface.legendInterface().moveLayer(layer, groupIndex)
@@ -366,6 +367,22 @@ class ArkPlan:
             self.levelsLayer = self.loadLayerByName(self.contextLayerDir, self.levelsLayerName, self.stylesDir, self.levelsStyleName, self.layerGroupIndex)
         if (self.gridPointsLayer is None):
             self.gridPointsLayer = self.loadLayerByName(self.contextLayerDir, self.gridPointsLayerName, self.stylesDir, self.gridStyleName, self.layerGroupIndex)
+
+
+    def _setDefaultSnapping(self, layer):
+        # TODO Check if layer id already in settings, only set defaults if it isn't
+        settings = QSettings()
+        defaultSnappingTolerance = settings.value('/qgis/digitizing/default_snapping_tolerance', 0 )
+        defaultSnappingUnit = settings.value('/qgis/digitizing/default_snapping_tolerance_unit', 0 )
+        defaultSnappingModeString = settings.value('/qgis/digitizing/default_snap_mode', 'to vertex')
+        defaultSnappingMode = QgsSnapper.SnapToVertex
+        if (defaultSnappingModeString == "to vertex and segment" ):
+            defaultSnappingMode = QgsSnapper.SnapToVertexAndSegment
+        elif (defaultSnappingModeString == 'to segment'):
+            defaultSnappingMode = QgsSnapper.SnapToSegment
+        else:
+            defaultSnappingMode = QgsSnapper.SnapToVertex
+        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, defaultSnappingMode, defaultSnappingUnit, defaultSnappingTolerance, False)
 
     # Setup the in-memory buffer layers
     def createBufferLayers(self):
@@ -416,6 +433,7 @@ class ArkPlan:
                           QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
                           QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize),
                           QgsField(self.elevationAttributeName, QVariant.Double, '', self.elevationAttributeSize, self.elevationAttributePrecision)])
+        self._setDefaultSnapping(vl)
         #TODO set symbols
         return vl
 
@@ -427,6 +445,7 @@ class ArkPlan:
                               QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
                               QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
                               QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize)])
+            self._setDefaultSnapping(vl)
         #TODO set symbols
         return vl
 

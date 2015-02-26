@@ -57,6 +57,477 @@ capture_point_cursor = [
 ]
 
 
+# Tool to show snapping points
+class QgsMapToolSnap(QgsMapTool):
+
+    _snapper = None  #QgsMapCanvasSnapper()
+    _snappingMarker = None  # QgsVertexMarker()
+
+    def __init__(self, canvas):
+        super(QgsMapToolSnap, self).__init__(canvas)
+
+    def __del__(self):
+        self._deleteSnappingMarker()
+
+    def activate(self):
+        super(QgsMapToolSnap, self).activate()
+        self._snapper = QgsMapCanvasSnapper()
+        self._snapper.setMapCanvas(self.canvas())
+
+    def deactivate(self):
+        self._deleteSnappingMarker()
+        self._snapper = None
+        super(QgsMapToolSnap, self).deactivate()
+
+    def canvasMoveEvent(self, e):
+        super(QgsMapToolSnap, self).canvasMoveEvent(e)
+        mapPoint, snapped = self._snapCursorPoint(e.pos())
+        if (snapped):
+            self._createSnappingMarker(mapPoint)
+        else:
+            self._deleteSnappingMarker()
+
+    def _snapCursorPoint(self, cursorPoint):
+        res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
+        if (res != 0 or len(snapResults) < 1):
+            return self.toMapCoordinates(cursorPoint), False
+        else:
+            return snapResults[0].snappedVertex, True
+
+    def _snapMapPoint(self, mapPoint):
+        res, snapResults = self._snapper.snapToBackgroundLayers(mapPoint)
+        if (res != 0 or len(snapResults) < 1):
+            return mapPoint, False
+        else:
+            return snapResults[0].snappedVertex, True
+
+    def _createSnappingMarker(self, snapPoint):
+        if (self._snappingMarker is None):
+            self._snappingMarker = QgsVertexMarker(self.canvas())
+            self._snappingMarker.setIconType(QgsVertexMarker.ICON_CROSS)
+            self._snappingMarker.setColor(Qt.magenta)
+            self._snappingMarker.setPenWidth(3)
+        self._snappingMarker.setCenter(snapPoint)
+
+    def _deleteSnappingMarker(self):
+        if (self._snappingMarker is not None):
+            self.canvas().scene().removeItem(self._snappingMarker)
+            self._snappingMarker = None
+
+# Tool to capture and show mouse clicks as geometry using map points
+class QgsMapToolCapture(QgsMapToolSnap):
+
+    _iface = None
+    _useLayerGeometry = False
+    _geometryType = QGis.NoGeometry
+    _mapPointList = []  #QList<QgsPoint>
+    _rubberBand = None  #QgsRubberBand()
+    _moveRubberBand = None  #QgsRubberBand()
+    _tip = ''
+    _validator = None  #QgsGeometryValidator()
+    _geometryErrors = []  #QList<QgsGeometry.Error>
+    _geometryErrorMarkers = []  #QList<QgsVertexMarker>
+
+    def __init__(self, canvas, iface, geometryType=QGis.UnknownGeometry):
+        super(QgsMapToolCapture, self).__init__(canvas)
+        self._iface = iface
+        self._geometryType = geometryType
+        if (geometryType == QGis.UnknownGeometry):
+            self._useLayerGeometry = True
+        self.setCursor(QCursor(QPixmap(capture_point_cursor), 8, 8))
+
+    def __del__(self):
+        self.deactivate();
+        super(QgsMapToolCapture, self).__del__()
+
+    def activate(self):
+        super(QgsMapToolCapture, self).activate()
+        geometryType = self.geometryType()
+        self._rubberBand = self._createRubberBand(geometryType)
+        self._moveRubberBand = self._createRubberBand(geometryType, True)
+        if (self._useLayerGeometry == True):
+            self._iface.currentLayerChanged.connect(self._currentLayerChanged)
+
+    def deactivate(self):
+        self.resetCapturing()
+        if (self._rubberBand is not None):
+            self.canvas().scene().removeItem(self._rubberBand)
+            self._rubberBand = None
+        if (self._moveRubberBand is not None):
+            self.canvas().scene().removeItem(self._moveRubberBand)
+            self._moveRubberBand = None
+        if (self._useLayerGeometry == True):
+            self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
+        super(QgsMapToolCapture, self).deactivate()
+
+    def geometryType(self):
+        if (self._useLayerGeometry and self._isVectorLayer()):
+            return self.canvas().currentLayer().geometryType()
+        else:
+            return self._geometryType
+
+    def _currentLayerChanged(self, layer):
+        if (not self._useLayerGeometry):
+            return
+        #TODO Update rubber bands
+        if (self._rubberBand is not None):
+            self._rubberBand.reset(self.geometryType())
+            for point in self._mapPointList[:-1]:
+                self._rubberBand.addPoint(point, False)
+        self._updateMoveRubberBand(self._mapPointList[-1])
+        self._validateGeometry()
+        self.canvas().refresh()
+
+    def canvasMoveEvent(self, e):
+        super(QgsMapToolCapture, self).canvasMoveEvent(e)
+        if (self._moveRubberBand is not None):
+            mapPoint, snapped = self._snapCursorPoint(e.pos())
+            self._moveRubberBand.movePoint(mapPoint)
+
+    def canvasReleaseEvent(self, e):
+        super(QgsMapToolCapture, self).canvasReleaseEvent(e)
+        if (e.button() == Qt.LeftButton):
+            self._addVertex(e.pos())
+
+    def keyPressEvent(self, e):
+        super(QgsMapToolCapture, self).keyPressEvent(e)
+        if (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
+            self._undo()
+            e.ignore()
+
+    def _createRubberBand(self, geometryType, moveBand=False):
+        settings = QSettings()
+        rb = QgsRubberBand(self.canvas(), geometryType)
+        rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
+        color = QColor(int(settings.value('/qgis/digitizing/line_color_red', 255)),
+                       int(settings.value('/qgis/digitizing/line_color_green', 0)),
+                       int(settings.value('/qgis/digitizing/line_color_blue', 0)))
+        myAlpha = int(settings.value('/qgis/digitizing/line_color_alpha', 200)) / 255.0
+        if (moveBand):
+            myAlpha = myAlpha * float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
+            rb.setLineStyle(Qt.DotLine)
+        if (geometryType == QGis.Polygon):
+            color.setAlphaF(myAlpha)
+        color.setAlphaF(myAlpha)
+        rb.setColor(color)
+        rb.show()
+        return rb
+
+    def _addVertex(self, pos):
+        mapPoint, snapped = self._snapCursorPoint(pos)
+        self._mapPointList.append(mapPoint)
+        self._rubberBand.addPoint(mapPoint)
+        self._updateMoveRubberBand(mapPoint)
+        self._validateGeometry()
+        return
+
+    def _updateMoveRubberBand(self, mapPoint):
+        if (self._moveRubberBand is None):
+            return
+        geometryType = self.geometryType()
+        self._moveRubberBand.reset(geometryType)
+        if (geometryType == QGis.Polygon):
+            self._moveRubberBand.addPoint(self._rubberBand.getPoint(0, 0), False)
+            self._moveRubberBand.movePoint(mapPoint, False)
+        self._moveRubberBand.addPoint(mapPoint)
+
+    def _undo(self):
+        if (self._rubberBand is not None):
+            rubberBandSize = self._rubberBand.numberOfVertices()
+            moveRubberBandSize = self._moveRubberBand.numberOfVertices()
+
+            if (rubberBandSize < 1 or len(self._mapPointList) < 1):
+                return
+
+            self._rubberBand.removePoint(-1)
+
+            if (rubberBandSize > 1):
+                if (moveRubberBandSize > 1):
+                    point = self._rubberBand.getPoint(0, rubberBandSize - 2)
+                    self._moveRubberBand.movePoint(moveRubberBandSize - 2, point)
+            else:
+                self._moveRubberBand.reset(self.geometryType())
+
+            self._mapPointList.pop()
+            self._validateGeometry()
+
+    def resetCapturing(self):
+        if (self._rubberBand is not None):
+            self._rubberBand.reset(self.geometryType())
+        if (self._moveRubberBand is not None):
+            self._moveRubberBand.reset(self.geometryType())
+        self._deleteGeometryValidation()
+        del self._mapPointList[:]
+        self.canvas().refresh()
+
+    def _deleteGeometryValidation(self):
+        if (self._validator is not None):
+            self._validator.errorFound.disconnect(self._addGeometryError)
+            self._validator.finished.disconnect(self.validationFinished)
+            self._validator.deleteLater()
+            self._validator = None
+        for errorMarker in self._geometryErrorMarkers:
+            self.canvas().scene().removeItem(errorMarker)
+        del self._geometryErrorMarkers[:]
+        self._geometryErrors[:]
+        self._tip = '';
+
+    def _validateGeometry(self):
+        geometryType = self.geometryType()
+        if (geometryType == QGis.Point or geometryType == QGis.UnknownGeometry or geometryType == QGis.NoGeometry or len(self._mapPointList) < 2):
+            return
+
+        settings = QSettings()
+        if (settings.value('/qgis/digitizing/validate_geometries', 1 ) == 0):
+            return
+
+        self._deleteGeometryValidation()
+
+        geometry = None #QgsGeometry()
+
+        if (geometryType == QGis.Line):
+            geometry = QgsGeometry.fromPolyline(self._mapPointList)
+        elif (geometryType == QGis.Polygon):
+            if (len(self._mapPointList) < 3):
+                return
+            closed = list(self._mapPointList)
+            closed.append(self._mapPointList[0])
+            geometry = QgsGeometry.fromPolygon([closed])
+
+        if (geometry is None):
+            return
+
+        self._validator = QgsGeometryValidator(geometry)
+        self._validator.errorFound.connect(self._addGeometryError)
+        self._validator.finished.connect(self.validationFinished)
+        self._validator.start()
+
+        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation started.'))
+
+    def _addGeometryError(self, error):
+        self._geometryErrors.append(error)
+
+        if (self._tip != ''):
+            self._tip += '\n'
+        self._tip += error.what()
+
+        if (error.hasWhere()):
+            marker = QgsVertexMarker(self.canvas())
+            marker.setCenter(error.where())
+            marker.setIconType(QgsVertexMarker.ICON_X)
+            marker.setPenWidth(2)
+            marker.setToolTip(error.what())
+            marker.setColor(Qt.green)
+            marker.setZValue(marker.zValue() + 1)
+            self._geometryErrorMarkers.append(marker)
+
+        self._iface.mainWindow().statusBar().showMessage(error.what())
+        if (self._tip != ''):
+            sb.setToolTip(self._tip)
+
+    def validationFinished(self):
+        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))
+
+    def _isVectorLayer(self):
+        return (self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer)
+
+
+class QgsMapToolAddFeature(QgsMapToolCapture):
+
+    NoFeature = 0
+    Point = 1
+    Segment = 2
+    Line = 3
+    Polygon = 4
+
+    _featureType = 0  # NoFeature
+    _defaultAttributes = {}  # QMap<int, QList<QVariant> >
+
+    def __init__(self, canvas, iface, featureType=0, toolName=''):
+        geometryType = QGis.UnknownGeometry
+        if (featureType == QgsMapToolAddFeature.Point):
+            geometryType = QGis.Point
+        elif (featureType == QgsMapToolAddFeature.Segment or featureType == QgsMapToolAddFeature.Line):
+            geometryType = QGis.Line
+        elif (featureType == QgsMapToolAddFeature.Polygon):
+            geometryType = QGis.Polygon
+        super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
+        if (toolName):
+            self.mToolName = toolName
+        else:
+            self.mToolName = self.tr('Add feature')
+        self._featureType = featureType
+
+    def isEditTool(self):
+        return True
+
+    def setDefaultAttributes(self, defaultAttributes):
+        self._defaultAttributes = defaultAttributes
+
+    def activate(self):
+        super(QgsMapToolAddFeature, self).activate()
+        vlayer = self._currentVectorLayer()
+        if (vlayer is not None and vlayer.geometryType() == QGis.NoGeometry):
+            self._addFeatureAction(vlayer, QgsFeature(), False)
+
+    def canvasReleaseEvent(self, e):
+        super(QgsMapToolAddFeature, self).canvasReleaseEvent(e)
+
+        if (self._featureType == QgsMapToolAddFeature.Point):
+            if (e.button() == Qt.LeftButton):
+                self._captureFeature()
+        else:
+            if (e.button() == Qt.LeftButton):
+                if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) == 2):
+                    self._captureFeature()
+            elif (e.button() == Qt.RightButton):
+                self._captureFeature()
+
+    def _captureFeature(self):
+        #points: bail out if there is not exactly one vertex
+        if (self._featureType == QgsMapToolAddFeature.Point and len(self._mapPointList) != 1):
+            self.resetCapturing()
+            return
+
+        #segments: bail out if there are not exactly two vertices
+        if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) != 2):
+            self.resetCapturing()
+            return
+
+        #lines: bail out if there are not at least two vertices
+        if (self._featureType == QgsMapToolAddFeature.Line and len(self._mapPointList) < 2):
+            self.resetCapturing()
+            return
+
+        #polygons: bail out if there are not at least three vertices
+        if (self._featureType == QgsMapToolAddFeature.Polygon and len(self._mapPointList) < 3):
+            self.resetCapturing()
+            return
+
+        if (not self._isVectorLayer()):
+            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not a vector layer'), QgsMessageBar.CRITICAL)
+            self.resetCapturing()
+            return
+        vlayer = self._currentVectorLayer()
+
+        if (not vlayer.isEditable()):
+            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not editable'), QgsMessageBar.CRITICAL)
+            self.resetCapturing()
+            return
+
+        if (vlayer.geometryType() != self.geometryType()):
+            self.messageEmitted.emit(self.tr('Cannot add feature: The geometry type of this layer is different than the capture tool.'), QgsMessageBar.CRITICAL)
+            self.resetCapturing()
+            return;
+
+        provider = vlayer.dataProvider()
+        if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
+            self.resetCapturing()
+            self.messageEmitted.emit(self.tr('Cannot add feature: The data provider for this layer does not support the addition of features.'), QgsMessageBar.CRITICAL)
+            return
+
+        layerWKBType = vlayer.wkbType()
+        layerPoints = self._layerPoints()
+        feature = QgsFeature(vlayer.pendingFields(), 0)
+        geometry = None
+
+        self.resetCapturing()
+
+        if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
+            geometry = QgsGeometry.fromPoint(layerPoints[0])
+        elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
+            geometry = QgsGeometry.fromMultiPoint(QgsMultiPoint(layerPoints[0]))
+        elif (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):
+            geometry = QgsGeometry.fromPolyline(layerPoints)
+        elif (layerWKBType == QGis.WKBMultiLineString or layerWKBType == QGis.WKBMultiLineString25D):
+            geometry = QgsGeometry.fromMultiPolyline([layerPoints])
+        elif (layerWKBType == QGis.WKBPolygon or  layerWKBType == QGis.WKBPolygon25D):
+            geometry = QgsGeometry.fromPolygon([layerPoints])
+        elif (layerWKBType == QGis.WKBMultiPolygon or  layerWKBType == QGis.WKBMultiPolygon25D):
+            geometry = QgsGeometry.fromMultiPolygon([layerPoints])
+        else:
+            self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
+            return
+
+        if (geometry is None):
+            self.messageEmitted.emit(self.tr('Cannot add feature. Invalid geometry'), QgsMessageBar.CRITICAL)
+            return
+        feature.setGeometry(geometry)
+
+        if (self._featureType == QgsMapToolAddFeature.Polygon):
+
+            avoidIntersectionsReturn = feature.geometry().avoidIntersections()
+            if (avoidIntersectionsReturn == 1):
+                #not a polygon type. Impossible to get there
+                pass
+            elif (avoidIntersectionsReturn == 3):
+                self.messageEmitted.emit(self.tr('An error was reported during intersection removal'), QgsMessageBar.CRITICAL)
+
+            if (not feature.geometry().asWkb()): #avoid intersection might have removed the whole geometry
+                reason = ''
+                if (avoidIntersectionsReturn != 2):
+                    reason = self.tr('The feature cannot be added because it\'s geometry is empty')
+                else:
+                    reason = self.tr('The feature cannot be added because it\'s geometry collapsed due to intersection avoidance')
+                self.messageEmitted.emit(reason, QgsMessageBar.CRITICAL)
+                return
+
+        featureSaved = self._addFeatureAction(vlayer, feature, False)
+
+        if (featureSaved and self._featureType != QgsMapToolAddFeature.Point):
+            #add points to other features to keep topology up-to-date
+            topologicalEditing = QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
+
+            #use always topological editing for avoidIntersection.
+            #Otherwise, no way to guarantee the geometries don't have a small gap in between.
+            intersectionLayers = QgsProject.instance().readListEntry('Digitizing', '/AvoidIntersectionsList')
+            avoidIntersection = len(intersectionLayers)
+            if (avoidIntersection): #try to add topological points also to background layers
+                for intersectionLayer in intersectionLayers:
+                    vl = QgsMapLayerRegistry.instance().mapLayer(str(intersectionLayer))
+                    #can only add topological points if background layer is editable...
+                    if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
+                        vl.self._addTopologicalPoints(feature.geometry())
+            elif (topologicalEditing):
+                vlayer.self._addTopologicalPoints(feature.geometry())
+
+
+
+    def _addFeatureAction(self, vlayer, feature, showModal=True):
+        action = QgsFeatureAction(self.tr('add feature'), feature, vlayer, -1, -1, self._iface, self)
+        res = action.addFeature(self._defaultAttributes, showModal)
+        if (showModal):
+            action = None
+        return res
+
+    def _addTopologicalPoints(self, geometry):
+        if self.canvas() is None:
+            return 1
+        vlayer = self._currentVectorLayer()
+        if vlayer is None:
+            return 2
+        for point in geometry:
+            vlayer.self._addTopologicalPoints(point)
+        return 0
+
+    def _layerPoints(self):
+        layerPoints = []
+        vlayer = self._currentVectorLayer()
+        if vlayer is None:
+            return layerPoints
+        for mapPoint in self._mapPointList:
+            layerPoint = self.toLayerCoordinates(vlayer, mapPoint)
+            layerPoints.append(layerPoint)
+        return layerPoints
+
+    def _currentVectorLayer(self):
+        layer = self.canvas().currentLayer()
+        if (layer.type() == QgsMapLayer.VectorLayer):
+            return layer
+        else:
+            return None
+
+# TODO Clean up this and fix dialog problems
 class QgsFeatureAction(QAction):
 
     _layer = QgsVectorLayer()
@@ -173,6 +644,9 @@ class QgsFeatureAction(QAction):
         elif (self._layer.featureFormSuppress() == QgsVectorLayer.SuppressOff):
             isDisabledAttributeValuesDlg = False
 
+        #TODO Set to disabled as not all required dialog api exposed in Python!!!
+        isDisabledAttributeValuesDlg = True
+
         if (isDisabledAttributeValuesDlg):
             self._layer.beginEditCommand(self.text())
             self._featureSaved = self._layer.addFeature(self._feature)
@@ -212,521 +686,3 @@ class QgsFeatureAction(QAction):
                 origValues = self._lastUsedValues[self._layer]
                 if (origValues[idx] != newValues[idx]):
                     self._lastUsedValues[self._layer][idx] = newValues[idx]
-
-# Tool to show snapping points
-class QgsMapToolSnap(QgsMapTool):
-
-    _snapper = QgsMapCanvasSnapper()
-    _snappingMarker = None  # QgsVertexMarker()
-
-    def __init__(self, canvas):
-        super(QgsMapToolSnap, self).__init__(canvas)
-        self._snapper.setMapCanvas(canvas)
-
-    def __del__(self):
-        self._deleteSnappingMarker()
-
-    def deactivate(self):
-        self._deleteSnappingMarker()
-        super(QgsMapToolSnap, self).deactivate()
-
-    def canvasMoveEvent(self, e):
-        mapPoint, snapped = self._snapCursorPoint(e.pos())
-        if (snapped):
-            self._createSnappingMarker(mapPoint)
-        else:
-            self._deleteSnappingMarker()
-
-    def _snapCursorPoint(self, cursorPoint):
-        res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
-        if (res != 0 or len(snapResults) < 1):
-            return self.toMapCoordinates(cursorPoint), False
-        else:
-            return snapResults[0].snappedVertex, True
-
-    def _snapMapPoint(self, mapPoint):
-        res, snapResults = self._snapper.snapToBackgroundLayers(mapPoint)
-        if (res != 0 or len(snapResults) < 1):
-            return mapPoint, False
-        else:
-            return snapResults[0].snappedVertex, True
-
-    def _createSnappingMarker(self, snapPoint):
-        if (self._snappingMarker is None):
-            self._snappingMarker = QgsVertexMarker(self.canvas())
-            self._snappingMarker.setIconType(QgsVertexMarker.ICON_CROSS)
-            self._snappingMarker.setColor(Qt.magenta)
-            self._snappingMarker.setPenWidth(3)
-        self._snappingMarker.setCenter(snapPoint)
-
-    def _deleteSnappingMarker(self):
-        if (self._snappingMarker is not None):
-            self.canvas().scene().removeItem(self._snappingMarker)
-            self._snappingMarker = None
-
-# Tool to capture and show mouse clicks as geometry using map points
-class QgsMapToolCapture(QgsMapToolSnap):
-
-    _iface = None
-    _capturing = False
-    _useLayerGeometry = True
-    _geometryType = QGis.NoGeometry
-    _mapPointList = []  #QList<QgsPoint>
-    _rubberBand = None  #QgsRubberBand()
-    _moveRubberBand = None  #QgsRubberBand()
-    _tip = ''
-    _validator = None  #QgsGeometryValidator()
-    _geometryErrors = []  #QList<QgsGeometry.Error>
-    _geometryErrorMarkers = []  #QList<QgsVertexMarker>
-
-    def __init__(self, canvas, iface, geometryType=QGis.UnknownGeometry):
-        super(QgsMapToolCapture, self).__init__(canvas)
-        self._iface = iface
-        self._geometryType = geometryType
-        if (geometryType == QGis.UnknownGeometry):
-            self._useLayerGeometry = True
-            self._geometryType = self._geometryType()
-            self._iface.currentLayerChanged.connect(self._currentLayerChanged)
-        self.setCursor(QCursor(QPixmap(capture_point_cursor), 8, 8))
-
-    def __del__(self):
-        self.deactivate();
-        super(QgsMapToolCapture, self).__del__()
-
-    def activate(self):
-        super(QgsMapToolCapture, self).activate()
-        geometryType = self.geometryType()
-        if (geometryType == QGis.Line or geometryType == QGis.Polygon):
-            self._rubberBand = self._createRubberBand(geometryType)
-            self._moveRubberBand = self._createRubberBand(geometryType, True)
-
-    def deactivate(self):
-        self._resetCapturing()
-        self._rubberBand = None
-        self._moveRubberBand = None
-        if (self._validator is not None):
-            self._validator.deleteLater()
-            self._validator = None
-        super(QgsMapToolCapture, self).deactivate()
-
-    def geometryType(self):
-        if (self._useLayerGeometry and self._isVectorLayer()):
-            return self.canvas().currentLayer().geometryType()
-        else:
-            return self._geometryType
-
-    def _currentLayerChanged(self, layer):
-        if (not self._useLayerGeometry):
-            return
-        #TODO Update rubber bands
-
-    def canvasMoveEvent(self, e):
-        super(QgsMapToolCapture, self).canvasMoveEvent(e)
-        if (self._moveRubberBand is not None):
-            mapPoint, snapped = self._snapCursorPoint(e.pos())
-            self._moveRubberBand.movePoint(mapPoint)
-
-    def canvasPressEvent(self, e):
-        pass
-
-    def keyPressEvent(self, e):
-        if (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
-            self._undo()
-            e.ignore()
-
-    def _createRubberBand(self, geometryType, moveBand=False):
-        settings = QSettings()
-        rb = QgsRubberBand(self.canvas(), geometryType)
-        rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
-        color = QColor(int(settings.value('/qgis/digitizing/line_color_red', 255)),
-                       int(settings.value('/qgis/digitizing/line_color_green', 0)),
-                       int(settings.value('/qgis/digitizing/line_color_blue', 0)))
-        myAlpha = int(settings.value('/qgis/digitizing/line_color_alpha', 200)) / 255.0
-        if (moveBand):
-            myAlpha = myAlpha * float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
-            rb.setLineStyle(Qt.DotLine)
-        if (geometryType == QGis.Polygon):
-            color.setAlphaF(myAlpha)
-        color.setAlphaF(myAlpha)
-        rb.setColor(color)
-        rb.show()
-        return rb
-
-    def _mapPoints(self):
-        return self._mapPointList
-
-    def _addVertex(self, pos):
-        geometryType = self.geometryType()
-        if (geometryType == QGis.NoGeometry or geometryType == QGis.UnknownGeometry):
-            self.messageEmitted.emit(self.tr('Cannot capture point, unknown geometry'), QgsMessageBar.CRITICAL)
-            return 2
-
-        mapPoint, snapped = self._snapCursorPoint(pos)
-        self._mapPointList.append(mapPoint)
-
-        if (geometryType == QGis.Point):
-            return 0
-
-        self._rubberBand.addPoint(mapPoint)
-
-        self._moveRubberBand.reset(geometryType)
-        if (geometryType == QGis.Polygon):
-            firstPoint = self._rubberBand.getPoint(0, 0)
-            self._moveRubberBand.addPoint(firstPoint)
-            self._moveRubberBand.movePoint(mapPoint)
-        self._moveRubberBand.addPoint(mapPoint)
-
-        self._validateGeometry()
-        return 0
-
-    def _undo(self):
-        if (self._rubberBand is not None):
-            rubberBandSize = self._rubberBand.numberOfVertices()
-            moveRubberBandSize = self._moveRubberBand.numberOfVertices()
-
-            if (rubberBandSize < 1 or len(self._mapPointList) < 1):
-                return
-
-            self._rubberBand.removePoint(-1)
-
-            if (rubberBandSize > 1):
-                if (moveRubberBandSize > 1):
-                    point = self._rubberBand.getPoint(0, rubberBandSize - 2)
-                    self._moveRubberBand.movePoint(moveRubberBandSize - 2, point)
-            else:
-                self._moveRubberBand.reset(self.geometryType())
-
-            self._mapPointList.pop()
-            self._validateGeometry()
-
-    def _resetCapturing(self):
-        self._resetRubberBand()
-        self._resetMoveRubberBand()
-        self._deleteErrorMarkers()
-        self._geometryErrors = []
-        self._mapPointList = []
-        self.canvas().refresh()
-
-    def _deleteErrorMarkers(self):
-        for errorMarker in self._geometryErrorMarkers:
-            self.canvas().scene().removeItem(errorMarker)
-        self._geometryErrorMarkers = []
-
-    def _resetRubberBand(self):
-        if (self._rubberBand is not None):
-            self.canvas().scene().removeItem(self._rubberBand)
-            self._rubberBand.reset(self.geometryType())
-            self._rubberBand = None
-
-    def _resetMoveRubberBand(self):
-        if (self._moveRubberBand is not None):
-            self.canvas().scene().removeItem(self._moveRubberBand)
-            self._moveRubberBand.reset(self.geometryType())
-
-    def _validateGeometry(self):
-        geometryType = self._geometryType
-        if (geometryType == QGis.Point or geometryType == QGis.UnknownGeometry or geometryType == QGis.NoGeometry or len(self._mapPointList) < 2):
-            return
-
-        settings = QSettings()
-        if (settings.value('/qgis/digitizing/validate_geometries', 1 ) == 0):
-            return
-
-        if (self._validator is not None):
-            self._validator.deleteLater()
-            self._validator = None
-
-        self._tip = '';
-        self._geometryErrors = []
-        self._deleteErrorMarkers()
-
-        geometry = None #QgsGeometry()
-
-        if (geometryType == QGis.Line):
-            geometry = QgsGeometry.fromPolyline(self._mapPointList)
-        elif (geometryType == QGis.Polygon):
-            if (len(self._mapPointList) < 3):
-                return
-            closed = list(self._mapPointList)
-            closed.append(self._mapPointList[0])
-            geometry = QgsGeometry.fromPolygon([closed])
-
-        if (geometry is None):
-            return
-
-        self._validator = QgsGeometryValidator(geometry)
-        self._validator.errorFound.connect(self._addGeometryError)
-        self._validator.finished.connect(self.validationFinished)
-        self._validator.start()
-
-        sb = self._iface.mainWindow().statusBar()
-        sb.showMessage(self.tr('Validation started.'))
-
-    def _addGeometryError(self, error):
-        self._geometryErrors.append(error)
-
-        if (self._tip != ''):
-            self._tip += '\n'
-        self._tip += error.what()
-
-        if (error.hasWhere()):
-            vm = QgsVertexMarker(self.canvas())
-            vm.setCenter(error.where())
-            vm.setIconType(QgsVertexMarker.ICON_X)
-            vm.setPenWidth(2)
-            vm.setToolTip(error.what())
-            vm.setColor(Qt.green)
-            vm.setZValue(vm.zValue() + 1)
-            self._geometryErrorMarkers.append(vm)
-
-        sb = self._iface.mainWindow().statusBar()
-        sb.showMessage(error.what())
-        if (self._tip != ''):
-            sb.setToolTip(self._tip)
-
-    def validationFinished(self):
-        sb = self._iface.mainWindow().statusBar()
-        sb.showMessage(self.tr('Validation finished.'))
-
-    def _isVectorLayer(self):
-        return (self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer)
-
-
-class QgsMapToolAddFeature(QgsMapToolCapture):
-
-    NoFeature = 0
-    Point = 1
-    Segment = 2
-    Line = 3
-    Polygon = 4
-
-    _featureType = 0  # NoFeature
-    _defaultAttributes = {}  # QMap<int, QList<QVariant> >
-
-    def __init__(self, canvas, iface, featureType=0, toolName=''):
-        geometryType = QGis.UnknownGeometry
-        if (featureType == QgsMapToolAddFeature.Point):
-            geometryType = QGis.Point
-        elif (featureType == QgsMapToolAddFeature.Segment or featureType == QgsMapToolAddFeature.Line):
-            geometryType = QGis.Line
-        elif (featureType == QgsMapToolAddFeature.Polygon):
-            geometryType = QGis.Polygon
-        super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
-        if (toolName):
-            self.mToolName = toolName
-        else:
-            self.mToolName = self.tr('Add feature')
-        self._featureType = featureType
-
-    def isEditTool(self):
-        return True
-
-    def setDefaultAttributes(self, defaultAttributes):
-        self._defaultAttributes = defaultAttributes
-
-    def addFeature(self, vlayer, feature, showModal=True):
-        action = QgsFeatureAction(self.tr('add feature'), feature, vlayer, -1, -1, self._iface, self)
-        res = action.addFeature(self._defaultAttributes, showModal)
-        if (showModal):
-            action = None
-        return res
-
-    def activate(self):
-        vlayer = self._currentVectorLayer()
-        if (vlayer is not None and vlayer.geometryType() == QGis.NoGeometry):
-            self.addFeature(vlayer, QgsFeature(), False)
-            return
-        super(QgsMapToolAddFeature, self).activate()
-
-    def canvasReleaseEvent(self, e):
-        if (not self._isVectorLayer()):
-            self._notifyNotVectorLayer()
-            return
-
-        vlayer = self._currentVectorLayer()
-        layerWKBType = vlayer.wkbType()
-        provider = vlayer.dataProvider()
-
-        if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
-            self.messageEmitted.emit(self.tr('The data provider for this layer does not support the addition of features.'), QgsMessageBar.WARNING)
-            return
-
-        if (vlayer.geometryType() != self.geometryType()):
-            self.messageEmitted.emit(self.tr('The geometry type of this layer is different than the capture tool.'), QgsMessageBar.WARNING)
-            return;
-
-        if (not vlayer.isEditable()):
-            self._notifyNotEditableLayer()
-            return
-
-        # POINT CAPTURING
-        if (self._featureType == QgsMapToolAddFeature.Point):
-            if (e.button() != Qt.LeftButton):
-                return
-
-            idPoint = QgsPoint()  #point in map coordinates
-            savePoint = QgsPoint()  #point in layer coordinates
-            idPoint = self._snapCursorPoint(e.pos())
-            try:
-                savePoint = self.toLayerCoordinates(vlayer, idPoint)
-            except:
-                self.messageEmitted.emit(self.tr('Cannot transform the point to the layers coordinate system'), QgsMessageBar.WARNING)
-                return
-
-            feature = QgsFeature(vlayer.pendingFields(), 0)
-            geometry = None
-            if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
-                geometry = QgsGeometry.fromPoint(savePoint)
-            elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
-                geometry = QgsGeometry.fromMultiPoint(QgsMultiPoint(savePoint))
-            feature.setGeometry(geometry)
-            self.addFeature(vlayer, feature, False)
-            self.canvas().refresh()
-
-        # LINE AND POLYGON CAPTURING
-        elif (self._featureType == QgsMapToolAddFeature.Line or self._featureType == QgsMapToolAddFeature.Segment or self._featureType == QgsMapToolAddFeature.Polygon):
-
-            #add point to list and to rubber band
-            if (e.button() == Qt.LeftButton):
-                error = self._addVertex(e.pos())
-                if (error == 1):
-                    #current layer is not a vector layer
-                    self.messageEmitted.emit(self.tr('Current Layer is not a vector layer'), QgsMessageBar.WARNING)
-                    return
-                elif (error == 2):
-                    #problem with coordinate transformation
-                    self.messageEmitted.emit(self.tr('Cannot transform the point to the layers coordinate system'), QgsMessageBar.WARNING)
-                    return
-
-                if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) == 2):
-                    self._captureFeature()
-
-            elif (e.button() == Qt.RightButton):
-                self._captureFeature()
-
-    def _captureFeature(self):
-        #segments: bail out if there are not exactly two vertices
-        if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) != 2):
-            self._resetCapturing()
-            return
-
-        #lines: bail out if there are not at least two vertices
-        if (self._featureType == QgsMapToolAddFeature.Line and len(self._mapPointList) < 2):
-            self._resetCapturing()
-            return
-
-        #polygons: bail out if there are not at least three vertices
-        if (self._featureType == QgsMapToolAddFeature.Polygon and len(self._mapPointList) < 3):
-            self._resetCapturing()
-            return
-
-        vlayer = self._currentVectorLayer()
-        if (vlayer is None):
-            self._resetCapturing()
-            self._notifyNotVectorLayer()
-            return
-
-        layerWKBType = vlayer.wkbType()
-
-        #create QgsFeature with wkb representation
-        feature = QgsFeature(vlayer.pendingFields(), 0)
-
-        geometry = None
-
-        if (self._featureType == QgsMapToolAddFeature.Line or self._featureType == QgsMapToolAddFeature.Segment):
-
-            if (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):
-                geometry = QgsGeometry.fromPolyline(self._layerPoints())
-            elif (layerWKBType == QGis.WKBMultiLineString or layerWKBType == QGis.WKBMultiLineString25D):
-                geometry = QgsGeometry.fromMultiPolyline([self._layerPoints()])
-            else:
-                self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
-                self._resetCapturing()
-                return #unknown wkbtype
-
-            feature.setGeometry(geometry)
-
-        else: # polygon
-
-            if (layerWKBType == QGis.WKBPolygon or  layerWKBType == QGis.WKBPolygon25D):
-                geometry = QgsGeometry.fromPolygon([self._layerPoints()])
-            elif (layerWKBType == QGis.WKBMultiPolygon or  layerWKBType == QGis.WKBMultiPolygon25D):
-                geometry = QgsGeometry.fromMultiPolygon([self._layerPoints()])
-            else:
-                self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
-                self._resetCapturing()
-                return #unknown wkbtype
-
-            if (geometry is None):
-                self._resetCapturing()
-                return # invalid geometry; one possibility is from duplicate points
-            feature.setGeometry(geometry)
-
-            avoidIntersectionsReturn = feature.geometry().avoidIntersections()
-            if (avoidIntersectionsReturn == 1):
-                #not a polygon type. Impossible to get there
-                pass
-            elif (avoidIntersectionsReturn == 3):
-                self.messageEmitted.emit(self.tr('An error was reported during intersection removal'), QgsMessageBar.CRITICAL)
-
-            if (not feature.geometry().asWkb()): #avoid intersection might have removed the whole geometry
-                reason = ''
-                if (avoidIntersectionsReturn != 2):
-                    reason = self.tr('The feature cannot be added because it\'s geometry is empty')
-                else:
-                    reason = self.tr('The feature cannot be added because it\'s geometry collapsed due to intersection avoidance')
-                self.messageEmitted.emit(reason, QgsMessageBar.CRITICAL)
-                self._resetCapturing()
-                return
-
-        if (self.addFeature(vlayer, feature, False)):
-            #add points to other features to keep topology up-to-date
-            topologicalEditing = QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
-
-            #use always topological editing for avoidIntersection.
-            #Otherwise, no way to guarantee the geometries don't have a small gap in between.
-            intersectionLayers = QgsProject.instance().readListEntry('Digitizing', '/AvoidIntersectionsList')
-            avoidIntersection = len(intersectionLayers)
-            if (avoidIntersection): #try to add topological points also to background layers
-                for intersectionLayer in intersectionLayers:
-                    vl = QgsMapLayerRegistry.instance().mapLayer(str(intersectionLayer))
-                    #can only add topological points if background layer is editable...
-                    if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
-                        vl.self._addTopologicalPoints(feature.geometry())
-            elif (topologicalEditing):
-                vlayer.self._addTopologicalPoints(feature.geometry())
-
-        self._resetCapturing()
-
-    def _addTopologicalPoints(self, geometry):
-        if self.canvas() is None:
-            return 1
-        vlayer = self._currentVectorLayer()
-        if vlayer is None:
-            return 2
-        for point in geometry:
-            vlayer.self._addTopologicalPoints(point)
-        return 0
-
-    def _layerPoints(self):
-        layerPoints = []
-        vlayer = self._currentVectorLayer()
-        if vlayer is None:
-            return layerPoints
-        for mapPoint in self._mapPointList:
-            layerPoint = self.toLayerCoordinates(vlayer, mapPoint)
-            layerPoints.append(layerPoint)
-        return layerPoints
-
-    def _currentVectorLayer(self):
-        layer = self.canvas().currentLayer()
-        if (layer.type() == QgsMapLayer.VectorLayer):
-            return layer
-        else:
-            return None
-
-    def _notifyNotVectorLayer(self):
-        self.messageEmitted.emit(self.tr('No active vector layer'), QgsMessageBar.INFO)
-
-    def _notifyNotEditableLayer(self):
-        self.messageEmitted.emit(self.tr('Layer not editable'), QgsMessageBar.INFO)

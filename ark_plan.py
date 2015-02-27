@@ -31,7 +31,7 @@ import resources_rc
 # Import the code for the dialog
 from ark_plan_dock import ArkPlanDock
 from ark_georef_dialog import ArkGeorefDialog
-from project_settings_dialog import ProjectSettingsDialog
+from settings import *
 from ark_map_tools import *
 from snap_map_tools import *
 from ark_plan_util import *
@@ -43,51 +43,9 @@ class ArkPlan:
     """QGIS Plugin Implementation."""
 
     # Project settings
-
-    projectDataFolder = QDir()
-    projectSiteCode = ''
-    prependSiteCode = True
-
-    projectPlanFolder = QDir()
-    useRawProcessedFolders = True
-    planOpacity = 50
+    settings = None # Settings()
 
     # Internal variables
-
-    pluginName = u'ArkPlan'
-
-    projectConfigured = False
-    projectGroupName = 'Ark'
-    projectGroupIndex = -1
-    dataGroupName = 'Context Data'
-    dataGroupIndex = -1
-    bufferGroupName = 'Edit Buffers'
-    bufferGroupIndex = -1
-    planGroupName = 'Context Plans'
-    planGroupIndex = -1
-
-    pointsBaseName = 'context_pt'
-    linesBaseName = 'context_pl'
-    polygonsBaseName = 'context_pg'
-    schematicBaseName = 'schematic_pg'
-
-    gridPointsBaseName = 'grid_pt'
-    gridPointsFieldX = 'x'
-    gridPointsFieldY = 'y'
-
-    bufferSuffix = '_mem'
-
-    contextAttributeName = 'context'
-    contextAttributeSize = 5
-    sourceAttributeName = 'source'
-    sourceAttributeSize = 30
-    typeAttributeName = 'type'
-    typeAttributeSize = 10
-    commentAttributeName = 'comment'
-    commentAttributeSize = 100
-    elevationAttributeName = 'elevation'
-    elevationAttributeSize = 5
-    elevationAttributePrecision = 2
 
     crs = 'EPSG:27700'
     initialised = False
@@ -98,14 +56,12 @@ class ArkPlan:
     comment = ''
     geoLayer = QgsRasterLayer()
 
-    layerGroupIndex = -1
     pointsLayer = None
     linesLayer = None
     polygonsLayer = None
     schematicLayer = None
     gridPointsLayer = None
 
-    bufferGroupIndex = -1
     pointsBuffer = None
     linesBuffer = None
     polygonsBuffer = None
@@ -115,28 +71,21 @@ class ArkPlan:
     currentMapTool = None
 
     def __init__(self, iface):
-        """Constructor.
 
-        :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-        :type iface: QgsInterface
-        """
-        # Save reference to the QGIS interface
-        self.iface = iface
+        self.settings = Settings('ArkPlan', iface)
+
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
+
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
             'ArkPlan_{}.qm'.format(locale))
-
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
-
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
@@ -144,8 +93,8 @@ class ArkPlan:
         self.actions = []
         self.menu = self.tr(u'&ArkPlan')
         # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(self.pluginName)
-        self.toolbar.setObjectName(self.pluginName)
+        self.toolbar = self.settings.iface.addToolBar(self.settings.pluginName)
+        self.toolbar.setObjectName(self.settings.pluginName)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -230,7 +179,7 @@ class ArkPlan:
             self.toolbar.addAction(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(
+            self.settings.iface.addPluginToMenu(
                 self.menu,
                 action)
 
@@ -242,10 +191,10 @@ class ArkPlan:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = ':/plugins/ArkPlan/icon.png'
-        self.menuAction = self.add_action(icon_path, text=self.tr(u'ArkPlan'), callback=self.run, checkable=True, parent=self.iface.mainWindow())
-        self.projectSettingsAction = self.add_action(icon_path, text=self.tr(u'ArkPlan Settings'), callback=self.runProjectSettings, checkable=False, parent=self.iface.mainWindow())
+        self.menuAction = self.add_action(icon_path, text=self.tr(u'ArkPlan'), callback=self.run, checkable=True, parent=self.settings.iface.mainWindow())
+        self.projectSettingsAction = self.add_action(icon_path, text=self.tr(u'ArkPlan Settings'), callback=self.settings.showSettingsDialog, checkable=False, parent=self.settings.iface.mainWindow())
 
-        self.dock = ArkPlanDock(self.iface)
+        self.dock = ArkPlanDock(self.settings.iface)
         self.dock.visibilityChanged.connect(self.setDockVisibility)
         self.dock.dockLocationChanged.connect(self.setDockLocation)
 
@@ -283,77 +232,32 @@ class ArkPlan:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
         if self.schematicBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
-        if (self.bufferGroupIndex >= 0):
-            self.iface.legendInterface().removeGroup(self.bufferGroupIndex)
+        if (self.settings.bufferGroupIndex >= 0):
+            self.settings.iface.legendInterface().removeGroup(self.settings.bufferGroupIndex)
 
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&ArkPlan'),
-                action)
-            self.iface.removeToolBarIcon(action)
+            self.settings.iface.removePluginMenu(self.tr(u'&ArkPlan'), action)
+            self.settings.iface.removeToolBarIcon(action)
 
         # Unload the dock
-        self.iface.removeDockWidget(self.dock)
+        self.settings.iface.removeDockWidget(self.dock)
         self.dock.deleteLater()
 
-    def loadProjectSettings(self):
-        project = QgsProject.instance()
-        self.projectConfigured = project.readBoolEntry(self.pluginName, 'projectConfigured', False)[0]
-        self.projectDataFolder = QDir(project.readEntry(self.pluginName, 'projectDataFolder', '')[0])
-        self.projectSiteCode = project.readEntry(self.pluginName, 'projectSiteCode', '')[0]
-        self.prependSiteCode = project.readBoolEntry(self.pluginName, 'prependSiteCode', True)[0]
-        self.projectPlanFolder = QDir(project.readEntry(self.pluginName, 'projectPlanFolder', '')[0])
-        self.useRawProcessedFolders = project.readBoolEntry(self.pluginName, 'useRawProcessedFolders', True)[0]
-        self.planOpacity = project.readNumEntry(self.pluginName, 'planOpacity', 50)[0]
-        # TODO Find why this doesn't work!
-        projectCRS = unicode(QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")[0])
-
-    def saveProjectSettings(self):
-        project = QgsProject.instance()
-        project.writeEntry(self.pluginName, 'projectConfigured', self.projectConfigured)
-        project.writeEntry(self.pluginName, 'projectDataFolder', self.projectDataFolder.absolutePath())
-        project.writeEntry(self.pluginName, 'projectSiteCode', self.projectSiteCode)
-        project.writeEntry(self.pluginName, 'prependSiteCode', self.prependSiteCode)
-        project.writeEntry(self.pluginName, 'projectPlanFolder', self.projectPlanFolder.absolutePath())
-        project.writeEntry(self.pluginName, 'useRawProcessedFolders', self.useRawProcessedFolders)
-        project.writeEntry(self.pluginName, 'planOpacity', self.planOpacity)
-
     def configureProject(self):
-        if (self.runProjectSettings() and self.projectDataFolder.exists() and self.projectPlanFolder.exists()):
+        if (self.settings.showSettingsDialog() and self.settings.dataDir().exists() and self.settings.planDir().exists()):
             # Do validation, check if files exist, etc
-            self.projectConfigured = True
+            self.settings.setIsConfigured(True)
         else:
-            self.projectConfigured = False
-
-    def runProjectSettings(self):
-        settingsDialog = ProjectSettingsDialog(self.pluginName, self.iface.mainWindow())
-        if (settingsDialog.exec_()):
-            self.projectDataFolder = QDir(settingsDialog.projectDataFolder())
-            self.projectSiteCode = settingsDialog.projectSiteCode()
-            self.prependSiteCode = settingsDialog.prependSiteCode()
-            self.projectPlanFolder = QDir(settingsDialog.projectPlanFolder())
-            self.useRawProcessedFolders = settingsDialog.useRawProcessedFolders()
-            self.planOpacity = settingsDialog.planOpacity()
-            self.saveProjectSettings()
-            return True
-        return False
-
-    def layerName(self, baseName):
-        if (self.prependSiteCode and self.projectSiteCode):
-            return self.projectSiteCode + '_' + baseName
-        return baseName
-
-    def bufferName(self, baseName):
-        return self.layerName(baseName) + self.bufferSuffix
+            self.settings.setIsConfigured(False)
 
     def run(self):
         if self.menuAction.isChecked():
             if not self.initialised:
                 self.initialise()
-            self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+            self.settings.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
         else:
-            self.iface.removeDockWidget(self.dock)
+            self.settings.iface.removeDockWidget(self.dock)
 
     def setDockLocation(self, location):
         self.dockLocation = location
@@ -362,16 +266,18 @@ class ArkPlan:
         self.menuAction.setChecked(visible)
 
     def groupIndexChanged(self, oldIndex, newIndex):
-        if (oldIndex == self.layerGroupIndex):
-            self.layerGroupIndex = newIndex
-        elif (oldIndex == self.bufferGroupIndex):
-            self.bufferGroupIndex = newIndex
+        if (oldIndex == self.settings.dataGroupIndex):
+            self.settings.dataGroupIndex = newIndex
+        elif (oldIndex == self.settings.bufferGroupIndex):
+            self.settings.bufferGroupIndex = newIndex
+        elif (oldIndex == self.settings.planGroupIndex):
+            self.settings.planGroupIndex = newIndex
 
     def loadLayerByName(self, dir, name, groupIndex):
         # If the layer is already loaded, use it and return
         layerList = QgsMapLayerRegistry.instance().mapLayersByName(name)
         if (len(layerList) > 0):
-            self.iface.legendInterface().moveLayer(layerList[0], groupIndex)
+            self.settings.iface.legendInterface().moveLayer(layerList[0], groupIndex)
             return layerList[0]
         #TODO Check if exists, if not then create!
         # Otherwise load the layer and add it to the legend
@@ -381,22 +287,21 @@ class ArkPlan:
             # TODO Check for other locations of style file
             layer.loadNamedStyle(dir.absolutePath() + '/' + name + '.qml')
             QgsMapLayerRegistry.instance().addMapLayer(layer)
-            self.iface.legendInterface().moveLayer(layer, groupIndex)
-            self.iface.legendInterface().refreshLayerSymbology(layer)
+            self.settings.iface.legendInterface().moveLayer(layer, groupIndex)
+            self.settings.iface.legendInterface().refreshLayerSymbology(layer)
             return layer
         return None
 
     def initialise(self):
 
-        self.loadProjectSettings()
-        if (not self.projectConfigured):
+        if (not self.settings.isConfigured()):
             self.configureProject()
 
         # If the legend indexes change make sure we stay updated
-        self.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
+        self.settings.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
 
         # If the map tool changes make sure we stay updated
-        self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
+        self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
 
         self.createBufferLayers()
         self.loadContextLayers()
@@ -404,88 +309,71 @@ class ArkPlan:
 
     # Load the context layers if not already loaded
     def loadContextLayers(self):
-        haveLayerGroup = False
-        i = 0
-        for groupName in self.iface.legendInterface().groups():
-            if (not haveLayerGroup and groupName == self.dataGroupName):
-                haveLayerGroup = True
-                self.layerGroupIndex = i
-            i += 1
-        if (not haveLayerGroup):
-            self.layerGroupIndex = self.iface.legendInterface().addGroup(self.dataGroupName)
+        if (self.settings.dataGroupIndex < 0):
+            self.settings.dataGroupIndex = self.getGroupIndex(self.settings.dataGroupName)
         if (self.schematicLayer is None):
-            self.schematicLayer = self.loadLayerByName(self.projectDataFolder, self.layerName(self.schematicBaseName), self.layerGroupIndex)
+            self.schematicLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.schematicLayerName(), self.settings.dataGroupIndex)
             self.dock.setSchematicsLayer(self.schematicLayer)
         if (self.polygonsLayer is None):
-            self.polygonsLayer = self.loadLayerByName(self.projectDataFolder, self.layerName(self.polygonsBaseName), self.layerGroupIndex)
+            self.polygonsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.polygonsLayerName(), self.settings.dataGroupIndex)
             self.dock.setPolygonsLayer(self.polygonsLayer)
         if (self.linesLayer is None):
-            self.linesLayer = self.loadLayerByName(self.projectDataFolder, self.layerName(self.linesBaseName), self.layerGroupIndex)
+            self.linesLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.linesLayerName(), self.settings.dataGroupIndex)
             self.dock.setLinesLayer(self.linesLayer)
         if (self.pointsLayer is None):
-            self.pointsLayer = self.loadLayerByName(self.projectDataFolder, self.layerName(self.pointsBaseName), self.layerGroupIndex)
+            self.pointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.pointsLayerName(), self.settings.dataGroupIndex)
         if (self.gridPointsLayer is None):
-            self.gridPointsLayer = self.loadLayerByName(self.projectDataFolder, self.layerName(self.gridPointsBaseName), self.layerGroupIndex)
+            self.gridPointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.gridPointsLayerName(), self.settings.dataGroupIndex)
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
-        settings = QSettings()
-        defaultSnappingTolerance = settings.value('/qgis/digitizing/default_snapping_tolerance', 0.0, float)
-        defaultSnappingUnit = settings.value('/qgis/digitizing/default_snapping_tolerance_unit', 0, int)
-        defaultSnappingModeString = settings.value('/qgis/digitizing/default_snap_mode', 'to vertex')
-        defaultSnappingMode = QgsSnapper.SnapToVertex
-        if (defaultSnappingModeString == "to vertex and segment" ):
-            defaultSnappingMode = QgsSnapper.SnapToVertexAndSegment
-        elif (defaultSnappingModeString == 'to segment'):
-            defaultSnappingMode = QgsSnapper.SnapToSegment
-        else:
-            defaultSnappingMode = QgsSnapper.SnapToVertex
-        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, defaultSnappingMode, defaultSnappingUnit, defaultSnappingTolerance, False)
+        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, self.settings.defaultSnappingMode(), self.settings.defaultSnappingUnit(), self.settings.defaultSnappingTolerance(), False)
 
     # Setup the in-memory buffer layers
     def createBufferLayers(self):
 
-        self.bufferGroupIndex = self.iface.legendInterface().addGroup(self.bufferGroupName)
+        if (self.settings.bufferGroupIndex < 0):
+            self.settings.bufferGroupIndex = self.getGroupIndex(self.settings.bufferGroupName)
 
         if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
-            self.schematicBuffer = self.createStandardBuffer(self.schematicBaseName, 'Polygon')
+            self.schematicBuffer = self.createStandardBuffer(self.settings.schematicBufferName(), self.settings.schematicLayerName(), 'Polygon')
             self.dock.setSchematicsBuffer(self.schematicBuffer)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self.createStandardBuffer(self.polygonsBaseName, 'Polygon')
+            self.polygonsBuffer = self.createStandardBuffer(self.settings.polygonsBufferName(), self.settings.polygonsLayerName(), 'Polygon')
             self.dock.setPolygonsBuffer(self.polygonsBuffer)
 
         if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self.createStandardBuffer(self.linesBaseName, 'LineString')
+            self.linesBuffer = self.createStandardBuffer(self.settings.linesBufferName(), self.settings.linesLayerName(),'LineString')
             self.dock.setLinesBuffer(self.linesBuffer)
 
         if self.pointsBuffer is None:
-            self.pointsBuffer = self.createPointsLayer(self.bufferName(self.pointsBaseName), 'memory')
+            self.pointsBuffer = self.createPointsLayer(self.settings.pointsBufferName(), 'memory')
             QgsMapLayerRegistry.instance().addMapLayer(self.pointsBuffer)
-        self.pointsBuffer.loadNamedStyle(self.projectDataFolder.absolutePath() + '/' + self.layerName(self.pointsBaseName) + '.qml')
-        self.iface.legendInterface().moveLayer(self.pointsBuffer, self.bufferGroupIndex)
-        self.iface.legendInterface().refreshLayerSymbology(self.pointsBuffer)
+        self.pointsBuffer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + self.settings.pointsLayerName() + '.qml')
+        self.settings.iface.legendInterface().moveLayer(self.pointsBuffer, self.settings.bufferGroupIndex)
+        self.settings.iface.legendInterface().refreshLayerSymbology(self.pointsBuffer)
         self.pointsBuffer.startEditing()
 
-    def createStandardBuffer(self, baseName, geometry):
-        buffer = self.createStandardLayer(geometry, self.bufferName(baseName), 'memory')
+    def createStandardBuffer(self, bufferName, styleName, geometry):
+        buffer = self.createStandardLayer(geometry, bufferName, 'memory')
         if buffer.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(buffer)
             self.dock.setLinesBuffer(buffer)
-            buffer.loadNamedStyle(self.projectDataFolder.absolutePath() + '/' + self.layerName(self.linesBaseName) + '.qml')
-            self.iface.legendInterface().moveLayer(buffer, self.bufferGroupIndex)
-            self.iface.legendInterface().refreshLayerSymbology(buffer)
+            buffer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + styleName + '.qml')
+            self.settings.iface.legendInterface().moveLayer(buffer, self.settings.bufferGroupIndex)
+            self.settings.iface.legendInterface().refreshLayerSymbology(buffer)
             buffer.startEditing()
             return buffer
 
     def createPointsLayer(self, name, provider):
         vl = QgsVectorLayer("Point?crs=" + self.crs + "&index=yes", name, provider)
         pr = vl.dataProvider()
-        pr.addAttributes([QgsField(self.contextAttributeName, QVariant.Int, '', self.contextAttributeSize),
-                          QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
-                          QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
-                          QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize),
-                          QgsField(self.elevationAttributeName, QVariant.Double, '', self.elevationAttributeSize, self.elevationAttributePrecision)])
+        pr.addAttributes([QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
+                          QgsField(self.settings.sourceAttributeName,  QVariant.String, '', self.settings.sourceAttributeSize),
+                          QgsField(self.settings.typeAttributeName, QVariant.String, '', self.settings.typeAttributeSize),
+                          QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize),
+                          QgsField(self.settings.elevationAttributeName, QVariant.Double, '', self.settings.elevationAttributeSize, self.settings.elevationAttributePrecision)])
         self._setDefaultSnapping(vl)
         #TODO set symbols
         return vl
@@ -494,10 +382,10 @@ class ArkPlan:
         vl = QgsVectorLayer(type + "?crs=" + self.crs + "&index=yes", name, provider)
         if (vl.isValid()):
             pr = vl.dataProvider()
-            pr.addAttributes([QgsField(self.contextAttributeName, QVariant.Int, '', self.contextAttributeSize),
-                              QgsField(self.sourceAttributeName,  QVariant.String, '', self.sourceAttributeSize),
-                              QgsField(self.typeAttributeName, QVariant.String, '', self.typeAttributeSize),
-                              QgsField(self.commentAttributeName, QVariant.String, '', self.commentAttributeSize)])
+            pr.addAttributes([QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
+                              QgsField(self.settings.sourceAttributeName,  QVariant.String, '', self.settings.sourceAttributeSize),
+                              QgsField(self.settings.typeAttributeName, QVariant.String, '', self.settings.typeAttributeSize),
+                              QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize)])
             self._setDefaultSnapping(vl)
         #TODO set symbols
         return vl
@@ -543,29 +431,13 @@ class ArkPlan:
         self.dock.setSource(str(number))
 
     def loadRawPlan(self):
-        folder = QDir()
-        if self.useRawProcessedFolders:
-            folder = QDir(self.projectPlanFolder.absolutePath() + '/raw')
-            if (not folder.exists()):
-                folder = self.projectPlanFolder
-        else:
-            folder = self.projectPlanFolder
-
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), folder.absolutePath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.settings.rawPlanPath(),
                                                        self.tr('Image Files (*.png *.tif *.tiff)')))
         if fileName:
             self.georeferencePlan(QFileInfo(fileName))
 
     def loadGeoPlan(self):
-        folder = QDir()
-        if self.useRawProcessedFolders:
-            folder = QDir(self.projectPlanFolder.absolutePath() + '/processed')
-            if (not folder.exists()):
-                self.projectPlanFolder.mkdir('processed')
-        else:
-            folder = self.projectPlanFolder
-
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), folder.absolutePath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.settings.processedPlanPath(),
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
@@ -588,7 +460,7 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = ArkGeorefDialog(rawFile, self.projectPlanFolder, self.useRawProcessedFolders, self.crs, self.layerName(self.gridPointsBaseName), self.gridPointsFieldX, self.gridPointsFieldY)
+        georefDialog = ArkGeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.crs, self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
@@ -597,28 +469,40 @@ class ArkPlan:
     def loadGeoLayer(self, geoFile):
         #TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self.planOpacity/100.0)
+        self.geoLayer.renderer().setOpacity(self.settings.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
-        #TODO Add to own group?
-        self.iface.legendInterface().moveLayer(self.geoLayer, self.bufferGroupIndex)
-        self.iface.mapCanvas().setExtent(self.geoLayer.extent())
+        if (self.settings.planGroupIndex < 0):
+            self.settings.planGroupIndex = self.getGroupIndex(self.settings.planGroupName)
+        self.settings.iface.legendInterface().moveLayer(self.geoLayer, self.settings.planGroupIndex)
+        self.settings.iface.mapCanvas().setExtent(self.geoLayer.extent())
+
+    def getGroupIndex(self, groupName):
+        groupIndex = -1
+        i = 0
+        for name in self.settings.iface.legendInterface().groups():
+            if (groupIndex < 0 and name == groupName):
+                groupIndex = i
+            i += 1
+        if (groupIndex < 0):
+            groupIndex = self.settings.iface.legendInterface().addGroup(groupName)
+        return groupIndex
 
     # Layers Management Methods
 
     def showLevels(self, status):
-        self.iface.legendInterface().setLayerVisible(self.pointsLayer, status)
+        self.settings.iface.legendInterface().setLayerVisible(self.pointsLayer, status)
 
     def showLines(self, status):
-        self.iface.legendInterface().setLayerVisible(self.linesLayer, status)
+        self.settings.iface.legendInterface().setLayerVisible(self.linesLayer, status)
 
     def showPolygons(self, status):
-        self.iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
+        self.settings.iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
 
     def showSchematics(self, status):
-        self.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
+        self.settings.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
 
     def applyContextFilter(self, contextList):
-        clause = '"cxt_no" = %d'
+        clause = '"context" = %d'
         filter = ''
         if (len(contextList) > 0):
             filter += clause % contextList[0]
@@ -631,7 +515,7 @@ class ArkPlan:
         self.applyLayerFilter(self.schematicLayer, filter)
 
     def applyLayerFilter(self, layer, filter):
-        if (self.iface.mapCanvas().isDrawing()):
+        if (self.settings.iface.mapCanvas().isDrawing()):
             QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Canvas is drawing')
             return
         if (layer.type() != QgsMapLayer.VectorLayer):
@@ -647,21 +531,21 @@ class ArkPlan:
             QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer has joins')
             return
         layer.setSubsetString(filter)
-        self.iface.mapCanvas().refresh()
-        self.iface.legendInterface().refreshLayerSymbology(layer)
+        self.settings.iface.mapCanvas().refresh()
+        self.settings.iface.legendInterface().refreshLayerSymbology(layer)
 
     # Levels Tool Methods
 
     def enableLevelsMode(self, type):
         #TODO disable all snapping
-        self.iface.mapCanvas().setCurrentLayer(self.pointsBuffer)
-        self.iface.legendInterface().setCurrentLayer(self.pointsBuffer)
+        self.settings.iface.mapCanvas().setCurrentLayer(self.pointsBuffer)
+        self.settings.iface.legendInterface().setCurrentLayer(self.pointsBuffer)
         if self.levelsMapTool is not None:
             del self.levelsMapTool
-        self.levelsMapTool = LevelsMapTool(self.iface.mapCanvas())
+        self.levelsMapTool = LevelsMapTool(self.settings.iface.mapCanvas())
         self.levelsMapTool.levelAdded.connect(self.addLevel)
         self.levelsMapTool.setType(type)
-        self.iface.mapCanvas().setMapTool(self.levelsMapTool)
+        self.settings.iface.mapCanvas().setMapTool(self.levelsMapTool)
 
     def addLevel(self, point, type, elevation):
         feature = QgsFeature()
@@ -670,7 +554,7 @@ class ArkPlan:
         self.pointsBuffer.beginEditCommand('Buffer level ' + str(self.context) + ' ' + type + ' ' + str(elevation))
         self.pointsBuffer.addFeature(feature, True)
         self.pointsBuffer.endEditCommand()
-        self.iface.mapCanvas().refresh()
+        self.settings.iface.mapCanvas().refresh()
 
     # Map Tool Methods
 
@@ -692,14 +576,14 @@ class ArkPlan:
 
     def enableMapTool(self, typeAttribute, layer, featureType, toolName):
         #TODO configure snapping
-        self.iface.mapCanvas().setCurrentLayer(layer)
-        self.iface.legendInterface().setCurrentLayer(layer)
+        self.settings.iface.mapCanvas().setCurrentLayer(layer)
+        self.settings.iface.legendInterface().setCurrentLayer(layer)
         if self.currentMapTool is not None:
             self.currentMapTool.deactivate()
             self.currentMapTool = None
-        self.currentMapTool = QgsMapToolAddFeature(self.iface.mapCanvas(), self.iface, featureType, toolName)
+        self.currentMapTool = QgsMapToolAddFeature(self.settings.iface.mapCanvas(), self.settings.iface, featureType, toolName)
         self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
-        self.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):

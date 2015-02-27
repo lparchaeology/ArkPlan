@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ProjectSettingsDialogBase</class>
- <widget class="QDialog" name="ProjectSettingsDialogBase">
+ <class>SettingsDialogBase</class>
+ <widget class="QDialog" name="SettingsDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>481</width>
-    <height>265</height>
+    <height>277</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ArkPlan Project Settings</string>
+   <string>Settings</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
@@ -110,7 +110,7 @@
    <item row="6" column="0">
     <widget class="QLabel" name="separatePlansLabel">
      <property name="text">
-      <string>Separate raw / processed:</string>
+      <string>Separate plan folders:</string>
      </property>
      <property name="buddy">
       <cstring>separatePlansCheck</cstring>
@@ -119,6 +119,9 @@
    </item>
    <item row="6" column="1">
     <widget class="QCheckBox" name="separatePlansCheck">
+     <property name="toolTip">
+      <string>Select if the raw and processed plans should be stored in separate folders.</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -128,17 +131,17 @@
     </widget>
    </item>
    <item row="7" column="0">
-    <widget class="QLabel" name="planOpacityLabel">
+    <widget class="QLabel" name="planTransparencyLabel">
      <property name="text">
-      <string>Plan opacity:</string>
+      <string>Plan tranparency:</string>
      </property>
      <property name="buddy">
-      <cstring>planOpacitySpin</cstring>
+      <cstring>planTransparencySpin</cstring>
      </property>
     </widget>
    </item>
    <item row="7" column="1">
-    <widget class="QSpinBox" name="planOpacitySpin">
+    <widget class="QSpinBox" name="planTransparencySpin">
      <property name="suffix">
       <string>%</string>
      </property>
@@ -170,7 +173,7 @@
   <tabstop>planFolderEdit</tabstop>
   <tabstop>planFolderButton</tabstop>
   <tabstop>separatePlansCheck</tabstop>
-  <tabstop>planOpacitySpin</tabstop>
+  <tabstop>planTransparencySpin</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
@@ -178,7 +181,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ProjectSettingsDialogBase</receiver>
+   <receiver>SettingsDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -194,7 +197,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ProjectSettingsDialogBase</receiver>
+   <receiver>SettingsDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

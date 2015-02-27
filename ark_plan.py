@@ -69,7 +69,7 @@ class ArkPlan:
     pointsBaseName = 'context_pt'
     linesBaseName = 'context_pl'
     polygonsBaseName = 'context_pg'
-    schematicBaseName = 'context_schm_pg'
+    schematicBaseName = 'schematic_pg'
 
     gridPointsBaseName = 'grid_pt'
     gridPointsFieldX = 'x'

@@ -50,7 +50,9 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     crt = 'EPSG:27700'
 
     #TODO Get from settings
-    tempPath = QDir('/filebin/1120L - 100 Minories/GIS/plans/incoming')
+    projectPlanFolder = QDir()
+    rawFolder = QDir()
+    processedFolder = QDir()
     rawFile = QFileInfo()
     pointFile = QFileInfo()
     geoFile = QFileInfo()
@@ -66,7 +68,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     gridXField = ''
     gridYField = ''
 
-    def __init__(self, rawFile, geoDir, crt, gridLayerName, gridX, gridY, parent=None):
+    def __init__(self, rawFile, projectPlanFolder, useRawProcessedFolders, crt, gridLayerName, gridX, gridY, parent=None):
         super(ArkGeorefDialog, self).__init__(parent)
         self.setupUi(self)
 
@@ -78,8 +80,19 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
             self.showText('')
             self.m_runButton.setEnabled(False)
             self.m_runCloseButton.setEnabled(False)
-        self.crt = crt
 
+        self.crt = crt
+        self.projectPlanFolder = projectPlanFolder
+        if useRawProcessedFolders:
+            self.rawFolder = QDir(self.projectPlanFolder.absolutePath() + '/raw')
+            if (not self.rawFolder.exists()):
+                self.rawFolder = self.projectPlanFolder
+            self.processedFolder = QDir(self.projectPlanFolder.absolutePath() + '/processed')
+            if (not self.processedFolder.exists()):
+                self.projectPlanFolder.mkdir('processed')
+        else:
+            self.rawFolder = self.projectPlanFolder
+            self.processedFolder = self.projectPlanFolder
         self.rawFile = rawFile
         self.showText('Raw File: \'' + self.rawFile.absoluteFilePath() + '\'')
         if (not self.rawFile.exists()):
@@ -90,7 +103,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.showText('GCP File: \'' + self.pointFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.showText('GCP file found, will be used for default ground control points')
-        self.geoFile = QFileInfo(geoDir, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
+        self.geoFile = QFileInfo(self.processedFolder, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
         self.showText('Geo File: \'' + self.geoFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.showText('Warning: Georeferenced file found, will be overwritten with new file!')
@@ -306,7 +319,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gdalArgs = []
         self.gdalCommand = ''
         cropped = self.rawPixmap.copy(0, 0, self.rawPixmap.width(), int(self.rawPixmap.height() * 0.83))
-        cropped.save(self.tempPath.absolutePath() + '/arkplan_crop.png')
+        cropped.save(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png')
         self.runTranslateStep()
 
     def runTranslateStep(self):
@@ -317,8 +330,8 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gdalArgs.extend(['-gcp', str(self.gcp1.x()), str(self.gcp1.y()), str(self.geo1.x()), str(self.geo1.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp2.x()), str(self.gcp2.y()), str(self.geo2.x()), str(self.geo2.y())])
         self.gdalArgs.extend(['-gcp', str(self.gcp3.x()), str(self.gcp3.y()), str(self.geo3.x()), str(self.geo3.y())])
-        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_crop.png')
-        self.gdalArgs.append(self.tempPath.absolutePath() + '/arkplan_trans.tiff')
+        self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png')
+        self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdal_translate.absoluteFilePath(), self.gdalArgs)
 
@@ -332,7 +345,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
         self.gdalArgs.extend(['-co', 'COMPRESS=LZW'])
         self.gdalArgs.append('-dstalpha')
         self.gdalArgs.append('-overwrite')
-        self.gdalArgs.append('\"' + self.tempPath.absolutePath() + '/arkplan_trans.tiff' + '\"')
+        self.gdalArgs.append('\"' + self.projectPlanFolder.absolutePath() + '/arkplan_trans.tiff' + '\"')
         self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
         self.gdalCommand = self.gdalwarp.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdalCommand)

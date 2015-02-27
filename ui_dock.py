@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_m_arkPlanDockWidget(object):
     def setupUi(self, m_arkPlanDockWidget):
         m_arkPlanDockWidget.setObjectName(_fromUtf8("m_arkPlanDockWidget"))
-        m_arkPlanDockWidget.resize(410, 903)
+        m_arkPlanDockWidget.resize(390, 903)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -45,7 +45,7 @@ class Ui_m_arkPlanDockWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 390, 855))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 370, 855))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))

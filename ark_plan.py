@@ -336,59 +336,53 @@ class ArkPlan:
             self.settings.bufferGroupIndex = self.getGroupIndex(self.settings.bufferGroupName)
 
         if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
-            self.schematicBuffer = self.createStandardBuffer(self.settings.schematicBufferName(), self.settings.schematicLayerName(), 'Polygon')
-            self.dock.setSchematicsBuffer(self.schematicBuffer)
+            self.schematicBuffer = self.createLayer('Polygon', self.settings.schematicBufferName(), self.settings.schematicLayerName(), 'memory')
+            if (self.schematicBuffer.isValid()):
+                self.addLayerToLegend(self.schematicBuffer, self.settings.bufferGroupIndex)
+                self.schematicBuffer.startEditing()
+                self.dock.setSchematicsBuffer(self.schematicBuffer)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self.createStandardBuffer(self.settings.polygonsBufferName(), self.settings.polygonsLayerName(), 'Polygon')
-            self.dock.setPolygonsBuffer(self.polygonsBuffer)
+            self.polygonsBuffer = self.createLayer('Polygon', self.settings.polygonsBufferName(), self.settings.polygonsLayerName(), 'memory')
+            if (self.polygonsBuffer.isValid()):
+                self.addLayerToLegend(self.polygonsBuffer, self.settings.bufferGroupIndex)
+                self.polygonsBuffer.startEditing()
+                self.dock.setPolygonsBuffer(self.polygonsBuffer)
 
         if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self.createStandardBuffer(self.settings.linesBufferName(), self.settings.linesLayerName(),'LineString')
-            self.dock.setLinesBuffer(self.linesBuffer)
+            self.linesBuffer = self.createLayer('LineString', self.settings.linesBufferName(), self.settings.linesLayerName(), 'memory')
+            if (self.linesBuffer.isValid()):
+                self.addLayerToLegend(self.linesBuffer, self.settings.bufferGroupIndex)
+                self.linesBuffer.startEditing()
+                self.dock.setLinesBuffer(self.linesBuffer)
 
-        if self.pointsBuffer is None:
-            self.pointsBuffer = self.createPointsLayer(self.settings.pointsBufferName(), 'memory')
-            QgsMapLayerRegistry.instance().addMapLayer(self.pointsBuffer)
-        self.pointsBuffer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + self.settings.pointsLayerName() + '.qml')
-        self.settings.iface.legendInterface().moveLayer(self.pointsBuffer, self.settings.bufferGroupIndex)
-        self.settings.iface.legendInterface().refreshLayerSymbology(self.pointsBuffer)
-        self.pointsBuffer.startEditing()
+        if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
+            self.pointsBuffer = self.createLayer('Point', self.settings.pointsBufferName(), self.settings.pointsLayerName(), 'memory')
+            if (self.pointsBuffer.isValid()):
+                self.addLayerToLegend(self.pointsBuffer, self.settings.bufferGroupIndex)
+                self.pointsBuffer.startEditing()
+                self.dock.setLinesBuffer(self.pointsBuffer)
 
-    def createStandardBuffer(self, bufferName, styleName, geometry):
-        buffer = self.createStandardLayer(geometry, bufferName, 'memory')
-        if buffer.isValid():
-            QgsMapLayerRegistry.instance().addMapLayer(buffer)
-            self.dock.setLinesBuffer(buffer)
-            buffer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + styleName + '.qml')
-            self.settings.iface.legendInterface().moveLayer(buffer, self.settings.bufferGroupIndex)
-            self.settings.iface.legendInterface().refreshLayerSymbology(buffer)
-            buffer.startEditing()
-            return buffer
+    def addLayerToLegend(self, layer, group):
+        if layer.isValid():
+            QgsMapLayerRegistry.instance().addMapLayer(layer)
+            self.settings.iface.legendInterface().moveLayer(layer, group)
+            self.settings.iface.legendInterface().refreshLayerSymbology(layer)
 
-    def createPointsLayer(self, name, provider):
-        vl = QgsVectorLayer("Point?crs=" + self.crs + "&index=yes", name, provider)
-        pr = vl.dataProvider()
-        pr.addAttributes([QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
+    def createLayer(self, type, name, style, provider):
+        layer = QgsVectorLayer(type + "?crs=" + self.crs + "&index=yes", name, provider)
+        if (layer.isValid()):
+            attributes = [QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
                           QgsField(self.settings.sourceAttributeName,  QVariant.String, '', self.settings.sourceAttributeSize),
                           QgsField(self.settings.typeAttributeName, QVariant.String, '', self.settings.typeAttributeSize),
-                          QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize),
-                          QgsField(self.settings.elevationAttributeName, QVariant.Double, '', self.settings.elevationAttributeSize, self.settings.elevationAttributePrecision)])
-        self._setDefaultSnapping(vl)
-        #TODO set symbols
-        return vl
-
-    def createStandardLayer(self, type, name, provider):
-        vl = QgsVectorLayer(type + "?crs=" + self.crs + "&index=yes", name, provider)
-        if (vl.isValid()):
-            pr = vl.dataProvider()
-            pr.addAttributes([QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
-                              QgsField(self.settings.sourceAttributeName,  QVariant.String, '', self.settings.sourceAttributeSize),
-                              QgsField(self.settings.typeAttributeName, QVariant.String, '', self.settings.typeAttributeSize),
-                              QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize)])
-            self._setDefaultSnapping(vl)
-        #TODO set symbols
-        return vl
+                          QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize)]
+            if (type.lower() == 'point'):
+                attributes.append(QgsField(self.settings.elevationAttributeName, QVariant.Double, '', self.settings.elevationAttributeSize, self.settings.elevationAttributePrecision))
+            layer.dataProvider().addAttributes(attributes)
+            layer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + style + '.qml')
+            self._setDefaultSnapping(layer)
+        #TODO set symbols?
+        return layer
 
     def clearBuffer(self, type, buffer):
         buffer.selectAll()

@@ -27,8 +27,9 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
 import ui_dock
 import snapping_widgets
+from dock import *
 
-class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
+class ArkPlanDock(QgsDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
@@ -54,10 +55,9 @@ class ArkPlanDock(QDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
     showPolygonsChanged = pyqtSignal(int)
     showSchematicsChanged = pyqtSignal(int)
 
-    def __init__(self, iface, parent=None):
+    def __init__(self, parent=None):
         super(ArkPlanDock, self).__init__(parent)
         self.setupUi(self)
-        self.iface = iface
 
         self.m_loadRawButton.clicked.connect(self.loadRawFileSelected)
         self.m_loadGeoButton.clicked.connect(self.loadGeoFileSelected)

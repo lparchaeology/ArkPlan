@@ -420,4 +420,5 @@ class Ui_m_arkPlanDockWidget(object):
         self.m_mergeButton.setToolTip(_translate("m_arkPlanDockWidget", "Move new context to main layers", None))
         self.m_mergeButton.setText(_translate("m_arkPlanDockWidget", "Merge", None))
 
+from dock import QgsDockWidget
 from snapping_widgets import SnappingToolButton, TopoEditToolButton

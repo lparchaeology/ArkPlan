@@ -191,12 +191,11 @@ class ArkPlan:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = ':/plugins/ArkPlan/icon.png'
-        self.menuAction = self.add_action(icon_path, text=self.tr(u'ArkPlan'), callback=self.run, checkable=True, parent=self.settings.iface.mainWindow())
         self.projectSettingsAction = self.add_action(icon_path, text=self.tr(u'ArkPlan Settings'), callback=self.settings.showSettingsDialog, checkable=False, parent=self.settings.iface.mainWindow())
 
-        self.dock = ArkPlanDock(self.settings.iface)
-        self.dock.visibilityChanged.connect(self.setDockVisibility)
-        self.dock.dockLocationChanged.connect(self.setDockLocation)
+        self.dock = ArkPlanDock()
+        self.dock.load(self.settings.iface, Qt.RightDockWidgetArea, self.menu, self.toolbar, icon_path, self.tr(u'Draw Archaeological Plans'))
+        self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
@@ -241,8 +240,7 @@ class ArkPlan:
             self.settings.iface.removeToolBarIcon(action)
 
         # Unload the dock
-        self.settings.iface.removeDockWidget(self.dock)
-        self.dock.deleteLater()
+        self.dock.unload()
 
     def configureProject(self):
         if (self.settings.showSettingsDialog() and self.settings.dataDir().exists() and self.settings.planDir().exists()):
@@ -251,19 +249,10 @@ class ArkPlan:
         else:
             self.settings.setIsConfigured(False)
 
-    def run(self):
-        if self.menuAction.isChecked():
+    def run(self, checked):
+        if checked:
             if not self.initialised:
                 self.initialise()
-            self.settings.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
-        else:
-            self.settings.iface.removeDockWidget(self.dock)
-
-    def setDockLocation(self, location):
-        self.dockLocation = location
-
-    def setDockVisibility(self, visible):
-        self.menuAction.setChecked(visible)
 
     def groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.settings.dataGroupIndex):

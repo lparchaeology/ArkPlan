@@ -32,6 +32,7 @@ import resources_rc
 from ark_plan_dock import ArkPlanDock
 from ark_georef_dialog import ArkGeorefDialog
 from settings import *
+from layers import *
 from ark_map_tools import *
 from snap_map_tools import *
 from ark_plan_util import *
@@ -47,25 +48,14 @@ class ArkPlan:
 
     # Internal variables
 
-    crs = 'EPSG:27700'
     initialised = False
     dockLocation = Qt.RightDockWidgetArea
     siteCode = ''
     context = 0
     source = '0'
     comment = ''
-    geoLayer = QgsRasterLayer()
 
-    pointsLayer = None
-    linesLayer = None
-    polygonsLayer = None
-    schematicLayer = None
-    gridPointsLayer = None
-
-    pointsBuffer = None
-    linesBuffer = None
-    polygonsBuffer = None
-    schematicBuffer = None
+    layers = None  # LayerManager
 
     levelsMapTool = None
     currentMapTool = None
@@ -73,6 +63,7 @@ class ArkPlan:
     def __init__(self, iface):
 
         self.settings = Settings('ArkPlan', iface)
+        self.layers = LayerManager(self.settings)
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
@@ -213,26 +204,17 @@ class ArkPlan:
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.dock.showLevelsChanged.connect(self.showLevels)
-        self.dock.showLinesChanged.connect(self.showLines)
-        self.dock.showPolygonsChanged.connect(self.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.showSchematics)
+        self.dock.showPointsChanged.connect(self.layers.showPoints)
+        self.dock.showLinesChanged.connect(self.layers.showLines)
+        self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
 
-        self.dock.contextFilterChanged.connect(self.applyContextFilter)
+        self.dock.contextFilterChanged.connect(self.layers.applyContextFilter)
 
     def unload(self):
 
-        # Remove the levels form the legend
-        if (self.pointsBuffer is not None and self.pointsBuffer.isValid()):
-            QgsMapLayerRegistry.instance().removeMapLayer(self.pointsBuffer.id())
-        if self.linesBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
-        if self.polygonsBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
-        if self.schematicBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
-        if (self.settings.bufferGroupIndex >= 0):
-            self.settings.iface.legendInterface().removeGroup(self.settings.bufferGroupIndex)
+        # Remove the layers from the legend
+        self.layers.unload()
 
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -254,157 +236,24 @@ class ArkPlan:
             if not self.initialised:
                 self.initialise()
 
-    def groupIndexChanged(self, oldIndex, newIndex):
-        if (oldIndex == self.settings.dataGroupIndex):
-            self.settings.dataGroupIndex = newIndex
-        elif (oldIndex == self.settings.bufferGroupIndex):
-            self.settings.bufferGroupIndex = newIndex
-        elif (oldIndex == self.settings.planGroupIndex):
-            self.settings.planGroupIndex = newIndex
-
-    def loadLayerByName(self, dir, name, groupIndex):
-        # If the layer is already loaded, use it and return
-        layerList = QgsMapLayerRegistry.instance().mapLayersByName(name)
-        if (len(layerList) > 0):
-            self.settings.iface.legendInterface().moveLayer(layerList[0], groupIndex)
-            return layerList[0]
-        #TODO Check if exists, if not then create!
-        # Otherwise load the layer and add it to the legend
-        layer = QgsVectorLayer(dir.absolutePath() + '/' + name + '.shp', name, "ogr")
-        if (layer.isValid()):
-            self._setDefaultSnapping(layer)
-            # TODO Check for other locations of style file
-            layer.loadNamedStyle(dir.absolutePath() + '/' + name + '.qml')
-            QgsMapLayerRegistry.instance().addMapLayer(layer)
-            self.settings.iface.legendInterface().moveLayer(layer, groupIndex)
-            self.settings.iface.legendInterface().refreshLayerSymbology(layer)
-            return layer
-        return None
-
     def initialise(self):
 
         if (not self.settings.isConfigured()):
             self.configureProject()
 
-        # If the legend indexes change make sure we stay updated
-        self.settings.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
+        self.layers.initialise()
+        self.dock.setSchematicsBuffer(self.layers.schematicBuffer)
+        self.dock.setPolygonsBuffer(self.layers.polygonsBuffer)
+        self.dock.setLinesBuffer(self.layers.linesBuffer)
+        self.dock.setLinesBuffer(self.layers.pointsBuffer)
+        self.dock.setSchematicsLayer(self.layers.schematicLayer)
+        self.dock.setPolygonsLayer(self.layers.polygonsLayer)
+        self.dock.setLinesLayer(self.layers.linesLayer)
 
         # If the map tool changes make sure we stay updated
         self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
 
-        self.createBufferLayers()
-        self.loadContextLayers()
         self.initialised = True
-
-    # Load the context layers if not already loaded
-    def loadContextLayers(self):
-        if (self.settings.dataGroupIndex < 0):
-            self.settings.dataGroupIndex = self.getGroupIndex(self.settings.dataGroupName)
-        if (self.schematicLayer is None):
-            self.schematicLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.schematicLayerName(), self.settings.dataGroupIndex)
-            self.dock.setSchematicsLayer(self.schematicLayer)
-        if (self.polygonsLayer is None):
-            self.polygonsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.polygonsLayerName(), self.settings.dataGroupIndex)
-            self.dock.setPolygonsLayer(self.polygonsLayer)
-        if (self.linesLayer is None):
-            self.linesLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.linesLayerName(), self.settings.dataGroupIndex)
-            self.dock.setLinesLayer(self.linesLayer)
-        if (self.pointsLayer is None):
-            self.pointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.pointsLayerName(), self.settings.dataGroupIndex)
-        if (self.gridPointsLayer is None):
-            self.gridPointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.gridPointsLayerName(), self.settings.dataGroupIndex)
-
-    def _setDefaultSnapping(self, layer):
-        # TODO Check if layer id already in settings, only set defaults if it isn't
-        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, self.settings.defaultSnappingMode(), self.settings.defaultSnappingUnit(), self.settings.defaultSnappingTolerance(), False)
-
-    # Setup the in-memory buffer layers
-    def createBufferLayers(self):
-
-        if (self.settings.bufferGroupIndex < 0):
-            self.settings.bufferGroupIndex = self.getGroupIndex(self.settings.bufferGroupName)
-
-        if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
-            self.schematicBuffer = self.createLayer('Polygon', self.settings.schematicBufferName(), self.settings.schematicLayerName(), 'memory')
-            if (self.schematicBuffer.isValid()):
-                self.addLayerToLegend(self.schematicBuffer, self.settings.bufferGroupIndex)
-                self.schematicBuffer.startEditing()
-                self.dock.setSchematicsBuffer(self.schematicBuffer)
-
-        if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self.createLayer('Polygon', self.settings.polygonsBufferName(), self.settings.polygonsLayerName(), 'memory')
-            if (self.polygonsBuffer.isValid()):
-                self.addLayerToLegend(self.polygonsBuffer, self.settings.bufferGroupIndex)
-                self.polygonsBuffer.startEditing()
-                self.dock.setPolygonsBuffer(self.polygonsBuffer)
-
-        if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self.createLayer('LineString', self.settings.linesBufferName(), self.settings.linesLayerName(), 'memory')
-            if (self.linesBuffer.isValid()):
-                self.addLayerToLegend(self.linesBuffer, self.settings.bufferGroupIndex)
-                self.linesBuffer.startEditing()
-                self.dock.setLinesBuffer(self.linesBuffer)
-
-        if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
-            self.pointsBuffer = self.createLayer('Point', self.settings.pointsBufferName(), self.settings.pointsLayerName(), 'memory')
-            if (self.pointsBuffer.isValid()):
-                self.addLayerToLegend(self.pointsBuffer, self.settings.bufferGroupIndex)
-                self.pointsBuffer.startEditing()
-                self.dock.setLinesBuffer(self.pointsBuffer)
-
-    def addLayerToLegend(self, layer, group):
-        if layer.isValid():
-            QgsMapLayerRegistry.instance().addMapLayer(layer)
-            self.settings.iface.legendInterface().moveLayer(layer, group)
-            self.settings.iface.legendInterface().refreshLayerSymbology(layer)
-
-    def createLayer(self, type, name, style, provider):
-        layer = QgsVectorLayer(type + "?crs=" + self.crs + "&index=yes", name, provider)
-        if (layer.isValid()):
-            attributes = [QgsField(self.settings.contextAttributeName, QVariant.Int, '', self.settings.contextAttributeSize),
-                          QgsField(self.settings.sourceAttributeName,  QVariant.String, '', self.settings.sourceAttributeSize),
-                          QgsField(self.settings.typeAttributeName, QVariant.String, '', self.settings.typeAttributeSize),
-                          QgsField(self.settings.commentAttributeName, QVariant.String, '', self.settings.commentAttributeSize)]
-            if (type.lower() == 'point'):
-                attributes.append(QgsField(self.settings.elevationAttributeName, QVariant.Double, '', self.settings.elevationAttributeSize, self.settings.elevationAttributePrecision))
-            layer.dataProvider().addAttributes(attributes)
-            layer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + style + '.qml')
-            self._setDefaultSnapping(layer)
-        #TODO set symbols?
-        return layer
-
-    def clearBuffer(self, type, buffer):
-        buffer.selectAll()
-        if (buffer.selectedFeatureCount() > 0):
-            buffer.beginEditCommand('Clear buffer ' + type + ' data ' + str(self.context))
-            buffer.deleteSelectedFeatures()
-            buffer.endEditCommand()
-            buffer.commitChanges()
-            buffer.startEditing()
-        buffer.removeSelection()
-
-    def copyBuffer(self, type, buffer, layer):
-        buffer.selectAll()
-        if (buffer.selectedFeatureCount() > 0):
-            layer.startEditing()
-            layer.beginEditCommand('Merge context ' + type + ' data ' + str(self.context))
-            layer.addFeatures(buffer.selectedFeatures(), False)
-            layer.endEditCommand()
-            layer.commitChanges()
-        buffer.removeSelection()
-
-    def mergeBuffers(self):
-        self.copyBuffer('levels', self.pointsBuffer, self.pointsLayer)
-        self.copyBuffer('lines', self.linesBuffer, self.linesLayer)
-        self.copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer)
-        self.copyBuffer('schematic', self.schematicBuffer, self.schematicLayer)
-        self.clearBuffers()
-
-    def clearBuffers(self):
-        self.clearBuffer('levels', self.pointsBuffer)
-        self.clearBuffer('lines', self.linesBuffer)
-        self.clearBuffer('polygons', self.polygonsBuffer)
-        self.clearBuffer('schematic', self.schematicBuffer)
 
     # Plan Tools
 
@@ -426,7 +275,7 @@ class ArkPlan:
             geoFile = QFileInfo(fileName)
             md = planMetadata(geoFile.completeBaseName())
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
-            self.loadGeoLayer(geoFile)
+            self.layers.loadGeoLayer(geoFile)
 
     def setSite(self, siteCode):
         self.siteCode = siteCode
@@ -443,86 +292,18 @@ class ArkPlan:
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = ArkGeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.crs, self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
+        georefDialog = ArkGeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs(), self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
             self.loadGeoLayer(georefDialog.geoRefFile())
 
-    def loadGeoLayer(self, geoFile):
-        #TODO Check if already loaded, remove old one?
-        self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self.settings.planTransparency()/100.0)
-        QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
-        if (self.settings.planGroupIndex < 0):
-            self.settings.planGroupIndex = self.getGroupIndex(self.settings.planGroupName)
-        self.settings.iface.legendInterface().moveLayer(self.geoLayer, self.settings.planGroupIndex)
-        self.settings.iface.mapCanvas().setExtent(self.geoLayer.extent())
-
-    def getGroupIndex(self, groupName):
-        groupIndex = -1
-        i = 0
-        for name in self.settings.iface.legendInterface().groups():
-            if (groupIndex < 0 and name == groupName):
-                groupIndex = i
-            i += 1
-        if (groupIndex < 0):
-            groupIndex = self.settings.iface.legendInterface().addGroup(groupName)
-        return groupIndex
-
-    # Layers Management Methods
-
-    def showLevels(self, status):
-        self.settings.iface.legendInterface().setLayerVisible(self.pointsLayer, status)
-
-    def showLines(self, status):
-        self.settings.iface.legendInterface().setLayerVisible(self.linesLayer, status)
-
-    def showPolygons(self, status):
-        self.settings.iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
-
-    def showSchematics(self, status):
-        self.settings.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
-
-    def applyContextFilter(self, contextList):
-        clause = '"context" = %d'
-        filter = ''
-        if (len(contextList) > 0):
-            filter += clause % contextList[0]
-            for context in contextList[1:]:
-                filter += ' or '
-                filter += clause % context
-        self.applyLayerFilter(self.pointsLayer, filter)
-        self.applyLayerFilter(self.linesLayer, filter)
-        self.applyLayerFilter(self.polygonsLayer, filter)
-        self.applyLayerFilter(self.schematicLayer, filter)
-
-    def applyLayerFilter(self, layer, filter):
-        if (self.settings.iface.mapCanvas().isDrawing()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Canvas is drawing')
-            return
-        if (layer.type() != QgsMapLayer.VectorLayer):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Not a vector layer')
-            return
-        if (layer.isEditable()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer is in editing mode')
-            return
-        if (not layer.dataProvider().supportsSubsetString()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Subsets not supported by layer')
-            return
-        if (len(layer.vectorJoins()) > 0):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer has joins')
-            return
-        layer.setSubsetString(filter)
-        self.settings.iface.mapCanvas().refresh()
-        self.settings.iface.legendInterface().refreshLayerSymbology(layer)
-
     # Levels Tool Methods
 
     def enableLevelsMode(self, type):
         #TODO disable all snapping
-        self.settings.iface.mapCanvas().setCurrentLayer(self.pointsBuffer)
-        self.settings.iface.legendInterface().setCurrentLayer(self.pointsBuffer)
+        self.settings.iface.mapCanvas().setCurrentLayer(self.layers.pointsBuffer)
+        self.settings.iface.legendInterface().setCurrentLayer(self.layers.pointsBuffer)
         if self.levelsMapTool is not None:
             del self.levelsMapTool
         self.levelsMapTool = LevelsMapTool(self.settings.iface.mapCanvas())
@@ -534,28 +315,35 @@ class ArkPlan:
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPoint(point))
         feature.setAttributes([self.context, self.source, type, self.comment, elevation])
-        self.pointsBuffer.beginEditCommand('Buffer level ' + str(self.context) + ' ' + type + ' ' + str(elevation))
-        self.pointsBuffer.addFeature(feature, True)
-        self.pointsBuffer.endEditCommand()
+        self.layers.pointsBuffer.beginEditCommand('Buffer level ' + str(self.context) + ' ' + type + ' ' + str(elevation))
+        self.layers.pointsBuffer.addFeature(feature, True)
+        self.layers.pointsBuffer.endEditCommand()
         self.settings.iface.mapCanvas().refresh()
 
-    # Map Tool Methods
+    # Layer Methods
+
+    def mergeBuffers(self):
+        self.layers.copyBuffers('Merge context data  ' + str(self.context))
+        self.clearBuffers()
+
+    def clearBuffers(self):
+        self.layers.clearBuffers('Clear buffer data ' + str(self.context))
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Segment, self.tr('Add line segment feature'))
+        self.enableMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Segment, self.tr('Add line segment feature'))
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.linesBuffer, QgsMapToolAddFeature.Line, self.tr('Add line feature'))
+        self.enableMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Line, self.tr('Add line feature'))
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.polygonsBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add polygon feature'))
+        self.enableMapTool(typeAttribute, self.layers.polygonsBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add polygon feature'))
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.schematicBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add schematic feature'))
+        self.enableMapTool(typeAttribute, self.layers.schematicBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add schematic feature'))
 
     def enableMapTool(self, typeAttribute, layer, featureType, toolName):
         #TODO configure snapping

@@ -40,7 +40,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>370</width>
+         <width>373</width>
          <height>855</height>
         </rect>
        </property>
@@ -605,7 +605,7 @@
               </widget>
              </item>
              <item row="1" column="1" alignment="Qt::AlignHCenter">
-              <widget class="QCheckBox" name="m_showLevelsCheck">
+              <widget class="QCheckBox" name="m_showPointsCheck">
                <property name="toolTip">
                 <string>Show existing levels</string>
                </property>
@@ -620,7 +620,7 @@
              <item row="0" column="1">
               <widget class="QLabel" name="label_8">
                <property name="text">
-                <string>Levels</string>
+                <string>Points:</string>
                </property>
               </widget>
              </item>
@@ -793,11 +793,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QgsDockWidget</class>
-   <extends>QDockWidget</extends>
-   <header>dock.h</header>
-  </customwidget>
-  <customwidget>
    <class>SnappingToolButton</class>
    <extends>QToolButton</extends>
    <header>snapping_widgets.h</header>
@@ -806,6 +801,12 @@
    <class>TopoEditToolButton</class>
    <extends>QToolButton</extends>
    <header>snapping_widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>dock.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

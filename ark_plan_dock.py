@@ -50,7 +50,7 @@ class ArkPlanDock(QgsDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
 
     contextFilterChanged = pyqtSignal(list)
 
-    showLevelsChanged = pyqtSignal(int)
+    showPointsChanged = pyqtSignal(int)
     showLinesChanged = pyqtSignal(int)
     showPolygonsChanged = pyqtSignal(int)
     showSchematicsChanged = pyqtSignal(int)
@@ -103,7 +103,7 @@ class ArkPlanDock(QgsDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
         self.filterLineEdit.returnPressed.connect(self.contextFilterSelected)
         self.m_contextFilterButton.clicked.connect(self.contextFilterSelected)
 
-        self.m_showLevelsCheck.stateChanged.connect(self.showLevelsChanged)
+        self.m_showPointsCheck.stateChanged.connect(self.showPointsChanged)
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
         self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
         self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)

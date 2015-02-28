@@ -136,8 +136,9 @@ class Settings():
         self.project.writeEntry(self.pluginName, 'planTransparency', transparency)
 
     def projectCrs(self):
+        return u'EPSG:27700'
         # TODO Find why this doesn't work!
-        return unicode(QgsProject.instance().readEntry('SpatialRefSys', '/ProjectCRSProj4String', u'')[0])
+        # return unicode(QgsProject.instance().readEntry('SpatialRefSys', '/ProjectCRSProj4String', u'')[0])
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

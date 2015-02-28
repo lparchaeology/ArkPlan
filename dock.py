@@ -26,23 +26,24 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QAction, QIcon
 
-class GgsDockWidget(QDockWidget):
+class QgsDockWidget(QDockWidget):
 
     toggled = pyqtSignal(bool)
 
     _iface = None  # QgsInterface()
-    _menuAction = QAction()
+    _menuAction = None  # QAction()
     _dockLocation = None  # Qt::DockWidgetArea
 
     def __init__(self, iface, parent=None):
-        super(GgsDockWidget, self).__init__(parent)
+        super(QgsDockWidget, self).__init__(parent)
 
     def load(self, iface, location, menu, toolbar, iconPath, actionText, tip='', whatsThis=''):
         self._iface = iface
+        self._dockLocation = location
         icon = QIcon(iconPath)
-        self._menuAction = QAction(icon, actionText, self.iface.mainWindow())
+        self._menuAction = QAction(icon, actionText, self._iface.mainWindow())
         self._menuAction.toggled.connect(self._toggle)
-        self._menuAction.setEnabled(enabled_flag)
+        self._menuAction.toggled.connect(self.toggled)
         self._menuAction.setCheckable(True)
         self._menuAction.setStatusTip(tip)
         self._menuAction.setWhatsThis(whatsThis)
@@ -53,8 +54,8 @@ class GgsDockWidget(QDockWidget):
         self.visibilityChanged.connect(self._menuAction.setChecked)
         self.dockLocationChanged.connect(self._updateDockLocation)
 
-    def unload(self)
-        self._iface.removeToolBarIcon(self.dockAction)
+    def unload(self):
+        self._iface.removeToolBarIcon(self._menuAction)
         self._iface.removeDockWidget(self)
         self.deleteLater()
 
@@ -69,6 +70,6 @@ class GgsDockWidget(QDockWidget):
 
     def _toggle(self, checked):
         if checked:
-            self._iface.addDockWidget(self._dockLocation, self.dock)
+            self._iface.addDockWidget(self._dockLocation, self)
         else:
-            self._iface.removeDockWidget(self.dock)
+            self._iface.removeDockWidget(self)

@@ -21,19 +21,29 @@
  ***************************************************************************/
 """
 
+import os.path
+
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QDir
-from PyQt4.QtGui import QDialog, QFileDialog
+from PyQt4.QtCore import Qt, QSettings, QDir, QObject
+from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
 
 from qgis.core import QgsProject, QgsSnapper
 
 from settings_dialog_base import *
 
-class Settings():
+import resources_rc
+
+class Settings(QObject):
 
     iface = None # QgsInteface()
     project = None # QgsProject()
-    pluginName = ''
+    pluginName = 'Ark'
+    pluginPath = ''
+    pluginIconPath = ':/plugins/ArkPlan/icon.png'
+
+    menuName = ''
+    toolbar = None  # QToolBar()
+    settingsAction = None  # QAction()
 
     projectGroupName = 'Ark'
     projectGroupIndex = -1
@@ -67,16 +77,50 @@ class Settings():
     elevationAttributeSize = 5
     elevationAttributePrecision = 2
 
-    def __init__(self, pluginName, iface):
-        self.project = QgsProject.instance()
-        self.pluginName = pluginName
+    def __init__(self, iface):
+        super(Settings, self).__init__()
         self.iface = iface
+        self.project = QgsProject.instance()
+
+        self.pluginName = self.tr(u'Ark')
+        self.pluginPath = os.path.dirname(__file__)
+
+        # Declare instance attributes
+        self.menuName = self.tr(u'&Ark')
+        self.toolbar = self.iface.addToolBar(self.pluginName)
+        self.toolbar.setObjectName(self.pluginName)
+
+    def initGui(self):
+        self.settingsAction = self.createMenuAction(self.tr(u'ArkPlan Settings'), self.pluginIconPath, False)
+        self.settingsAction.toggled.connect(self.showSettingsDialog)
+
+    def unload(self):
+        self.iface.removePluginMenu(self.tr(u'&ArkPlan'), action)
+        self.iface.removeToolBarIcon(action)
+
+    def createMenuAction(self, actionText, iconPath, checkable, tip='', whatsThis=''):
+        icon = QIcon(iconPath)
+        action = QAction(icon, actionText, self.iface.mainWindow())
+        action.setCheckable(checkable)
+        action.setStatusTip(tip)
+        action.setWhatsThis(whatsThis)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(self.menuName, action)
+        return action
 
     def isConfigured(self):
         return self.project.readBoolEntry(self.pluginName, 'configured', False)[0]
 
-    def setIsConfigured(self, configured):
+    def _setIsConfigured(self, configured):
         self.project.writeEntry(self.pluginName, 'configured', configured)
+
+    def configure(self):
+        ret = self.showSettingsDialog()
+        # TODO more validation, check if files exist, etc
+        if (self.dataDir().exists() and self.planDir().exists()):
+            self._setIsConfigured(True)
+        else:
+            self._setIsConfigured(False)
 
     def dataDir(self):
         return QDir(self.dataPath())

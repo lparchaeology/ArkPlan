@@ -48,12 +48,11 @@ class LayerManager:
     schematicBuffer = None
 
     def __init__(self, settings):
-
         self.settings = settings
-
-    def initialise(self):
         # If the legend indexes change make sure we stay updated
         self.settings.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
+
+    def initialise(self):
         self.createBufferLayers()
         self.loadContextLayers()
 

@@ -296,7 +296,7 @@ class ArkPlan:
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
-            self.loadGeoLayer(georefDialog.geoRefFile())
+            self.layers.loadGeoLayer(georefDialog.geoRefFile())
 
     # Levels Tool Methods
 

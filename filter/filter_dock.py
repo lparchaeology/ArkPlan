@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+                                      Ark
+                                 A QGIS plugin
+             QGIS Plugin for ARK, the Archaeological Recording Kit
+                              -------------------
+        begin                : 2015-03-02
+        git sha              : $Format:%H$
+        copyright            : (C) 2015 by L - P: Heritage LLP
+        copyright            : (C) 2015 by John Layt
+        email                : john@layt.net
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
+
+from PyQt4 import uic
+from PyQt4.QtCore import Qt, pyqtSignal
+
+from ..core.dock import *
+
+import filter_dock_base
+
+class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
+
+    contextFilterChanged = pyqtSignal(list)
+    subGroupFilterChanged = pyqtSignal(list)
+    groupFilterChanged = pyqtSignal(list)
+
+    buildFilterSelected = pyqtSignal()
+    clearFilterSelected = pyqtSignal()
+    zoomSelected = pyqtSignal()
+    loadDataSelected = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(FilterDock, self).__init__(parent)
+        self.setupUi(self)
+
+        self.contextFilterCombo.activated.connect(self._contextFilterSelected)
+        self.contextFilterLineEdit = self.contextFilterCombo.lineEdit()
+        self.contextFilterLineEdit.returnPressed.connect(self._contextFilterSelected)
+        self.contextFilterButton.clicked.connect(self._contextFilterSelected)
+
+        self.subGroupFilterCombo.activated.connect(self._subGroupFilterSelected)
+        self.subGroupFilterLineEdit = self.subGroupFilterCombo.lineEdit()
+        self.subGroupFilterLineEdit.returnPressed.connect(self._subGroupFilterSelected)
+        self.subGroupFilterButton.clicked.connect(self._subGroupFilterSelected)
+
+        self.groupFilterCombo.activated.connect(self._groupFilterSelected)
+        self.groupFilterLineEdit = self.groupFilterCombo.lineEdit()
+        self.groupFilterLineEdit.returnPressed.connect(self._groupFilterSelected)
+        self.groupFilterButton.clicked.connect(self._groupFilterSelected)
+
+        self.buildFilterButton.clicked.connect(self.buildFilterSelected)
+        self.clearFilterButton.clicked.connect(self._clearFilterClicked)
+        self.loadDataButton.clicked.connect(self.loadDataSelected)
+        self.zoomButton.clicked.connect(self.zoomSelected)
+
+        self.enableGroupFilters(False)
+
+    def _contextFilterSelected(self):
+        self.subGroupFilterLineEdit.clear()
+        self.groupFilterLineEdit.clear()
+        filter = self.contextFilterCombo.currentText()
+        filter = filter.replace(',', ' ')
+        contexts = [int(cxtStr) for cxtStr in filter.split()]
+        self.contextFilterChanged.emit(contexts)
+
+    def _subGroupFilterSelected(self):
+        self.contextFilterLineEdit.clear()
+        self.groupFilterLineEdit.clear()
+        filter = self.subGroupFilterCombo.currentText()
+        filter = filter.replace(',', ' ')
+        subGroups = [int(cxtStr) for cxtStr in filter.split()]
+        self.subGroupFilterChanged.emit(subGroups)
+
+    def _groupFilterSelected(self):
+        self.contextFilterLineEdit.clear()
+        self.subGroupFilterLineEdit.clear()
+        filter = self.groupFilterCombo.currentText()
+        filter = filter.replace(',', ' ')
+        groups = [int(cxtStr) for cxtStr in filter.split()]
+        self.groupFilterChanged.emit(groups)
+
+    def _clearFilterClicked(self):
+        self.contextFilterLineEdit.clear()
+        self.subGroupFilterLineEdit.clear()
+        self.groupFilterLineEdit.clear()
+        self.clearFilterSelected.emit()
+
+    def enableGroupFilters(self, status):
+        self.subGroupFilterCombo.setEnabled(status)
+        self.subGroupFilterButton.setEnabled(status)
+        self.groupFilterCombo.setEnabled(status)
+        self.groupFilterButton.setEnabled(status)
+
+    def displayFilter(self, filter):
+        self.filterEdit.setText(filter)

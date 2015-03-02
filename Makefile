@@ -1,12 +1,13 @@
 #/***************************************************************************
-# ArkPlan
-#
-# Plugin to assist in digitising of Archaeological plans.
-#							 -------------------
-#		begin				: 2014-12-07
-#		git sha				: $Format:%H$
-#		copyright			: (C) 2014 by John Layt
-#		email				: john@layt.net
+#                                      Ark
+#                                 A QGIS plugin
+#             QGIS Plugin for ARK, the Archaeological Recording Kit
+#                              -------------------
+#        begin                : 2015-03-02
+#        git sha              : $Format:%H$
+#        copyright            : (C) 2015 by L - P: Heritage LLP
+#        copyright            : (C) 2015 by John Layt
+#        email                : john@layt.net
 # ***************************************************************************/
 #
 #/***************************************************************************
@@ -38,10 +39,9 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	ark_plan.py \
-	ark_plan_dialog.py
+	ark.py
 
-PLUGINNAME = ArkPlan
+PLUGINNAME = Ark
 
 PY_FILES = \
 	ark_plan.py \

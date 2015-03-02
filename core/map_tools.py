@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlan
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+             QGIS Plugin for ARK, the Archaeological Recording Kit
                               -------------------
-        begin                : 2015-02-23
+        begin                : 2015-03-02
         git sha              : $Format:%H$
         copyright            : (C) 2015 by John Layt
         copyright            : (C) 2015 by L - P: Heritage LLP
@@ -55,6 +55,34 @@ capture_point_cursor = [
   "      ++.++     ",
   "       +.+      "
 ]
+
+
+# Tool to add a level, no snapping
+class LevelsMapTool(QgsMapTool):
+
+    levelAdded = pyqtSignal(QgsPoint, 'QString', float)
+
+    featureAdded = pyqtSignal(list, QGis.GeometryType, 'QString')
+
+    featureType = ''
+
+    def __init__(self, canvas, type='lvl'):
+        QgsMapTool.__init__(self, canvas)
+
+    def featureType(self):
+        return self.featureType
+
+    def setType(self, featureType):
+        self.featureType = featureType
+
+    def canvasPressEvent(self, e):
+        if e.button() != Qt.LeftButton:
+            return
+        elevation, ok = QInputDialog.getDouble(None, 'Add Level', 'Please enter the elevation in meters (m):',
+                                               0, -100, 100, 2)
+        if ok:
+            point = self.toMapCoordinates(e.pos())
+            self.levelAdded.emit(point, self.featureType, elevation)
 
 
 # Tool to show snapping points

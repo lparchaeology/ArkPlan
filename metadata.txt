@@ -7,11 +7,11 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=ArkPlan
+name=Ark
 qgisMinimumVersion=2.0
-description=Plugin to assist in digitising of Archaeological plans.
+description=QGIS Plugin for ARK, the Archaeological Recording Kit
 version=0.1
-author=John Layt
+author=John Layt / L - P: Heritage LLP
 email=john@layt.net
 
 # End of mandatory metadata
@@ -24,13 +24,12 @@ email=john@layt.net
 # Tags are comma separated with spaces allowed
 tags=
 
-homepage=
-tracker=
-repository=
+homepage=https://github.com/jlayt/ArkPlan
+tracker=https://github.com/jlayt/ArkPlan
+repository=https://github.com/jlayt/ArkPlan
 icon=icon.png
 # experimental flag
 experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
-

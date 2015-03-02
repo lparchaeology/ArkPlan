@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlanDialog
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
-                             -------------------
-        begin                : 2015-01-10
+             QGIS Plugin for ARK, the Archaeological Recording Kit
+                              -------------------
+        begin                : 2015-03-02
         git sha              : $Format:%H$
+        copyright            : (C) 2015 by L - P: Heritage LLP
         copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
@@ -25,12 +26,15 @@ import os
 
 from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice
 from PyQt4 import QtGui, uic
-from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer
-import ark_georef_dialog_base
-import ark_georef_graphics_view
-from ark_plan_util import *
 
-class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBase):
+from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer
+
+from ..plan.plan_util import *
+
+import georef_dialog_base
+import georef_graphics_view
+
+class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     # Internal variables
     gridPoint1 = QPoint()
@@ -69,7 +73,7 @@ class ArkGeorefDialog(QtGui.QDialog, ark_georef_dialog_base.Ui_ArkGeorefDialogBa
     gridYField = ''
 
     def __init__(self, rawFile, projectPlanFolder, useRawProcessedFolders, crt, gridLayerName, gridX, gridY, parent=None):
-        super(ArkGeorefDialog, self).__init__(parent)
+        super(GeorefDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.gdal_translate.setFile(QDir(self.gdalPath()), 'gdal_translate')

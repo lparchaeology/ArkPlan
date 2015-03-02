@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlanDialog
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+             QGIS Plugin for ARK, the Archaeological Recording Kit
                              -------------------
         begin                : 2015-02-28
         git sha              : $Format:%H$

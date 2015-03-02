@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ArkGeorefDialogBase</class>
- <widget class="QDialog" name="ArkGeorefDialogBase">
+ <class>GeorefDialogBase</class>
+ <widget class="QDialog" name="GeorefDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -473,7 +473,7 @@
           </layout>
          </item>
          <item>
-          <widget class="ArkGeorefGraphicsView" name="m_gridView1">
+          <widget class="GeorefGraphicsView" name="m_gridView1">
            <property name="interactive">
             <bool>false</bool>
            </property>
@@ -521,7 +521,7 @@
           </layout>
          </item>
          <item>
-          <widget class="ArkGeorefGraphicsView" name="m_planView">
+          <widget class="GeorefGraphicsView" name="m_planView">
            <property name="interactive">
             <bool>false</bool>
            </property>
@@ -569,7 +569,7 @@
           </layout>
          </item>
          <item>
-          <widget class="ArkGeorefGraphicsView" name="m_gridView2">
+          <widget class="GeorefGraphicsView" name="m_gridView2">
            <property name="interactive">
             <bool>false</bool>
            </property>
@@ -617,7 +617,7 @@
           </layout>
          </item>
          <item>
-          <widget class="ArkGeorefGraphicsView" name="m_gridView3">
+          <widget class="GeorefGraphicsView" name="m_gridView3">
            <property name="interactive">
             <bool>false</bool>
            </property>
@@ -636,9 +636,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ArkGeorefGraphicsView</class>
+   <class>GeorefGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>ark_georef_graphics_view.h</header>
+   <header>georef_graphics_view.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

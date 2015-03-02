@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlan
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+             QGIS Plugin for ARK, the Archaeological Recording Kit
                               -------------------
-        begin                : 2015-02-02
+        begin                : 2015-03-02
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by John Layt
+        copyright            : (C) 2015 by L - P: Heritage LLP
+        copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 

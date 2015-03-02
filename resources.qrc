@@ -1,14 +1,14 @@
 <RCC>
-    <qresource prefix="/plugins/ArkPlan" >
+    <qresource prefix="/plugins/Ark" >
         <file>icon.png</file>
     </qresource>
-    <qresource prefix="/plugins/ArkPlan" >
-        <file>iconSnapVertex.png</file>
+    <qresource prefix="/plugins/Ark/core" >
+        <file>core/iconSnapVertex.png</file>
     </qresource>
-    <qresource prefix="/plugins/ArkPlan" >
-        <file>iconSnapSegment.png</file>
+    <qresource prefix="/plugins/Ark/core" >
+        <file>core/iconSnapSegment.png</file>
     </qresource>
-    <qresource prefix="/plugins/ArkPlan" >
-        <file>iconSnapVertexSegment.png</file>
+    <qresource prefix="/plugins/Ark/core" >
+        <file>core/iconSnapVertexSegment.png</file>
     </qresource>
 </RCC>

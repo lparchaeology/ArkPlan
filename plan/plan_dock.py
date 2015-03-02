@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlanDialog
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
-                             -------------------
-        begin                : 2014-12-07
+             QGIS Plugin for ARK, the Archaeological Recording Kit
+                              -------------------
+        begin                : 2015-03-02
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by John Layt
+        copyright            : (C) 2015 by L - P: Heritage LLP
+        copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -22,14 +23,17 @@
 """
 
 import os
+
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
-import ui_dock
-import snapping_widgets
-from dock import *
 
-class ArkPlanDock(QgsDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
+from ..core.dock import *
+from ..core.snap_widgets import *
+
+import plan_dock_base
+
+class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
@@ -56,7 +60,7 @@ class ArkPlanDock(QgsDockWidget, ui_dock.Ui_m_arkPlanDockWidget):
     showSchematicsChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(ArkPlanDock, self).__init__(parent)
+        super(PlanDock, self).__init__(parent)
         self.setupUi(self)
 
         self.m_loadRawButton.clicked.connect(self.loadRawFileSelected)

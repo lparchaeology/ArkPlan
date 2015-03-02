@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>m_arkPlanDockWidget</class>
- <widget class="QgsDockWidget" name="m_arkPlanDockWidget">
+ <class>PlanDockWidget</class>
+ <widget class="QgsDockWidget" name="m_planDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -795,17 +795,17 @@
   <customwidget>
    <class>SnappingToolButton</class>
    <extends>QToolButton</extends>
-   <header>snapping_widgets.h</header>
+   <header>..core.snap_widgets.h</header>
   </customwidget>
   <customwidget>
    <class>TopoEditToolButton</class>
    <extends>QToolButton</extends>
-   <header>snapping_widgets.h</header>
+   <header>..core.snap_widgets.h</header>
   </customwidget>
   <customwidget>
    <class>QgsDockWidget</class>
    <extends>QDockWidget</extends>
-   <header>dock.h</header>
+   <header>..core.dock.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

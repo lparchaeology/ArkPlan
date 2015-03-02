@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlanDialog
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
-                             -------------------
-        begin                : 2015-01-10
+             QGIS Plugin for ARK, the Archaeological Recording Kit
+                              -------------------
+        begin                : 2015-03-02
         git sha              : $Format:%H$
+        copyright            : (C) 2015 by L - P: Heritage LLP
         copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
@@ -26,14 +27,14 @@ import os
 from PyQt4.QtCore import Qt, QEvent, qDebug, pyqtSignal, QPointF
 from PyQt4.QtGui import QGraphicsView
 
-class ArkGeorefGraphicsView(QGraphicsView):
+class GeorefGraphicsView(QGraphicsView):
 
     pointSelected = pyqtSignal(QPointF)
     buttonDown = False
     panning = False
 
     def __init__(self, parent=None):
-        super(ArkGeorefGraphicsView, self).__init__(parent)
+        super(GeorefGraphicsView, self).__init__(parent)
         self.setCursor(Qt.CrossCursor)
 
     def viewRect(self):

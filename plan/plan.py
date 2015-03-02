@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlan
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+             QGIS Plugin for ARK, the Archaeological Recording Kit
                               -------------------
-        begin                : 2015-03-01
+        begin                : 2015-03-02
         git sha              : $Format:%H$
+        copyright            : (C) 2015 by L - P: Heritage LLP
         copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
@@ -25,14 +26,14 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
 
-# Import the code for the dialog
-from ark_plan_dock import ArkPlanDock
-from ark_georef_dialog import ArkGeorefDialog
-from settings import *
-from layers import *
-from ark_map_tools import *
-from snap_map_tools import *
-from ark_plan_util import *
+from ..core.settings import Settings
+from ..core.layers import LayerManager
+from ..core.map_tools import *
+
+from ..georef.georef_dialog import GeorefDialog
+
+from plan_dock import PlanDock
+from plan_util import *
 
 class Plan(QObject):
 
@@ -57,8 +58,8 @@ class Plan(QObject):
         self.layers = layers
 
     def initGui(self):
-        self.dock = ArkPlanDock()
-        self.dock.load(self.settings, Qt.RightDockWidgetArea, self.tr(u'Draw Archaeological Plans'), ':/plugins/ArkPlan/icon.png')
+        self.dock = PlanDock()
+        self.dock.load(self.settings, Qt.RightDockWidgetArea, self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/icon.png')
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
@@ -151,7 +152,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = ArkGeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs(), self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
+        georefDialog = GeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs(), self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])

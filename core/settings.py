@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlanDialog
+                                      Ark
                                  A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
-                             -------------------
-        begin                : 2015-01-10
+             QGIS Plugin for ARK, the Archaeological Recording Kit
+                              -------------------
+        begin                : 2015-03-02
         git sha              : $Format:%H$
+        copyright            : (C) 2015 by L - P: Heritage LLP
         copyright            : (C) 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
@@ -31,15 +32,13 @@ from qgis.core import QgsProject, QgsSnapper
 
 from settings_dialog_base import *
 
-import resources_rc
-
 class Settings(QObject):
 
     iface = None # QgsInteface()
     project = None # QgsProject()
     pluginName = 'Ark'
     pluginPath = ''
-    pluginIconPath = ':/plugins/ArkPlan/icon.png'
+    pluginIconPath = ':/plugins/Ark/icon.png'
 
     menuName = ''
     toolbar = None  # QToolBar()
@@ -91,12 +90,12 @@ class Settings(QObject):
         self.toolbar.setObjectName(self.pluginName)
 
     def initGui(self):
-        self.settingsAction = self.createMenuAction(self.tr(u'ArkPlan Settings'), self.pluginIconPath, False)
+        self.settingsAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
         self.settingsAction.toggled.connect(self.showSettingsDialog)
 
     def unload(self):
-        self.iface.removePluginMenu(self.tr(u'&ArkPlan'), action)
-        self.iface.removeToolBarIcon(action)
+        self.iface.removePluginMenu(self.menuName, self.settingsAction)
+        self.iface.removeToolBarIcon(self.settingsAction)
 
     def createMenuAction(self, actionText, iconPath, checkable, tip='', whatsThis=''):
         icon = QIcon(iconPath)

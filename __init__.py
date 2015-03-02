@@ -25,11 +25,11 @@
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load ArkPlan class from file ArkPlan.
+    """Load Ark class from file Ark.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    from .ark_plan import ArkPlan
-    return ArkPlan(iface)
+    from .ark import Ark
+    return Ark(iface)

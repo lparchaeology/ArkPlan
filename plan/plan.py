@@ -59,7 +59,7 @@ class Plan(QObject):
 
     def initGui(self):
         self.dock = PlanDock()
-        self.dock.load(self.settings, Qt.RightDockWidgetArea, self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/icon.png')
+        self.dock.load(self.settings, Qt.RightDockWidgetArea, self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png')
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)

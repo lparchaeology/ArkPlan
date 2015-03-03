@@ -2,16 +2,19 @@
     <qresource prefix="/plugins/Ark" >
         <file>icon.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark/core" >
+    <qresource prefix="/plugins/Ark" >
         <file>core/iconSnapVertex.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark/core" >
+    <qresource prefix="/plugins/Ark" >
         <file>core/iconSnapSegment.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark/core" >
+    <qresource prefix="/plugins/Ark" >
         <file>core/iconSnapVertexSegment.png</file>
     </qresource>
     <qresource prefix="/plugins/Ark" >
         <file>filter/view-filter.png</file>
+    </qresource>
+    <qresource prefix="/plugins/Ark" >
+        <file>plan/draw-freehand.png</file>
     </qresource>
 </RCC>

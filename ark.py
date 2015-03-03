@@ -26,6 +26,7 @@ import resources_rc
 from .core.settings import Settings
 from .core.layers import LayerManager
 
+from .grid.grid import GridModule
 from .plan.plan import Plan
 from .filter.filter import Filter
 
@@ -43,11 +44,13 @@ class Ark:
     def __init__(self, iface):
         self.settings = Settings(iface)
         self.layers = LayerManager(self.settings)
+        self.gridDock = GridModule(self.settings, self.layers)
         self.planDock = Plan(self.settings, self.layers)
         self.filterDock = Filter(self.settings, self.layers)
 
     def initGui(self):
         self.settings.initGui()
+        self.gridDock.initGui()
         self.planDock.initGui()
         self.filterDock.initGui()
 
@@ -57,6 +60,7 @@ class Ark:
         self.layers.unload()
 
         # Unload the modules
+        self.gridDock.unload()
         self.planDock.unload()
         self.filterDock.unload()
 

@@ -59,6 +59,10 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     showPolygonsChanged = pyqtSignal(int)
     showSchematicsChanged = pyqtSignal(int)
 
+    linesSnappingToggled = pyqtSignal(bool)
+    polygonsSnappingToggled = pyqtSignal(bool)
+    schematicSnappingToggled = pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(parent)
         self.setupUi(self)
@@ -111,6 +115,10 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
         self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
         self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
+
+        self.m_snapLinesLayerTool.snapSettingsChanged.connect(self.linesLayerSnapSettingsChanged)
+        self.m_snapPolygonsLayerTool.snapSettingsChanged.connect(self.polygonsLayerSnapSettingsChanged)
+        self.m_snapSchematicsLayerTool.snapSettingsChanged.connect(self.schematicLayerSnapSettingsChanged)
 
     # Plan Tools
 
@@ -214,6 +222,17 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def setSchematicsLayer(self, layer):
         self.m_snapSchematicsLayerTool.setLayer(layer)
+
+    def linesLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
+        self.linesSnappingToggled.emit(enabled)
+
+    def polygonsLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
+        self.polygonsSnappingToggled.emit(enabled)
+
+    def schematicLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
+        self.schematicSnappingToggled.emit(enabled)
+
+    # Filter Tools
 
     def contextFilterSelected(self):
         filter = self.m_contextFilterCombo.currentText()

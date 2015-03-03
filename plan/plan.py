@@ -83,6 +83,10 @@ class Plan(QObject):
         self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
         self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
 
+        self.dock.linesSnappingToggled.connect(self.layers.showLinesVertexMarkers)
+        self.dock.polygonsSnappingToggled.connect(self.layers.showPolygonsVertexMarkers)
+        self.dock.schematicSnappingToggled.connect(self.layers.showSchematicVertexMarkers)
+
         self.dock.contextFilterChanged.connect(self.layers.applyContextFilter)
 
     def unload(self):

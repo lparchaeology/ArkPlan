@@ -239,6 +239,23 @@ class LayerManager:
     def showSchematics(self, status):
         self.settings.iface.legendInterface().setLayerVisible(self.schematicLayer, status)
 
+    def showLinesVertexMarkers(self, status):
+        self.showVertexMarkers(self.linesLayer, status)
+
+    def showPolygonsVertexMarkers(self, status):
+        self.showVertexMarkers(self.polygonsLayer, status)
+
+    def showSchematicVertexMarkers(self, status):
+        self.showVertexMarkers(self.schematicLayer, status)
+
+    def showVertexMarkers(self, layer, status):
+        # TODO Get marker from project settings
+        # TODO Cater for edit mode? Cache previous settings?
+        if status:
+            layer.rendererV2().setVertexMarkerAppearance(QgsVectorLayer.Cross, 3)
+        else:
+            layer.rendererV2().setVertexMarkerAppearance(QgsVectorLayer.NoMarker, 0)
+
     def applyContextFilter(self, contextList):
         clause = '"context" = %d'
         filter = ''

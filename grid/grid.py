@@ -27,6 +27,8 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
 
+from vectorbender.vectorbendertransformers import *
+
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
@@ -84,3 +86,9 @@ class GridModule(QObject):
     def showCreateGridDialog(self):
         dialog = CreateGridDialog(self, self.settings.iface.mainWindow())
         return dialog.exec_()
+
+
+    def transformPoint(self):
+        self.transformer = LinearTransformer(pairsLayer, False)
+        # Uses QgsPoint
+        newPoint = self.transformer.map(oldPoint)

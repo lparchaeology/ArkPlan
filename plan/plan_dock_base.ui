@@ -508,27 +508,6 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="m_topologicalLabel">
-               <property name="text">
-                <string>Topological:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="TopoEditToolButton" name="m_topologicalTool">
-               <property name="text">
-                <string>topo</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="2" column="1">
               <widget class="SnappingToolButton" name="m_snapLinesLayerTool">
@@ -640,6 +619,27 @@
                </property>
                <property name="popupMode">
                 <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="m_topologicalLabel">
+               <property name="text">
+                <string>Topological editing:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="TopoEditToolButton" name="m_topologicalTool">
+               <property name="text">
+                <string>topo</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
                </property>
               </widget>
              </item>

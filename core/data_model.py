@@ -21,7 +21,11 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QVariant, QModelIndex
+import csv
+
+from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QDir
+
+from ..core.settings import Settings
 
 class TableModel(QAbstractTableModel):
 
@@ -186,3 +190,65 @@ class GroupModel(TableModel):
         record.update(arkRecord)
         record.update({'strat_group_no' : group_no})
         self._table.append(record)
+
+
+class DataManager(QObject):
+
+
+    _arkGroupDataFilename = 'PCO06_ark_groups.csv'
+    _arkSubGroupDataFilename = 'PCO06_ark_subgroups.csv'
+    _arkContextDataFilename = 'PCO06_ark_contexts.csv'
+
+    _contextGroupingModel = ContextGroupingModel()
+    _contextModel = ContextModel()
+    _subGroupModel = SubGroupModel()
+    _groupModel = GroupModel()
+
+
+    def __init__(self, settings):
+        super(DataManager, self).__init__()
+        self.settings = settings
+
+
+    def loadData(self):
+        self._contextGroupingModel.clear()
+        self._contextModel.clear()
+        self._subGroupModel.clear()
+        self._groupModel.clear()
+        subToGroup = {}
+        subToGroup[0] = 0
+        with open(self.settings.dataPath() + '/' + self._arkGroupDataFilename) as csvFile:
+            reader = csv.DictReader(csvFile)
+            for record in reader:
+                pass
+                self._groupModel.addGroup(record)
+        with open(self.settings.dataPath() + '/' + self._arkSubGroupDataFilename) as csvFile:
+            reader = csv.DictReader(csvFile)
+            for record in reader:
+                sub_group_string = record['sub_group']
+                sub_group_no = int(sub_group_string.split('_')[-1])
+                group_string = record['strat_group']
+                group_no = 0
+                if group_string:
+                    group_no = int(group_string.split('_')[-1])
+                subToGroup[sub_group_no] = group_no
+                self._subGroupModel.addSubGroup(record)
+        with open(self.settings.dataPath() + '/' + self._arkContextDataFilename) as csvFile:
+            reader = csv.DictReader(csvFile)
+            for record in reader:
+                context_string = record['context']
+                context_no = int(context_string.split('_')[-1])
+                sub_group_string = record['sub_group']
+                sub_group_no = 0
+                if sub_group_string:
+                    sub_group_no = int(sub_group_string.split('_')[-1])
+                self._contextGroupingModel.addGrouping(context_no, sub_group_no, subToGroup[sub_group_no])
+                self._contextModel.addContext(record)
+
+
+    def getContextsForSubGroup(self, sub_group_no):
+        return _contextGroupingModel.getContextsForSubGroup()
+
+
+    def getContextsForGroup(self, group_no):
+        return _contextGroupingModel.getContextsForGroup()

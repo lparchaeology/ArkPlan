@@ -47,6 +47,8 @@ class LayerManager:
     polygonsBuffer = None
     schematicBuffer = None
 
+    filter = ''
+
     def __init__(self, settings):
         self.settings = settings
         # If the legend indexes change make sure we stay updated
@@ -256,18 +258,25 @@ class LayerManager:
         else:
             layer.rendererV2().setVertexMarkerAppearance(QgsVectorLayer.NoMarker, 0)
 
+
     def applyContextFilter(self, contextList):
-        clause = '"context" = %d'
+        clause = '"' + self.settings.contextAttributeName + '" = %d'
         filter = ''
         if (len(contextList) > 0):
             filter += clause % contextList[0]
             for context in contextList[1:]:
                 filter += ' or '
                 filter += clause % context
-        self.applyLayerFilter(self.pointsLayer, filter)
-        self.applyLayerFilter(self.linesLayer, filter)
-        self.applyLayerFilter(self.polygonsLayer, filter)
-        self.applyLayerFilter(self.schematicLayer, filter)
+        self.applyFilter(filter)
+
+
+    def applyFilter(self, filter):
+        self.filter = filter
+        self.applyLayerFilter(self.pointsLayer, self.filter)
+        self.applyLayerFilter(self.linesLayer, self.filter)
+        self.applyLayerFilter(self.polygonsLayer, self.filter)
+        self.applyLayerFilter(self.schematicLayer, self.filter)
+
 
     def applyLayerFilter(self, layer, filter):
         if (self.settings.iface.mapCanvas().isDrawing()):
@@ -288,3 +297,41 @@ class LayerManager:
         layer.setSubsetString(filter)
         self.settings.iface.mapCanvas().refresh()
         self.settings.iface.legendInterface().refreshLayerSymbology(layer)
+
+
+    def zoomToLayers(self, includeBuffers):
+        self.pointsLayer.updateExtents()
+        self.linesLayer.updateExtents()
+        self.polygonsLayer.updateExtents()
+        self.schematicLayer.updateExtents()
+        extent = QgsRectangle()
+        extent = self.extendExtent(extent, self.pointsLayer)
+        extent = self.extendExtent(extent, self.linesLayer)
+        extent = self.extendExtent(extent, self.polygonsLayer)
+        extent = self.extendExtent(extent, self.schematicLayer)
+        if includeBuffers:
+            self.pointsBuffer.updateExtents()
+            self.linesBuffer.updateExtents()
+            self.polygonsBuffer.updateExtents()
+            self.schematicBuffer.updateExtents()
+            extent = self.extendExtent(extent, self.pointsBuffer)
+            extent = self.extendExtent(extent, self.linesBuffer)
+            extent = self.extendExtent(extent, self.polygonsBuffer)
+            extent = self.extendExtent(extent, self.schematicBuffer)
+        if (extent is not None and not extent.isNull()):
+            extent.scale(1.05)
+            self.settings.iface.mapCanvas().setExtent(extent)
+            self.settings.iface.mapCanvas().refresh()
+
+
+    def extendExtent(self, extent, layer):
+        layerExtent = QgsRectangle()
+        if (layer is not None and layer.isValid() and layer.featureCount() > 0 and self.settings.iface.legendInterface().isLayerVisible(layer)):
+            layerExtent = layer.extent()
+        if (extent is None and layerExtent is None):
+            return QgsRectangle()
+        elif (extent is None or extent.isNull()):
+            return layerExtent
+        elif (layerExtent is None or layerExtent.isNull()):
+            return extent
+        return extent.combineExtentWith(layerExtent)

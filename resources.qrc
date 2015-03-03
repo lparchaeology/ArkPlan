@@ -11,4 +11,7 @@
     <qresource prefix="/plugins/Ark/core" >
         <file>core/iconSnapVertexSegment.png</file>
     </qresource>
+    <qresource prefix="/plugins/Ark" >
+        <file>filter/view-filter.png</file>
+    </qresource>
 </RCC>

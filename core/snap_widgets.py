@@ -69,17 +69,17 @@ class SnappingToolButton(QToolButton):
         #Disable until we have a _layerId
         self.setEnabled(False)
 
-        self._vertexIcon = QIcon(':/plugins/ArkPlan/iconSnapVertex.png')
+        self._vertexIcon = QIcon(':/plugins/ArkPlan/core/iconSnapVertex.png')
         self._vertexAction = QAction(self._vertexIcon, 'Vertex', self)
         self._vertexAction.setStatusTip('Snap to vertex')
         self._vertexAction.setCheckable(True)
 
-        self._segmentIcon = QIcon(':/plugins/ArkPlan/iconSnapSegment.png')
+        self._segmentIcon = QIcon(':/plugins/ArkPlan/core/iconSnapSegment.png')
         self._segmentAction = QAction(self._segmentIcon, 'Segment', self)
         self._segmentAction.setStatusTip('Snap to segment')
         self._segmentAction.setCheckable(True)
 
-        self._vertexSegmentIcon = QIcon(':/plugins/ArkPlan/iconSnapVertexSegment.png')
+        self._vertexSegmentIcon = QIcon(':/plugins/ArkPlan/core/iconSnapVertexSegment.png')
         self._vertexSegmentAction = QAction(self._vertexSegmentIcon, 'Vertex and Segment', self)
         self._vertexSegmentAction.setStatusTip('Snap to vertex and segment')
         self._vertexSegmentAction.setCheckable(True)

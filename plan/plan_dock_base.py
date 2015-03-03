@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plan/plan_dock_base.ui'
 #
-# Created: Mon Mar  2 14:43:35 2015
+# Created: Tue Mar  3 12:01:08 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -24,14 +24,14 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_PlanDockWidget(object):
-    def setupUi(self, m_planDockWidget):
-        m_planDockWidget.setObjectName(_fromUtf8("m_planDockWidget"))
-        m_planDockWidget.setGeometry(QtCore.QRect(0, 0, 390, 903))
+    def setupUi(self, PlanDockWidget):
+        PlanDockWidget.setObjectName(_fromUtf8("PlanDockWidget"))
+        PlanDockWidget.resize(389, 771)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(m_planDockWidget.sizePolicy().hasHeightForWidth())
-        m_planDockWidget.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(PlanDockWidget.sizePolicy().hasHeightForWidth())
+        PlanDockWidget.setSizePolicy(sizePolicy)
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.dockWidgetContents)
@@ -46,7 +46,7 @@ class Ui_PlanDockWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 373, 855))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 363, 719))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -99,7 +99,7 @@ class Ui_PlanDockWidget(object):
         self.m_extentTool = QtGui.QToolButton(self.m_drawingToolsGroup)
         self.m_extentTool.setCheckable(True)
         self.m_extentTool.setObjectName(_fromUtf8("m_extentTool"))
-        self.m_toolButtonGroup = QtGui.QButtonGroup(m_planDockWidget)
+        self.m_toolButtonGroup = QtGui.QButtonGroup(PlanDockWidget)
         self.m_toolButtonGroup.setObjectName(_fromUtf8("m_toolButtonGroup"))
         self.m_toolButtonGroup.addButton(self.m_extentTool)
         self.gridLayout.addWidget(self.m_extentTool, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
@@ -298,26 +298,6 @@ class Ui_PlanDockWidget(object):
         self.gridLayout_3.addWidget(self.m_showSchematicsCheck, 1, 4, 1, 1, QtCore.Qt.AlignHCenter)
         self.verticalLayout_3.addLayout(self.gridLayout_3)
         self.verticalLayout.addWidget(self.groupBox)
-        self.m_existingContextsGroup = QtGui.QGroupBox(self.scrollAreaWidgetContents)
-        self.m_existingContextsGroup.setObjectName(_fromUtf8("m_existingContextsGroup"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.m_existingContextsGroup)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.m_contextFilterCombo = QtGui.QComboBox(self.m_existingContextsGroup)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.m_contextFilterCombo.sizePolicy().hasHeightForWidth())
-        self.m_contextFilterCombo.setSizePolicy(sizePolicy)
-        self.m_contextFilterCombo.setEditable(True)
-        self.m_contextFilterCombo.setObjectName(_fromUtf8("m_contextFilterCombo"))
-        self.horizontalLayout_2.addWidget(self.m_contextFilterCombo)
-        self.m_contextFilterButton = QtGui.QPushButton(self.m_existingContextsGroup)
-        self.m_contextFilterButton.setObjectName(_fromUtf8("m_contextFilterButton"))
-        self.horizontalLayout_2.addWidget(self.m_contextFilterButton)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-        self.verticalLayout.addWidget(self.m_existingContextsGroup)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.m_clearButton = QtGui.QPushButton(self.scrollAreaWidgetContents)
@@ -331,16 +311,16 @@ class Ui_PlanDockWidget(object):
         self.verticalLayout.addItem(spacerItem)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_4.addWidget(self.scrollArea)
-        m_planDockWidget.setWidget(self.dockWidgetContents)
+        PlanDockWidget.setWidget(self.dockWidgetContents)
         self.m_contextLabel.setBuddy(self.m_contextSpin)
         self.m_sourceLabel.setBuddy(self.m_sourceEdit)
         self.m_commentLabel.setBuddy(self.m_commentEdit)
 
-        self.retranslateUi(m_planDockWidget)
-        QtCore.QMetaObject.connectSlotsByName(m_planDockWidget)
+        self.retranslateUi(PlanDockWidget)
+        QtCore.QMetaObject.connectSlotsByName(PlanDockWidget)
 
-    def retranslateUi(self, m_planDockWidget):
-        m_planDockWidget.setWindowTitle(_translate("PlanDockWidget", "ArkPlan", None))
+    def retranslateUi(self, PlanDockWidget):
+        PlanDockWidget.setWindowTitle(_translate("PlanDockWidget", "ArkPlan", None))
         self.m_loadRawButton.setText(_translate("PlanDockWidget", "Load Raw", None))
         self.m_loadGeoButton.setText(_translate("PlanDockWidget", "Load Geo", None))
         self.m_planGroup.setTitle(_translate("PlanDockWidget", "Attributes", None))
@@ -414,8 +394,6 @@ class Ui_PlanDockWidget(object):
         self.label_13.setText(_translate("PlanDockWidget", "Schms", None))
         self.m_snapLinesLayerTool.setText(_translate("PlanDockWidget", "...", None))
         self.m_showSchematicsCheck.setToolTip(_translate("PlanDockWidget", "Show existing schematics", None))
-        self.m_existingContextsGroup.setTitle(_translate("PlanDockWidget", "Filter:", None))
-        self.m_contextFilterButton.setText(_translate("PlanDockWidget", "Apply", None))
         self.m_clearButton.setToolTip(_translate("PlanDockWidget", "Clear unsaved changes from work layers", None))
         self.m_clearButton.setText(_translate("PlanDockWidget", "Clear", None))
         self.m_mergeButton.setToolTip(_translate("PlanDockWidget", "Move new context to main layers", None))

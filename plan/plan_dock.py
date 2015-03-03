@@ -52,8 +52,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
-    contextFilterChanged = pyqtSignal(list)
-
     showPointsChanged = pyqtSignal(int)
     showLinesChanged = pyqtSignal(int)
     showPolygonsChanged = pyqtSignal(int)
@@ -105,11 +103,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
-
-        self.m_contextFilterCombo.activated.connect(self.contextFilterSelected)
-        self.filterLineEdit = self.m_contextFilterCombo.lineEdit()
-        self.filterLineEdit.returnPressed.connect(self.contextFilterSelected)
-        self.m_contextFilterButton.clicked.connect(self.contextFilterSelected)
 
         self.m_showPointsCheck.stateChanged.connect(self.showPointsChanged)
         self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
@@ -231,11 +224,3 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def schematicLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
         self.schematicSnappingToggled.emit(enabled)
-
-    # Filter Tools
-
-    def contextFilterSelected(self):
-        filter = self.m_contextFilterCombo.currentText()
-        filter = filter.replace(',', ' ')
-        contexts = [int(cxtStr) for cxtStr in filter.split()]
-        self.contextFilterChanged.emit(contexts)

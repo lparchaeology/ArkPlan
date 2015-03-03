@@ -87,8 +87,6 @@ class Plan(QObject):
         self.dock.polygonsSnappingToggled.connect(self.layers.showPolygonsVertexMarkers)
         self.dock.schematicSnappingToggled.connect(self.layers.showSchematicVertexMarkers)
 
-        self.dock.contextFilterChanged.connect(self.layers.applyContextFilter)
-
     def unload(self):
 
         # Unload the dock

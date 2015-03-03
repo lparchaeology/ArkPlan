@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PlanDockWidget</class>
- <widget class="QgsDockWidget" name="m_planDockWidget">
+ <widget class="QgsDockWidget" name="PlanDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
-    <height>903</height>
+    <width>389</width>
+    <height>771</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,8 +40,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>373</width>
-         <height>855</height>
+         <width>363</width>
+         <height>719</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -706,39 +706,6 @@
                </property>
                <property name="checked">
                 <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="m_existingContextsGroup">
-          <property name="title">
-           <string>Filter:</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QComboBox" name="m_contextFilterCombo">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="editable">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="m_contextFilterButton">
-               <property name="text">
-                <string>Apply</string>
                </property>
               </widget>
              </item>

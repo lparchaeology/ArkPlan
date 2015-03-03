@@ -229,8 +229,13 @@ class Filter(QObject):
 
 
     def extendExtent(self, extent, layer):
-        if not self.settings.iface.legendInterface().isLayerVisible(layer):
+        layerExtent = QgsRectangle()
+        if (layer is not None and layer.isValid() and layer.featureCount() > 0 and self.settings.iface.legendInterface().isLayerVisible(layer)):
+            layerExtent = layer.extent()
+        if (extent is None and layerExtent is None):
+            return QgsRectangle()
+        elif (extent is None or extent.isNull()):
+            return layerExtent
+        elif (layerExtent is None or layerExtent.isNull()):
             return extent
-        if (extent is None or extent.isNull()):
-            return layer.extent()
-        return extent.combineExtentWith(layer.extent())
+        return extent.combineExtentWith(layerExtent)

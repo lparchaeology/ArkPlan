@@ -57,7 +57,7 @@ class Filter(QObject):
         self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Filter context layers'), ':/plugins/Ark/filter/view-filter.png')
         self.dock.toggled.connect(self.run)
 
-        self.dock.contextFilterChanged.connect(self.layers.applyContextFilter)
+        self.dock.contextFilterChanged.connect(self.applyContextFilter)
         self.dock.subGroupFilterChanged.connect(self.applySubGroupFilter)
         self.dock.groupFilterChanged.connect(self.applyGroupFilter)
         self.dock.buildFilterSelected.connect(self.buildFilter)
@@ -91,6 +91,11 @@ class Filter(QObject):
 
 
     # Filter methods
+
+    def applyContextFilter(self, contextList):
+        self.layers.applyContextFilter(contextList)
+        self.dock.displayFilter(self.layers.filter)
+
 
     def applySubGroupFilter(self, subList):
         contextList = []

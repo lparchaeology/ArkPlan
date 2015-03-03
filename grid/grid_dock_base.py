@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Tue Mar  3 15:09:04 2015
+# Created: Tue Mar  3 23:40:40 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,23 +26,24 @@ except AttributeError:
 class Ui_GridDock(object):
     def setupUi(self, GridDock):
         GridDock.setObjectName(_fromUtf8("GridDock"))
-        GridDock.resize(373, 157)
+        GridDock.resize(347, 159)
         self.GridDockContents = QtGui.QWidget()
         self.GridDockContents.setObjectName(_fromUtf8("GridDockContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.GridDockContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.mapToolButton = QtGui.QRadioButton(self.GridDockContents)
-        self.mapToolButton.setChecked(True)
-        self.mapToolButton.setObjectName(_fromUtf8("mapToolButton"))
-        self.horizontalLayout.addWidget(self.mapToolButton)
         self.enterCrsButton = QtGui.QRadioButton(self.GridDockContents)
+        self.enterCrsButton.setChecked(True)
         self.enterCrsButton.setObjectName(_fromUtf8("enterCrsButton"))
         self.horizontalLayout.addWidget(self.enterCrsButton)
         self.enterLocalButton = QtGui.QRadioButton(self.GridDockContents)
         self.enterLocalButton.setObjectName(_fromUtf8("enterLocalButton"))
         self.horizontalLayout.addWidget(self.enterLocalButton)
+        self.mapToolButton = QtGui.QRadioButton(self.GridDockContents)
+        self.mapToolButton.setChecked(False)
+        self.mapToolButton.setObjectName(_fromUtf8("mapToolButton"))
+        self.horizontalLayout.addWidget(self.mapToolButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -51,6 +52,8 @@ class Ui_GridDock(object):
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.crsEastingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
         self.crsEastingSpin.setReadOnly(True)
+        self.crsEastingSpin.setPrefix(_fromUtf8(""))
+        self.crsEastingSpin.setSuffix(_fromUtf8(""))
         self.crsEastingSpin.setDecimals(3)
         self.crsEastingSpin.setMaximum(999999.999)
         self.crsEastingSpin.setObjectName(_fromUtf8("crsEastingSpin"))
@@ -86,10 +89,10 @@ class Ui_GridDock(object):
 
     def retranslateUi(self, GridDock):
         GridDock.setWindowTitle(_translate("GridDock", "Local Grid", None))
-        self.mapToolButton.setText(_translate("GridDock", "Map Tool", None))
         self.enterCrsButton.setText(_translate("GridDock", "Enter CRS", None))
         self.enterLocalButton.setText(_translate("GridDock", "Enter Local", None))
-        self.label.setText(_translate("GridDock", "CRS Coordinates:", None))
-        self.label_2.setText(_translate("GridDock", "Local Coordinates:", None))
+        self.mapToolButton.setText(_translate("GridDock", "From Map", None))
+        self.label.setText(_translate("GridDock", "CRS:", None))
+        self.label_2.setText(_translate("GridDock", "Local:", None))
 
 from ..core.dock import QgsDockWidget

@@ -25,6 +25,8 @@
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 
+from qgis.core import *
+
 from ..core.dock import *
 
 import grid_dock_base
@@ -32,20 +34,42 @@ import grid_dock_base
 
 class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
-    mapToolSelected = pyqtSignal()
-    enterCrsSelected = pyqtSignal()
-    enterLocalSelected = pyqtSignal()
+    mapToolToggled = pyqtSignal(bool)
+    convertCrsSelected = pyqtSignal()
+    convertLocalSelected = pyqtSignal()
 
     def __init__(self, parent=None):
         super(GridDock, self).__init__(parent)
         self.setupUi(self)
 
         self.mapToolButton.clicked.connect(self.mapToolClicked)
-        self.mapToolButton.clicked.connect(self.mapToolSelected)
+        self.mapToolButton.toggled.connect(self.mapToolToggled)
         self.enterCrsButton.clicked.connect(self.enterCrsClicked)
-        self.enterCrsButton.clicked.connect(self.enterCrsSelected)
         self.enterLocalButton.clicked.connect(self.enterLocalClicked)
-        self.enterLocalButton.clicked.connect(self.enterLocalSelected)
+
+        self.crsEastingSpin.editingFinished.connect(self.convertCrsSelected)
+        self.crsNorthingSpin.editingFinished.connect(self.convertCrsSelected)
+
+        self.localEastingSpin.editingFinished.connect(self.convertLocalSelected)
+        self.localNorthingSpin.editingFinished.connect(self.convertLocalSelected)
+
+
+    def crsPoint(self):
+        return QgsPoint(self.crsEastingSpin.value(), self.crsNorthingSpin.value())
+
+
+    def setCrsPoint(self, point):
+        self.crsEastingSpin.setValue(point.x())
+        self.crsNorthingSpin.setValue(point.y())
+
+
+    def localPoint(self):
+        return QgsPoint(self.localEastingSpin.value(), self.localNorthingSpin.value())
+
+
+    def setLocalPoint(self, point):
+        self.localEastingSpin.setValue(point.x())
+        self.localNorthingSpin.setValue(point.y())
 
 
     def mapToolClicked(self):

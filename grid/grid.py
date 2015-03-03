@@ -26,8 +26,9 @@ from PyQt4.QtCore import Qt, QObject
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
+from qgis.gui import QgsMapToolEmitPoint
 
-from vectorbender.vectorbendertransformers import *
+from VectorBender.vectorbendertransformers import LinearTransformer
 
 from ..core.settings import Settings
 from ..core.layers import LayerManager
@@ -41,6 +42,7 @@ class GridModule(QObject):
     layers = None  # LayerManager()
 
     # Internal variables
+    mapTool = None  # QgsMapToolEmitPoint()
     initialised = False
 
     def __init__(self, settings, layers):
@@ -58,6 +60,9 @@ class GridModule(QObject):
         self.dock = GridDock()
         self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png')
         self.dock.toggled.connect(self.run)
+        self.dock.mapToolToggled.connect(self.enableMapTool)
+        self.dock.convertCrsSelected.connect(self.convertCrs)
+        self.dock.convertLocalSelected.connect(self.convertLocal)
 
 
     def unload(self):
@@ -78,6 +83,15 @@ class GridModule(QObject):
             self.settings.configure()
         self.layers.initialise()
 
+        self.mapTool = QgsMapToolEmitPoint(self.settings.iface.mapCanvas())
+        self.mapTool.canvasClicked.connect(self.pointSelected)
+
+        self.crsLayer = QgsVectorLayer(self.settings.dataPath() + '/grid_bender_osgb_to_local.shp', 'grid_bender_osgb_to_local', "ogr")
+        self.crsTransformer = LinearTransformer(self.crsLayer, False)
+
+        self.localLayer = QgsVectorLayer(self.settings.dataPath() + '/grid_bender_local_to_osgb.shp', 'grid_bender_local_to_osgb', "ogr")
+        self.localTransformer = LinearTransformer(self.localLayer, False)
+
         self.initialised = True
 
 
@@ -88,7 +102,22 @@ class GridModule(QObject):
         return dialog.exec_()
 
 
-    def transformPoint(self):
-        self.transformer = LinearTransformer(pairsLayer, False)
-        # Uses QgsPoint
-        newPoint = self.transformer.map(oldPoint)
+    def enableMapTool(self, status):
+        if status:
+            self.settings.iface.mapCanvas().setMapTool(self.mapTool)
+        elif (self.settings.iface.mapCanvas().mapTool() == self.mapTool):
+            self.settings.iface.mapCanvas().setMapTool(None)
+
+    def pointSelected(self, point, button):
+        if (button == Qt.LeftButton):
+            self.dock.setCrsPoint(point)
+            self.convertCrs()
+
+    def convertCrs(self):
+        localPoint = self.crsTransformer.map(self.dock.crsPoint())
+        self.dock.setLocalPoint(localPoint)
+
+
+    def convertLocal(self):
+        crsPoint = self.localTransformer.map(self.dock.localPoint())
+        self.dock.setCrsPoint(crsPoint)

@@ -91,7 +91,7 @@ class Settings(QObject):
 
     def initGui(self):
         self.settingsAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
-        self.settingsAction.toggled.connect(self.showSettingsDialog)
+        self.settingsAction.triggered.connect(self.showSettingsDialog)
 
     def unload(self):
         self.iface.removePluginMenu(self.menuName, self.settingsAction)

@@ -30,6 +30,7 @@ from qgis.core import *
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
+from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
 
 class GridModule(QObject):
@@ -49,12 +50,16 @@ class GridModule(QObject):
     # Standard Dock methods
 
     def initGui(self):
+        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create Grid'), ':/plugins/Ark/grid/view-grid.png', False)
+        self.createGridAction.triggered.connect(self.showCreateGridDialog)
+
         self.dock = GridDock()
-        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Ark Grid'), ':/plugins/Ark/grid/view-grid.png')
+        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png')
         self.dock.toggled.connect(self.run)
 
 
     def unload(self):
+        self.settings.iface.removeToolBarIcon(self.createGridAction)
         self.dock.unload()
 
 
@@ -75,3 +80,7 @@ class GridModule(QObject):
 
 
     # Grid methods
+
+    def showCreateGridDialog(self):
+        dialog = CreateGridDialog(self, self.settings.iface.mainWindow())
+        return dialog.exec_()

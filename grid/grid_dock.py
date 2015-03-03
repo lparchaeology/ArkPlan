@@ -32,7 +32,38 @@ import grid_dock_base
 
 class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
+    mapToolSelected = pyqtSignal()
+    enterCrsSelected = pyqtSignal()
+    enterLocalSelected = pyqtSignal()
 
     def __init__(self, parent=None):
         super(GridDock, self).__init__(parent)
         self.setupUi(self)
+
+        self.mapToolButton.clicked.connect(self.mapToolClicked)
+        self.mapToolButton.clicked.connect(self.mapToolSelected)
+        self.enterCrsButton.clicked.connect(self.enterCrsClicked)
+        self.enterCrsButton.clicked.connect(self.enterCrsSelected)
+        self.enterLocalButton.clicked.connect(self.enterLocalClicked)
+        self.enterLocalButton.clicked.connect(self.enterLocalSelected)
+
+
+    def mapToolClicked(self):
+        self.crsEastingSpin.setReadOnly(True)
+        self.crsNorthingSpin.setReadOnly(True)
+        self.localEastingSpin.setReadOnly(True)
+        self.localNorthingSpin.setReadOnly(True)
+
+
+    def enterCrsClicked(self):
+        self.crsEastingSpin.setReadOnly(False)
+        self.crsNorthingSpin.setReadOnly(False)
+        self.localEastingSpin.setReadOnly(True)
+        self.localNorthingSpin.setReadOnly(True)
+
+
+    def enterLocalClicked(self):
+        self.crsEastingSpin.setReadOnly(True)
+        self.crsNorthingSpin.setReadOnly(True)
+        self.localEastingSpin.setReadOnly(False)
+        self.localNorthingSpin.setReadOnly(False)

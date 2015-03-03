@@ -6,15 +6,127 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>345</width>
-    <height>114</height>
+    <width>373</width>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Ark Grid</string>
+   <string>Local Grid</string>
   </property>
   <widget class="QWidget" name="GridDockContents">
-   <layout class="QVBoxLayout" name="verticalLayout"/>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QRadioButton" name="mapToolButton">
+        <property name="text">
+         <string>Map Tool</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="enterCrsButton">
+        <property name="text">
+         <string>Enter CRS</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="enterLocalButton">
+        <property name="text">
+         <string>Enter Local</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>CRS Coordinates:</string>
+        </property>
+        <property name="buddy">
+         <cstring>crsEastingSpin</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="crsEastingSpin">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <double>999999.998999999952503</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QDoubleSpinBox" name="crsNorthingSpin">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <double>999999.998999999952503</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Local Coordinates:</string>
+        </property>
+        <property name="buddy">
+         <cstring>localEastingSpin</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="localEastingSpin">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="maximum">
+         <double>999.990000000000009</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="localNorthingSpin">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="maximum">
+         <double>999.990000000000009</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>4</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
   </widget>
  </widget>
  <customwidgets>

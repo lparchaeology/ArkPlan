@@ -64,6 +64,10 @@ class Filter(QObject):
         self.dock.clearFilterSelected.connect(self.clearFilter)
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.zoomSelected.connect(self.zoomFilter)
+        self.dock.showPointsChanged.connect(self.layers.showPoints)
+        self.dock.showLinesChanged.connect(self.layers.showLines)
+        self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
 
 
     def unload(self):

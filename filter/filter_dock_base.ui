@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FilterDock</class>
- <widget class="QgsDockWidget" name="filterDock">
+ <widget class="QgsDockWidget" name="FilterDock">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>321</width>
-    <height>239</height>
+    <width>328</width>
+    <height>296</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Filter Ark Layers</string>
   </property>
-  <widget class="QWidget" name="arkFilterDockContents">
+  <widget class="QWidget" name="FilterDockContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -149,6 +149,97 @@
      </widget>
     </item>
     <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="4" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showSchematicsLabel">
+        <property name="text">
+         <string>Schms</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" alignment="Qt::AlignHCenter">
+       <widget class="QCheckBox" name="showLinesCheck">
+        <property name="toolTip">
+         <string>Show existing lines</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showPointsLabel">
+        <property name="text">
+         <string>Points</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4" alignment="Qt::AlignHCenter">
+       <widget class="QCheckBox" name="showSchematicsCheck">
+        <property name="toolTip">
+         <string>Show existing schematics</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showPolygonsLabel">
+        <property name="text">
+         <string>Polys</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="showLabel">
+        <property name="text">
+         <string>Show:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showLinesLabel">
+        <property name="text">
+         <string>Lines</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" alignment="Qt::AlignHCenter">
+       <widget class="QCheckBox" name="showPointsCheck">
+        <property name="toolTip">
+         <string>Show existing levels</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3" alignment="Qt::AlignHCenter">
+       <widget class="QCheckBox" name="showPolygonsCheck">
+        <property name="toolTip">
+         <string>Show existing polygons</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -165,6 +256,7 @@
    <zorder>verticalSpacer</zorder>
    <zorder></zorder>
    <zorder>filterEdit</zorder>
+   <zorder>layoutWidget</zorder>
   </widget>
  </widget>
  <customwidgets>

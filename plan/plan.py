@@ -78,11 +78,6 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.dock.showPointsChanged.connect(self.layers.showPoints)
-        self.dock.showLinesChanged.connect(self.layers.showLines)
-        self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
-
         self.dock.linesSnappingToggled.connect(self.layers.showLinesVertexMarkers)
         self.dock.polygonsSnappingToggled.connect(self.layers.showPolygonsVertexMarkers)
         self.dock.schematicSnappingToggled.connect(self.layers.showSchematicVertexMarkers)

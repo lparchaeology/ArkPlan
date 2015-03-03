@@ -52,11 +52,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
-    showPointsChanged = pyqtSignal(int)
-    showLinesChanged = pyqtSignal(int)
-    showPolygonsChanged = pyqtSignal(int)
-    showSchematicsChanged = pyqtSignal(int)
-
     linesSnappingToggled = pyqtSignal(bool)
     polygonsSnappingToggled = pyqtSignal(bool)
     schematicSnappingToggled = pyqtSignal(bool)
@@ -103,11 +98,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
-
-        self.m_showPointsCheck.stateChanged.connect(self.showPointsChanged)
-        self.m_showLinesCheck.stateChanged.connect(self.showLinesChanged)
-        self.m_showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
-        self.m_showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
 
         self.m_snapLinesLayerTool.snapSettingsChanged.connect(self.linesLayerSnapSettingsChanged)
         self.m_snapPolygonsLayerTool.snapSettingsChanged.connect(self.polygonsLayerSnapSettingsChanged)

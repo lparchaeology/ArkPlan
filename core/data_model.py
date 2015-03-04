@@ -24,6 +24,7 @@
 import csv
 
 from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QDir
+from PyQt4.QtGui import QSortFilterProxyModel
 
 from ..core.settings import Settings
 
@@ -226,13 +227,19 @@ class DataManager(QObject):
 
     _contextGroupingModel = ContextGroupingModel()
     _contextModel = ContextModel()
+    _contextProxyModel = QSortFilterProxyModel()
     _subGroupModel = SubGroupModel()
+    _subGroupProxyModel = QSortFilterProxyModel()
     _groupModel = GroupModel()
+    _groupProxyModel = QSortFilterProxyModel()
 
 
     def __init__(self, settings):
         super(DataManager, self).__init__()
         self.settings = settings
+        self._contextProxyModel.setSourceModel(self._contextModel)
+        self._subGroupProxyModel.setSourceModel(self._subGroupModel)
+        self._groupProxyModel.setSourceModel(self._groupModel)
 
 
     def loadData(self):

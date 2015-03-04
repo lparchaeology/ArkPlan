@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QObject
+from PyQt4.QtCore import Qt, QObject, QRegExp
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
@@ -45,6 +45,7 @@ class Filter(QObject):
     # Internal variables
     initialised = False
     dataLoaded = False
+    contextList = []
 
     identifyMapTool = None  # MapToolIndentifyFeatures()
 
@@ -106,27 +107,30 @@ class Filter(QObject):
     # Filter methods
 
     def applyContextFilter(self, contextList):
-        self.layers.applyContextFilter(contextList)
+        del self.contextList[:]
+        self.contextList = contextList
+        self.layers.applyContextFilter(self.contextList)
         self.dock.displayFilter(self.layers.filter)
 
 
     def applySubGroupFilter(self, subList):
-        contextList = []
+        del self.contextList[:]
         for sub in subList:
-            contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.layers.applyContextFilter(contextList)
+            self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
+        self.layers.applyContextFilter(self.contextList)
         self.dock.displayFilter(self.layers.filter)
 
 
     def applyGroupFilter(self, groupList):
-        contextList = []
+        del self.contextList[:]
         for group in groupList:
-            contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.layers.applyContextFilter(contextList)
+            self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
+        self.layers.applyContextFilter(self.contextList)
         self.dock.displayFilter(self.layers.filter)
 
 
     def clearFilter(self):
+        del self.contextList[:]
         self.applyFilter('')
 
 
@@ -167,11 +171,29 @@ class Filter(QObject):
 
 
     def showDataDialog(self):
+        subList = []
+        groupList = []
+        for context in self.contextList:
+            subList.append(self.data.subGroupForContext(context))
+            groupList.append(self.data.groupForContext(context))
         dataDialog = DataDialog(self, self.settings.iface.mainWindow())
-        dataDialog.contextTableView.setModel(self.data._contextModel)
+        dataDialog.contextTableView.setModel(self.data._contextProxyModel)
+        self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(self.contextList))
         dataDialog.contextTableView.resizeColumnsToContents()
-        dataDialog.subGroupTableView.setModel(self.data._subGroupModel)
+        dataDialog.subGroupTableView.setModel(self.data._subGroupProxyModel)
+        self.data._subGroupProxyModel.setFilterRegExp(self._listToRegExp(subList))
         dataDialog.subGroupTableView.resizeColumnsToContents()
-        dataDialog.groupTableView.setModel(self.data._groupModel)
+        dataDialog.groupTableView.setModel(self.data._groupProxyModel)
+        self.data._groupProxyModel.setFilterRegExp(self._listToRegExp(groupList))
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
+
+
+    def _listToRegExp(self, lst):
+        if (len(lst) < 1):
+            return QRegExp()
+        exp = str(lst[0])
+        if (len(lst) > 1):
+            for element in lst[1:]:
+                exp = exp + '|' + str(element)
+        return QRegExp('\\b(' + exp + ')\\b')

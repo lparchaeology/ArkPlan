@@ -167,18 +167,22 @@ class Filter(QObject):
 
     def showIdentifyDialog(self, feature):
         context = feature.attribute(self.settings.contextAttributeName)
-        self.settings.iface.messageBar().pushMessage("Context", str(context) + ': ' + str(self.data.contextData(context)), QgsMessageBar.INFO)
+        self.showDataDialog([context])
 
 
     def showDataDialog(self):
+        return showDataDialog(self.contextList)
+
+
+    def showDataDialog(self, contextList):
         subList = []
         groupList = []
-        for context in self.contextList:
+        for context in contextList:
             subList.append(self.data.subGroupForContext(context))
             groupList.append(self.data.groupForContext(context))
         dataDialog = DataDialog(self, self.settings.iface.mainWindow())
         dataDialog.contextTableView.setModel(self.data._contextProxyModel)
-        self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(self.contextList))
+        self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(contextList))
         dataDialog.contextTableView.resizeColumnsToContents()
         dataDialog.subGroupTableView.setModel(self.data._subGroupProxyModel)
         self.data._subGroupProxyModel.setFilterRegExp(self._listToRegExp(subList))

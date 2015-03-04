@@ -54,7 +54,7 @@ class GridModule(QObject):
     # Standard Dock methods
 
     def initGui(self):
-        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create Grid'), ':/plugins/Ark/grid/view-grid.png', False)
+        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create Grid'), ':/plugins/Ark/grid/snap-orthogonal.png', False)
         self.createGridAction.triggered.connect(self.showCreateGridDialog)
 
         self.dock = GridDock()

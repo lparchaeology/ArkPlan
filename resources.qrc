@@ -15,7 +15,7 @@
         <file>filter/view-filter.png</file>
     </qresource>
     <qresource prefix="/plugins/Ark" >
-        <file>grid/edit-node.png</file>
+        <file>grid/snap-orthogonal.png</file>
     </qresource>
     <qresource prefix="/plugins/Ark" >
         <file>grid/view-grid.png</file>

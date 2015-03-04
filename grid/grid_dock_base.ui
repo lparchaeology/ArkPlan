@@ -105,6 +105,9 @@
         <property name="readOnly">
          <bool>true</bool>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="maximum">
          <double>999.990000000000009</double>
         </property>
@@ -114,6 +117,9 @@
        <widget class="QDoubleSpinBox" name="localNorthingSpin">
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>3</number>
         </property>
         <property name="maximum">
          <double>999.990000000000009</double>

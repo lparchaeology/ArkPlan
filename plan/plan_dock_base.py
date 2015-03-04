@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plan/plan_dock_base.ui'
 #
-# Created: Tue Mar  3 12:10:12 2015
+# Created: Wed Mar  4 07:52:17 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -213,16 +213,6 @@ class Ui_PlanDockWidget(object):
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.m_topologicalLabel = QtGui.QLabel(self.groupBox)
-        self.m_topologicalLabel.setObjectName(_fromUtf8("m_topologicalLabel"))
-        self.horizontalLayout_3.addWidget(self.m_topologicalLabel)
-        self.m_topologicalTool = TopoEditToolButton(self.groupBox)
-        self.m_topologicalTool.setCheckable(True)
-        self.m_topologicalTool.setObjectName(_fromUtf8("m_topologicalTool"))
-        self.horizontalLayout_3.addWidget(self.m_topologicalTool)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.m_snapLinesLayerTool = SnappingToolButton(self.groupBox)
@@ -271,6 +261,16 @@ class Ui_PlanDockWidget(object):
         self.m_snapSchematicsBufferTool.setObjectName(_fromUtf8("m_snapSchematicsBufferTool"))
         self.gridLayout_3.addWidget(self.m_snapSchematicsBufferTool, 1, 3, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_3)
+        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.m_topologicalLabel = QtGui.QLabel(self.groupBox)
+        self.m_topologicalLabel.setObjectName(_fromUtf8("m_topologicalLabel"))
+        self.horizontalLayout_3.addWidget(self.m_topologicalLabel)
+        self.m_topologicalTool = TopoEditToolButton(self.groupBox)
+        self.m_topologicalTool.setCheckable(True)
+        self.m_topologicalTool.setObjectName(_fromUtf8("m_topologicalTool"))
+        self.horizontalLayout_3.addWidget(self.m_topologicalTool)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         self.verticalLayout.addWidget(self.groupBox)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -349,8 +349,6 @@ class Ui_PlanDockWidget(object):
         self.m_schematicTool.setText(_translate("PlanDockWidget", "sch", None))
         self.m_clearTool.setText(_translate("PlanDockWidget", "clr", None))
         self.groupBox.setTitle(_translate("PlanDockWidget", "Editing:", None))
-        self.m_topologicalLabel.setText(_translate("PlanDockWidget", "Topological:", None))
-        self.m_topologicalTool.setText(_translate("PlanDockWidget", "topo", None))
         self.m_snapLinesLayerTool.setText(_translate("PlanDockWidget", "...", None))
         self.label_13.setText(_translate("PlanDockWidget", "Schms", None))
         self.label_11.setText(_translate("PlanDockWidget", "Lines", None))
@@ -362,6 +360,8 @@ class Ui_PlanDockWidget(object):
         self.m_snapPolygonsLayerTool.setText(_translate("PlanDockWidget", "...", None))
         self.m_snapSchematicsLayerTool.setText(_translate("PlanDockWidget", "...", None))
         self.m_snapSchematicsBufferTool.setText(_translate("PlanDockWidget", "...", None))
+        self.m_topologicalLabel.setText(_translate("PlanDockWidget", "Topological editing:", None))
+        self.m_topologicalTool.setText(_translate("PlanDockWidget", "topo", None))
         self.m_clearButton.setToolTip(_translate("PlanDockWidget", "Clear unsaved changes from work layers", None))
         self.m_clearButton.setText(_translate("PlanDockWidget", "Clear", None))
         self.m_mergeButton.setToolTip(_translate("PlanDockWidget", "Move new context to main layers", None))

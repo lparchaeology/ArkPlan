@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Tue Mar  3 23:40:40 2015
+# Created: Wed Mar  4 08:19:06 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -69,11 +69,13 @@ class Ui_GridDock(object):
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
         self.localEastingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
         self.localEastingSpin.setReadOnly(True)
+        self.localEastingSpin.setDecimals(3)
         self.localEastingSpin.setMaximum(999.99)
         self.localEastingSpin.setObjectName(_fromUtf8("localEastingSpin"))
         self.gridLayout.addWidget(self.localEastingSpin, 1, 1, 1, 1)
         self.localNorthingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
         self.localNorthingSpin.setReadOnly(True)
+        self.localNorthingSpin.setDecimals(3)
         self.localNorthingSpin.setMaximum(999.99)
         self.localNorthingSpin.setObjectName(_fromUtf8("localNorthingSpin"))
         self.gridLayout.addWidget(self.localNorthingSpin, 1, 2, 1, 1)

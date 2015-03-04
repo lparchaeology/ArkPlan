@@ -86,10 +86,10 @@ class GridModule(QObject):
         self.mapTool = QgsMapToolEmitPoint(self.settings.iface.mapCanvas())
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
-        self.crsLayer = QgsVectorLayer(self.settings.dataPath() + '/grid_bender_osgb_to_local.shp', 'grid_bender_osgb_to_local', "ogr")
+        self.crsLayer = QgsVectorLayer(self.settings.gridPath() + '/grid_bender_osgb_to_local.shp', 'grid_bender_osgb_to_local', "ogr")
         self.crsTransformer = LinearTransformer(self.crsLayer, False)
 
-        self.localLayer = QgsVectorLayer(self.settings.dataPath() + '/grid_bender_local_to_osgb.shp', 'grid_bender_local_to_osgb', "ogr")
+        self.localLayer = QgsVectorLayer(self.settings.gridPath() + '/grid_bender_local_to_osgb.shp', 'grid_bender_local_to_osgb', "ogr")
         self.localTransformer = LinearTransformer(self.localLayer, False)
 
         self.initialised = True

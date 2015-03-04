@@ -142,6 +142,15 @@ class Settings(QObject):
     def setPrependSiteCode(self, prepend):
         self.project.writeEntry(self.pluginName, 'prependSiteCode', prepend)
 
+    def gridPath(self):
+        path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
+        if (not path):
+            return self.dataPath()
+        return path
+
+    def setGridPath(self, absolutePath):
+        self.project.writeEntry(self.pluginName, 'gridPath', absolutePath)
+
     def planDir(self):
         return QDir(self.planPath())
 
@@ -259,17 +268,20 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.dataFolderEdit.setText(settings.dataPath())
         self.siteCodeEdit.setText(settings.siteCode())
         self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
+        self.gridFolderEdit.setText(settings.gridPath())
         self.planFolderEdit.setText(settings.planPath())
         self.separatePlansCheck.setChecked(settings.separatePlanFolders())
         self.planTransparencySpin.setValue(settings.planTransparency())
 
         self.dataFolderButton.clicked.connect(self._selectDataFolder)
+        self.gridFolderButton.clicked.connect(self._selectGridFolder)
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
         self._settings.setDataPath(self.dataFolderEdit.text())
         self._settings.setSiteCode(self.siteCodeEdit.text())
         self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
+        self._settings.setGridPath(self.gridFolderEdit.text())
         self._settings.setPlanPath(self.planFolderEdit.text())
         self._settings.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
         self._settings.setPlanTransparency(self.planTransparencySpin.value())
@@ -279,6 +291,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Data Folder'), self.dataFolderEdit.text()))
         if folderName:
             self.dataFolderEdit.setText(folderName)
+
+    def _selectGridFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))
+        if folderName:
+            self.gridFolderEdit.setText(folderName)
 
     def _selectPlanFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))

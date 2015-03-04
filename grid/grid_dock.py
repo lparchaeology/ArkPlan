@@ -53,6 +53,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.localEastingSpin.editingFinished.connect(self.convertLocalSelected)
         self.localNorthingSpin.editingFinished.connect(self.convertLocalSelected)
 
+        self.enterCrsClicked()
 
     def crsPoint(self):
         return QgsPoint(self.crsEastingSpin.value(), self.crsNorthingSpin.value())

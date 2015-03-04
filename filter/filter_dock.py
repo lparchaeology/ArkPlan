@@ -39,6 +39,7 @@ class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
     clearFilterSelected = pyqtSignal()
     zoomSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
+    showDataSelected = pyqtSignal()
 
     showPointsChanged = pyqtSignal(int)
     showLinesChanged = pyqtSignal(int)
@@ -67,6 +68,7 @@ class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
         self.buildFilterButton.clicked.connect(self.buildFilterSelected)
         self.clearFilterButton.clicked.connect(self._clearFilterClicked)
         self.loadDataButton.clicked.connect(self.loadDataSelected)
+        self.showDataButton.clicked.connect(self.showDataSelected)
         self.zoomButton.clicked.connect(self.zoomSelected)
 
         self.showPointsCheck.stateChanged.connect(self.showPointsChanged)

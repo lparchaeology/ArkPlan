@@ -33,6 +33,7 @@ from ..core.layers import LayerManager
 from ..core.data_model import *
 from ..core.map_tools import MapToolIndentifyFeatures
 
+from data_dialog import DataDialog
 from filter_dock import FilterDock
 
 class Filter(QObject):
@@ -43,6 +44,7 @@ class Filter(QObject):
 
     # Internal variables
     initialised = False
+    dataLoaded = False
 
     identifyMapTool = None  # MapToolIndentifyFeatures()
 
@@ -69,6 +71,7 @@ class Filter(QObject):
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.clearFilterSelected.connect(self.clearFilter)
         self.dock.loadDataSelected.connect(self.loadData)
+        self.dock.showDataSelected.connect(self.showDataDialog)
         self.dock.zoomSelected.connect(self.zoomFilter)
         self.dock.showPointsChanged.connect(self.layers.showPoints)
         self.dock.showLinesChanged.connect(self.layers.showLines)
@@ -142,6 +145,7 @@ class Filter(QObject):
     def loadData(self):
         self.data.loadData()
         self.dock.enableGroupFilters(True)
+        self.dataLoaded = True
 
 
     def zoomFilter(self):
@@ -150,6 +154,8 @@ class Filter(QObject):
 
     def triggerIdentifyAction(self, checked):
         if checked:
+            if not self.dataLoaded:
+                self.data.loadData()
             self.settings.iface.mapCanvas().setMapTool(self.identifyMapTool)
         else:
             self.settings.iface.mapCanvas().unsetMapTool(self.identifyMapTool)
@@ -157,4 +163,15 @@ class Filter(QObject):
 
     def showIdentifyDialog(self, feature):
         context = feature.attribute(self.settings.contextAttributeName)
-        self.settings.iface.messageBar().pushMessage("Context", str(context), QgsMessageBar.INFO)
+        self.settings.iface.messageBar().pushMessage("Context", str(context) + ': ' + str(self.data.contextData(context)), QgsMessageBar.INFO)
+
+
+    def showDataDialog(self):
+        dataDialog = DataDialog(self, self.settings.iface.mainWindow())
+        dataDialog.contextTableView.setModel(self.data._contextModel)
+        dataDialog.contextTableView.resizeColumnsToContents()
+        dataDialog.subGroupTableView.setModel(self.data._subGroupModel)
+        dataDialog.subGroupTableView.resizeColumnsToContents()
+        dataDialog.groupTableView.setModel(self.data._groupModel)
+        dataDialog.groupTableView.resizeColumnsToContents()
+        return dataDialog.exec_()

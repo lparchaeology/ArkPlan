@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'filter/filter_dock_base.ui'
 #
-# Created: Tue Mar  3 12:10:12 2015
+# Created: Wed Mar  4 15:46:25 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,26 +26,29 @@ except AttributeError:
 class Ui_FilterDock(object):
     def setupUi(self, FilterDock):
         FilterDock.setObjectName(_fromUtf8("FilterDock"))
-        FilterDock.resize(328, 296)
+        FilterDock.resize(306, 344)
         self.FilterDockContents = QtGui.QWidget()
         self.FilterDockContents.setObjectName(_fromUtf8("FilterDockContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.FilterDockContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.loadDataButton = QtGui.QPushButton(self.FilterDockContents)
-        self.loadDataButton.setObjectName(_fromUtf8("loadDataButton"))
-        self.horizontalLayout.addWidget(self.loadDataButton)
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.zoomButton = QtGui.QPushButton(self.FilterDockContents)
         self.zoomButton.setObjectName(_fromUtf8("zoomButton"))
-        self.horizontalLayout.addWidget(self.zoomButton)
+        self.gridLayout_2.addWidget(self.zoomButton, 0, 1, 1, 1)
         self.buildFilterButton = QtGui.QPushButton(self.FilterDockContents)
         self.buildFilterButton.setObjectName(_fromUtf8("buildFilterButton"))
-        self.horizontalLayout.addWidget(self.buildFilterButton)
+        self.gridLayout_2.addWidget(self.buildFilterButton, 0, 2, 1, 1)
         self.clearFilterButton = QtGui.QPushButton(self.FilterDockContents)
         self.clearFilterButton.setObjectName(_fromUtf8("clearFilterButton"))
-        self.horizontalLayout.addWidget(self.clearFilterButton)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout_2.addWidget(self.clearFilterButton, 0, 3, 1, 1)
+        self.loadDataButton = QtGui.QPushButton(self.FilterDockContents)
+        self.loadDataButton.setObjectName(_fromUtf8("loadDataButton"))
+        self.gridLayout_2.addWidget(self.loadDataButton, 1, 1, 1, 1)
+        self.showDataButton = QtGui.QPushButton(self.FilterDockContents)
+        self.showDataButton.setObjectName(_fromUtf8("showDataButton"))
+        self.gridLayout_2.addWidget(self.showDataButton, 1, 2, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_2)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.subGroupFilterLabel = QtGui.QLabel(self.FilterDockContents)
@@ -148,10 +151,11 @@ class Ui_FilterDock(object):
 
     def retranslateUi(self, FilterDock):
         FilterDock.setWindowTitle(_translate("FilterDock", "Filter Ark Layers", None))
-        self.loadDataButton.setText(_translate("FilterDock", "Data", None))
         self.zoomButton.setText(_translate("FilterDock", "Zoom", None))
         self.buildFilterButton.setText(_translate("FilterDock", "Build", None))
         self.clearFilterButton.setText(_translate("FilterDock", "Clear", None))
+        self.loadDataButton.setText(_translate("FilterDock", "Load", None))
+        self.showDataButton.setText(_translate("FilterDock", "Show", None))
         self.subGroupFilterLabel.setText(_translate("FilterDock", "Sub-Groups:", None))
         self.groupFilterButton.setText(_translate("FilterDock", "Apply", None))
         self.groupFilterLabel.setText(_translate("FilterDock", "Groups:", None))

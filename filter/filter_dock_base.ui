@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>328</width>
-    <height>296</height>
+    <width>306</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,32 +16,39 @@
   <widget class="QWidget" name="FilterDockContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="loadDataButton">
-        <property name="text">
-         <string>Data</string>
-        </property>
-       </widget>
-      </item>
-      <item>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
        <widget class="QPushButton" name="zoomButton">
         <property name="text">
          <string>Zoom</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="2">
        <widget class="QPushButton" name="buildFilterButton">
         <property name="text">
          <string>Build</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="3">
        <widget class="QPushButton" name="clearFilterButton">
         <property name="text">
          <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="loadDataButton">
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="showDataButton">
+        <property name="text">
+         <string>Show</string>
         </property>
        </widget>
       </item>
@@ -256,7 +263,6 @@
    <zorder>verticalSpacer</zorder>
    <zorder></zorder>
    <zorder>filterEdit</zorder>
-   <zorder>layoutWidget</zorder>
   </widget>
  </widget>
  <customwidgets>

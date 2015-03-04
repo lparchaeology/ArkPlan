@@ -43,14 +43,18 @@ class TableModel(QAbstractTableModel):
         return len(self._fields)
 
     def data(self, index, role):
-        if (not index.isValid() or index.row() < 0 or index.row() > len(self._table) or role != Qt.DisplayRole):
+        if (role != Qt.DisplayRole):
+            return None
+        if (not index.isValid() or index.row() < 0 or index.row() > len(self._table)):
             return self._nullRecord[self._fields[index.column()]]
         record = self._table[index.row()]
         data = record[self._fields[index.column()]]
         return data
 
     def headerData(self, section, orientation, role):
-        if (role == Qt.DisplayRole and orientation == Qt.Horizontal):
+        if (role != Qt.DisplayRole):
+            return None
+        if (orientation == Qt.Horizontal):
             return self._fields[section]
         return ''
 
@@ -137,6 +141,27 @@ class ContextGroupingModel(TableModel):
             if record['group_no'] == group_no:
                 contexts.append(record['context_no'])
         return contexts
+
+
+    def subGroupForContext(self, context_no):
+        for record in self._table:
+            if record['context_no'] == context_no:
+                return record['sub_group_no']
+        return 0
+
+
+    def groupForContext(self, context_no):
+        for record in self._table:
+            if record['context_no'] == context_no:
+                return record['group_no']
+        return 0
+
+
+    def groupForSubGroup(self, sub_group_no):
+        for record in self._table:
+            if record['sub_group_no'] == sub_group_no:
+                return record['group_no']
+        return 0
 
 
 class ContextModel(TableModel):
@@ -246,9 +271,33 @@ class DataManager(QObject):
                 self._contextModel.addContext(record)
 
 
-    def getContextsForSubGroup(self, sub_group_no):
-        return _contextGroupingModel.getContextsForSubGroup()
+    def contextData(self, context_no):
+        return self._contextModel.getRecord('context_no', context_no)
 
 
-    def getContextsForGroup(self, group_no):
-        return _contextGroupingModel.getContextsForGroup()
+    def subGroupData(self, sub_group_no):
+        return self._subGroupModel.getRecord('sub_group_no', sub_group_no)
+
+
+    def groupData(self, group_no):
+        return self._groupModel.getRecord('group_no', group_no)
+
+
+    def contextsForSubGroup(self, sub_group_no):
+        return self._contextGroupingModel.getContextsForSubGroup(sub_group_no)
+
+
+    def contextsForGroup(self, group_no):
+        return self._contextGroupingModel.getContextsForGroup(group_no)
+
+
+    def subGroupForContext(self, context_no):
+        return self._contextGroupingModel.subGroupForContext(context_no)
+
+
+    def groupForContext(self, context_no):
+        return self._contextGroupingModel.groupForContext(context_no)
+
+
+    def groupForSubGroup(self, sub_group_no):
+        return self._contextGroupingModel.groupForSubGroup(sub_group_no)

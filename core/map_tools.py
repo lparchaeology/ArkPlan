@@ -28,7 +28,7 @@ from PyQt4.QtCore import Qt, pyqtSignal, QSettings
 from PyQt4.QtGui import QInputDialog, QColor, QAction, QPixmap, QCursor
 
 from qgis.core import *
-from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker, QgsMessageBar, QgisInterface, QgsAttributeEditorContext, QgsAttributeDialog
+from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker, QgsMessageBar, QgisInterface, QgsAttributeEditorContext, QgsAttributeDialog, QgsMapToolIdentify
 
 # Code ported from QGIS app and adapted to take default attribute values
 # Snapping code really should be in the public api classes
@@ -55,6 +55,28 @@ capture_point_cursor = [
   "      ++.++     ",
   "       +.+      "
 ]
+
+
+class MapToolIndentifyFeatures(QgsMapToolIdentify):
+
+    featureIdentified = pyqtSignal(QgsFeature)
+
+    def __init__(self, canvas):
+        super(MapToolIndentifyFeatures, self).__init__(canvas)
+        mToolName = self.tr('Identify feature')
+
+    def canvasReleaseEvent(self, e):
+        if e.button() != Qt.LeftButton:
+            return
+        results = self.identify(e.x(), e.y(), QgsMapToolIdentify.TopDownAll, QgsMapToolIdentify.VectorLayer)
+        if (len(results) < 1):
+            return
+        # TODO: display a menu when several features identified
+        self.featureIdentified.emit(results[0].mFeature)
+
+    def keyPressEvent(self, e):
+        if (e.key() == Qt.Key_Escape):
+            canvas().unsetMapTool(self)
 
 
 # Tool to add a level, no snapping

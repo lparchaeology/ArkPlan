@@ -26,11 +26,12 @@ from PyQt4.QtCore import Qt, QObject
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
-from qgis.gui import QgsExpressionBuilderDialog
+from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 from ..core.data_model import *
+from ..core.map_tools import MapToolIndentifyFeatures
 
 from filter_dock import FilterDock
 
@@ -43,6 +44,8 @@ class Filter(QObject):
     # Internal variables
     initialised = False
 
+    identifyMapTool = None  # MapToolIndentifyFeatures()
+
     def __init__(self, settings, layers):
         super(Filter, self).__init__()
         self.settings = settings
@@ -53,8 +56,11 @@ class Filter(QObject):
     # Standard Dock methods
 
     def initGui(self):
+        self.identifyAction = self.settings.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
+
         self.dock = FilterDock()
-        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Filter context layers'), ':/plugins/Ark/filter/view-filter.png')
+        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png')
         self.dock.toggled.connect(self.run)
 
         self.dock.contextFilterChanged.connect(self.applyContextFilter)
@@ -68,6 +74,10 @@ class Filter(QObject):
         self.dock.showLinesChanged.connect(self.layers.showLines)
         self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
         self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
+
+        self.identifyMapTool = MapToolIndentifyFeatures(self.settings.iface.mapCanvas())
+        self.identifyMapTool.setAction(self.identifyAction)
+        self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
 
     def unload(self):
@@ -136,3 +146,15 @@ class Filter(QObject):
 
     def zoomFilter(self):
         self.layers.zoomToLayers(False)
+
+
+    def triggerIdentifyAction(self, checked):
+        if checked:
+            self.settings.iface.mapCanvas().setMapTool(self.identifyMapTool)
+        else:
+            self.settings.iface.mapCanvas().unsetMapTool(self.identifyMapTool)
+
+
+    def showIdentifyDialog(self, feature):
+        context = feature.attribute(self.settings.contextAttributeName)
+        self.settings.iface.messageBar().pushMessage("Context", str(context), QgsMessageBar.INFO)

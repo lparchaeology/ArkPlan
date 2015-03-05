@@ -72,7 +72,7 @@ class Filter(QObject):
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.clearFilterSelected.connect(self.clearFilter)
         self.dock.loadDataSelected.connect(self.loadData)
-        self.dock.showDataSelected.connect(self.showDataDialog)
+        self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomSelected.connect(self.zoomFilter)
         self.dock.showPointsChanged.connect(self.layers.showPoints)
         self.dock.showLinesChanged.connect(self.layers.showLines)
@@ -167,14 +167,14 @@ class Filter(QObject):
 
     def showIdentifyDialog(self, feature):
         context = feature.attribute(self.settings.contextAttributeName)
-        self.showDataDialog([context])
+        self.showDataDialogList([context])
 
 
-    def showDataDialog(self):
-        return showDataDialog(self.contextList)
+    def showDataDialogFilter(self):
+        return self.showDataDialogList(self.contextList)
 
 
-    def showDataDialog(self, contextList):
+    def showDataDialogList(self, contextList):
         subList = []
         groupList = []
         for context in contextList:

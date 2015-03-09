@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>495</width>
-    <height>197</height>
+    <width>505</width>
+    <height>231</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,49 +19,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="2">
-      <widget class="QDoubleSpinBox" name="crsOriginNorthingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="crsAxisNorthingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="axisLabel">
-       <property name="text">
-        <string>Axis Coordinates:</string>
-       </property>
-       <property name="buddy">
-        <cstring>crsAxisEastingSpin</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QSpinBox" name="spinBox_2">
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>200</number>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QDoubleSpinBox" name="crsAxisEastingSpin">
        <property name="decimals">
@@ -79,6 +36,16 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="1">
+      <widget class="QRadioButton" name="xAxisButton">
+       <property name="text">
+        <string>X Axis</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="originLabel">
        <property name="text">
@@ -89,8 +56,8 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="crsOriginEastingSpin">
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="crsAxisNorthingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -99,20 +66,26 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="originFromMapButton">
-       <property name="text">
-        <string>From Map</string>
+     <item row="3" column="2">
+      <widget class="QSpinBox" name="spinBox_2">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>200</number>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="1" column="0">
+      <widget class="QLabel" name="axisLabel">
        <property name="text">
-        <string>On Axis:</string>
+        <string>Axis Coordinates:</string>
        </property>
        <property name="buddy">
-        <cstring>xAxisButton</cstring>
+        <cstring>crsAxisEastingSpin</cstring>
        </property>
       </widget>
      </item>
@@ -137,19 +110,59 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="originLabel_2">
        <property name="text">
         <string>Local Origin:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="xAxisButton">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>X Axis</string>
+        <string>On Axis:</string>
        </property>
-       <property name="checked">
-        <bool>true</bool>
+       <property name="buddy">
+        <cstring>xAxisButton</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="originFromMapButton">
+       <property name="text">
+        <string>From Map</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="crsOriginEastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QDoubleSpinBox" name="crsOriginNorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="terminusEastingSpin"/>
+     </item>
+     <item row="4" column="2">
+      <widget class="QSpinBox" name="terminusNorthingSpin"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="terminusLabel">
+       <property name="text">
+        <string>Local Terminus:</string>
        </property>
       </widget>
      </item>

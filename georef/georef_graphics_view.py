@@ -24,10 +24,8 @@
 
 import os
 
-from PyQt4.QtCore import Qt, QWidget, QEvent, qDebug, pyqtSignal, QPointF
-from PyQt4.QtGui import QGraphicsView
-
-import gcp_widget_base
+from PyQt4.QtCore import Qt, QEvent, qDebug, pyqtSignal, QPointF
+from PyQt4.QtGui import QGraphicsView, QWidget
 
 class GeorefGraphicsView(QGraphicsView):
 

@@ -37,18 +37,6 @@ import georef_graphics_view
 class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     # Internal variables
-    gridPoint1 = QPoint()
-    gridPoint2 = QPoint()
-    gridPoint3 = QPoint()
-
-    geo1 = QgsPoint()
-    geo2 = QgsPoint()
-    geo3 = QgsPoint()
-
-    gcp1 = QPointF()
-    gcp2 = QPointF()
-    gcp3 = QPointF()
-
     closeOnDone = False
     gdalStep = ''
     crt = 'EPSG:27700'
@@ -146,29 +134,12 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.scene = QtGui.QGraphicsScene(self)
         self.rawItem = self.scene.addPixmap(self.rawPixmap)
 
-        self.m_gridView1.setScene(self.scene)
-        self.m_gridView1.centerOn(250, 100)
-        self.m_gridView1.scale(2, 2)
-        self.gridItem1 = self.scene.addEllipse(-1.5, -1.5, 3.0, 3.0, QtGui.QPen(Qt.red))
-        self.gridItem1.setVisible(False)
-        self.m_gridView1.pointSelected.connect(self.setGcp1)
+        self.gcpWidget1.setScene(self.scene, 250, 100, 2)
+        self.gcpWidget2.setScene(self.scene, 250, 3050, 2)
+        self.gcpWidget3.setScene(self.scene, 3200, 3050, 2)
 
-        self.m_gridView2.setScene(self.scene)
-        self.m_gridView2.centerOn(250, 3050)
-        self.m_gridView2.scale(2, 2)
-        self.gridItem2 = self.scene.addEllipse(-1.5, -1.5, 3.0, 3.0, QtGui.QPen(Qt.red))
-        self.gridItem2.setVisible(False)
-        self.m_gridView2.pointSelected.connect(self.setGcp2)
-
-        self.m_gridView3.setScene(self.scene)
-        self.m_gridView3.centerOn(3200, 3050)
-        self.m_gridView3.scale(2, 2)
-        self.gridItem3 = self.scene.addEllipse(-1.5, -1.5, 3.0, 3.0, QtGui.QPen(Qt.red))
-        self.gridItem3.setVisible(False)
-        self.m_gridView3.pointSelected.connect(self.setGcp3)
-
-        self.m_planView.setScene(self.scene)
-        self.m_planView.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        self.planView.setScene(self.scene)
+        self.planView.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
         #TODO Make clicks set focus of other views
 
         self.m_fileEdit.setText(self.rawFile.baseName())
@@ -180,46 +151,23 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.loadGcpFile()
             self.showText('')
 
-    def resizeGcpTable(self):
-        self.m_gcpTable.resizeColumnsToContents()
-        self.m_gcpTable.resizeRowsToContents()
+        self.m_outputText.setHidden(True)
 
     def updateGridPoints(self):
-        self.gridPoint1 = QPoint(self.m_eastSpin.value(), self.m_northSpin.value() + 5)
-        self.m_gridLabel1.setText('%d / %d' % (self.gridPoint1.x(), self.gridPoint1.y()))
-        self.m_gcpTable.item(0, 2).setText(str(self.gridPoint1.x()))
-        self.m_gcpTable.item(0, 3).setText(str(self.gridPoint1.y()))
-
-        self.gridPoint2 = QPoint(self.m_eastSpin.value(), self.m_northSpin.value())
-        self.m_gridLabel2.setText('%d / %d' % (self.gridPoint2.x(), self.gridPoint2.y()))
-        self.m_gcpTable.item(1, 2).setText(str(self.gridPoint2.x()))
-        self.m_gcpTable.item(1, 3).setText(str(self.gridPoint2.y()))
-
-        self.gridPoint3 = QPoint(self.m_eastSpin.value() + 5, self.m_northSpin.value())
-        self.m_gridLabel3.setText('%d / %d' % (self.gridPoint3.x(), self.gridPoint3.y()))
-        self.m_gcpTable.item(2, 2).setText(str(self.gridPoint3.x()))
-        self.m_gcpTable.item(2, 3).setText(str(self.gridPoint3.y()))
-
-        self.resizeGcpTable()
+        self.gcpWidget1.setLocalPoint(QPoint(self.m_eastSpin.value(), self.m_northSpin.value() + 5))
+        self.gcpWidget2.setLocalPoint(QPoint(self.m_eastSpin.value(), self.m_northSpin.value()))
+        self.gcpWidget3.setLocalPoint(QPoint(self.m_eastSpin.value() + 5, self.m_northSpin.value()))
 
     def updateGeoPoints(self):
         # Find the geo points for the grid points
         features = self.gridLayer.getFeatures()
         for feature in features:
-            if feature.attributes()[self.gridXField] == self.gridPoint1.x() and feature.attributes()[self.gridYField] == self.gridPoint1.y():
-                   self.geo1 = feature.geometry().asPoint()
-            if feature.attributes()[self.gridXField] == self.gridPoint2.x() and feature.attributes()[self.gridYField] == self.gridPoint2.y():
-                   self.geo2 = feature.geometry().asPoint()
-            if feature.attributes()[self.gridXField] == self.gridPoint3.x() and feature.attributes()[self.gridYField] == self.gridPoint3.y():
-                   self.geo3 = feature.geometry().asPoint()
-
-        self.m_gcpTable.item(0, 4).setText(str(self.geo1.x()))
-        self.m_gcpTable.item(0, 5).setText(str(self.geo1.y()))
-        self.m_gcpTable.item(1, 4).setText(str(self.geo2.x()))
-        self.m_gcpTable.item(1, 5).setText(str(self.geo2.y()))
-        self.m_gcpTable.item(2, 4).setText(str(self.geo3.x()))
-        self.m_gcpTable.item(2, 5).setText(str(self.geo3.y()))
-        self.resizeGcpTable()
+            if feature.attributes()[self.gridXField] == self.gcpWidget1.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget1.localPoint().y():
+                   self.gcpWidget1.setCrsPoint(feature.geometry().asPoint())
+            if feature.attributes()[self.gridXField] == self.gcpWidget2.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget2.localPoint().y():
+                   self.gcpWidget2.setCrsPoint(feature.geometry().asPoint())
+            if feature.attributes()[self.gridXField] == self.gcpWidget3.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget3.localPoint().y():
+                   self.gcpWidget3.setCrsPoint(feature.geometry().asPoint())
 
     def updateGeoFile(self):
         md = self.metadata()
@@ -236,10 +184,10 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.m_suffixEdit.setEnabled(status)
         self.m_eastSpin.setEnabled(status)
         self.m_northSpin.setEnabled(status)
-        self.m_gridView1.setEnabled(status)
-        self.m_gridView2.setEnabled(status)
-        self.m_gridView3.setEnabled(status)
-        self.m_planView.setEnabled(status)
+        self.gcpWidget1.setEnabled(status)
+        self.gcpWidget2.setEnabled(status)
+        self.gcpWidget3.setEnabled(status)
+        self.planView.setEnabled(status)
         if (status):
             self.m_progressBar.setRange(0, 100)
         else:
@@ -269,30 +217,6 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     def showText(self, text):
         self.m_outputText.append(text)
 
-    def setGcp1(self, point):
-        self.gcp1 = point
-        self.gridItem1.setPos(point)
-        self.gridItem1.setVisible(True)
-        self.m_gcpTable.item(0, 0).setText(str(point.x()))
-        self.m_gcpTable.item(0, 1).setText(str(point.y()))
-        self.resizeGcpTable()
-
-    def setGcp2(self, point):
-        self.gcp2 = point
-        self.gridItem2.setPos(point)
-        self.gridItem2.setVisible(True)
-        self.m_gcpTable.item(1, 0).setText(str(point.x()))
-        self.m_gcpTable.item(1, 1).setText(str(point.y()))
-        self.resizeGcpTable()
-
-    def setGcp3(self, point):
-        self.gcp3 = point
-        self.gridItem3.setPos(point)
-        self.gridItem3.setVisible(True)
-        self.m_gcpTable.item(2, 0).setText(str(point.x()))
-        self.m_gcpTable.item(2, 1).setText(str(point.y()))
-        self.resizeGcpTable()
-
     def gdalPath(self):
         settings = QSettings()
         return settings.value('/GdalTools/gdalPath', '/usr/bin')
@@ -312,7 +236,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.reject()
 
     def runGeoreference(self):
-        if (self.gcp1.isNull() or self.gcp2.isNull() or self.gcp3.isNull()):
+        if (self.gcpWidget1.rawPoint().isNull() or self.gcpWidget2.rawPoint().isNull() or self.gcpWidget3.rawPoint().isNull()):
             self.showText('ERROR: Please set all 3 Ground Control Points!')
             return
         self.enableUi(False)
@@ -331,9 +255,9 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalArgs = []
         self.gdalArgs.extend(['-of', 'GTiff'])
         self.gdalArgs.extend(['-a_srs', self.crt])
-        self.gdalArgs.extend(['-gcp', str(self.gcp1.x()), str(self.gcp1.y()), str(self.geo1.x()), str(self.geo1.y())])
-        self.gdalArgs.extend(['-gcp', str(self.gcp2.x()), str(self.gcp2.y()), str(self.geo2.x()), str(self.geo2.y())])
-        self.gdalArgs.extend(['-gcp', str(self.gcp3.x()), str(self.gcp3.y()), str(self.geo3.x()), str(self.geo3.y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y()), str(self.gcpWidget1.crsPoint().x()), str(self.gcpWidget1.crsPoint().y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y()), str(self.gcpWidget2.crsPoint().x()), str(self.gcpWidget2.crsPoint().y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y()), str(self.gcpWidget3.crsPoint().x()), str(self.gcpWidget3.crsPoint().y())])
         self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png')
         self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
@@ -423,15 +347,15 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             elif (vals[4] == '0'):
                 self.showText('not used point')
                 pass
-            elif (vals[0] == str(self.geo1.x()) and vals[1] == str(self.geo1.y())):
+            elif (vals[0] == str(self.gcpWidget1.crsPoint().x()) and vals[1] == str(self.gcpWidget1.crsPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix1 = QPointF(float(vals[2]), float(vals[3]))
-            elif (vals[0] == str(self.geo2.x()) and vals[1] == str(self.geo2.y())):
+            elif (vals[0] == str(self.gcpWidget2.crsPoint().x()) and vals[1] == str(self.gcpWidget2.crsPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix2 = QPointF(float(vals[2]), float(vals[3]))
-            elif (vals[0] == str(self.geo3.x()) and vals[1] == str(self.geo3.y())):
+            elif (vals[0] == str(self.gcpWidget3.crsPoint().x()) and vals[1] == str(self.gcpWidget3.crsPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix3 = QPointF(float(vals[2]), float(vals[3]))
@@ -444,9 +368,9 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         if (lines != 3 or pix1.isNull() or pix2.isNull() or pix3.isNull()):
             self.showText('GCP file did not contain a valid set of points matching the grid')
         else:
-            self.setGcp1(pix1)
-            self.setGcp2(pix2)
-            self.setGcp3(pix3)
+            self.gcpWidget1.setRawPoint(pix1)
+            self.gcpWidget2.setRawPoint(pix2)
+            self.gcpWidget3.setRawPoint(pix3)
             self.showText('GCP file points loaded')
 
     def writeGcpFile(self):
@@ -456,8 +380,8 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             return
         outStream = QTextStream(outFile)
         outStream << 'mapX,mapY,pixelX,pixelY,enable\n'
-        outStream << ','.join([str(self.geo1.x()), str(self.geo1.y()), str(self.gcp1.x()), str(self.gcp1.y())]) << ',1\n'
-        outStream << ','.join([str(self.geo2.x()), str(self.geo2.y()), str(self.gcp2.x()), str(self.gcp2.y())]) << ',1\n'
-        outStream << ','.join([str(self.geo3.x()), str(self.geo3.y()), str(self.gcp3.x()), str(self.gcp3.y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget1.crsPoint().x()), str(self.gcpWidget1.crsPoint().y()), str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget2.crsPoint().x()), str(self.gcpWidget2.crsPoint().y()), str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget3.crsPoint().x()), str(self.gcpWidget3.crsPoint().y()), str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y())]) << ',1\n'
         outFile.close()
         self.showText('GCP file written')

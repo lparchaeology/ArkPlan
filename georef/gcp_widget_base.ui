@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="GeorefGraphicsView" name="pointView">
+    <widget class="GeorefGraphicsView" name="gcpView">
      <property name="interactive">
       <bool>false</bool>
      </property>
@@ -65,13 +65,37 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="localXSpin"/>
+      <widget class="QSpinBox" name="localXSpin">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+      </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="crsXSpin"/>
+      <widget class="QDoubleSpinBox" name="crsXSpin">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QDoubleSpinBox" name="rawXSpin"/>
+      <widget class="QDoubleSpinBox" name="rawXSpin">
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>99999.899999999994179</double>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="yLabel">
@@ -81,13 +105,37 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="localYSpin"/>
+      <widget class="QSpinBox" name="localYSpin">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+      </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QDoubleSpinBox" name="crsYSpin"/>
+      <widget class="QDoubleSpinBox" name="crsYSpin">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
      </item>
      <item row="2" column="3">
-      <widget class="QDoubleSpinBox" name="rawYSpin"/>
+      <widget class="QDoubleSpinBox" name="rawYSpin">
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>99999.899999999994179</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

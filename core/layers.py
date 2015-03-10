@@ -55,8 +55,8 @@ class LayerManager:
         self.settings.iface.legendInterface().groupIndexChanged.connect(self.groupIndexChanged)
 
     def initialise(self):
-        self.createBufferLayers()
         self.loadContextLayers()
+        self.createBufferLayers()
 
     def unload(self):
         # Remove the buffers from the legend
@@ -124,28 +124,25 @@ class LayerManager:
             self.settings.bufferGroupIndex = self.getGroupIndex(self.settings.bufferGroupName)
 
         if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
-            self.schematicBuffer = self.createLayer('Polygon', self.settings.schematicBufferName(), self.settings.schematicLayerName(), 'memory')
-            if (self.schematicBuffer.isValid()):
-                self.addLayerToLegend(self.schematicBuffer, self.settings.bufferGroupIndex)
-                self.schematicBuffer.startEditing()
+            self.schematicBuffer = self.createMemoryLayer(self.schematicLayer)
+            self.addBufferToLegend(self.schematicBuffer)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self.createLayer('Polygon', self.settings.polygonsBufferName(), self.settings.polygonsLayerName(), 'memory')
-            if (self.polygonsBuffer.isValid()):
-                self.addLayerToLegend(self.polygonsBuffer, self.settings.bufferGroupIndex)
-                self.polygonsBuffer.startEditing()
+            self.polygonsBuffer = self.createMemoryLayer(self.polygonsLayer)
+            self.addBufferToLegend(self.polygonsBuffer)
 
         if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self.createLayer('LineString', self.settings.linesBufferName(), self.settings.linesLayerName(), 'memory')
-            if (self.linesBuffer.isValid()):
-                self.addLayerToLegend(self.linesBuffer, self.settings.bufferGroupIndex)
-                self.linesBuffer.startEditing()
+            self.linesBuffer = self.createMemoryLayer(self.linesLayer)
+            self.addBufferToLegend(self.linesBuffer)
 
         if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
-            self.pointsBuffer = self.createLayer('Point', self.settings.pointsBufferName(), self.settings.pointsLayerName(), 'memory')
-            if (self.pointsBuffer.isValid()):
-                self.addLayerToLegend(self.pointsBuffer, self.settings.bufferGroupIndex)
-                self.pointsBuffer.startEditing()
+            self.pointsBuffer = self.createMemoryLayer(self.pointsLayer)
+            self.addBufferToLegend(self.pointsBuffer)
+
+    def addBufferToLegend(self, buffer):
+        if buffer.isValid():
+            self.addLayerToLegend(buffer, self.settings.bufferGroupIndex)
+            buffer.startEditing()
 
     def addLayerToLegend(self, layer, group):
         if layer.isValid():
@@ -167,6 +164,50 @@ class LayerManager:
             self._setDefaultSnapping(layer)
         #TODO set symbols?
         return layer
+
+    def createMemoryLayer(self, layer):
+        self.settings.logMessage('createMemoryLayer: entered')
+        if layer.isValid():
+            self.settings.logMessage(layer.name())
+            self.settings.logMessage(layer.source())
+            uri = self.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
+            self.settings.logMessage(uri)
+            buffer = QgsVectorLayer(uri, layer.name() + self.settings.bufferSuffix, 'memory')
+            if (buffer is not None and buffer.isValid()):
+                self.settings.logMessage('createMemoryLayer: buffer created and is valid named ' + buffer.name())
+                buffer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
+                buffer.loadNamedStyle(layer.styleURI())
+            else:
+                self.settings.logMessage('FAILED')
+            return buffer
+        return None
+
+    def wkbToMemoryType(self, wkbType):
+        if (wkbType == QGis.WKBPoint):
+            return 'point'
+        elif (wkbType == QGis.WKBLineString):
+            return 'linestring'
+        elif (wkbType == QGis.WKBPolygon):
+            return 'polygon'
+        elif (wkbType == QGis.WKBMultiPoint):
+            return 'multipoint'
+        elif (wkbType == QGis.WKBMultiLineString):
+            return 'multilinestring'
+        elif (wkbType == QGis.WKBMultiPolygon):
+            return 'multipolygon'
+        elif (wkbType == QGis.WKBPoint25D):
+            return 'point'
+        elif (wkbType == QGis.WKBLineString25D):
+            return 'linestring'
+        elif (wkbType == QGis.WKBPolygon25D):
+            return 'polygon'
+        elif (wkbType == QGis.WKBMultiPoint25D):
+            return 'multipoint'
+        elif (wkbType == QGis.WKBMultiLineString25D):
+            return 'multilinestring'
+        elif (wkbType == QGis.WKBMultiPolygon25D):
+            return 'multipolygon'
+        return 'unknown'
 
     def clearBuffer(self, type, buffer, undoMessage=''):
         message = undoMessage

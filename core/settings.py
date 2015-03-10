@@ -28,7 +28,8 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QDir, QObject
 from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
 
-from qgis.core import QgsProject, QgsSnapper
+from qgis.core import QgsProject, QgsSnapper, QgsMessageLog
+from qgis.gui import QgsMessageBar
 
 from settings_dialog_base import *
 
@@ -120,6 +121,17 @@ class Settings(QObject):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
+
+    # Convenience logging functions
+
+    def logMessage(self, text, level=QgsMessageLog.INFO):
+        QgsMessageLog.logMessage(text, self.pluginName, level)
+
+    def showMessage(self, text, level=QgsMessageBar.INFO, duration=0):
+        self.iface.messageBar().pushMessage(text, level, duration)
+
+    def showStatusMessage(self, text):
+        self.iface.mainWindow().statusBar().showMessage(text)
 
     def dataDir(self):
         return QDir(self.dataPath())

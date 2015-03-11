@@ -132,7 +132,7 @@ class QgsMapToolSnap(QgsMapTool):
     _snapper = None  #QgsMapCanvasSnapper()
     _snappingMarker = None  # QgsVertexMarker()
     _showSnappableVertices = False
-    _snappableLayers = []  # [QgsMapLayer()]
+    _snappableVertices = []  # [QgsPoint()]
     _snappableMarkers = []  # [QgsVertexMarker()]
     _active = False
 
@@ -166,12 +166,14 @@ class QgsMapToolSnap(QgsMapTool):
         self._showSnappableVertices = show
         if show:
             self.canvas().layersChanged.connect(self._layersChanged)
+            self.canvas().extentsChanged.connect(self._redrawSnappableMarkers)
             QgsProject.instance().snapSettingsChanged.connect(self._layersChanged)
             self._layersChanged()
         else:
             self._deleteSnappableMarkers()
             self._snappableLayers = []
             self.canvas().layersChanged.disconnect(self._layersChanged)
+            self.canvas().extentsChanged.disconnect(self._redrawSnappableMarkers)
             QgsProject.instance().snapSettingsChanged.disconnect(self._layersChanged)
 
     def canvasMoveEvent(self, e):
@@ -212,28 +214,15 @@ class QgsMapToolSnap(QgsMapTool):
     def _createSnappableMarkers(self):
         if (not self._showSnappableVertices or not self._active):
             return
-        for layer in self._snappableLayers:
-            if not layer.isEditable():
-                for feature in layer.getFeatures():
-                    geometry = feature.geometry()
-                    vertices = []
-                    if geometry.type() == QGis.Point:
-                        vertices = [geometry.asPoint()]
-                    elif geometry.type() == QGis.Line:
-                        vertices = geometry.asPolyline()
-                    elif geometry.type() == QGis.Polygon:
-                        lines = geometry.asPolygon()
-                        for line in lines:
-                            vertices.extend(line)
-                    mp = QgsGeometry.fromMultiPoint(vertices)
-                    mp.simplify(0)
-                    for vertex in mp.asMultiPoint():
-                        marker = QgsVertexMarker(self.canvas())
-                        marker.setIconType(QgsVertexMarker.ICON_X)
-                        marker.setColor(Qt.gray)
-                        marker.setPenWidth(1)
-                        marker.setCenter(vertex)
-                        self._snappableMarkers.append(marker)
+        extent = self.canvas().extent()
+        for vertex in self._snappableVertices.asMultiPoint():
+            if (extent.contains(vertex)):
+                marker = QgsVertexMarker(self.canvas())
+                marker.setIconType(QgsVertexMarker.ICON_X)
+                marker.setColor(Qt.gray)
+                marker.setPenWidth(1)
+                marker.setCenter(vertex)
+                self._snappableMarkers.append(marker)
 
     def _deleteSnappableMarkers(self):
         for marker in self._snappableMarkers:
@@ -247,14 +236,32 @@ class QgsMapToolSnap(QgsMapTool):
         self._deleteSnappableMarkers()
         self._createSnappableMarkers()
 
+    def _redrawSnappableMarkers(self):
+        if (not self._showSnappableVertices or not self._active):
+            return
+        self._deleteSnappableMarkers()
+        self._createSnappableMarkers()
+
     def _buildSnappableLayers(self):
         if (not self._showSnappableVertices or not self._active):
             return
-        self._snappableLayers = []
+        vertices = []
         for layer in self.canvas().layers():
             ok, enabled, type, units, tolerance, avoid = QgsProject.instance().snapSettingsForLayer(layer.id())
-            if (ok and enabled):
-                self._snappableLayers.append(layer)
+            if (ok and enabled and not layer.isEditable()):
+                for feature in layer.getFeatures():
+                    geometry = feature.geometry()
+                    if geometry.type() == QGis.Point:
+                        vertices.extend([geometry.asPoint()])
+                    elif geometry.type() == QGis.Line:
+                        vertices.extend(geometry.asPolyline())
+                    elif geometry.type() == QGis.Polygon:
+                        lines = geometry.asPolygon()
+                        for line in lines:
+                            vertices.extend(line)
+        self._snappableVertices = QgsGeometry.fromMultiPoint(vertices)
+        self._snappableVertices.simplify(0)
+
 
 # Tool to capture and show mouse clicks as geometry using map points
 class QgsMapToolCapture(QgsMapToolSnap):

@@ -78,11 +78,9 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.dock.linesSnappingToggled.connect(self.layers.showLinesVertexMarkers)
-        self.dock.polygonsSnappingToggled.connect(self.layers.showPolygonsVertexMarkers)
-        self.dock.schematicSnappingToggled.connect(self.layers.showSchematicVertexMarkers)
-
     def unload(self):
+
+        self.deleteMapTool()
 
         # Unload the dock
         self.dock.unload()
@@ -211,11 +209,16 @@ class Plan(QObject):
             self.currentMapTool = None
         self.currentMapTool = QgsMapToolAddFeature(self.settings.iface.mapCanvas(), self.settings.iface, featureType, toolName)
         self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
+        self.currentMapTool.setShowSnappableVertices(True)
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):
             self.dock.clearCheckedToolButton()
-            if (self.currentMapTool is not None):
-                self.currentMapTool.deactivate()
-                self.currentMapTool = None
+            self.deleteMapTool()
+
+    def deleteMapTool(self):
+        if self.currentMapTool is not None:
+            self.currentMapTool.deactivate()
+            del self.currentMapTool
+            self.currentMapTool = None

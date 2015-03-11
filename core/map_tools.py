@@ -24,8 +24,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, pyqtSignal, QSettings
-from PyQt4.QtGui import QInputDialog, QColor, QAction, QPixmap, QCursor
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QSize
+from PyQt4.QtGui import QInputDialog, QColor, QAction, QPixmap, QCursor, QBitmap
 
 from qgis.core import *
 from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMarker, QgsMessageBar, QgisInterface, QgsAttributeEditorContext, QgsAttributeDialog, QgsMapToolIdentify
@@ -33,7 +33,7 @@ from qgis.gui import QgsMapTool, QgsRubberBand, QgsMapCanvasSnapper, QgsVertexMa
 # Code ported from QGIS app and adapted to take default attribute values
 # Snapping code really should be in the public api classes
 
-capture_point_cursor = [
+capture_point_cursor_xpm = [
   "16 16 3 1",
   " »     c None",
   ".»     c #000000",
@@ -55,6 +55,25 @@ capture_point_cursor = [
   "      ++.++     ",
   "       +.+      "
 ]
+capture_point_cursor = QCursor(QPixmap(capture_point_cursor_xpm), 8, 8)
+
+pan_bits = [
+  0xf0, 0x00, 0xf8, 0x01, 0x28, 0x07, 0x28, 0x05, 0x28, 0x1d, 0x28, 0x15,
+  0x2f, 0x15, 0x0d, 0x14, 0x09, 0x10, 0x03, 0x18, 0x06, 0x08, 0x04, 0x08,
+  0x0c, 0x0c, 0x18, 0x04, 0x30, 0x04, 0xe0, 0x07
+]
+pan_str = ''.join(chr(int(pan_bits[i])) for i in range(0, len(pan_bits)))
+pan_bmp = QBitmap.fromData(QSize(16, 16), pan_str)
+
+pan_mask_bits = [
+  0xf0, 0x00, 0xf8, 0x01, 0xf8, 0x07, 0xf8, 0x07, 0xf8, 0x1f, 0xf8, 0x1f,
+  0xff, 0x1f, 0xff, 0x1f, 0xff, 0x1f, 0xff, 0x1f, 0xfe, 0x0f, 0xfc, 0x0f,
+  0xfc, 0x0f, 0xf8, 0x07, 0xf0, 0x07, 0xe0, 0x07
+]
+pan_mask_str = ''.join(chr(int(pan_mask_bits[i])) for i in range(0, len(pan_mask_bits)))
+pan_mask_bmp = QBitmap.fromData(QSize(16, 16), pan_mask_str)
+
+pan_cursor = QCursor(pan_bmp, pan_mask_bmp, 5, 5)
 
 
 class MapToolIndentifyFeatures(QgsMapToolIdentify):
@@ -246,6 +265,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
     _mapPointList = []  #QList<QgsPoint>
     _rubberBand = None  #QgsRubberBand()
     _moveRubberBand = None  #QgsRubberBand()
+    _dragging = False
     _tip = ''
     _validator = None  #QgsGeometryValidator()
     _geometryErrors = []  #QList<QgsGeometry.Error>
@@ -257,7 +277,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
         self._geometryType = geometryType
         if (geometryType == QGis.UnknownGeometry):
             self._useLayerGeometry = True
-        self.setCursor(QCursor(QPixmap(capture_point_cursor), 8, 8))
+        self.setCursor(capture_point_cursor)
 
     def __del__(self):
         self.deactivate();
@@ -303,14 +323,23 @@ class QgsMapToolCapture(QgsMapToolSnap):
 
     def canvasMoveEvent(self, e):
         super(QgsMapToolCapture, self).canvasMoveEvent(e)
-        if (self._moveRubberBand is not None):
+        if (e.buttons() & Qt.LeftButton):
+            self._dragging = True
+            self.setCursor(pan_cursor)
+            self.canvas().panAction(e)
+        elif (self._moveRubberBand is not None):
             mapPoint, snapped = self._snapCursorPoint(e.pos())
             self._moveRubberBand.movePoint(mapPoint)
 
     def canvasReleaseEvent(self, e):
         super(QgsMapToolCapture, self).canvasReleaseEvent(e)
         if (e.button() == Qt.LeftButton):
-            self._addVertex(e.pos())
+            if self._dragging:
+                self.canvas().panActionEnd(e.pos())
+                self.setCursor(capture_point_cursor)
+                self._dragging = False
+            else:
+                self._addVertex(e.pos())
 
     def keyPressEvent(self, e):
         super(QgsMapToolCapture, self).keyPressEvent(e)
@@ -494,9 +523,11 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             self._addFeatureAction(vlayer, QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
+        wasDragging = self._dragging
         super(QgsMapToolAddFeature, self).canvasReleaseEvent(e)
-
-        if (self._featureType == QgsMapToolAddFeature.Point):
+        if (wasDragging):
+            pass
+        elif (self._featureType == QgsMapToolAddFeature.Point):
             if (e.button() == Qt.LeftButton):
                 self._captureFeature()
         else:

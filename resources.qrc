@@ -18,6 +18,9 @@
         <file>filter/view-filter.png</file>
     </qresource>
     <qresource prefix="/plugins/Ark" >
+        <file>grid/get-hot-new-stuff.png</file>
+    </qresource>
+    <qresource prefix="/plugins/Ark" >
         <file>grid/snap-orthogonal.png</file>
     </qresource>
     <qresource prefix="/plugins/Ark" >

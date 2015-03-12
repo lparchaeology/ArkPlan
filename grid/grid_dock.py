@@ -34,7 +34,6 @@ import grid_dock_base
 
 class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
-    mapToolToggled = pyqtSignal(bool)
     convertCrsSelected = pyqtSignal()
     convertLocalSelected = pyqtSignal()
 
@@ -42,18 +41,12 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         super(GridDock, self).__init__(parent)
         self.setupUi(self)
 
-        self.mapToolButton.clicked.connect(self.mapToolClicked)
-        self.mapToolButton.toggled.connect(self.mapToolToggled)
-        self.enterCrsButton.clicked.connect(self.enterCrsClicked)
-        self.enterLocalButton.clicked.connect(self.enterLocalClicked)
-
         self.crsEastingSpin.editingFinished.connect(self.convertCrsSelected)
         self.crsNorthingSpin.editingFinished.connect(self.convertCrsSelected)
 
         self.localEastingSpin.editingFinished.connect(self.convertLocalSelected)
         self.localNorthingSpin.editingFinished.connect(self.convertLocalSelected)
 
-        self.enterCrsClicked()
 
     def crsPoint(self):
         return QgsPoint(self.crsEastingSpin.value(), self.crsNorthingSpin.value())
@@ -73,22 +66,8 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.localNorthingSpin.setValue(point.y())
 
 
-    def mapToolClicked(self):
-        self.crsEastingSpin.setReadOnly(True)
-        self.crsNorthingSpin.setReadOnly(True)
-        self.localEastingSpin.setReadOnly(True)
-        self.localNorthingSpin.setReadOnly(True)
-
-
-    def enterCrsClicked(self):
-        self.crsEastingSpin.setReadOnly(False)
-        self.crsNorthingSpin.setReadOnly(False)
-        self.localEastingSpin.setReadOnly(True)
-        self.localNorthingSpin.setReadOnly(True)
-
-
-    def enterLocalClicked(self):
-        self.crsEastingSpin.setReadOnly(True)
-        self.crsNorthingSpin.setReadOnly(True)
-        self.localEastingSpin.setReadOnly(False)
-        self.localNorthingSpin.setReadOnly(False)
+    def setReadOnly(self, status):
+        self.crsEastingSpin.setReadOnly(status)
+        self.crsNorthingSpin.setReadOnly(status)
+        self.localEastingSpin.setReadOnly(status)
+        self.localNorthingSpin.setReadOnly(status)

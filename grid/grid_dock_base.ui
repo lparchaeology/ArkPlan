@@ -18,29 +18,35 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QRadioButton" name="enterCrsButton">
+       <widget class="QToolButton" name="mapGridTool">
         <property name="text">
-         <string>Enter CRS</string>
+         <string>Map</string>
         </property>
-        <property name="checked">
+        <property name="checkable">
          <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="enterLocalButton">
-        <property name="text">
-         <string>Enter Local</string>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-       </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="mapToolButton">
-        <property name="text">
-         <string>From Map</string>
+       <widget class="QToolButton" name="newGridTool">
+        <property name="toolTip">
+         <string/>
         </property>
-        <property name="checked">
-         <bool>false</bool>
+        <property name="text">
+         <string>New</string>
         </property>
        </widget>
       </item>
@@ -49,7 +55,7 @@
     <item>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="crsLabel">
         <property name="text">
          <string>CRS:</string>
         </property>
@@ -91,7 +97,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="localLabel">
         <property name="text">
          <string>Local:</string>
         </property>
@@ -109,7 +115,7 @@
          <number>3</number>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>9999.989999999999782</double>
         </property>
        </widget>
       </item>
@@ -122,7 +128,7 @@
          <number>3</number>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>9999.989999999999782</double>
         </property>
        </widget>
       </item>

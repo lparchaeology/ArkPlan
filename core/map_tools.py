@@ -57,24 +57,6 @@ capture_point_cursor_xpm = [
 ]
 capture_point_cursor = QCursor(QPixmap(capture_point_cursor_xpm), 8, 8)
 
-pan_bits = [
-  0xf0, 0x00, 0xf8, 0x01, 0x28, 0x07, 0x28, 0x05, 0x28, 0x1d, 0x28, 0x15,
-  0x2f, 0x15, 0x0d, 0x14, 0x09, 0x10, 0x03, 0x18, 0x06, 0x08, 0x04, 0x08,
-  0x0c, 0x0c, 0x18, 0x04, 0x30, 0x04, 0xe0, 0x07
-]
-pan_str = ''.join(chr(int(pan_bits[i])) for i in range(0, len(pan_bits)))
-pan_bmp = QBitmap.fromData(QSize(16, 16), pan_str)
-
-pan_mask_bits = [
-  0xf0, 0x00, 0xf8, 0x01, 0xf8, 0x07, 0xf8, 0x07, 0xf8, 0x1f, 0xf8, 0x1f,
-  0xff, 0x1f, 0xff, 0x1f, 0xff, 0x1f, 0xff, 0x1f, 0xfe, 0x0f, 0xfc, 0x0f,
-  0xfc, 0x0f, 0xf8, 0x07, 0xf0, 0x07, 0xe0, 0x07
-]
-pan_mask_str = ''.join(chr(int(pan_mask_bits[i])) for i in range(0, len(pan_mask_bits)))
-pan_mask_bmp = QBitmap.fromData(QSize(16, 16), pan_mask_str)
-
-pan_cursor = QCursor(pan_bmp, pan_mask_bmp, 5, 5)
-
 
 class MapToolIndentifyFeatures(QgsMapToolIdentify):
 
@@ -332,7 +314,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
         super(QgsMapToolCapture, self).canvasMoveEvent(e)
         if (e.buttons() & Qt.LeftButton):
             self._dragging = True
-            self.setCursor(pan_cursor)
+            self.setCursor(QCursor(Qt.ClosedHandCursor))
             self.canvas().panAction(e)
         elif (self._moveRubberBand is not None):
             mapPoint, snapped = self._snapCursorPoint(e.pos())

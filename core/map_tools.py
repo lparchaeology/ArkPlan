@@ -24,7 +24,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QSize
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QSize, QRect
 from PyQt4.QtGui import QInputDialog, QColor, QAction, QPixmap, QCursor, QBitmap
 
 from qgis.core import *
@@ -77,7 +77,7 @@ class MapToolIndentifyFeatures(QgsMapToolIdentify):
 
     def keyPressEvent(self, e):
         if (e.key() == Qt.Key_Escape):
-            canvas().unsetMapTool(self)
+            self.canvas().unsetMapTool(self)
 
 
 # Tool to add a level, no snapping
@@ -254,6 +254,8 @@ class QgsMapToolCapture(QgsMapToolSnap):
     _mapPointList = []  #QList<QgsPoint>
     _rubberBand = None  #QgsRubberBand()
     _moveRubberBand = None  #QgsRubberBand()
+    _zoomRubberBand = None  #QgsRubberBand()
+    _zoomRect = None # QRect()
     _dragging = False
     _tip = ''
     _validator = None  #QgsGeometryValidator()
@@ -288,6 +290,9 @@ class QgsMapToolCapture(QgsMapToolSnap):
         if (self._moveRubberBand is not None):
             self.canvas().scene().removeItem(self._moveRubberBand)
             self._moveRubberBand = None
+        if (self._zoomRubberBand is not None):
+            self.canvas().scene().removeItem(self._zoomRubberBand)
+            self._zoomRubberBand = None
         if (self._useLayerGeometry == True):
             self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
         super(QgsMapToolCapture, self).deactivate()
@@ -313,10 +318,28 @@ class QgsMapToolCapture(QgsMapToolSnap):
     def canvasMoveEvent(self, e):
         super(QgsMapToolCapture, self).canvasMoveEvent(e)
         if (e.buttons() & Qt.LeftButton):
-            self._dragging = True
-            self.setCursor(QCursor(Qt.ClosedHandCursor))
+            # Pan map mode
+            if not self._dragging:
+                self._dragging = True
+                self.setCursor(QCursor(Qt.ClosedHandCursor))
             self.canvas().panAction(e)
+        elif (e.buttons() & Qt.RightButton):
+            # Zoom map mode
+            if not self._dragging:
+                self._dragging = True
+                self.setCursor(QCursor(Qt.ClosedHandCursor))
+                self._zoomRubberBand = QgsRubberBand(self.canvas(), QGis.Polygon)
+                color = QColor(Qt.blue)
+                color.setAlpha(63)
+                self._zoomRubberBand.setColor(color)
+                self._zoomRect = QRect(0, 0, 0, 0)
+                self._zoomRect.setTopLeft(e.pos())
+            self._zoomRect.setBottomRight(e.pos())
+            if self._zoomRubberBand is not None:
+                self._zoomRubberBand.setToCanvasRectangle(self._zoomRect)
+                self._zoomRubberBand.show()
         elif (self._moveRubberBand is not None):
+            # Capture mode
             mapPoint, snapped = self._snapCursorPoint(e.pos())
             self._moveRubberBand.movePoint(mapPoint)
 
@@ -324,11 +347,35 @@ class QgsMapToolCapture(QgsMapToolSnap):
         super(QgsMapToolCapture, self).canvasReleaseEvent(e)
         if (e.button() == Qt.LeftButton):
             if self._dragging:
+                # Pan map mode
                 self.canvas().panActionEnd(e.pos())
                 self.setCursor(capture_point_cursor)
                 self._dragging = False
             else:
+                # Capture mode
                 self._addVertex(e.pos())
+        elif (e.button() == Qt.RightButton):
+            if self._dragging:
+                # Zoom mode
+                self._zoomRect.setBottomRight(e.pos())
+                if (self._zoomRect.topLeft() != self._zoomRect.bottomRight()):
+                    coordinateTransform = self.canvas().getCoordinateTransform()
+                    ll = coordinateTransform.toMapCoordinates(self._zoomRect.left(), self._zoomRect.bottom())
+                    ur = coordinateTransform.toMapCoordinates(self._zoomRect.right(), self._zoomRect.top())
+                    r = QgsRectangle()
+                    r.setXMinimum(ll.x())
+                    r.setYMinimum(ll.y())
+                    r.setXMaximum(ur.x())
+                    r.setYMaximum(ur.y())
+                    r.normalize()
+                    if (r.width() != 0 and r.height() != 0):
+                        self.canvas().setExtent(r)
+                        self.canvas().refresh()
+                self._dragging = False
+                if (self._zoomRubberBand is not None):
+                    self.canvas().scene().removeItem(self._zoomRubberBand)
+                    self._zoomRubberBand = None
+
 
     def keyPressEvent(self, e):
         super(QgsMapToolCapture, self).keyPressEvent(e)

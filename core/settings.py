@@ -127,6 +127,9 @@ class Settings(QObject):
     def logMessage(self, text, level=QgsMessageLog.INFO):
         QgsMessageLog.logMessage(text, self.pluginName, level)
 
+    def showCriticalMessage(self, text, duration=0):
+        self.iface.messageBar().pushMessage(text, QgsMessageBar.CRITICAL, duration)
+
     def showMessage(self, text, level=QgsMessageBar.INFO, duration=0):
         self.iface.messageBar().pushMessage(text, level, duration)
 

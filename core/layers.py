@@ -166,19 +166,12 @@ class LayerManager:
         return layer
 
     def createMemoryLayer(self, layer):
-        self.settings.logMessage('createMemoryLayer: entered')
         if layer.isValid():
-            self.settings.logMessage(layer.name())
-            self.settings.logMessage(layer.source())
             uri = self.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
-            self.settings.logMessage(uri)
             buffer = QgsVectorLayer(uri, layer.name() + self.settings.bufferSuffix, 'memory')
             if (buffer is not None and buffer.isValid()):
-                self.settings.logMessage('createMemoryLayer: buffer created and is valid named ' + buffer.name())
                 buffer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
                 buffer.loadNamedStyle(layer.styleURI())
-            else:
-                self.settings.logMessage('FAILED')
             return buffer
         return None
 
@@ -209,6 +202,28 @@ class LayerManager:
             return 'multipolygon'
         return 'unknown'
 
+    def okToMergeBuffers(self):
+        return self.areLayersEditable()
+
+    def areLayersEditable(self):
+        return self.isLayerEditable(self.pointsLayer) and self.isLayerEditable(self.linesLayer) and self.isLayerEditable(self.polygonsLayer) and self.isLayerEditable(self.schematicLayer)
+
+    def isLayerEditable(self, layer):
+        if (layer.type() != QgsMapLayer.VectorLayer):
+            self.settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Not a vector layer')
+            return False
+        if (layer.isModified()):
+            self.settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Has pending modifications')
+            return False
+        # We don't check here as can turn filter off temporarily
+        #if (layer.subsetString()):
+        #    self.settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Filter is applied')
+        #    return False
+        if (len(layer.vectorJoins()) > 0):
+            self.settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Layer has joins')
+            return False
+        return True
+
     def clearBuffer(self, type, buffer, undoMessage=''):
         message = undoMessage
         if (not undoMessage):
@@ -216,6 +231,8 @@ class LayerManager:
         message = message + ' - ' + type
         buffer.selectAll()
         if (buffer.selectedFeatureCount() > 0):
+            if not buffer.isEditable():
+                buffer.startEditing()
             buffer.beginEditCommand(message)
             buffer.deleteSelectedFeatures()
             buffer.endEditCommand()
@@ -224,24 +241,38 @@ class LayerManager:
         buffer.removeSelection()
 
     def copyBuffer(self, type, buffer, layer, undoMessage=''):
+        ok = False
         message = undoMessage
         if (not undoMessage):
             message = 'Merge data'
         message = message + ' - ' + type
+        filter = layer.subsetString()
+        if filter:
+            layer.setSubsetString('')
         buffer.selectAll()
         if (buffer.selectedFeatureCount() > 0):
-            layer.startEditing()
-            layer.beginEditCommand(message)
-            layer.addFeatures(buffer.selectedFeatures(), False)
-            layer.endEditCommand()
-            layer.commitChanges()
+            if layer.startEditing():
+                layer.beginEditCommand(message)
+                ok = layer.addFeatures(buffer.selectedFeatures(), False)
+                layer.endEditCommand()
+                if ok:
+                    ok = layer.commitChanges()
+        else:
+            ok = True
         buffer.removeSelection()
+        if filter:
+            layer.setSubsetString(filter)
+        return ok
 
-    def copyBuffers(self, undoMessage):
-        self.copyBuffer('levels', self.pointsBuffer, self.pointsLayer, undoMessage)
-        self.copyBuffer('lines', self.linesBuffer, self.linesLayer, undoMessage)
-        self.copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage)
-        self.copyBuffer('schematic', self.schematicBuffer, self.schematicLayer, undoMessage)
+    def mergeBuffers(self, undoMessage):
+        if self.copyBuffer('levels', self.pointsBuffer, self.pointsLayer, undoMessage):
+            self.clearBuffer('levels', self.pointsBuffer, undoMessage)
+        if self.copyBuffer('lines', self.linesBuffer, self.linesLayer, undoMessage):
+            self.clearBuffer('lines', self.linesBuffer, undoMessage)
+        if self.copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage):
+            self.clearBuffer('polygons', self.polygonsBuffer, undoMessage)
+        if self.copyBuffer('schematic', self.schematicBuffer, self.schematicLayer, undoMessage):
+            self.clearBuffer('schematic', self.schematicBuffer, undoMessage)
 
     def clearBuffers(self, undoMessage):
         self.clearBuffer('levels', self.pointsBuffer, undoMessage)
@@ -304,19 +335,19 @@ class LayerManager:
 
     def applyLayerFilter(self, layer, filter):
         if (self.settings.iface.mapCanvas().isDrawing()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Canvas is drawing')
+            self.settings.showMessage('Cannot apply filter: Canvas is drawing')
             return
         if (layer.type() != QgsMapLayer.VectorLayer):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Not a vector layer')
+            self.settings.showMessage('Cannot apply filter: Not a vector layer')
             return
         if (layer.isEditable()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer is in editing mode')
+            self.settings.showMessage('Cannot apply filter: Layer is in editing mode')
             return
         if (not layer.dataProvider().supportsSubsetString()):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Subsets not supported by layer')
+            self.settings.showMessage('Cannot apply filter: Subsets not supported by layer')
             return
         if (len(layer.vectorJoins()) > 0):
-            QMessageBox.information(self.dock, 'applyLayerFilter', 'Cannot apply filter: Layer has joins')
+            self.settings.showMessage('Cannot apply filter: Layer has joins')
             return
         layer.setSubsetString(filter)
         self.settings.iface.mapCanvas().refresh()

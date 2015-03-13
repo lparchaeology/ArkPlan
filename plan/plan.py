@@ -178,8 +178,8 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        self.layers.copyBuffers('Merge context data  ' + str(self.context))
-        self.clearBuffers()
+        if self.layers.okToMergeBuffers():
+            self.layers.mergeBuffers('Merge context ' + str(self.context))
 
     def clearBuffers(self):
         self.layers.clearBuffers('Clear buffer data ' + str(self.context))

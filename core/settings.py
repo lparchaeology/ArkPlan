@@ -25,10 +25,10 @@
 import os.path
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QDir, QObject
+from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant
 from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
 
-from qgis.core import QgsProject, QgsSnapper, QgsMessageLog
+from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
 from qgis.gui import QgsMessageBar
 
 from settings_dialog_base import *
@@ -76,6 +76,25 @@ class Settings(QObject):
     elevationAttributeName = 'elevation'
     elevationAttributeSize = 5
     elevationAttributePrecision = 2
+
+    fields = [ QgsField('id', QVariant.String, '', 10, 0, 'ID'),
+               QgsField('context', QVariant.Int, '', 5, 0, 'Context'),
+               QgsField('category', QVariant.String, '', 10, 0, 'Category'),
+               QgsField('elevation', QVariant.Double, '', 3, 3, 'Elevation'),
+               QgsField('source', QVariant.String, '', 50, 0, 'Source'),
+               QgsField('file', QVariant.String, '', 30, 0, 'File'),
+               QgsField('local_x', QVariant.Double, '', 4, 3, 'Local Grid X'),
+               QgsField('local_y', QVariant.Double, '', 4, 3, 'Local Grid Y'),
+               QgsField('crs_x', QVariant.Double, '', 6, 3, 'CRS X'),
+               QgsField('crs_y', QVariant.Double, '', 6, 3, 'CRS y'),
+               QgsField('comment', QVariant.String, '', 100, 0, 'Comment'),
+               QgsField('created_on', QVariant.String, '', 20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
+               QgsField('created_by', QVariant.String, '', 20, 0, 'Created By')]
+
+    contextLayerFields = ['context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+    contextPointLayerFields = ['context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    baselineLayerFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    gridLayerFields = ['id', 'category', 'local_x', 'local_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
 
     def __init__(self, iface):
         super(Settings, self).__init__()

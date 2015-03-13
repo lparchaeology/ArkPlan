@@ -27,7 +27,7 @@ import os
 from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice
 from PyQt4 import QtGui, uic
 
-from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer
+from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer, QgsMessageLog
 
 from ..plan.plan_util import *
 
@@ -216,6 +216,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def showText(self, text):
         self.m_outputText.append(text)
+        QgsMessageLog.logMessage(text, 'Ark', QgsMessageLog.INFO)
 
     def gdalPath(self):
         settings = QSettings()

@@ -111,7 +111,7 @@ class LayerManager:
         if (self.pointsLayer is None):
             self.pointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.pointsLayerName(), self.settings.dataGroupIndex)
         if (self.gridPointsLayer is None):
-            self.gridPointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.gridPointsLayerName(), self.settings.dataGroupIndex)
+            self.gridPointsLayer = self.loadLayerByName(self.settings.gridDir(), self.settings.gridPointsLayerName(), self.settings.dataGroupIndex)
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't

@@ -157,6 +157,9 @@ class Settings(QObject):
     def setPrependSiteCode(self, prepend):
         self.project.writeEntry(self.pluginName, 'prependSiteCode', prepend)
 
+    def gridDir(self):
+        return QDir(self.gridPath())
+
     def gridPath(self):
         path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
         if (not path):

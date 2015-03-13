@@ -24,7 +24,7 @@
 
 import os
 
-from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice
+from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QObject, qDebug, QProcess, QFileInfo, QSettings, QDir, QTextStream, QFile, QIODevice, QCoreApplication
 from PyQt4 import QtGui, uic
 
 from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer, QgsMessageLog
@@ -241,6 +241,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.showText('ERROR: Please set all 3 Ground Control Points!')
             return
         self.enableUi(False)
+        QCoreApplication.processEvents()
         self.runCropStep()
 
     def runCropStep(self):

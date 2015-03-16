@@ -100,7 +100,6 @@ class Plan(QObject):
         self.dock.setSchematicsBuffer(self.layers.schematicBuffer)
         self.dock.setPolygonsBuffer(self.layers.polygonsBuffer)
         self.dock.setLinesBuffer(self.layers.linesBuffer)
-        self.dock.setLinesBuffer(self.layers.pointsBuffer)
         self.dock.setSchematicsLayer(self.layers.schematicLayer)
         self.dock.setPolygonsLayer(self.layers.polygonsLayer)
         self.dock.setLinesLayer(self.layers.linesLayer)

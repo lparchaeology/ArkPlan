@@ -77,24 +77,26 @@ class Settings(QObject):
     elevationAttributeSize = 5
     elevationAttributePrecision = 2
 
-    fields = [ QgsField('id', QVariant.String, '', 10, 0, 'ID'),
-               QgsField('context', QVariant.Int, '', 5, 0, 'Context'),
-               QgsField('category', QVariant.String, '', 10, 0, 'Category'),
-               QgsField('elevation', QVariant.Double, '', 3, 3, 'Elevation'),
-               QgsField('source', QVariant.String, '', 50, 0, 'Source'),
-               QgsField('file', QVariant.String, '', 30, 0, 'File'),
-               QgsField('local_x', QVariant.Double, '', 4, 3, 'Local Grid X'),
-               QgsField('local_y', QVariant.Double, '', 4, 3, 'Local Grid Y'),
-               QgsField('crs_x', QVariant.Double, '', 6, 3, 'CRS X'),
-               QgsField('crs_y', QVariant.Double, '', 6, 3, 'CRS y'),
-               QgsField('comment', QVariant.String, '', 100, 0, 'Comment'),
-               QgsField('created_on', QVariant.String, '', 20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
-               QgsField('created_by', QVariant.String, '', 20, 0, 'Created By')]
+    fields = [ QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
+               QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
+               QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
+               QgsField('elevation',  QVariant.Double, '',   3, 3, 'Elevation'),
+               QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
+               QgsField('file',       QVariant.String, '',  30, 0, 'File'),
+               QgsField('local_x',    QVariant.Double, '',   4, 3, 'Local Grid X'),
+               QgsField('local_y',    QVariant.Double, '',   4, 3, 'Local Grid Y'),
+               QgsField('crs_x',      QVariant.Double, '',   6, 3, 'CRS X'),
+               QgsField('crs_y',      QVariant.Double, '',   6, 3, 'CRS y'),
+               QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
+               QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
+               QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')]
 
-    contextLayerFields = ['context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
-    contextPointLayerFields = ['context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
-    baselineLayerFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
-    gridLayerFields = ['id', 'category', 'local_x', 'local_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    contextPointFields = ['context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    contextLinesFields = ['context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+    contextPolygonsFields = contextLinesFields
+    contextSchematicFields = contextLinesFields
+    baselinePointFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    gridPointFields = ['id', 'category', 'local_x', 'local_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
 
     def __init__(self, iface):
         super(Settings, self).__init__()

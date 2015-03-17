@@ -111,33 +111,55 @@ class LevelsMapTool(QgsMapTool):
 # Tool to show snapping points
 class QgsMapToolSnap(QgsMapTool):
 
+    _active = False
+
+    _snappingEnabled = False
     _snapper = None  #QgsMapCanvasSnapper()
     _snappingMarker = None  # QgsVertexMarker()
+
     _showSnappableVertices = False
     _snappableVertices = []  # [QgsPoint()]
     _snappableMarkers = []  # [QgsVertexMarker()]
-    _active = False
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, snappingEnabled=True, showSnappableVertices=False):
         super(QgsMapToolSnap, self).__init__(canvas)
+        self.setSnappingEnabled(snappingEnabled)
+        self.setShowSnappableVertices(showSnappableVertices)
 
     def __del__(self):
         self.setShowSnappableVertices(False)
-        self._deleteSnappingMarker()
+        self._stopSnapping()
 
     def activate(self):
-        self._active = True
         super(QgsMapToolSnap, self).activate()
-        self._snapper = QgsMapCanvasSnapper()
-        self._snapper.setMapCanvas(self.canvas())
-        self._layersChanged()
+        self.setSnappingEnabled(True)
 
     def deactivate(self):
-        self._active = False
-        self._deleteSnappableMarkers()
+        self.setSnappingEnabled(False)
+        super(QgsMapToolSnap, self).deactivate()
+
+    def snappingEnabled(self):
+        return self._snappingEnabled
+
+    def setSnappingEnabled(self, enabled):
+        if (self._snappingEnabled == enabled):
+            return
+        self._snappingEnabled = enabled
+        if enabled:
+        else:
+
+    def _disable
+            self._deleteSnappableMarkers()
+
+    def _enableSnapping(self):
+        if (self._snappingEnabled):
+            self._snapper = QgsMapCanvasSnapper()
+            self._snapper.setMapCanvas(self.canvas())
+            self._layersChanged()
+
+    def _disableSnapping(self):
         self._deleteSnappingMarker()
         self._snapper = None
-        super(QgsMapToolSnap, self).deactivate()
 
     def showSnappableVertices(self):
         return self._showSnappableVertices
@@ -160,6 +182,8 @@ class QgsMapToolSnap(QgsMapTool):
 
     def canvasMoveEvent(self, e):
         super(QgsMapToolSnap, self).canvasMoveEvent(e)
+        if (not self._active or not self._snappingEnabled):
+            return
         mapPoint, snapped = self._snapCursorPoint(e.pos())
         if (snapped):
             self._createSnappingMarker(mapPoint)
@@ -194,7 +218,7 @@ class QgsMapToolSnap(QgsMapTool):
             self._snappingMarker = None
 
     def _createSnappableMarkers(self):
-        if (not self._showSnappableVertices or not self._active):
+        if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         extent = self.canvas().extent()
         for vertex in self._snappableVertices.asMultiPoint():
@@ -212,20 +236,20 @@ class QgsMapToolSnap(QgsMapTool):
         del self._snappableMarkers[:]
 
     def _layersChanged(self):
-        if (not self._showSnappableVertices or not self._active):
+        if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         self._buildSnappableLayers()
         self._deleteSnappableMarkers()
         self._createSnappableMarkers()
 
     def _redrawSnappableMarkers(self):
-        if (not self._showSnappableVertices or not self._active):
+        if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         self._deleteSnappableMarkers()
         self._createSnappableMarkers()
 
     def _buildSnappableLayers(self):
-        if (not self._showSnappableVertices or not self._active):
+        if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         vertices = []
         for layer in self.canvas().layers():

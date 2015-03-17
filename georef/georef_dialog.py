@@ -248,8 +248,9 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalStep = 'crop'
         self.gdalArgs = []
         self.gdalCommand = ''
-        cropped = self.rawPixmap.copy(0, 0, self.rawPixmap.width(), int(self.rawPixmap.height() * 0.83))
-        cropped.save(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png')
+        cropped = self.rawPixmap.copy(0, 0, self.rawPixmap.width(), int(self.rawPixmap.height() * 0.84))
+        image = cropped.toImage()
+        image.save(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png', 'PNG', 100)
         self.runTranslateStep()
 
     def runTranslateStep(self):

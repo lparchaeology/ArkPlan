@@ -121,7 +121,7 @@ class QgsMapToolSnap(QgsMapTool):
     _snappableVertices = []  # [QgsPoint()]
     _snappableMarkers = []  # [QgsVertexMarker()]
 
-    def __init__(self, canvas, snappingEnabled=True, showSnappableVertices=False):
+    def __init__(self, canvas, snappingEnabled=False, showSnappableVertices=False):
         super(QgsMapToolSnap, self).__init__(canvas)
         self._snappingEnabled = snappingEnabled
         self._showSnappableVertices = showSnappableVertices

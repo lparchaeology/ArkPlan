@@ -127,7 +127,8 @@ class QgsMapToolSnap(QgsMapTool):
         self._showSnappableVertices = showSnappableVertices
 
     def __del__(self):
-        self._stopSnapping()
+        if self._active:
+            self.deactivate()
 
     def isActive(self):
         return self._active
@@ -139,7 +140,8 @@ class QgsMapToolSnap(QgsMapTool):
 
     def deactivate(self):
         self._active = False
-        self._stopSnapping()
+        if self._snappingEnabled:
+            self._stopSnapping()
         super(QgsMapToolSnap, self).deactivate()
 
     def snappingEnabled(self):
@@ -272,7 +274,9 @@ class QgsMapToolSnap(QgsMapTool):
             if (ok and enabled and not layer.isEditable()):
                 for feature in layer.getFeatures():
                     geometry = feature.geometry()
-                    if geometry.type() == QGis.Point:
+                    if geometry is None:
+                        pass
+                    elif geometry.type() == QGis.Point:
                         vertices.extend([geometry.asPoint()])
                     elif geometry.type() == QGis.Line:
                         vertices.extend(geometry.asPolyline())

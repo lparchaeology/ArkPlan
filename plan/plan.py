@@ -203,9 +203,7 @@ class Plan(QObject):
         #TODO configure snapping
         self.settings.iface.mapCanvas().setCurrentLayer(layer)
         self.settings.iface.legendInterface().setCurrentLayer(layer)
-        if self.currentMapTool is not None:
-            self.currentMapTool.deactivate()
-            self.currentMapTool = None
+        self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.settings.iface.mapCanvas(), self.settings.iface, featureType, toolName)
         self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
         self.currentMapTool.setShowSnappableVertices(True)
@@ -218,6 +216,6 @@ class Plan(QObject):
 
     def deleteMapTool(self):
         if self.currentMapTool is not None:
-            self.currentMapTool.deactivate()
+            self.settings.iface.mapCanvas().unsetMapTool(self.currentMapTool)
             del self.currentMapTool
             self.currentMapTool = None

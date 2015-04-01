@@ -152,28 +152,6 @@ class Plan(QObject):
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
             self.layers.loadGeoLayer(georefDialog.geoRefFile())
 
-    # Levels Tool Methods
-
-    def enableLevelsMode(self, type):
-        #TODO disable all snapping
-        self.settings.iface.mapCanvas().setCurrentLayer(self.layers.pointsBuffer)
-        self.settings.iface.legendInterface().setCurrentLayer(self.layers.pointsBuffer)
-        if self.levelsMapTool is not None:
-            del self.levelsMapTool
-        self.levelsMapTool = LevelsMapTool(self.settings.iface.mapCanvas())
-        self.levelsMapTool.levelAdded.connect(self.addLevel)
-        self.levelsMapTool.setType(type)
-        self.settings.iface.mapCanvas().setMapTool(self.levelsMapTool)
-
-    def addLevel(self, point, type, elevation):
-        feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPoint(point))
-        feature.setAttributes([self.context, self.source, type, self.comment, elevation])
-        self.layers.pointsBuffer.beginEditCommand('Buffer level ' + str(self.context) + ' ' + type + ' ' + str(elevation))
-        self.layers.pointsBuffer.addFeature(feature, True)
-        self.layers.pointsBuffer.endEditCommand()
-        self.settings.iface.mapCanvas().refresh()
-
     # Layer Methods
 
     def mergeBuffers(self):
@@ -183,23 +161,33 @@ class Plan(QObject):
     def clearBuffers(self):
         self.layers.clearBuffers('Clear buffer data ' + str(self.context))
 
+    def enableLevelsMode(self, typeAttribute):
+        #TODO disable all snapping
+        self.createMapTool(typeAttribute, self.layers.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
+        self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.createMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.createMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.layers.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.createMapTool(typeAttribute, self.layers.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.enableMapTool(typeAttribute, self.layers.schematicBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(typeAttribute, self.layers.schematicBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):
+    def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):
         #TODO configure snapping
         self.settings.iface.mapCanvas().setCurrentLayer(layer)
         self.settings.iface.legendInterface().setCurrentLayer(layer)
@@ -209,7 +197,6 @@ class Plan(QObject):
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):

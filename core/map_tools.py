@@ -24,7 +24,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QSize, QRect
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QSize, QRect, QVariant
 from PyQt4.QtGui import QInputDialog, QColor, QAction, QPixmap, QCursor, QBitmap
 
 from qgis.core import *
@@ -78,34 +78,6 @@ class MapToolIndentifyFeatures(QgsMapToolIdentify):
     def keyPressEvent(self, e):
         if (e.key() == Qt.Key_Escape):
             self.canvas().unsetMapTool(self)
-
-
-# Tool to add a level, no snapping
-class LevelsMapTool(QgsMapTool):
-
-    levelAdded = pyqtSignal(QgsPoint, 'QString', float)
-
-    featureAdded = pyqtSignal(list, QGis.GeometryType, 'QString')
-
-    featureType = ''
-
-    def __init__(self, canvas, type='lvl'):
-        QgsMapTool.__init__(self, canvas)
-
-    def featureType(self):
-        return self.featureType
-
-    def setType(self, featureType):
-        self.featureType = featureType
-
-    def canvasPressEvent(self, e):
-        if e.button() != Qt.LeftButton:
-            return
-        elevation, ok = QInputDialog.getDouble(None, 'Add Level', 'Please enter the elevation in meters (m):',
-                                               0, -100, 100, 2)
-        if ok:
-            point = self.toMapCoordinates(e.pos())
-            self.levelAdded.emit(point, self.featureType, elevation)
 
 
 # Tool to show snapping points
@@ -574,6 +546,16 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
     _featureType = 0  # NoFeature
     _defaultAttributes = {}  # QMap<int, QList<QVariant> >
 
+    #TODO Eventually merge this with the input action?
+    _queryAttributeName = None
+    _queryType = None
+    _queryAttributeDefault = None
+    _queryTitle = ''
+    _queryLabel = ''
+    _queryDecimals = 0
+    _queryMin = 0
+    _queryMax = 0
+
     def __init__(self, canvas, iface, featureType=0, toolName=''):
         geometryType = QGis.UnknownGeometry
         if (featureType == QgsMapToolAddFeature.Point):
@@ -594,6 +576,17 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
     def setDefaultAttributes(self, defaultAttributes):
         self._defaultAttributes = defaultAttributes
+
+    #TODO Eventually merge this with the input action?
+    def setAttributeQuery(self, attributeName, attributeType, attributeDefault, title, label, min=0, max=0, decimals=0):
+            self._queryAttributeName = attributeName
+            self._queryType = attributeType
+            self._queryAttributeDefault = attributeDefault
+            self._queryTitle = title
+            self._queryLabel = label
+            self._queryMin = min
+            self._queryMax = max
+            self._queryDecimals = decimals
 
     def activate(self):
         super(QgsMapToolAddFeature, self).activate()
@@ -666,6 +659,22 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         self.resetCapturing()
 
+        #TODO Eventually merge this with the input action?
+        if self._queryAttributeName:
+            ok = False
+            value = None
+            if self._queryType == QVariant.Double:
+                value, ok = QInputDialog.getDouble(None, self._queryTitle, self._queryLabel, self._queryAttributeDefault, self._queryMin, self._queryMax, self._queryDecimals)
+            elif self._queryType == QVariant.Int:
+                value, ok = QInputDialog.getInt(None, self._queryTitle, self._queryLabel, self._queryAttributeDefault, self._queryMin, self._queryMax)
+            else:
+                value, ok = QInputDialog.getText(None, self._queryTitle, self._queryLabel, text=self._queryAttributeDefault)
+            if ok:
+                idx = vlayer.pendingFields().fieldNameIndex(self._queryAttributeName)
+                self._defaultAttributes[idx] = value
+            else:
+                return
+
         if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
             geometry = QgsGeometry.fromPoint(layerPoints[0])
         elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
@@ -724,6 +733,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             elif (topologicalEditing):
                 vlayer.self._addTopologicalPoints(feature.geometry())
 
+        self.canvas().refresh()
 
 
     def _addFeatureAction(self, vlayer, feature, showModal=True):
@@ -759,6 +769,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             return layer
         else:
             return None
+
 
 # TODO Clean up this and fix dialog problems
 class QgsFeatureAction(QAction):
@@ -859,7 +870,7 @@ class QgsFeatureAction(QAction):
 
         fields = self._layer.pendingFields()
         self._feature.initAttributes(fields.count())
-        for idx in range(0, fields.count() - 1):
+        for idx in range(0, fields.count()):
             v = ''
 
             if (defaultAttributes.has_key(idx)):

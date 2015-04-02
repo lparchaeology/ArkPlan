@@ -77,19 +77,20 @@ class Settings(QObject):
     elevationAttributeSize = 5
     elevationAttributePrecision = 2
 
-    fields = [ QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
-               QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
-               QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
-               QgsField('elevation',  QVariant.Double, '',   3, 3, 'Elevation'),
-               QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
-               QgsField('file',       QVariant.String, '',  30, 0, 'File'),
-               QgsField('local_x',    QVariant.Double, '',   4, 3, 'Local Grid X'),
-               QgsField('local_y',    QVariant.Double, '',   4, 3, 'Local Grid Y'),
-               QgsField('crs_x',      QVariant.Double, '',   6, 3, 'CRS X'),
-               QgsField('crs_y',      QVariant.Double, '',   6, 3, 'CRS y'),
-               QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-               QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
-               QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')]
+    fieldDefinitions = { 'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
+                         'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
+                         'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
+                         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
+                         'elevation' : QgsField('elevation',  QVariant.Double, '',   3, 3, 'Elevation'),
+                         'source'    : QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
+                         'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
+                         'local_x'   : QgsField('local_x',    QVariant.Double, '',   4, 3, 'Local Grid X'),
+                         'local_y'   : QgsField('local_y',    QVariant.Double, '',   4, 3, 'Local Grid Y'),
+                         'crs_x'     : QgsField('crs_x',      QVariant.Double, '',   6, 3, 'CRS X'),
+                         'crs_y'     : QgsField('crs_y',      QVariant.Double, '',   6, 3, 'CRS y'),
+                         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
+                         'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
+                         'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By') }
 
     contextPointFields = ['context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
     contextLinesFields = ['context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']

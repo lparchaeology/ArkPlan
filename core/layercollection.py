@@ -26,6 +26,8 @@ from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
 
+import utils
+
 class LayerCollectionSettings:
 
     collectionDir = QDir()
@@ -117,7 +119,7 @@ class LayerCollection:
     # Load the context layers if not already loaded
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
-            self._collectionGroupIndex = self.getGroupIndex(self._settings._collectionGroupName)
+            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings._collectionGroupName)
         if (self.schematicLayer is None and self._settings.schematicLayerName):
             self.schematicLayer = self.loadLayerByName(self._settings._collectionDir, self._settings.schematicLayerName, self._collectionGroupIndex)
         if (self.polygonsLayer is None and self._settings.polygonsLayerName):
@@ -135,7 +137,7 @@ class LayerCollection:
     def createEditBuffers(self):
 
         if (self._bufferGroupIndex < 0):
-            self._bufferGroupIndex = self.getGroupIndex(self._bufferGroupName)
+            self._bufferGroupIndex = utils.getGroupIndex(self._bufferGroupName)
 
         if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
             self.schematicBuffer = self.createMemoryLayer(self.schematicLayer)
@@ -181,40 +183,13 @@ class LayerCollection:
 
     def createMemoryLayer(self, layer):
         if layer.isValid():
-            uri = self.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
+            uri = utils.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
             buffer = QgsVectorLayer(uri, layer.name() + self._settings.bufferSuffix, 'memory')
             if (buffer is not None and buffer.isValid()):
                 buffer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
                 buffer.loadNamedStyle(layer.styleURI())
             return buffer
         return None
-
-    def wkbToMemoryType(self, wkbType):
-        if (wkbType == QGis.WKBPoint):
-            return 'point'
-        elif (wkbType == QGis.WKBLineString):
-            return 'linestring'
-        elif (wkbType == QGis.WKBPolygon):
-            return 'polygon'
-        elif (wkbType == QGis.WKBMultiPoint):
-            return 'multipoint'
-        elif (wkbType == QGis.WKBMultiLineString):
-            return 'multilinestring'
-        elif (wkbType == QGis.WKBMultiPolygon):
-            return 'multipolygon'
-        elif (wkbType == QGis.WKBPoint25D):
-            return 'point'
-        elif (wkbType == QGis.WKBLineString25D):
-            return 'linestring'
-        elif (wkbType == QGis.WKBPolygon25D):
-            return 'polygon'
-        elif (wkbType == QGis.WKBMultiPoint25D):
-            return 'multipoint'
-        elif (wkbType == QGis.WKBMultiLineString25D):
-            return 'multilinestring'
-        elif (wkbType == QGis.WKBMultiPolygon25D):
-            return 'multipolygon'
-        return 'unknown'
 
     def okToMergeBuffers(self):
         return self.areLayersEditable()
@@ -293,17 +268,6 @@ class LayerCollection:
         self.clearBuffer('lines', self.linesBuffer, undoMessage)
         self.clearBuffer('polygons', self.polygonsBuffer, undoMessage)
         self.clearBuffer('schematic', self.schematicBuffer, undoMessage)
-
-    def getGroupIndex(self, groupName):
-        groupIndex = -1
-        i = 0
-        for name in self._iface.legendInterface().groups():
-            if (groupIndex < 0 and name == groupName):
-                groupIndex = i
-            i += 1
-        if (groupIndex < 0):
-            groupIndex = self._iface.legendInterface().addGroup(groupName)
-        return groupIndex
 
     def showPoints(self, status):
         self._iface.legendInterface().setLayerVisible(self.pointsLayer, status)

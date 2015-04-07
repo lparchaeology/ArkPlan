@@ -57,3 +57,44 @@ def defaultSnappingTolerance():
     if tolerance is None:
         return 10.0
     return tolerance
+
+# Layer management utilities
+
+def getGroupIndex(iface, groupName):
+    groupIndex = -1
+    i = 0
+    for name in iface.legendInterface().groups():
+        if (groupIndex < 0 and name == groupName):
+            groupIndex = i
+        i += 1
+    if (groupIndex < 0):
+        groupIndex = iface.legendInterface().addGroup(groupName)
+    return groupIndex
+
+def wkbToMemoryType(self, wkbType):
+    if (wkbType == QGis.WKBPoint):
+        return 'point'
+    elif (wkbType == QGis.WKBLineString):
+        return 'linestring'
+    elif (wkbType == QGis.WKBPolygon):
+        return 'polygon'
+    elif (wkbType == QGis.WKBMultiPoint):
+        return 'multipoint'
+    elif (wkbType == QGis.WKBMultiLineString):
+        return 'multilinestring'
+    elif (wkbType == QGis.WKBMultiPolygon):
+        return 'multipolygon'
+    elif (wkbType == QGis.WKBPoint25D):
+        return 'point'
+    elif (wkbType == QGis.WKBLineString25D):
+        return 'linestring'
+    elif (wkbType == QGis.WKBPolygon25D):
+        return 'polygon'
+    elif (wkbType == QGis.WKBMultiPoint25D):
+        return 'multipoint'
+    elif (wkbType == QGis.WKBMultiLineString25D):
+        return 'multilinestring'
+    elif (wkbType == QGis.WKBMultiPolygon25D):
+        return 'multipolygon'
+    return 'unknown'
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>258</height>
+    <width>533</width>
+    <height>295</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="siteTab">
       <attribute name="title">
@@ -129,7 +129,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="gridFolderLayout">
          <item>
           <widget class="QLineEdit" name="gridFolderEdit"/>
          </item>
@@ -151,11 +151,31 @@
        <item row="0" column="0">
         <widget class="QLabel" name="gridFolderLabel">
          <property name="text">
-          <string>Grid Folder:</string>
+          <string>Folder:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="4" column="0">
+        <widget class="QLabel" name="gridPolygonsNameLabel">
+         <property name="text">
+          <string>Polygons Base Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="gridPointsNameEdit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="gridLinesNameLabel">
+         <property name="text">
+          <string>Lines Base Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="gridPolygonsNameEdit"/>
+       </item>
+       <item row="5" column="1">
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -167,6 +187,26 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="gridLinesNameEdit"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="gridPointNameLabel">
+         <property name="text">
+          <string>Points Base Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="gridGroupNameEdit"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="gridGroupNameLabel">
+         <property name="text">
+          <string>Group Name:</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

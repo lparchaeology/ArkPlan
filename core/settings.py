@@ -57,7 +57,12 @@ class Settings(QObject):
     polygonsBaseName = 'context_pg'
     schematicBaseName = 'schematic_pg'
 
-    gridPointsBaseName = 'grid_pt'
+    # Grid
+    gridGroupNameDefault = 'Grid'
+    gridGroupIndex = -1
+    gridPointsBaseNameDefault = 'grid_pt'
+    gridLinesBaseNameDefault = 'grid_pl'
+    gridPolygonsBaseNameDefault = 'grid_pg'
     gridPointsFieldX = 'x'
     gridPointsFieldY = 'y'
 
@@ -156,6 +161,18 @@ class Settings(QObject):
     def showStatusMessage(self, text):
         self.iface.mainWindow().statusBar().showMessage(text)
 
+
+    # Settings utilities
+
+    def setProjectEntry(self, key, value, default):
+        if (value == None or value == '' or value == default):
+            self.project.removeEntry(self.pluginName, key)
+        else:
+            self.project.writeEntry(self.pluginName, key, value)
+
+
+    # Site settings
+
     def dataDir(self):
         return QDir(self.dataPath())
 
@@ -177,18 +194,6 @@ class Settings(QObject):
     def setPrependSiteCode(self, prepend):
         self.project.writeEntry(self.pluginName, 'prependSiteCode', prepend)
 
-    def gridDir(self):
-        return QDir(self.gridPath())
-
-    def gridPath(self):
-        path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
-        if (not path):
-            return self.dataPath()
-        return path
-
-    def setGridPath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'gridPath', absolutePath)
-
     def useCustomStyles(self):
         return self.project.readBoolEntry(self.pluginName, 'useCustomStyles', False)[0]
 
@@ -206,6 +211,57 @@ class Settings(QObject):
 
     def setStylePath(self, absolutePath):
         self.project.writeEntry(self.pluginName, 'stylePath', absolutePath)
+
+
+    # Grid Settings
+
+    def gridDir(self):
+        return QDir(self.gridPath())
+
+    def gridPath(self):
+        path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
+        if (not path):
+            return self.dataPath()
+        return path
+
+    def setGridPath(self, absolutePath):
+        self.project.writeEntry(self.pluginName, 'gridPath', absolutePath)
+
+    def gridGroupName(self):
+        return self.project.readEntry(self.pluginName, 'gridGroupName', self.gridGroupNameDefault)[0]
+
+    def setGridGroupName(self, gridGroupName):
+        self.setProjectEntry('gridGroupName', gridGroupName, self.gridGroupNameDefault)
+
+    def gridPointsBaseName(self):
+        return self.project.readEntry(self.pluginName, 'gridPointsBaseName', self.gridPointsBaseNameDefault)[0]
+
+    def setGridPointsBaseName(self, gridPointsBaseName):
+        self.setProjectEntry('gridPointsBaseName', gridPointsBaseName, self.gridPolygonsBaseNameDefault)
+
+    def gridPointsLayerName(self):
+        return self._layerName(self.gridPointsBaseName())
+
+    def gridLinesBaseName(self):
+        return self.project.readEntry(self.pluginName, 'gridLinesBaseName', self.gridLinesBaseNameDefault)[0]
+
+    def setGridLinesBaseName(self, gridLinesBaseName):
+        self.setProjectEntry('gridLinesBaseName', gridLinesBaseName, self.gridPolygonsBaseNameDefault)
+
+    def gridLinesLayerName(self):
+        return self._layerName(self.gridLinesBaseName())
+
+    def gridPolygonsBaseName(self):
+        return self.project.readEntry(self.pluginName, 'gridPolygonsBaseName', self.gridPolygonsBaseNameDefault)[0]
+
+    def setGridPolygonsBaseName(self, gridPolygonsBaseName):
+        self.setProjectEntry('gridPolygonsBaseName', gridPolygonsBaseName, self.gridPolygonsBaseNameDefault)
+
+    def gridPointsLayerName(self):
+        return self._layerName(self.gridPolygonsBaseName())
+
+
+    # Plan settings
 
     def planDir(self):
         return QDir(self.planPath())
@@ -243,6 +299,7 @@ class Settings(QObject):
     def setPlanTransparency(self, transparency):
         self.project.writeEntry(self.pluginName, 'planTransparency', transparency)
 
+
     def projectCrs(self):
         return u'EPSG:27700'
         # TODO Find why this doesn't work!
@@ -263,9 +320,6 @@ class Settings(QObject):
 
     def schematicLayerName(self):
         return self._layerName(self.schematicBaseName)
-
-    def gridPointsLayerName(self):
-        return self._layerName(self.gridPointsBaseName)
 
     def pointsBufferName(self):
         return self._bufferName(self.pointsBaseName)
@@ -321,35 +375,58 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
         self.setupUi(self)
 
-        self.dataFolderEdit.setText(settings.dataPath())
+        # Site tab settings
         self.siteCodeEdit.setText(settings.siteCode())
         self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
-        self.gridFolderEdit.setText(settings.gridPath())
         if settings.useCustomStyles():
             self.defaultStylesCheck.setChecked(False)
             self.styleFolderEdit.setText(settings.stylePath())
             self.styleFolderEdit.setEnabled(True)
             self.styleFolderButton.setEnabled(True)
+
+        # Grid tab settings
+        self.gridFolderEdit.setText(settings.gridPath())
+        self.gridFolderButton.clicked.connect(self._selectGridFolder)
+        self.gridGroupNameEdit.setText(settings.gridGroupName())
+        self.gridPointsNameEdit.setText(settings.gridPointsBaseName())
+        self.gridLinesNameEdit.setText(settings.gridLinesBaseName())
+        self.gridPolygonsNameEdit.setText(settings.gridPolygonsBaseName())
+
+        # Context tab settings
+        self.dataFolderEdit.setText(settings.dataPath())
+
+        # Plan tab settings
         self.planFolderEdit.setText(settings.planPath())
         self.separatePlansCheck.setChecked(settings.separatePlanFolders())
         self.planTransparencySpin.setValue(settings.planTransparency())
 
         self.dataFolderButton.clicked.connect(self._selectDataFolder)
-        self.gridFolderButton.clicked.connect(self._selectGridFolder)
         self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
-        self._settings.setDataPath(self.dataFolderEdit.text())
+        # Site tab settings
         self._settings.setSiteCode(self.siteCodeEdit.text())
         self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
-        self._settings.setGridPath(self.gridFolderEdit.text())
         self._settings.setUseCustomStyles(self.styleFolderEdit.text() != '')
         self._settings.setStylePath(self.styleFolderEdit.text())
+
+        # Grid tab settings
+        self._settings.setGridPath(self.gridFolderEdit.text())
+        self._settings.setGridGroupName(self.gridGroupNameEdit.text())
+        self._settings.setGridPointsBaseName(self.gridPointsNameEdit.text())
+        self._settings.setGridLinesBaseName(self.gridLinesNameEdit.text())
+        self._settings.setGridPolygonsBaseName(self.gridPolygonsNameEdit.text())
+
+        # Contexts tab settings
+        self._settings.setDataPath(self.dataFolderEdit.text())
+
+        # Plan tab settings
         self._settings.setPlanPath(self.planFolderEdit.text())
         self._settings.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
         self._settings.setPlanTransparency(self.planTransparencySpin.value())
+
         return super(SettingsDialog, self).accept()
 
     def _selectDataFolder(self):

@@ -45,17 +45,10 @@ class Settings(QObject):
 
     projectGroupName = 'Ark'
     projectGroupIndex = -1
-    dataGroupName = 'Context Data'
-    dataGroupIndex = -1
-    bufferGroupName = 'Edit Buffers'
-    bufferGroupIndex = -1
     planGroupName = 'Context Plans'
     planGroupIndex = -1
 
-    pointsBaseName = 'context_pt'
-    linesBaseName = 'context_pl'
-    polygonsBaseName = 'context_pg'
-    schematicBaseName = 'schematic_pg'
+    bufferSuffix = '_mem'
 
     # Grid
     gridGroupNameDefault = 'Grid'
@@ -66,7 +59,16 @@ class Settings(QObject):
     gridPointsFieldX = 'x'
     gridPointsFieldY = 'y'
 
-    bufferSuffix = '_mem'
+    # Contexts
+    contextsGroupNameDefault = 'Context Data'
+    contextsGroupIndex = -1
+    contextsBufferGroupNameDefault = 'Edit Context Data'
+    contextsBufferGroupIndex = -1
+    contextsPointsBaseNameDefault = 'context_pt'
+    contextsLinesBaseNameDefault = 'context_pl'
+    contextsPolygonsBaseNameDefault = 'context_pg'
+    contextsScopeBaseNameDefault = 'context_mpg'
+
 
     contextAttributeName = 'context'
     contextAttributeSize = 5
@@ -142,7 +144,7 @@ class Settings(QObject):
     def configure(self):
         ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.dataDir().exists() and self.planDir().exists()):
+        if (self.siteDir().exists() and self.planDir().exists()):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -164,23 +166,28 @@ class Settings(QObject):
 
     # Settings utilities
 
-    def setProjectEntry(self, key, value, default):
+    def _setProjectEntry(self, key, value, default):
         if (value == None or value == '' or value == default):
             self.project.removeEntry(self.pluginName, key)
         else:
             self.project.writeEntry(self.pluginName, key, value)
 
+    def _layerName(self, baseName):
+        if (self.prependSiteCode() and self.siteCode()):
+            return self.siteCode() + '_' + baseName
+        return baseName
+
 
     # Site settings
 
-    def dataDir(self):
-        return QDir(self.dataPath())
+    def siteDir(self):
+        return QDir(self.sitePath())
 
-    def dataPath(self):
-        return self.project.readEntry(self.pluginName, 'dataPath', '')[0]
+    def sitePath(self):
+        return self.project.readEntry(self.pluginName, 'sitePath', '')[0]
 
-    def setDataPath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'dataPath', absolutePath)
+    def setSitePath(self, absolutePath):
+        self.project.writeEntry(self.pluginName, 'sitePath', absolutePath)
 
     def siteCode(self):
         return self.project.readEntry(self.pluginName, 'siteCode', '')[0]
@@ -221,7 +228,7 @@ class Settings(QObject):
     def gridPath(self):
         path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
         if (not path):
-            return self.dataPath()
+            return self.sitePath()
         return path
 
     def setGridPath(self, absolutePath):
@@ -231,13 +238,13 @@ class Settings(QObject):
         return self.project.readEntry(self.pluginName, 'gridGroupName', self.gridGroupNameDefault)[0]
 
     def setGridGroupName(self, gridGroupName):
-        self.setProjectEntry('gridGroupName', gridGroupName, self.gridGroupNameDefault)
+        self._setProjectEntry('gridGroupName', gridGroupName, self.gridGroupNameDefault)
 
     def gridPointsBaseName(self):
         return self.project.readEntry(self.pluginName, 'gridPointsBaseName', self.gridPointsBaseNameDefault)[0]
 
     def setGridPointsBaseName(self, gridPointsBaseName):
-        self.setProjectEntry('gridPointsBaseName', gridPointsBaseName, self.gridPolygonsBaseNameDefault)
+        self._setProjectEntry('gridPointsBaseName', gridPointsBaseName, self.gridPolygonsBaseNameDefault)
 
     def gridPointsLayerName(self):
         return self._layerName(self.gridPointsBaseName())
@@ -246,7 +253,7 @@ class Settings(QObject):
         return self.project.readEntry(self.pluginName, 'gridLinesBaseName', self.gridLinesBaseNameDefault)[0]
 
     def setGridLinesBaseName(self, gridLinesBaseName):
-        self.setProjectEntry('gridLinesBaseName', gridLinesBaseName, self.gridPolygonsBaseNameDefault)
+        self._setProjectEntry('gridLinesBaseName', gridLinesBaseName, self.gridPolygonsBaseNameDefault)
 
     def gridLinesLayerName(self):
         return self._layerName(self.gridLinesBaseName())
@@ -255,10 +262,73 @@ class Settings(QObject):
         return self.project.readEntry(self.pluginName, 'gridPolygonsBaseName', self.gridPolygonsBaseNameDefault)[0]
 
     def setGridPolygonsBaseName(self, gridPolygonsBaseName):
-        self.setProjectEntry('gridPolygonsBaseName', gridPolygonsBaseName, self.gridPolygonsBaseNameDefault)
+        self._setProjectEntry('gridPolygonsBaseName', gridPolygonsBaseName, self.gridPolygonsBaseNameDefault)
 
-    def gridPointsLayerName(self):
+    def gridPolygonsLayerName(self):
         return self._layerName(self.gridPolygonsBaseName())
+
+
+    # Contexts settings
+
+    def contextsDir(self):
+        return QDir(self.contextsPath())
+
+    def contextsPath(self):
+        path =  self.project.readEntry(self.pluginName, 'contextsPath', '')[0]
+        if (not path):
+            return self.sitePath()
+        return path
+
+    def setContextsPath(self, absolutePath):
+        self.project.writeEntry(self.pluginName, 'contextsPath', absolutePath)
+
+    def contextsGroupName(self):
+        return self.project.readEntry(self.pluginName, 'contextsGroupName', self.contextsGroupNameDefault)[0]
+
+    def setContextsGroupName(self, contextsGroupName):
+        self._setProjectEntry('contextsGroupName', contextsGroupName, self.contextsGroupNameDefault)
+
+    def contextsBufferGroupName(self):
+        return self.project.readEntry(self.pluginName, 'contextsBufferGroupName', self.contextsBufferGroupNameDefault)[0]
+
+    def setContextsBufferGroupName(self, contextsBufferGroupName):
+        self._setProjectEntry('contextsBufferGroupName', contextsBufferGroupName, self.contextsBufferGroupNameDefault)
+
+    def contextsPointsBaseName(self):
+        return self.project.readEntry(self.pluginName, 'contextsPointsBaseName', self.contextsPointsBaseNameDefault)[0]
+
+    def setContextsPointsBaseName(self, contextsPointsBaseName):
+        self._setProjectEntry('contextsPointsBaseName', contextsPointsBaseName, self.contextsPolygonsBaseNameDefault)
+
+    def contextsPointsLayerName(self):
+        return self._layerName(self.contextsPointsBaseName())
+
+    def contextsLinesBaseName(self):
+        return self.project.readEntry(self.pluginName, 'contextsLinesBaseName', self.contextsLinesBaseNameDefault)[0]
+
+    def setContextsLinesBaseName(self, contextsLinesBaseName):
+        self._setProjectEntry('contextsLinesBaseName', contextsLinesBaseName, self.contextsPolygonsBaseNameDefault)
+
+    def contextsLinesLayerName(self):
+        return self._layerName(self.contextsLinesBaseName())
+
+    def contextsPolygonsBaseName(self):
+        return self.project.readEntry(self.pluginName, 'contextsPolygonsBaseName', self.contextsPolygonsBaseNameDefault)[0]
+
+    def setContextsPolygonsBaseName(self, contextsPolygonsBaseName):
+        self._setProjectEntry('contextsPolygonsBaseName', contextsPolygonsBaseName, self.contextsPolygonsBaseNameDefault)
+
+    def contextsPolygonsLayerName(self):
+        return self._layerName(self.contextsPolygonsBaseName())
+
+    def contextsScopeBaseName(self):
+        return self.project.readEntry(self.pluginName, 'contextsScopeBaseName', self.contextsScopeBaseNameDefault)[0]
+
+    def setContextsScopeBaseName(self, contextsScopeBaseName):
+        self._setProjectEntry('contextsScopeBaseName', contextsScopeBaseName, self.contextsScopeBaseNameDefault)
+
+    def contextsScopeLayerName(self):
+        return self._layerName(self.contextsScopeBaseName())
 
 
     # Plan settings
@@ -309,38 +379,6 @@ class Settings(QObject):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())
         return settingsDialog.exec_()
 
-    def pointsLayerName(self):
-        return self._layerName(self.pointsBaseName)
-
-    def linesLayerName(self):
-        return self._layerName(self.linesBaseName)
-
-    def polygonsLayerName(self):
-        return self._layerName(self.polygonsBaseName)
-
-    def schematicLayerName(self):
-        return self._layerName(self.schematicBaseName)
-
-    def pointsBufferName(self):
-        return self._bufferName(self.pointsBaseName)
-
-    def linesBufferName(self):
-        return self._bufferName(self.linesBaseName)
-
-    def polygonsBufferName(self):
-        return self._bufferName(self.polygonsBaseName)
-
-    def schematicBufferName(self):
-        return self._bufferName(self.schematicBaseName)
-
-    def _layerName(self, baseName):
-        if (self.prependSiteCode() and self.siteCode()):
-            return self.siteCode() + '_' + baseName
-        return baseName
-
-    def _bufferName(self, baseName):
-        return self._layerName(baseName) + self.bufferSuffix
-
     def defaultSnappingMode(self):
         defaultSnappingModeString = QSettings().value('/qgis/digitizing/default_snap_mode', 'to vertex')
         defaultSnappingMode = QgsSnapper.SnapToVertex
@@ -376,6 +414,8 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.setupUi(self)
 
         # Site tab settings
+        self.siteFolderEdit.setText(settings.sitePath())
+        self.siteFolderButton.clicked.connect(self._selectSiteFolder)
         self.siteCodeEdit.setText(settings.siteCode())
         self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
         if settings.useCustomStyles():
@@ -393,20 +433,27 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.gridPolygonsNameEdit.setText(settings.gridPolygonsBaseName())
 
         # Context tab settings
-        self.dataFolderEdit.setText(settings.dataPath())
+        self.contextsFolderEdit.setText(settings.contextsPath())
+        self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
+        self.contextsGroupNameEdit.setText(settings.contextsGroupName())
+        self.contextsBufferGroupNameEdit.setText(settings.contextsBufferGroupName())
+        self.contextsPointsNameEdit.setText(settings.contextsPointsBaseName())
+        self.contextsLinesNameEdit.setText(settings.contextsLinesBaseName())
+        self.contextsPolygonsNameEdit.setText(settings.contextsPolygonsBaseName())
+        self.contextsScopeNameEdit.setText(settings.contextsScopeBaseName())
 
         # Plan tab settings
         self.planFolderEdit.setText(settings.planPath())
         self.separatePlansCheck.setChecked(settings.separatePlanFolders())
         self.planTransparencySpin.setValue(settings.planTransparency())
 
-        self.dataFolderButton.clicked.connect(self._selectDataFolder)
         self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
         # Site tab settings
+        self._settings.setSitePath(self.siteFolderEdit.text())
         self._settings.setSiteCode(self.siteCodeEdit.text())
         self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
         self._settings.setUseCustomStyles(self.styleFolderEdit.text() != '')
@@ -420,7 +467,13 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._settings.setGridPolygonsBaseName(self.gridPolygonsNameEdit.text())
 
         # Contexts tab settings
-        self._settings.setDataPath(self.dataFolderEdit.text())
+        self._settings.setContextsPath(self.contextsFolderEdit.text())
+        self._settings.setContextsGroupName(self.contextsGroupNameEdit.text())
+        self._settings.setContextsBufferGroupName(self.contextsBufferGroupNameEdit.text())
+        self._settings.setContextsPointsBaseName(self.contextsPointsNameEdit.text())
+        self._settings.setContextsLinesBaseName(self.contextsLinesNameEdit.text())
+        self._settings.setContextsPolygonsBaseName(self.contextsPolygonsNameEdit.text())
+        self._settings.setContextsScopeBaseName(self.contextsScopeNameEdit.text())
 
         # Plan tab settings
         self._settings.setPlanPath(self.planFolderEdit.text())
@@ -429,10 +482,10 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
         return super(SettingsDialog, self).accept()
 
-    def _selectDataFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Data Folder'), self.dataFolderEdit.text()))
+    def _selectSiteFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Site Folder'), self.siteFolderEdit.text()))
         if folderName:
-            self.dataFolderEdit.setText(folderName)
+            self.siteFolderEdit.setText(folderName)
 
     def _selectGridFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))
@@ -449,6 +502,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Style Folder'), self.styleFolderEdit.text()))
         if folderName:
             self.styleFolderEdit.setText(folderName)
+
+    def _selectContextsFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Contexts Folder'), self.contextsFolderEdit.text()))
+        if folderName:
+            self.contextsFolderEdit.setText(folderName)
 
     def _selectPlanFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))

@@ -68,14 +68,14 @@ class LayerManager:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
         if self.schematicBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
-        if (self.settings.bufferGroupIndex >= 0):
-            self.settings.iface.legendInterface().removeGroup(self.settings.bufferGroupIndex)
+        if (self.settings.contextsBufferGroupIndex >= 0):
+            self.settings.iface.legendInterface().removeGroup(self.settings.contextsBufferGroupIndex)
 
     def groupIndexChanged(self, oldIndex, newIndex):
-        if (oldIndex == self.settings.dataGroupIndex):
-            self.settings.dataGroupIndex = newIndex
-        elif (oldIndex == self.settings.bufferGroupIndex):
-            self.settings.bufferGroupIndex = newIndex
+        if (oldIndex == self.settings.contextsGroupIndex):
+            self.settings.contextsGroupIndex = newIndex
+        elif (oldIndex == self.settings.contextsBufferGroupIndex):
+            self.settings.contextsBufferGroupIndex = newIndex
         elif (oldIndex == self.settings.planGroupIndex):
             self.settings.planGroupIndex = newIndex
 
@@ -100,18 +100,18 @@ class LayerManager:
 
     # Load the context layers if not already loaded
     def loadContextLayers(self):
-        if (self.settings.dataGroupIndex < 0):
-            self.settings.dataGroupIndex = self.getGroupIndex(self.settings.dataGroupName)
+        if (self.settings.contextsGroupIndex < 0):
+            self.settings.contextsGroupIndex = self.getGroupIndex(self.settings.contextsGroupName())
         if (self.schematicLayer is None):
-            self.schematicLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.schematicLayerName(), self.settings.dataGroupIndex)
+            self.schematicLayer = self.loadLayerByName(self.settings.contextsDir(), self.settings.contextsScopeLayerName(), self.settings.contextsGroupIndex)
         if (self.polygonsLayer is None):
-            self.polygonsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.polygonsLayerName(), self.settings.dataGroupIndex)
+            self.polygonsLayer = self.loadLayerByName(self.settings.contextsDir(), self.settings.contextsPolygonsLayerName(), self.settings.contextsGroupIndex)
         if (self.linesLayer is None):
-            self.linesLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.linesLayerName(), self.settings.dataGroupIndex)
+            self.linesLayer = self.loadLayerByName(self.settings.contextsDir(), self.settings.contextsLinesLayerName(), self.settings.contextsGroupIndex)
         if (self.pointsLayer is None):
-            self.pointsLayer = self.loadLayerByName(self.settings.dataDir(), self.settings.pointsLayerName(), self.settings.dataGroupIndex)
+            self.pointsLayer = self.loadLayerByName(self.settings.contextsDir(), self.settings.contextsPointsLayerName(), self.settings.contextsGroupIndex)
         if (self.gridPointsLayer is None):
-            self.gridPointsLayer = self.loadLayerByName(self.settings.gridDir(), self.settings.gridPointsLayerName(), self.settings.dataGroupIndex)
+            self.gridPointsLayer = self.loadLayerByName(self.settings.gridDir(), self.settings.gridPointsLayerName(), self.settings.contextsGroupIndex)
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
@@ -120,8 +120,8 @@ class LayerManager:
     # Setup the in-memory buffer layers
     def createBufferLayers(self):
 
-        if (self.settings.bufferGroupIndex < 0):
-            self.settings.bufferGroupIndex = self.getGroupIndex(self.settings.bufferGroupName)
+        if (self.settings.contextsBufferGroupIndex < 0):
+            self.settings.contextsBufferGroupIndex = self.getGroupIndex(self.settings.contextsBufferGroupName())
 
         if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
             self.schematicBuffer = self.createMemoryLayer(self.schematicLayer)
@@ -140,8 +140,8 @@ class LayerManager:
             self.addBufferToLegend(self.pointsBuffer)
 
     def addBufferToLegend(self, buffer):
-        if buffer.isValid():
-            self.addLayerToLegend(buffer, self.settings.bufferGroupIndex)
+        if (buffer is not None and buffer.isValid()):
+            self.addLayerToLegend(buffer, self.settings.contextsBufferGroupIndex)
             buffer.startEditing()
 
     def addLayerToLegend(self, layer, group):
@@ -160,13 +160,13 @@ class LayerManager:
             if (type.lower() == 'point'):
                 attributes.append(QgsField(self.settings.elevationAttributeName, QVariant.Double, '', self.settings.elevationAttributeSize, self.settings.elevationAttributePrecision))
             layer.dataProvider().addAttributes(attributes)
-            layer.loadNamedStyle(self.settings.dataDir().absolutePath() + '/' + style + '.qml')
+            layer.loadNamedStyle(self.settings.contextsDir().absolutePath() + '/' + style + '.qml')
             self._setDefaultSnapping(layer)
         #TODO set symbols?
         return layer
 
     def createMemoryLayer(self, layer):
-        if layer.isValid():
+        if (layer is not None and layer.isValid()):
             uri = self.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
             buffer = QgsVectorLayer(uri, layer.name() + self.settings.bufferSuffix, 'memory')
             if (buffer is not None and buffer.isValid()):

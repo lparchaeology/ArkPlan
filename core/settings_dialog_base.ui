@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>533</width>
-    <height>295</height>
+    <width>537</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,24 +17,44 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="siteTab">
       <attribute name="title">
        <string>Site</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="siteFolderLabel">
+         <property name="text">
+          <string>Site Folder:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
         <widget class="QLineEdit" name="siteCodeEdit"/>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="6" column="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0" colspan="2">
         <widget class="QLabel" name="customStylesLabel">
          <property name="text">
           <string>Custom Styles Folder:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="siteCodeLabel">
          <property name="text">
           <string>Site Code:</string>
@@ -44,14 +64,14 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
+       <item row="4" column="0" colspan="2">
         <widget class="QLabel" name="defaultStylesLabel">
          <property name="text">
           <string>Use Default Styles:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="prependSiteCodeLabel">
          <property name="text">
           <string>Prepend site code:</string>
@@ -61,7 +81,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="4" column="2">
         <widget class="QCheckBox" name="defaultStylesCheck">
          <property name="text">
           <string/>
@@ -71,7 +91,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
+       <item row="5" column="2">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QLineEdit" name="styleFolderEdit">
@@ -98,7 +118,7 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="2">
+       <item row="3" column="2">
         <widget class="QCheckBox" name="prependSiteCodeCheck">
          <property name="text">
           <string/>
@@ -108,18 +128,25 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+       <item row="0" column="2">
+        <layout class="QHBoxLayout" name="siteFolderLayout">
+         <item>
+          <widget class="QLineEdit" name="siteFolderEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="siteFolderButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -216,12 +243,12 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="contextsFolderLayout">
          <item>
-          <widget class="QLineEdit" name="dataFolderEdit"/>
+          <widget class="QLineEdit" name="contextsFolderEdit"/>
          </item>
          <item>
-          <widget class="QPushButton" name="dataFolderButton">
+          <widget class="QPushButton" name="contextsFolderButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -236,17 +263,17 @@
         </layout>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="dataFolderLabel">
+        <widget class="QLabel" name="contextsFolderLabel">
          <property name="text">
-          <string>Data Folder:</string>
+          <string>Contexts Folder:</string>
          </property>
          <property name="buddy">
-          <cstring>dataFolderEdit</cstring>
+          <cstring>contextsFolderEdit</cstring>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <spacer name="verticalSpacer_2">
+       <item row="10" column="1">
+        <spacer name="contextsTabSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -257,6 +284,81 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="contextsScopeNameLabel">
+         <property name="text">
+          <string>Scope Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsScopeNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="contextsPointsNameEdit"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="contextsGroupNameLabel">
+         <property name="text">
+          <string>Group Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsGroupNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="contextsGroupNameEdit"/>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="contextsPolygonsNameEdit"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="contextsLinesNameLabel">
+         <property name="text">
+          <string>Lines Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsLinesNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QLineEdit" name="contextsScopeNameEdit"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="contextsLinesNameEdit"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="contextsPointNameLabel">
+         <property name="text">
+          <string>Points Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsPointsNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="contextsPolygonsNameLabel">
+         <property name="text">
+          <string>Polygons Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsPolygonsNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="contextsBufferGroupNameEdit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="contextsBufferGroupNameLabel">
+         <property name="text">
+          <string>Buffer Group Name:</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -388,8 +490,8 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>dataFolderEdit</tabstop>
-  <tabstop>dataFolderButton</tabstop>
+  <tabstop>contextsFolderEdit</tabstop>
+  <tabstop>contextsFolderButton</tabstop>
   <tabstop>planFolderEdit</tabstop>
   <tabstop>planFolderButton</tabstop>
   <tabstop>planTransparencySpin</tabstop>

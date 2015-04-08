@@ -36,16 +36,24 @@ class LayerCollectionSettings:
     bufferGroupName = ''
 
     pointsLayerName = ''
+    pointsLayerPath = ''
+    pointsStylePath = ''
     pointsLayerFields = QgsFields()
 
     linesLayerName = ''
+    linesLayerPath = ''
+    linesStylePath = ''
     linesLayerFields = QgsFields()
 
     polygonsLayerName = ''
+    polygonsLayerPath = ''
+    polygonsStylePath = ''
     polygonsLayerFields = QgsFields()
 
     # Scope, Boundary, Reach, Dimension, Schematic???
     scopeLayerName = ''
+    scopeLayerPath = ''
+    scopeStylePath = ''
     scopeLayerFields = QgsFields()
 
 
@@ -54,12 +62,12 @@ class LayerCollection:
     pointsLayer = None
     linesLayer = None
     polygonsLayer = None
-    schematicLayer = None
+    scopeLayer = None
 
     pointsBuffer = None
     linesBuffer = None
     polygonsBuffer = None
-    schematicBuffer = None
+    scopeBuffer = None
 
     # Internal variables
 
@@ -71,7 +79,7 @@ class LayerCollection:
     filter = ''
 
     def __init__(self, iface, settings):
-        self.iface = iface
+        self._iface = iface
         self._settings = settings
         # If the legend indexes change make sure we stay updated
         self._iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
@@ -80,16 +88,18 @@ class LayerCollection:
         self.loadCollection()
 
     def unload(self):
-        # Remove the buffers from the legend
-        if (self.pointsBuffer is not None and self.pointsBuffer.isValid()):
+        self.unloadBuffers()
+
+    def unloadBuffers(self):
+        if self.pointsBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.pointsBuffer.id())
         if self.linesBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
         if self.polygonsBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
-        if self.schematicBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.schematicBuffer.id())
-        if (self._bufferGroupIndex >= 0):
+        if self.scopeBuffer is not None:
+            QgsMapLayerRegistry.instance().removeMapLayer(self.scopeBuffer.id())
+        if self._bufferGroupIndex >= 0:
             self._iface.legendInterface().removeGroup(self._bufferGroupIndex)
 
     def _groupIndexChanged(self, oldIndex, newIndex):
@@ -98,91 +108,82 @@ class LayerCollection:
         elif (oldIndex == self._bufferGroupIndex):
             self._bufferGroupIndex = newIndex
 
-    def loadLayerByName(self, dir, name, groupIndex):
-        # If the layer is already loaded, use it and return
-        layerList = QgsMapLayerRegistry.instance().mapLayersByName(name)
-        if (len(layerList) > 0):
-            self._iface.legendInterface().moveLayer(layerList[0], groupIndex)
-            return layerList[0]
-        # Otherwise load the layer and add it to the legend
-        layer = QgsVectorLayer(dir.absolutePath() + '/' + name + '.shp', name, "ogr")
-        if (layer.isValid()):
-            self._setDefaultSnapping(layer)
-            # TODO Check for other locations of style file
-            layer.loadNamedStyle(dir.absolutePath() + '/' + name + '.qml')
-            QgsMapLayerRegistry.instance().addMapLayer(layer)
-            self._iface.legendInterface().moveLayer(layer, groupIndex)
-            self._iface.legendInterface().refreshLayerSymbology(layer)
-            return layer
-        return None
-
-    # Load the context layers if not already loaded
-    def loadCollection(self):
-        if (self._collectionGroupIndex < 0):
-            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings._collectionGroupName)
-        if (self.schematicLayer is None and self._settings.schematicLayerName):
-            self.schematicLayer = self.loadLayerByName(self._settings._collectionDir, self._settings.schematicLayerName, self._collectionGroupIndex)
-        if (self.polygonsLayer is None and self._settings.polygonsLayerName):
-            self.polygonsLayer = self.loadLayerByName(self._settings._collectionDir, self._settings.polygonsLayerName, self._collectionGroupIndex)
-        if (self.linesLayer is None and self._settings.linesLayerName):
-            self.linesLayer = self.loadLayerByName(self._settings._collectionDir, self._settings.linesLayerName, self._collectionGroupIndex)
-        if (self.pointsLayer is None and self._settings.pointsLayerName):
-            self.pointsLayer = self.loadLayerByName(self._settings._collectionDir, self._settings.pointsLayerName, self._collectionGroupIndex)
-
-    def _setDefaultSnapping(self, layer):
-        # TODO Check if layer id already in settings, only set defaults if it isn't
-        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, self._settings.defaultSnappingMode(), self._settings.defaultSnappingUnit(), self._settings.defaultSnappingTolerance(), False)
-
-    # Setup the in-memory buffer layers
-    def createEditBuffers(self):
-
-        if (self._bufferGroupIndex < 0):
-            self._bufferGroupIndex = utils.getGroupIndex(self._bufferGroupName)
-
-        if (self.schematicBuffer is None or not self.schematicBuffer.isValid()):
-            self.schematicBuffer = self.createMemoryLayer(self.schematicLayer)
-            self.addBufferToLegend(self.schematicBuffer)
-
-        if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self.createMemoryLayer(self.polygonsLayer)
-            self.addBufferToLegend(self.polygonsBuffer)
-
-        if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self.createMemoryLayer(self.linesLayer)
-            self.addBufferToLegend(self.linesBuffer)
-
-        if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
-            self.pointsBuffer = self.createMemoryLayer(self.pointsLayer)
-            self.addBufferToLegend(self.pointsBuffer)
-
-    def addBufferToLegend(self, buffer):
-        if buffer.isValid():
-            self.addLayerToLegend(buffer, self._bufferGroupIndex)
-            buffer.startEditing()
-
-    def addLayerToLegend(self, layer, group):
-        if layer.isValid():
+    def _addLayerToLegend(self, layer, group):
+        if (layer is not None and layer.isValid()):
             QgsMapLayerRegistry.instance().addMapLayer(layer)
             self._iface.legendInterface().moveLayer(layer, group)
             self._iface.legendInterface().refreshLayerSymbology(layer)
 
-    def createLayer(self, type, name, style, provider):
-        layer = QgsVectorLayer(type + "?crs=" + self._settings.collectionCrs + "&index=yes", name, provider)
-        if (layer.isValid()):
-            attributes = [QgsField(self._settings.contextAttributeName, QVariant.Int, '', self._settings.contextAttributeSize),
-                          QgsField(self._settings.sourceAttributeName,  QVariant.String, '', self._settings.sourceAttributeSize),
-                          QgsField(self._settings.typeAttributeName, QVariant.String, '', self._settings.typeAttributeSize),
-                          QgsField(self._settings.commentAttributeName, QVariant.String, '', self._settings.commentAttributeSize)]
-            if (type.lower() == 'point'):
-                attributes.append(QgsField(self._settings.elevationAttributeName, QVariant.Double, '', self._settings.elevationAttributeSize, self._settings.elevationAttributePrecision))
-            layer.dataProvider().addAttributes(attributes)
-            layer.loadNamedStyle(self._settings._collectionDir.absolutePath() + '/' + style + '.qml')
+    def _loadLayer(self, layerName, layerPath, stylePath, groupIndex):
+        if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
+            return None
+        # If the layer is already loaded, use it and return
+        layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
+        if (len(layerList) > 0):
+            self._iface.legendInterface().moveLayer(layerList[0], groupIndex)
+            return layerList[0]
+        # Otherwise load the layer and add it to the legend
+        layer = QgsVectorLayer(layerPath, layerName, "ogr")
+        if (layer is not None and layer.isValid()):
             self._setDefaultSnapping(layer)
-        #TODO set symbols?
+            if (stylePath is not None and stylePath != ''):
+                layer.loadNamedStyle(stylePath)
+            self._addLayerToLegend(layer, groupIndex)
+            return layer
+        return None
+
+    # Load the collection layers if not already loaded
+    # TODO Ask to create if don't already exist
+    def loadCollection(self):
+        if (self._collectionGroupIndex < 0):
+            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings._collectionGroupName)
+        self.scopeLayer = self._loadLayer(self._settings.scopeLayerName, self._settings.scopeLayerPath, self._settings.scopeStylePath, self._collectionGroupIndex)
+        self.polygonsLayer = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsStylePath, self._collectionGroupIndex)
+        self.linesLayer = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesStylePath, self._collectionGroupIndex)
+        self.pointsLayer = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsStylePath, self._collectionGroupIndex)
+
+    def _setDefaultSnapping(self, layer):
+        # TODO Check if layer id already in settings, only set defaults if it isn't
+        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, utils.defaultSnappingMode(), utils.defaultSnappingUnit(), utils.defaultSnappingTolerance(), False)
+
+    # Setup the in-memory buffer layers
+    def createBuffers(self):
+
+        if (self._bufferGroupIndex < 0):
+            self._bufferGroupIndex = utils.getGroupIndex(self._bufferGroupName)
+
+        if (self.scopeBuffer is None or not self.scopeBuffer.isValid()):
+            self.scopeBuffer = self._createBufferLayer(self.scopeLayer)
+
+        if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
+            self.polygonsBuffer = self._createBufferLayer(self.polygonsLayer)
+
+        if (self.linesBuffer is None or not self.linesBuffer.isValid()):
+            self.linesBuffer = self._createBufferLayer(self.linesLayer)
+
+        if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
+            self.pointsBuffer = self._createBufferLayer(self.pointsLayer)
+
+    def _createBufferLayer(self, layer):
+        if (layer is not None and layer.isValid()):
+            buffer = self._createMemoryLayer(layer)
+            if (buffer is not None and buffer.isValid()):
+                self._addLayerToLegend(buffer, self._bufferGroupIndex)
+                buffer.startEditing()
+                return buffer
+        return None
+
+    def _createLayer(self, type, name, provider, attributes, layerPath, stylePath):
+        layer = QgsVectorLayer(layerPath, name, provider)
+        if (layer is not None and layer.isValid()):
+            layer.dataProvider().addAttributes(attributes)
+            layer.loadNamedStyle(stylePath)
+            self._setDefaultSnapping(layer)
+            # TODO save layer??? crs???
         return layer
 
-    def createMemoryLayer(self, layer):
-        if layer.isValid():
+    def _createMemoryLayer(self, layer):
+        if (layer is not None and layer.isValid()):
             uri = utils.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
             buffer = QgsVectorLayer(uri, layer.name() + self._settings.bufferSuffix, 'memory')
             if (buffer is not None and buffer.isValid()):
@@ -192,12 +193,12 @@ class LayerCollection:
         return None
 
     def okToMergeBuffers(self):
-        return self.areLayersEditable()
+        return self.isCollectionEditable()
 
-    def areLayersEditable(self):
-        return self.isLayerEditable(self.pointsLayer) and self.isLayerEditable(self.linesLayer) and self.isLayerEditable(self.polygonsLayer) and self.isLayerEditable(self.schematicLayer)
+    def isCollectionEditable(self):
+        return self._isLayerEditable(self.pointsLayer) and self._isLayerEditable(self.linesLayer) and self._isLayerEditable(self.polygonsLayer) and self._isLayerEditable(self.scopeLayer)
 
-    def isLayerEditable(self, layer):
+    def _isLayerEditable(self, layer):
         if (layer.type() != QgsMapLayer.VectorLayer):
             self._settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Not a vector layer')
             return False
@@ -213,7 +214,7 @@ class LayerCollection:
             return False
         return True
 
-    def clearBuffer(self, type, buffer, undoMessage=''):
+    def _clearBuffer(self, type, buffer, undoMessage=''):
         message = undoMessage
         if (not undoMessage):
             message = 'Clear buffer'
@@ -229,7 +230,7 @@ class LayerCollection:
             buffer.startEditing()
         buffer.removeSelection()
 
-    def copyBuffer(self, type, buffer, layer, undoMessage=''):
+    def _copyBuffer(self, type, buffer, layer, undoMessage=''):
         ok = False
         message = undoMessage
         if (not undoMessage):
@@ -254,20 +255,21 @@ class LayerCollection:
         return ok
 
     def mergeBuffers(self, undoMessage):
-        if self.copyBuffer('levels', self.pointsBuffer, self.pointsLayer, undoMessage):
-            self.clearBuffer('levels', self.pointsBuffer, undoMessage)
-        if self.copyBuffer('lines', self.linesBuffer, self.linesLayer, undoMessage):
-            self.clearBuffer('lines', self.linesBuffer, undoMessage)
-        if self.copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage):
-            self.clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        if self.copyBuffer('schematic', self.schematicBuffer, self.schematicLayer, undoMessage):
-            self.clearBuffer('schematic', self.schematicBuffer, undoMessage)
+        if self._copyBuffer('levels', self.pointsBuffer, self.pointsLayer, undoMessage):
+            self._clearBuffer('levels', self.pointsBuffer, undoMessage)
+        if self._copyBuffer('lines', self.linesBuffer, self.linesLayer, undoMessage):
+            self._clearBuffer('lines', self.linesBuffer, undoMessage)
+        if self._copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage):
+            self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
+        if self._copyBuffer('scope', self.scopeBuffer, self.scopeLayer, undoMessage):
+            self._clearBuffer('scope', self.scopeBuffer, undoMessage)
 
-    def clearBuffers(self, undoMessage):
-        self.clearBuffer('levels', self.pointsBuffer, undoMessage)
-        self.clearBuffer('lines', self.linesBuffer, undoMessage)
-        self.clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        self.clearBuffer('schematic', self.schematicBuffer, undoMessage)
+    def _clearBuffers(self, undoMessage):
+        self._clearBuffer('levels', self.pointsBuffer, undoMessage)
+        self._clearBuffer('lines', self.linesBuffer, undoMessage)
+        self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
+        self._clearBuffer('scope', self.scopeBuffer, undoMessage)
+
 
     def showPoints(self, status):
         self._iface.legendInterface().setLayerVisible(self.pointsLayer, status)
@@ -278,30 +280,21 @@ class LayerCollection:
     def showPolygons(self, status):
         self._iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
 
-    def showSchematics(self, status):
-        self._iface.legendInterface().setLayerVisible(self.schematicLayer, status)
-
-
-    def applyContextFilter(self, contextList):
-        clause = '"' + self._settings.contextAttributeName + '" = %d'
-        filter = ''
-        if (len(contextList) > 0):
-            filter += clause % contextList[0]
-            for context in contextList[1:]:
-                filter += ' or '
-                filter += clause % context
-        self.applyFilter(filter)
+    def showScope(self, status):
+        self._iface.legendInterface().setLayerVisible(self.scopeLayer, status)
 
 
     def applyFilter(self, filter):
         self.filter = filter
-        self.applyLayerFilter(self.pointsLayer, self.filter)
-        self.applyLayerFilter(self.linesLayer, self.filter)
-        self.applyLayerFilter(self.polygonsLayer, self.filter)
-        self.applyLayerFilter(self.schematicLayer, self.filter)
+        self._applyLayerFilter(self.pointsLayer, self.filter)
+        self._applyLayerFilter(self.linesLayer, self.filter)
+        self._applyLayerFilter(self.polygonsLayer, self.filter)
+        self._applyLayerFilter(self.scopeLayer, self.filter)
 
 
-    def applyLayerFilter(self, layer, filter):
+    def _applyLayerFilter(self, layer, filter):
+        if (layer is None):
+            return
         if (self._iface.mapCanvas().isDrawing()):
             self._settings.showMessage('Cannot apply filter: Canvas is drawing')
             return
@@ -322,32 +315,31 @@ class LayerCollection:
         self._iface.legendInterface().refreshLayerSymbology(layer)
 
 
-    def zoomToLayers(self, includeBuffers):
+    def zoomToCollection(self):
         self.pointsLayer.updateExtents()
         self.linesLayer.updateExtents()
         self.polygonsLayer.updateExtents()
-        self.schematicLayer.updateExtents()
+        self.scopeLayer.updateExtents()
+        self.pointsBuffer.updateExtents()
+        self.linesBuffer.updateExtents()
+        self.polygonsBuffer.updateExtents()
+        self.scopeBuffer.updateExtents()
         extent = QgsRectangle()
-        extent = self.extendExtent(extent, self.pointsLayer)
-        extent = self.extendExtent(extent, self.linesLayer)
-        extent = self.extendExtent(extent, self.polygonsLayer)
-        extent = self.extendExtent(extent, self.schematicLayer)
-        if includeBuffers:
-            self.pointsBuffer.updateExtents()
-            self.linesBuffer.updateExtents()
-            self.polygonsBuffer.updateExtents()
-            self.schematicBuffer.updateExtents()
-            extent = self.extendExtent(extent, self.pointsBuffer)
-            extent = self.extendExtent(extent, self.linesBuffer)
-            extent = self.extendExtent(extent, self.polygonsBuffer)
-            extent = self.extendExtent(extent, self.schematicBuffer)
+        extent = self._extendExtent(extent, self.pointsLayer)
+        extent = self._extendExtent(extent, self.linesLayer)
+        extent = self._extendExtent(extent, self.polygonsLayer)
+        extent = self._extendExtent(extent, self.scopeLayer)
+        extent = self._extendExtent(extent, self.pointsBuffer)
+        extent = self._extendExtent(extent, self.linesBuffer)
+        extent = self._extendExtent(extent, self.polygonsBuffer)
+        extent = self._extendExtent(extent, self.scopeBuffer)
         if (extent is not None and not extent.isNull()):
             extent.scale(1.05)
             self._iface.mapCanvas().setExtent(extent)
             self._iface.mapCanvas().refresh()
 
 
-    def extendExtent(self, extent, layer):
+    def _extendExtent(self, extent, layer):
         layerExtent = QgsRectangle()
         if (layer is not None and layer.isValid() and layer.featureCount() > 0 and self._iface.legendInterface().isLayerVisible(layer)):
             layerExtent = layer.extent()

@@ -21,6 +21,8 @@
  ***************************************************************************/
 """
 
+import os.path
+
 import resources_rc
 
 from .core.settings import Settings
@@ -42,7 +44,7 @@ class Ark:
     filterDock = None  # Filter()
 
     def __init__(self, iface):
-        self.settings = Settings(iface)
+        self.settings = Settings(iface, os.path.dirname(__file__))
         self.layers = LayerManager(self.settings)
         self.gridDock = GridModule(self.settings, self.layers)
         self.planDock = Plan(self.settings, self.layers)

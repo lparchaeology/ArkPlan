@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant
 from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
@@ -99,13 +97,13 @@ class Settings(QObject):
     baselinePointFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
     gridPointFields = ['id', 'category', 'local_x', 'local_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
 
-    def __init__(self, iface):
+    def __init__(self, iface, pluginPath):
         super(Settings, self).__init__()
         self.iface = iface
         self.project = QgsProject.instance()
 
         self.pluginName = self.tr(u'Ark')
-        self.pluginPath = os.path.dirname(__file__)
+        self.pluginPath = pluginPath
 
         # Declare instance attributes
         self.menuName = self.tr(u'&Ark')
@@ -190,6 +188,24 @@ class Settings(QObject):
 
     def setGridPath(self, absolutePath):
         self.project.writeEntry(self.pluginName, 'gridPath', absolutePath)
+
+    def useCustomStyles(self):
+        return self.project.readBoolEntry(self.pluginName, 'useCustomStyles', False)[0]
+
+    def setUseCustomStyles(self, useCustomStyles):
+        self.project.writeEntry(self.pluginName, 'useCustomStyles', useCustomStyles)
+
+    def styleDir(self):
+        return QDir(self.stylePath())
+
+    def stylePath(self):
+        path =  self.project.readEntry(self.pluginName, 'stylePath', '')[0]
+        if (not path):
+            return self.pluginPath + '/styles'
+        return path
+
+    def setStylePath(self, absolutePath):
+        self.project.writeEntry(self.pluginName, 'stylePath', absolutePath)
 
     def planDir(self):
         return QDir(self.planPath())
@@ -309,12 +325,19 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.siteCodeEdit.setText(settings.siteCode())
         self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
         self.gridFolderEdit.setText(settings.gridPath())
+        if settings.useCustomStyles():
+            self.defaultStylesCheck.setChecked(False)
+            self.styleFolderEdit.setText(settings.stylePath())
+            self.styleFolderEdit.setEnabled(True)
+            self.styleFolderButton.setEnabled(True)
         self.planFolderEdit.setText(settings.planPath())
         self.separatePlansCheck.setChecked(settings.separatePlanFolders())
         self.planTransparencySpin.setValue(settings.planTransparency())
 
         self.dataFolderButton.clicked.connect(self._selectDataFolder)
         self.gridFolderButton.clicked.connect(self._selectGridFolder)
+        self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
+        self.styleFolderButton.clicked.connect(self._selectStyleFolder)
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
@@ -322,6 +345,8 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._settings.setSiteCode(self.siteCodeEdit.text())
         self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
         self._settings.setGridPath(self.gridFolderEdit.text())
+        self._settings.setUseCustomStyles(self.styleFolderEdit.text() != '')
+        self._settings.setStylePath(self.styleFolderEdit.text())
         self._settings.setPlanPath(self.planFolderEdit.text())
         self._settings.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
         self._settings.setPlanTransparency(self.planTransparencySpin.value())
@@ -336,6 +361,17 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))
         if folderName:
             self.gridFolderEdit.setText(folderName)
+
+    def _toggleDefaultStyle(self, useDefault):
+        if useDefault:
+            self.styleFolderEdit.setText('')
+        self.styleFolderEdit.setEnabled(not useDefault)
+        self.styleFolderButton.setEnabled(not useDefault)
+
+    def _selectStyleFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Style Folder'), self.styleFolderEdit.text()))
+        if folderName:
+            self.styleFolderEdit.setText(folderName)
 
     def _selectPlanFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))

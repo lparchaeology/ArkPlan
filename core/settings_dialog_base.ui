@@ -6,14 +6,54 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
-    <height>310</height>
+    <width>534</width>
+    <height>371</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="6" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLineEdit" name="planFolderEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="planFolderButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="separatePlansLabel">
+     <property name="text">
+      <string>Separate plan folders:</string>
+     </property>
+     <property name="buddy">
+      <cstring>separatePlansCheck</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="planTransparencyLabel">
+     <property name="text">
+      <string>Plan tranparency:</string>
+     </property>
+     <property name="buddy">
+      <cstring>planTransparencySpin</cstring>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="siteCodeLabel">
      <property name="text">
@@ -84,7 +124,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="prependSiteCodeLabel">
      <property name="text">
       <string>Prepend site code:</string>
@@ -94,7 +134,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="QCheckBox" name="prependSiteCodeCheck">
      <property name="text">
       <string/>
@@ -104,7 +144,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="planFolderLabel">
      <property name="text">
       <string>Plan Folder:</string>
@@ -115,12 +155,19 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <widget class="QLineEdit" name="planFolderEdit"/>
+      <widget class="QLineEdit" name="styleFolderEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="planFolderButton">
+      <widget class="QPushButton" name="styleFolderButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -134,40 +181,7 @@
      </item>
     </layout>
    </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="separatePlansLabel">
-     <property name="text">
-      <string>Separate plan folders:</string>
-     </property>
-     <property name="buddy">
-      <cstring>separatePlansCheck</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="separatePlansCheck">
-     <property name="toolTip">
-      <string>Select if the raw and processed plans should be stored in separate folders.</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="planTransparencyLabel">
-     <property name="text">
-      <string>Plan tranparency:</string>
-     </property>
-     <property name="buddy">
-      <cstring>planTransparencySpin</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
+   <item row="8" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QSpinBox" name="planTransparencySpin">
@@ -197,13 +211,50 @@
      </item>
     </layout>
    </item>
-   <item row="7" column="0" colspan="2">
+   <item row="7" column="1">
+    <widget class="QCheckBox" name="separatePlansCheck">
+     <property name="toolTip">
+      <string>Select if the raw and processed plans should be stored in separate folders.</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="defaultStylesCheck">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="defaultStylesLabel">
+     <property name="text">
+      <string>Use Default Styles:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="customStylesLabel">
+     <property name="text">
+      <string>Custom Styles Folder:</string>
      </property>
     </widget>
    </item>

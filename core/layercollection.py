@@ -34,6 +34,7 @@ class LayerCollectionSettings:
     collectionCrs = ''
     collectionGroupName = ''
     bufferGroupName = ''
+    bufferSuffix = ''
 
     pointsLayerName = ''
     pointsLayerPath = ''

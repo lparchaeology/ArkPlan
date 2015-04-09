@@ -74,10 +74,6 @@ class Filter(QObject):
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomSelected.connect(self.zoomFilter)
-        self.dock.showPointsChanged.connect(self.layers.showPoints)
-        self.dock.showLinesChanged.connect(self.layers.showLines)
-        self.dock.showPolygonsChanged.connect(self.layers.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.layers.showSchematics)
 
         self.identifyMapTool = MapToolIndentifyFeatures(self.settings.iface.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
@@ -100,6 +96,10 @@ class Filter(QObject):
         if (not self.settings.isConfigured()):
             self.settings.configure()
         self.layers.initialise()
+        self.dock.showPointsChanged.connect(self.layers.contexts.showPoints)
+        self.dock.showLinesChanged.connect(self.layers.contexts.showLines)
+        self.dock.showPolygonsChanged.connect(self.layers.contexts.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.layers.contexts.showScope)
 
         self.initialised = True
 

@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QVariant
+from PyQt4.QtCore import QVariant, QDir
 from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
@@ -137,7 +137,7 @@ class LayerCollection:
     # TODO Ask to create if don't already exist
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
-            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings._collectionGroupName)
+            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings.collectionGroupName)
         self.scopeLayer = self._loadLayer(self._settings.scopeLayerName, self._settings.scopeLayerPath, self._settings.scopeStylePath, self._collectionGroupIndex)
         self.polygonsLayer = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsStylePath, self._collectionGroupIndex)
         self.linesLayer = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesStylePath, self._collectionGroupIndex)
@@ -151,7 +151,7 @@ class LayerCollection:
     def createBuffers(self):
 
         if (self._bufferGroupIndex < 0):
-            self._bufferGroupIndex = utils.getGroupIndex(self._bufferGroupName)
+            self._bufferGroupIndex = utils.getGroupIndex(self._iface, self._settings.bufferGroupName)
 
         if (self.scopeBuffer is None or not self.scopeBuffer.isValid()):
             self.scopeBuffer = self._createBufferLayer(self.scopeLayer)
@@ -283,6 +283,18 @@ class LayerCollection:
 
     def showScope(self, status):
         self._iface.legendInterface().setLayerVisible(self.scopeLayer, status)
+
+
+    def applyFilter(self, field, valueList):
+        # TODO string versus decimal field type!
+        clause = '"' + field + '" = %d'
+        filter = ''
+        if (len(valueList) > 0):
+            filter += clause % valueList[0]
+            for value in valueList[1:]:
+                filter += ' or '
+                filter += clause % value
+        self.contexts.applyFilter(filter)
 
 
     def applyFilter(self, filter):

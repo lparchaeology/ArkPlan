@@ -96,13 +96,14 @@ class Plan(QObject):
         if (not self.settings.isConfigured()):
             self.settings.configure()
         self.layers.initialise()
+        self.layers.contexts.createBuffers()
 
-        self.dock.setSchematicsBuffer(self.layers.schematicBuffer)
-        self.dock.setPolygonsBuffer(self.layers.polygonsBuffer)
-        self.dock.setLinesBuffer(self.layers.linesBuffer)
-        self.dock.setSchematicsLayer(self.layers.schematicLayer)
-        self.dock.setPolygonsLayer(self.layers.polygonsLayer)
-        self.dock.setLinesLayer(self.layers.linesLayer)
+        self.dock.setSchematicsBuffer(self.layers.contexts.scopeBuffer)
+        self.dock.setPolygonsBuffer(self.layers.contexts.polygonsBuffer)
+        self.dock.setLinesBuffer(self.layers.contexts.linesBuffer)
+        self.dock.setSchematicsLayer(self.layers.contexts.scopeLayer)
+        self.dock.setPolygonsLayer(self.layers.contexts.polygonsLayer)
+        self.dock.setLinesLayer(self.layers.contexts.linesLayer)
 
         # If the map tool changes make sure we stay updated
         self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
@@ -155,36 +156,36 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        if self.layers.okToMergeBuffers():
-            self.layers.mergeBuffers('Merge context ' + str(self.context))
+        if self.layers.contexts.okToMergeBuffers():
+            self.layers.contexts.mergeBuffers('Merge context ' + str(self.context))
 
     def clearBuffers(self):
-        self.layers.clearBuffers('Clear buffer data ' + str(self.context))
+        self.layers.contexts.clearBuffers('Clear buffer data ' + str(self.context))
 
     def enableLevelsMode(self, typeAttribute):
         #TODO disable all snapping
-        self.createMapTool(typeAttribute, self.layers.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
+        self.createMapTool(typeAttribute, self.layers.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.createMapTool(typeAttribute, self.layers.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.schematicBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(typeAttribute, self.layers.contexts.scopeBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):

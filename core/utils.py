@@ -26,7 +26,7 @@ import os.path
 
 from PyQt4.QtCore import QSettings
 
-from qgis.core import QgsProject, QgsSnapper, QgsMessageLog
+from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog
 from qgis.gui import QgsMessageBar
 
 # Project setting utilities
@@ -71,7 +71,7 @@ def getGroupIndex(iface, groupName):
         groupIndex = iface.legendInterface().addGroup(groupName)
     return groupIndex
 
-def wkbToMemoryType(self, wkbType):
+def wkbToMemoryType(wkbType):
     if (wkbType == QGis.WKBPoint):
         return 'point'
     elif (wkbType == QGis.WKBLineString):

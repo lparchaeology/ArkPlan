@@ -55,12 +55,16 @@ class Plan(QObject):
     def __init__(self, settings, layers):
         super(Plan, self).__init__()
         self.settings = settings
+        # If the project gets changed, make sure we update too
+        self.settings.projectChanged.connect(self.loadProject)
+        # If the map tool changes make sure we stay updated
+        self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
         self.layers = layers
 
     # Load the module when plugin is loaded
     def load(self):
         self.dock = PlanDock()
-        self.dock.load(self.settings, Qt.RightDockWidgetArea, self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png')
+        self.dock.load(self.settings.iface, Qt.RightDockWidgetArea, self.settings.createMenuAction(self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png', True))
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
@@ -95,11 +99,16 @@ class Plan(QObject):
         if self.initialised:
             return
 
+        self.settings.initialise()
         if (not self.settings.isConfigured()):
-            self.settings.configure()
+            return
         self.layers.initialise()
-        self.layers.contexts.createBuffers()
 
+        self.initialiseBuffers()
+        self.initialised = True
+
+    def initialiseBuffers(self):
+        self.layers.contexts.createBuffers()
         self.dock.setSchematicsBuffer(self.layers.contexts.scopeBuffer)
         self.dock.setPolygonsBuffer(self.layers.contexts.polygonsBuffer)
         self.dock.setLinesBuffer(self.layers.contexts.linesBuffer)
@@ -107,10 +116,10 @@ class Plan(QObject):
         self.dock.setPolygonsLayer(self.layers.contexts.polygonsLayer)
         self.dock.setLinesLayer(self.layers.contexts.linesLayer)
 
-        # If the map tool changes make sure we stay updated
-        self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
-
-        self.initialised = True
+    def loadProject(self):
+        if not self.initialised:
+            return
+        self.initialised = False
 
     # Plan Tools
 

@@ -36,7 +36,6 @@ class Ark:
     """QGIS Plugin Implementation."""
 
     # Common plugin objects
-    iface = None  # QgisInterface()
     settings = None # Settings()
     layers = None  # LayerManager()
 
@@ -46,23 +45,20 @@ class Ark:
     filterModule = None  # Filter()
 
     def __init__(self, iface):
-        self.iface = iface
-        self.iface.initializationCompleted.connect(self.projectLoad)
-        self.iface.projectRead.connect(self.projectLoad)
-        self.iface.newProjectCreated.connect(self.projectLoad)
-
         self.settings = Settings(iface, os.path.dirname(__file__))
         self.layers = LayerManager(self.settings)
         self.gridModule = GridModule(self.settings, self.layers)
         self.planModule = Plan(self.settings, self.layers)
         self.filterModule = Filter(self.settings, self.layers)
 
+    # Load the plugin
     def initGui(self):
         self.settings.load()
         self.gridModule.load()
         self.planModule.load()
         self.filterModule.load()
 
+    # Unload the plugin
     def unload(self):
 
         # Remove the layers from the legend
@@ -75,3 +71,4 @@ class Ark:
 
         # Removes the plugin menu item and icon from QGIS GUI.
         self.settings.unload()
+

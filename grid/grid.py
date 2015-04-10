@@ -30,8 +30,6 @@ from qgis.gui import QgsMapToolEmitPoint
 
 from VectorBender.vectorbendertransformers import LinearTransformer
 
-import utils
-
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
@@ -57,14 +55,14 @@ class GridModule(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.createGridAction = utils.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
+        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
         self.createGridAction.triggered.connect(self.showCreateGridDialog)
 
-        self.identifyGridAction = utils.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
+        self.identifyGridAction = self.settings.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
         self.dock = GridDock()
-        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png')
+        self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
         self.dock.mapGridTool.setDefaultAction(self.identifyGridAction)
         self.dock.newGridTool.setDefaultAction(self.createGridAction)

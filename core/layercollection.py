@@ -61,14 +61,22 @@ class LayerCollectionSettings:
 class LayerCollection:
 
     pointsLayer = None
+    pointsLayerId = ''
     linesLayer = None
+    linesLayerId = ''
     polygonsLayer = None
+    polygonsLayerId = ''
     scopeLayer = None
+    scopeLayerId = ''
 
     pointsBuffer = None
+    pointsBufferId = ''
     linesBuffer = None
+    linesBufferId = ''
     polygonsBuffer = None
+    polygonsBufferId = ''
     scopeBuffer = None
+    scopeBufferId = ''
 
     # Internal variables
 
@@ -84,6 +92,8 @@ class LayerCollection:
         self._settings = settings
         # If the legend indexes change make sure we stay updated
         self._iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+        # If the layers are removed we need to remove them too
+        QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
     def initialise(self):
         self.loadCollection()
@@ -109,11 +119,35 @@ class LayerCollection:
         elif (oldIndex == self._bufferGroupIndex):
             self._bufferGroupIndex = newIndex
 
+    # If a layer is removed from the registry, (i.e. closed), we can't use it anymore
+    def _layersRemoved(self, layerList):
+        for layerId in layerList:
+            if layerId == '':
+                pass
+            elif layerId == self.pointsLayerId:
+                self.pointsLayer = None
+            elif layerId == self.linesLayerId:
+                self.linesLayer = None
+            elif layerId == self.polygonsLayerId:
+                self.polygonsLayer = None
+            elif layerId == self.scopeLayerId:
+                self.scopeLayer = None
+            elif layerId == self.pointsBufferId:
+                self.pointsBuffer = None
+            elif layerId == self.linesBufferId:
+                self.linesBuffer = None
+            elif layerId == self.polygonsBufferId:
+                self.polygonsBuffer = None
+            elif layerId == self.scopeBufferId:
+                self.scopeBuffer = None
+
     def _addLayerToLegend(self, layer, group):
         if (layer is not None and layer.isValid()):
-            QgsMapLayerRegistry.instance().addMapLayer(layer)
+            ret = QgsMapLayerRegistry.instance().addMapLayer(layer)
             self._iface.legendInterface().moveLayer(layer, group)
             self._iface.legendInterface().refreshLayerSymbology(layer)
+            return ret
+        return layer
 
     def _loadLayer(self, layerName, layerPath, stylePath, groupIndex):
         if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
@@ -129,8 +163,7 @@ class LayerCollection:
             self._setDefaultSnapping(layer)
             if (stylePath is not None and stylePath != ''):
                 layer.loadNamedStyle(stylePath)
-            self._addLayerToLegend(layer, groupIndex)
-            return layer
+            return self._addLayerToLegend(layer, groupIndex)
         return None
 
     # Load the collection layers if not already loaded

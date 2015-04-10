@@ -23,7 +23,7 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant
+from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant, pyqtSignal
 from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
@@ -32,6 +32,9 @@ from qgis.gui import QgsMessageBar
 from settings_dialog_base import *
 
 class Settings(QObject):
+
+    # Signal when the project changes so modules can reload
+    projectChanged = pyqtSignal()
 
     iface = None # QgsInteface()
     project = None # QgsProject()
@@ -107,7 +110,6 @@ class Settings(QObject):
     def __init__(self, iface, pluginPath):
         super(Settings, self).__init__()
         self.iface = iface
-        self.project = QgsProject.instance()
 
         self.pluginName = self.tr(u'Ark')
         self.pluginPath = pluginPath
@@ -117,19 +119,44 @@ class Settings(QObject):
         self.toolbar = self.iface.addToolBar(self.pluginName)
         self.toolbar.setObjectName(self.pluginName)
 
-    def initGui(self):
-        self.settingsAction = utils.createMenuAction(self.iface, self.tr(u'Ark Settings'), self.pluginIconPath, False)
+    # Load the module when plugin is loaded
+    def load(self):
+        self.settingsAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
         self.settingsAction.triggered.connect(self.showSettingsDialog)
 
+    # Unload the module when plugin is unloaded
     def unload(self):
         self.iface.removePluginMenu(self.menuName, self.settingsAction)
         self.iface.removeToolBarIcon(self.settingsAction)
 
+    # Initialise settings for the project the first time they are needed
+    def initialise(self):
+        if not self.isConfigured():
+            self.configure()
+        if self.isConfigured():
+            self.settings.iface.projectRead.connect(self.projectLoad)
+            self.settings.iface.newProjectCreated.connect(self.projectLoad)
+        else:
+            self.showCriticalMessage('ARK Project not configured, unable to continue!')
+
+    def projectLoad(self):
+        self.projectChanged.emit()
+
+    def createMenuAction(self, actionText, iconPath, checkable, tip='', whatsThis=''):
+        icon = QIcon(iconPath)
+        action = QAction(icon, actionText, self.iface.mainWindow())
+        action.setCheckable(checkable)
+        action.setStatusTip(tip)
+        action.setWhatsThis(whatsThis)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(self.menuName, action)
+        return action
+
     def isConfigured(self):
-        return self.project.readBoolEntry(self.pluginName, 'configured', False)[0]
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'configured', False)[0]
 
     def _setIsConfigured(self, configured):
-        self.project.writeEntry(self.pluginName, 'configured', configured)
+        QgsProject.instance().writeEntry(self.pluginName, 'configured', configured)
 
     def configure(self):
         ret = self.showSettingsDialog()
@@ -158,9 +185,9 @@ class Settings(QObject):
 
     def _setProjectEntry(self, key, value, default):
         if (value == None or value == '' or value == default):
-            self.project.removeEntry(self.pluginName, key)
+            QgsProject.instance().removeEntry(self.pluginName, key)
         else:
-            self.project.writeEntry(self.pluginName, key, value)
+            QgsProject.instance().writeEntry(self.pluginName, key, value)
 
     def _layerName(self, baseName):
         if (self.prependSiteCode() and self.siteCode()):
@@ -174,40 +201,40 @@ class Settings(QObject):
         return QDir(self.sitePath())
 
     def sitePath(self):
-        return self.project.readEntry(self.pluginName, 'sitePath', '')[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'sitePath', '')[0]
 
     def setSitePath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'sitePath', absolutePath)
+        QgsProject.instance().writeEntry(self.pluginName, 'sitePath', absolutePath)
 
     def siteCode(self):
-        return self.project.readEntry(self.pluginName, 'siteCode', '')[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'siteCode', '')[0]
 
     def setSiteCode(self, siteCode):
-        self.project.writeEntry(self.pluginName, 'siteCode', siteCode)
+        QgsProject.instance().writeEntry(self.pluginName, 'siteCode', siteCode)
 
     def prependSiteCode(self):
-        return self.project.readBoolEntry(self.pluginName, 'prependSiteCode', True)[0]
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'prependSiteCode', True)[0]
 
     def setPrependSiteCode(self, prepend):
-        self.project.writeEntry(self.pluginName, 'prependSiteCode', prepend)
+        QgsProject.instance().writeEntry(self.pluginName, 'prependSiteCode', prepend)
 
     def useCustomStyles(self):
-        return self.project.readBoolEntry(self.pluginName, 'useCustomStyles', False)[0]
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'useCustomStyles', False)[0]
 
     def setUseCustomStyles(self, useCustomStyles):
-        self.project.writeEntry(self.pluginName, 'useCustomStyles', useCustomStyles)
+        QgsProject.instance().writeEntry(self.pluginName, 'useCustomStyles', useCustomStyles)
 
     def styleDir(self):
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path =  self.project.readEntry(self.pluginName, 'stylePath', '')[0]
+        path =  QgsProject.instance().readEntry(self.pluginName, 'stylePath', '')[0]
         if (not path):
             return self.pluginPath + '/styles'
         return path
 
     def setStylePath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'stylePath', absolutePath)
+        QgsProject.instance().writeEntry(self.pluginName, 'stylePath', absolutePath)
 
 
     # Grid Settings
@@ -216,22 +243,22 @@ class Settings(QObject):
         return QDir(self.gridPath())
 
     def gridPath(self):
-        path =  self.project.readEntry(self.pluginName, 'gridPath', '')[0]
+        path =  QgsProject.instance().readEntry(self.pluginName, 'gridPath', '')[0]
         if (not path):
             return self.sitePath()
         return path
 
     def setGridPath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'gridPath', absolutePath)
+        QgsProject.instance().writeEntry(self.pluginName, 'gridPath', absolutePath)
 
     def gridGroupName(self):
-        return self.project.readEntry(self.pluginName, 'gridGroupName', self.gridGroupNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'gridGroupName', self.gridGroupNameDefault)[0]
 
     def setGridGroupName(self, gridGroupName):
         self._setProjectEntry('gridGroupName', gridGroupName, self.gridGroupNameDefault)
 
     def gridPointsBaseName(self):
-        return self.project.readEntry(self.pluginName, 'gridPointsBaseName', self.gridPointsBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'gridPointsBaseName', self.gridPointsBaseNameDefault)[0]
 
     def setGridPointsBaseName(self, gridPointsBaseName):
         self._setProjectEntry('gridPointsBaseName', gridPointsBaseName, self.gridPolygonsBaseNameDefault)
@@ -240,7 +267,7 @@ class Settings(QObject):
         return self._layerName(self.gridPointsBaseName())
 
     def gridLinesBaseName(self):
-        return self.project.readEntry(self.pluginName, 'gridLinesBaseName', self.gridLinesBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'gridLinesBaseName', self.gridLinesBaseNameDefault)[0]
 
     def setGridLinesBaseName(self, gridLinesBaseName):
         self._setProjectEntry('gridLinesBaseName', gridLinesBaseName, self.gridPolygonsBaseNameDefault)
@@ -249,7 +276,7 @@ class Settings(QObject):
         return self._layerName(self.gridLinesBaseName())
 
     def gridPolygonsBaseName(self):
-        return self.project.readEntry(self.pluginName, 'gridPolygonsBaseName', self.gridPolygonsBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'gridPolygonsBaseName', self.gridPolygonsBaseNameDefault)[0]
 
     def setGridPolygonsBaseName(self, gridPolygonsBaseName):
         self._setProjectEntry('gridPolygonsBaseName', gridPolygonsBaseName, self.gridPolygonsBaseNameDefault)
@@ -264,28 +291,28 @@ class Settings(QObject):
         return QDir(self.contextsPath())
 
     def contextsPath(self):
-        path =  self.project.readEntry(self.pluginName, 'contextsPath', '')[0]
+        path =  QgsProject.instance().readEntry(self.pluginName, 'contextsPath', '')[0]
         if (not path):
             return self.sitePath()
         return path
 
     def setContextsPath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'contextsPath', absolutePath)
+        QgsProject.instance().writeEntry(self.pluginName, 'contextsPath', absolutePath)
 
     def contextsGroupName(self):
-        return self.project.readEntry(self.pluginName, 'contextsGroupName', self.contextsGroupNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsGroupName', self.contextsGroupNameDefault)[0]
 
     def setContextsGroupName(self, contextsGroupName):
         self._setProjectEntry('contextsGroupName', contextsGroupName, self.contextsGroupNameDefault)
 
     def contextsBufferGroupName(self):
-        return self.project.readEntry(self.pluginName, 'contextsBufferGroupName', self.contextsBufferGroupNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsBufferGroupName', self.contextsBufferGroupNameDefault)[0]
 
     def setContextsBufferGroupName(self, contextsBufferGroupName):
         self._setProjectEntry('contextsBufferGroupName', contextsBufferGroupName, self.contextsBufferGroupNameDefault)
 
     def contextsPointsBaseName(self):
-        return self.project.readEntry(self.pluginName, 'contextsPointsBaseName', self.contextsPointsBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsPointsBaseName', self.contextsPointsBaseNameDefault)[0]
 
     def setContextsPointsBaseName(self, contextsPointsBaseName):
         self._setProjectEntry('contextsPointsBaseName', contextsPointsBaseName, self.contextsPolygonsBaseNameDefault)
@@ -294,7 +321,7 @@ class Settings(QObject):
         return self._layerName(self.contextsPointsBaseName())
 
     def contextsLinesBaseName(self):
-        return self.project.readEntry(self.pluginName, 'contextsLinesBaseName', self.contextsLinesBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsLinesBaseName', self.contextsLinesBaseNameDefault)[0]
 
     def setContextsLinesBaseName(self, contextsLinesBaseName):
         self._setProjectEntry('contextsLinesBaseName', contextsLinesBaseName, self.contextsPolygonsBaseNameDefault)
@@ -303,7 +330,7 @@ class Settings(QObject):
         return self._layerName(self.contextsLinesBaseName())
 
     def contextsPolygonsBaseName(self):
-        return self.project.readEntry(self.pluginName, 'contextsPolygonsBaseName', self.contextsPolygonsBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsPolygonsBaseName', self.contextsPolygonsBaseNameDefault)[0]
 
     def setContextsPolygonsBaseName(self, contextsPolygonsBaseName):
         self._setProjectEntry('contextsPolygonsBaseName', contextsPolygonsBaseName, self.contextsPolygonsBaseNameDefault)
@@ -312,7 +339,7 @@ class Settings(QObject):
         return self._layerName(self.contextsPolygonsBaseName())
 
     def contextsScopeBaseName(self):
-        return self.project.readEntry(self.pluginName, 'contextsScopeBaseName', self.contextsScopeBaseNameDefault)[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsScopeBaseName', self.contextsScopeBaseNameDefault)[0]
 
     def setContextsScopeBaseName(self, contextsScopeBaseName):
         self._setProjectEntry('contextsScopeBaseName', contextsScopeBaseName, self.contextsScopeBaseNameDefault)
@@ -342,22 +369,22 @@ class Settings(QObject):
         return self.planPath()
 
     def planPath(self):
-        return self.project.readEntry(self.pluginName, 'planPath', '')[0]
+        return QgsProject.instance().readEntry(self.pluginName, 'planPath', '')[0]
 
     def setPlanPath(self, absolutePath):
-        self.project.writeEntry(self.pluginName, 'planPath', absolutePath)
+        QgsProject.instance().writeEntry(self.pluginName, 'planPath', absolutePath)
 
     def separatePlanFolders(self):
-        return self.project.readBoolEntry(self.pluginName, 'separatePlanFolders', True)[0]
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'separatePlanFolders', True)[0]
 
     def setSeparatePlanFolders(self, separatePlans):
-        self.project.writeEntry(self.pluginName, 'separatePlanFolders', separatePlans)
+        QgsProject.instance().writeEntry(self.pluginName, 'separatePlanFolders', separatePlans)
 
     def planTransparency(self):
-        return self.project.readNumEntry(self.pluginName, 'planTransparency', 50)[0]
+        return QgsProject.instance().readNumEntry(self.pluginName, 'planTransparency', 50)[0]
 
     def setPlanTransparency(self, transparency):
-        self.project.writeEntry(self.pluginName, 'planTransparency', transparency)
+        QgsProject.instance().writeEntry(self.pluginName, 'planTransparency', transparency)
 
 
     def projectCrs(self):

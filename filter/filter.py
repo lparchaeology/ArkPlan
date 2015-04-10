@@ -28,8 +28,6 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
-import utils
-
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 from ..core.data_model import *
@@ -62,11 +60,11 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = utils.createMenuAction(self.settings.iface, self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+        self.identifyAction = self.settings.createMenuAction(self.settings.iface, self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
-        self.dock.load(self.settings, Qt.LeftDockWidgetArea, self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png')
+        self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png', True))
         self.dock.toggled.connect(self.run)
 
         self.dock.contextFilterChanged.connect(self.applyContextFilter)

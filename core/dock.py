@@ -27,8 +27,6 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QAction, QIcon
 
-import utils
-
 class QgsDockWidget(QDockWidget):
 
     toggled = pyqtSignal(bool)
@@ -40,11 +38,11 @@ class QgsDockWidget(QDockWidget):
     def __init__(self, iface, parent=None):
         super(QgsDockWidget, self).__init__(parent)
 
-    def load(self, iface, location, actionText, iconPath, tip='', whatsThis=''):
+    def load(self, iface, location, menuAction):
         self._iface = iface
         self._dockLocation = location
 
-        self._menuAction = utils.createMenuAction(actionText, iconPath, True)
+        self._menuAction = menuAction
         self._menuAction.toggled.connect(self._toggle)
         self._menuAction.toggled.connect(self.toggled)
 

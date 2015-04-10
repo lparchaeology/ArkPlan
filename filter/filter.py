@@ -28,6 +28,8 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
+import utils
+
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 from ..core.data_model import *
@@ -58,8 +60,9 @@ class Filter(QObject):
 
     # Standard Dock methods
 
-    def initGui(self):
-        self.identifyAction = self.settings.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+    # Load the module when plugin is loaded
+    def load(self):
+        self.identifyAction = utils.createMenuAction(self.settings.iface, self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
@@ -80,6 +83,7 @@ class Filter(QObject):
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
 
+    # Unload the module when plugin is unloaded
     def unload(self):
         self.dock.unload()
 

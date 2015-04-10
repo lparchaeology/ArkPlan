@@ -118,22 +118,12 @@ class Settings(QObject):
         self.toolbar.setObjectName(self.pluginName)
 
     def initGui(self):
-        self.settingsAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
+        self.settingsAction = utils.createMenuAction(self.iface, self.tr(u'Ark Settings'), self.pluginIconPath, False)
         self.settingsAction.triggered.connect(self.showSettingsDialog)
 
     def unload(self):
         self.iface.removePluginMenu(self.menuName, self.settingsAction)
         self.iface.removeToolBarIcon(self.settingsAction)
-
-    def createMenuAction(self, actionText, iconPath, checkable, tip='', whatsThis=''):
-        icon = QIcon(iconPath)
-        action = QAction(icon, actionText, self.iface.mainWindow())
-        action.setCheckable(checkable)
-        action.setStatusTip(tip)
-        action.setWhatsThis(whatsThis)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(self.menuName, action)
-        return action
 
     def isConfigured(self):
         return self.project.readBoolEntry(self.pluginName, 'configured', False)[0]

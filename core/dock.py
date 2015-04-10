@@ -22,26 +22,29 @@
 """
 
 import os
+
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QAction, QIcon
+
+import utils
 
 class QgsDockWidget(QDockWidget):
 
     toggled = pyqtSignal(bool)
 
-    _settings = None  # Settings()
+    _iface = None  # QgisInterface()
     _menuAction = None  # QAction()
     _dockLocation = None  # Qt::DockWidgetArea
 
     def __init__(self, iface, parent=None):
         super(QgsDockWidget, self).__init__(parent)
 
-    def load(self, settings, location, actionText, iconPath, tip='', whatsThis=''):
-        self._settings = settings
+    def load(self, iface, location, actionText, iconPath, tip='', whatsThis=''):
+        self._iface = iface
         self._dockLocation = location
 
-        self._menuAction = self._settings.createMenuAction(actionText, iconPath, True)
+        self._menuAction = utils.createMenuAction(actionText, iconPath, True)
         self._menuAction.toggled.connect(self._toggle)
         self._menuAction.toggled.connect(self.toggled)
 
@@ -49,8 +52,8 @@ class QgsDockWidget(QDockWidget):
         self.dockLocationChanged.connect(self._updateDockLocation)
 
     def unload(self):
-        self._settings.iface.removeToolBarIcon(self._menuAction)
-        self._settings.iface.removeDockWidget(self)
+        self._iface.removeToolBarIcon(self._menuAction)
+        self._iface.removeDockWidget(self)
         self.deleteLater()
 
     def menuAction(self):
@@ -64,6 +67,6 @@ class QgsDockWidget(QDockWidget):
 
     def _toggle(self, checked):
         if checked:
-            self._settings.iface.addDockWidget(self._dockLocation, self)
+            self._iface.addDockWidget(self._dockLocation, self)
         else:
-            self._settings.iface.removeDockWidget(self)
+            self._iface.removeDockWidget(self)

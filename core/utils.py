@@ -25,9 +25,22 @@
 import os.path
 
 from PyQt4.QtCore import QSettings
+from PyQt4.QtGui import QIcon, QAction
 
 from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog
 from qgis.gui import QgsMessageBar
+
+# Plugin utilities
+
+def createMenuAction(iface, actionText, iconPath, checkable, tip='', whatsThis=''):
+    icon = QIcon(iconPath)
+    action = QAction(icon, actionText, iface.mainWindow())
+    action.setCheckable(checkable)
+    action.setStatusTip(tip)
+    action.setWhatsThis(whatsThis)
+    self.toolbar.addAction(action)
+    self.iface.addPluginToMenu(self.menuName, action)
+    return action
 
 # Project setting utilities
 

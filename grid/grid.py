@@ -30,6 +30,8 @@ from qgis.gui import QgsMapToolEmitPoint
 
 from VectorBender.vectorbendertransformers import LinearTransformer
 
+import utils
+
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
@@ -53,11 +55,12 @@ class GridModule(QObject):
 
     # Standard Dock methods
 
-    def initGui(self):
-        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
+    # Load the module when plugin is loaded
+    def load(self):
+        self.createGridAction = utils.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
         self.createGridAction.triggered.connect(self.showCreateGridDialog)
 
-        self.identifyGridAction = self.settings.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
+        self.identifyGridAction = utils.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
         self.dock = GridDock()
@@ -69,6 +72,7 @@ class GridModule(QObject):
         self.dock.convertLocalSelected.connect(self.convertLocal)
 
 
+    # Unload the module when plugin is unloaded
     def unload(self):
         self.settings.iface.removeToolBarIcon(self.createGridAction)
         self.settings.iface.removeToolBarIcon(self.identifyGridAction)

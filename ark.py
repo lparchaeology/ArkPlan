@@ -36,25 +36,32 @@ class Ark:
     """QGIS Plugin Implementation."""
 
     # Common plugin objects
+    iface = None  # QgisInterface()
     settings = None # Settings()
     layers = None  # LayerManager()
 
     # Modules
-    planDock = None  # Plan()
-    filterDock = None  # Filter()
+    gridModule = None  # Plan()
+    planModule = None  # Plan()
+    filterModule = None  # Filter()
 
     def __init__(self, iface):
+        self.iface = iface
+        self.iface.initializationCompleted.connect(self.projectLoad)
+        self.iface.projectRead.connect(self.projectLoad)
+        self.iface.newProjectCreated.connect(self.projectLoad)
+
         self.settings = Settings(iface, os.path.dirname(__file__))
         self.layers = LayerManager(self.settings)
-        self.gridDock = GridModule(self.settings, self.layers)
-        self.planDock = Plan(self.settings, self.layers)
-        self.filterDock = Filter(self.settings, self.layers)
+        self.gridModule = GridModule(self.settings, self.layers)
+        self.planModule = Plan(self.settings, self.layers)
+        self.filterModule = Filter(self.settings, self.layers)
 
     def initGui(self):
-        self.settings.initGui()
-        self.gridDock.initGui()
-        self.planDock.initGui()
-        self.filterDock.initGui()
+        self.settings.load()
+        self.gridModule.load()
+        self.planModule.load()
+        self.filterModule.load()
 
     def unload(self):
 
@@ -62,9 +69,9 @@ class Ark:
         self.layers.unload()
 
         # Unload the modules
-        self.gridDock.unload()
-        self.planDock.unload()
-        self.filterDock.unload()
+        self.gridModule.unload()
+        self.planModule.unload()
+        self.filterModule.unload()
 
         # Removes the plugin menu item and icon from QGIS GUI.
         self.settings.unload()

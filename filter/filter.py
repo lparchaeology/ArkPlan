@@ -60,7 +60,7 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.settings.createMenuAction(self.settings.iface, self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+        self.identifyAction = self.settings.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()

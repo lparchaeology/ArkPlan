@@ -134,8 +134,8 @@ class Settings(QObject):
         if not self.isConfigured():
             self.configure()
         if self.isConfigured():
-            self.settings.iface.projectRead.connect(self.projectLoad)
-            self.settings.iface.newProjectCreated.connect(self.projectLoad)
+            self.iface.projectRead.connect(self.projectLoad)
+            self.iface.newProjectCreated.connect(self.projectLoad)
         else:
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
 

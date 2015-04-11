@@ -151,30 +151,32 @@ class LayerCollection:
 
     def _loadLayer(self, layerName, layerPath, stylePath, groupIndex):
         if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
-            return None
+            return None, ''
         # If the layer is already loaded, use it and return
         layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
         if (len(layerList) > 0):
             self._iface.legendInterface().moveLayer(layerList[0], groupIndex)
-            return layerList[0]
+            return layerList[0], layerList[0].id()
         # Otherwise load the layer and add it to the legend
         layer = QgsVectorLayer(layerPath, layerName, "ogr")
         if (layer is not None and layer.isValid()):
             self._setDefaultSnapping(layer)
             if (stylePath is not None and stylePath != ''):
                 layer.loadNamedStyle(stylePath)
-            return self._addLayerToLegend(layer, groupIndex)
-        return None
+            layer = self._addLayerToLegend(layer, groupIndex)
+            if (layer is not None and layer.isValid()):
+                return layer, layer.id()
+        return None, ''
 
     # Load the collection layers if not already loaded
     # TODO Ask to create if don't already exist
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
             self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings.collectionGroupName)
-        self.scopeLayer = self._loadLayer(self._settings.scopeLayerName, self._settings.scopeLayerPath, self._settings.scopeStylePath, self._collectionGroupIndex)
-        self.polygonsLayer = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsStylePath, self._collectionGroupIndex)
-        self.linesLayer = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesStylePath, self._collectionGroupIndex)
-        self.pointsLayer = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsStylePath, self._collectionGroupIndex)
+        self.scopeLayer, self.scopeLayerId = self._loadLayer(self._settings.scopeLayerName, self._settings.scopeLayerPath, self._settings.scopeStylePath, self._collectionGroupIndex)
+        self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsStylePath, self._collectionGroupIndex)
+        self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesStylePath, self._collectionGroupIndex)
+        self.pointsLayer, self.pointsLayerId = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsStylePath, self._collectionGroupIndex)
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
@@ -187,25 +189,25 @@ class LayerCollection:
             self._bufferGroupIndex = utils.getGroupIndex(self._iface, self._settings.bufferGroupName)
 
         if (self.scopeBuffer is None or not self.scopeBuffer.isValid()):
-            self.scopeBuffer = self._createBufferLayer(self.scopeLayer)
+            self.scopeBuffer, self.scopeBufferId = self._createBufferLayer(self.scopeLayer)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer = self._createBufferLayer(self.polygonsLayer)
+            self.polygonsBuffer, self.polygonsBufferId = self._createBufferLayer(self.polygonsLayer)
 
         if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer = self._createBufferLayer(self.linesLayer)
+            self.linesBuffer, self.linesBufferId = self._createBufferLayer(self.linesLayer)
 
         if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
-            self.pointsBuffer = self._createBufferLayer(self.pointsLayer)
+            self.pointsBuffer, self.pointsBufferId = self._createBufferLayer(self.pointsLayer)
 
     def _createBufferLayer(self, layer):
         if (layer is not None and layer.isValid()):
             buffer = self._createMemoryLayer(layer)
             if (buffer is not None and buffer.isValid()):
-                self._addLayerToLegend(buffer, self._bufferGroupIndex)
+                buffer = self._addLayerToLegend(buffer, self._bufferGroupIndex)
                 buffer.startEditing()
-                return buffer
-        return None
+                return buffer, buffer.id()
+        return None, ''
 
     def _createLayer(self, type, name, provider, attributes, layerPath, stylePath):
         layer = QgsVectorLayer(layerPath, name, provider)

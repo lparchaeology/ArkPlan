@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Thu Mar 12 12:58:40 2015
+# Created: Sun Apr 12 15:58:50 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,24 +26,11 @@ except AttributeError:
 class Ui_GridDock(object):
     def setupUi(self, GridDock):
         GridDock.setObjectName(_fromUtf8("GridDock"))
-        GridDock.resize(347, 159)
+        GridDock.resize(271, 128)
         self.GridDockContents = QtGui.QWidget()
         self.GridDockContents.setObjectName(_fromUtf8("GridDockContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.GridDockContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.mapGridTool = QtGui.QToolButton(self.GridDockContents)
-        self.mapGridTool.setCheckable(True)
-        self.mapGridTool.setObjectName(_fromUtf8("mapGridTool"))
-        self.horizontalLayout.addWidget(self.mapGridTool)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.newGridTool = QtGui.QToolButton(self.GridDockContents)
-        self.newGridTool.setToolTip(_fromUtf8(""))
-        self.newGridTool.setObjectName(_fromUtf8("newGridTool"))
-        self.horizontalLayout.addWidget(self.newGridTool)
-        self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.crsLabel = QtGui.QLabel(self.GridDockContents)
@@ -79,8 +66,8 @@ class Ui_GridDock(object):
         self.localNorthingSpin.setObjectName(_fromUtf8("localNorthingSpin"))
         self.gridLayout.addWidget(self.localNorthingSpin, 1, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
-        spacerItem1 = QtGui.QSpacerItem(20, 4, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem1)
+        spacerItem = QtGui.QSpacerItem(20, 4, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
         GridDock.setWidget(self.GridDockContents)
         self.crsLabel.setBuddy(self.crsEastingSpin)
         self.localLabel.setBuddy(self.localEastingSpin)
@@ -90,8 +77,6 @@ class Ui_GridDock(object):
 
     def retranslateUi(self, GridDock):
         GridDock.setWindowTitle(_translate("GridDock", "Local Grid", None))
-        self.mapGridTool.setText(_translate("GridDock", "Map", None))
-        self.newGridTool.setText(_translate("GridDock", "New", None))
         self.crsLabel.setText(_translate("GridDock", "CRS:", None))
         self.localLabel.setText(_translate("GridDock", "Local:", None))
 

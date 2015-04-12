@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>231</height>
+    <width>475</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,33 +19,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="crsAxisEastingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
-      <widget class="QPushButton" name="axisFromMapButton">
-       <property name="text">
-        <string>From Map</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="xAxisButton">
-       <property name="text">
-        <string>X Axis</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="originLabel">
        <property name="text">
@@ -56,8 +29,15 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="crsAxisNorthingSpin">
+     <item row="1" column="3">
+      <widget class="QPushButton" name="axisFromMapButton">
+       <property name="text">
+        <string>From Map</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="crsTerminusEastingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -66,7 +46,17 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="2">
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="crsTerminusNorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
       <widget class="QSpinBox" name="spinBox_2">
        <property name="maximum">
         <number>9999</number>
@@ -82,21 +72,14 @@
      <item row="1" column="0">
       <widget class="QLabel" name="axisLabel">
        <property name="text">
-        <string>Axis Coordinates:</string>
+        <string>Terminus Coordinates:</string>
        </property>
        <property name="buddy">
-        <cstring>crsAxisEastingSpin</cstring>
+        <cstring>crsTerminusEastingSpin</cstring>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QRadioButton" name="yAxisButton">
-       <property name="text">
-        <string>Y Axis</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="QSpinBox" name="originEastingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -109,20 +92,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="originLabel_2">
        <property name="text">
         <string>Local Origin:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>On Axis:</string>
-       </property>
-       <property name="buddy">
-        <cstring>xAxisButton</cstring>
        </property>
       </widget>
      </item>
@@ -153,13 +126,13 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="terminusEastingSpin"/>
      </item>
-     <item row="4" column="2">
+     <item row="3" column="2">
       <widget class="QSpinBox" name="terminusNorthingSpin"/>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="terminusLabel">
        <property name="text">
         <string>Local Terminus:</string>
@@ -208,8 +181,8 @@
   <tabstop>crsOriginEastingSpin</tabstop>
   <tabstop>crsOriginNorthingSpin</tabstop>
   <tabstop>originFromMapButton</tabstop>
-  <tabstop>crsAxisEastingSpin</tabstop>
-  <tabstop>crsAxisNorthingSpin</tabstop>
+  <tabstop>crsTerminusEastingSpin</tabstop>
+  <tabstop>crsTerminusNorthingSpin</tabstop>
   <tabstop>axisFromMapButton</tabstop>
   <tabstop>cancelButton</tabstop>
   <tabstop>createGridButton</tabstop>

@@ -22,19 +22,47 @@
  ***************************************************************************/
 """
 
+import math
+
 from PyQt4.QtCore import Qt, QObject
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint
 
-from VectorBender.vectorbendertransformers import LinearTransformer
-
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
 from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
+
+# Based on LinearTransformer code from VectorBender plugin
+# (C) 2014 by Olivier Dalang
+class LinearTransformer():
+
+    def __init__(self, a1, b1, a2, b2):
+        #scale
+        self.ds = math.sqrt((b2.x() - b1.x()) ** 2.0 + (b2.y() - b1.y()) ** 2.0) / math.sqrt((a2.x() - a1.x()) ** 2.0 + (a2.y() - a1.y()) ** 2.0)
+        #rotation
+        self.da =  math.atan2(b2.y() - b1.y(), b2.x() - b1.x()) - math.atan2(a2.y() - a1.y(), a2.x() - a1.x() )
+        #translation
+        self.dx1 = a1.x()
+        self.dy1 = a1.y()
+        self.dx2 = b1.x()
+        self.dy2 = b1.y()
+
+    def map(self, p):
+        #move to origin (translation part 1)
+        p = QgsPoint( p.x()-self.dx1, p.y()-self.dy1 )
+        #scale
+        p = QgsPoint( self.ds*p.x(), self.ds*p.y() )
+        #rotation
+        p = QgsPoint(math.cos(self.da) * p.x() - math.sin(self.da) * p.y(), math.sin(self.da) * p.x() + math.cos(self.da) * p.y())
+        #remove to right spot (translation part 2)
+        p = QgsPoint(p.x() + self.dx2, p.y() + self.dy2)
+
+        return p
+
 
 class GridModule(QObject):
 
@@ -64,8 +92,6 @@ class GridModule(QObject):
         self.dock = GridDock()
         self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
-        self.dock.mapGridTool.setDefaultAction(self.identifyGridAction)
-        self.dock.newGridTool.setDefaultAction(self.createGridAction)
         self.dock.convertCrsSelected.connect(self.convertCrs)
         self.dock.convertLocalSelected.connect(self.convertLocal)
 
@@ -88,26 +114,36 @@ class GridModule(QObject):
 
         if (not self.settings.isConfigured()):
             self.settings.configure()
+        if (not self.settings.isConfigured()):
+            return
         self.layers.initialise()
+        if self.layers.grid.pointsLayer is None:
+            return
+
+        features = []
+        for feature in self.layers.grid.pointsLayer.getFeatures():
+            features.append(feature)
+        if len(features) < 2:
+            return
+        self.layers.grid.pointsLayer.removeSelection()
+        crs1, local1 = self.transformPoints(features[0])
+        crs2, local2 = self.transformPoints(features[1])
+        self.crsTransformer = LinearTransformer(crs1, local1, crs2, local2)
+        self.localTransformer = LinearTransformer(local1, crs1, local2, crs2)
 
         self.mapTool = QgsMapToolEmitPoint(self.settings.iface.mapCanvas())
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
-        self.crsLayer = QgsVectorLayer(self.settings.gridPath() + '/grid_bender_osgb_to_local.shp', 'grid_bender_osgb_to_local', "ogr")
-        if (self.crsLayer is None or not self.crsLayer.isValid()):
-            self.settings.showMessage('Unable to load grid bender conversion file!')
-            return
-        self.crsTransformer = LinearTransformer(self.crsLayer, False)
-
-        self.localLayer = QgsVectorLayer(self.settings.gridPath() + '/grid_bender_local_to_osgb.shp', 'grid_bender_local_to_osgb', "ogr")
-        if (self.localLayer is None or not self.localLayer.isValid()):
-            self.settings.showMessage('Unable to load grid bender conversion file!')
-            return
-        self.localTransformer = LinearTransformer(self.localLayer, False)
-
         self.dock.setReadOnly(False)
-
         self.initialised = True
+
+
+    def transformPoints(self, feature):
+        crsPoint = feature.geometry().asPoint()
+        localX = feature.attribute(self.settings.gridPointsFieldX)
+        localY = feature.attribute(self.settings.gridPointsFieldY)
+        localPoint = QgsPoint(localX, localY)
+        return crsPoint, localPoint
 
 
     # Grid methods
@@ -118,15 +154,23 @@ class GridModule(QObject):
 
 
     def enableMapTool(self, status):
-        if status:
-            self.settings.iface.mapCanvas().setMapTool(self.mapTool)
-        else:
-            self.settings.iface.mapCanvas().unsetMapTool(self.mapTool)
-        self.dock.setReadOnly(status)
+        if not self.initialised:
+            self.initialise()
+        if self.initialised:
+            if status:
+                self.settings.iface.mapCanvas().setMapTool(self.mapTool)
+            else:
+                self.settings.iface.mapCanvas().unsetMapTool(self.mapTool)
+        elif status:
+            self.identifyGridAction.setChecked(False)
 
 
     def pointSelected(self, point, button):
+        if not self.initialised:
+            return
         if (button == Qt.LeftButton):
+            if not self.dock.menuAction().isChecked():
+                self.dock.menuAction().toggle()
             self.dock.setCrsPoint(point)
             self.convertCrs()
 

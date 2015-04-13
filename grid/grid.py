@@ -34,6 +34,7 @@ from ..core.utils import *
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
+from ..core.select_layer_dialog import SelectLayerDialog
 from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
 
@@ -90,6 +91,9 @@ class GridModule(QObject):
         self.identifyGridAction = self.settings.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
+        self.addLocalAction = self.settings.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
+        self.addLocalAction.triggered.connect(self.selectLayerForLocal)
+
         self.dock = GridDock()
         self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
@@ -99,6 +103,7 @@ class GridModule(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
+        self.settings.iface.removeToolBarIcon(self.addLocalAction)
         self.settings.iface.removeToolBarIcon(self.createGridAction)
         self.settings.iface.removeToolBarIcon(self.identifyGridAction)
         self.dock.unload()
@@ -184,25 +189,51 @@ class GridModule(QObject):
     def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
         localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
         fields = QgsFields()
-        fields.append(QgsField('local_x', QVariant.Double, '', 4, 3, 'Local Grid X'))
-        fields.append(QgsField('local_y', QVariant.Double, '', 4, 3, 'Local Grid Y'))
+        fields.append(self.settings.fieldDefinitions['local_x'])
+        fields.append(self.settings.fieldDefinitions['local_y'])
+        local_x = self.settings.fieldDefinitions['local_x'].name()
+        local_y = self.settings.fieldDefinitions['local_y'].name()
+
         pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
-        projectCrs = self.settings.iface.mapCanvas().mapRenderer().destinationCrs()
-        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, projectCrs, 'ESRI Shapefile')
+        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
         if points.hasError() != QgsVectorFileWriter.NoError:
             self.settings.showCriticalMessage('Create grid points file failed!!!')
             return
         for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
             for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
-                localPoint = QgsPoint(localX,localY)
+                localPoint = QgsPoint(localX, localY)
                 crsPoint = localTransformer.map(localPoint)
-                feature = QgsFeature()
-                feature.setFields(fields)
+                feature = QgsFeature(fields)
                 feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
-                feature.setAttribute(self.settings.gridPointsFieldX, localX)
-                feature.setAttribute(self.settings.gridPointsFieldY, localY)
+                feature.setAttribute(local_x, localX)
+                feature.setAttribute(local_y, localY)
                 points.addFeature(feature)
         del points
+
+        linesPath = self.settings.gridPath() + '/' + self.settings.gridLinesLayerName() + '.shp'
+        lines = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
+        if lines.hasError() != QgsVectorFileWriter.NoError:
+            self.settings.showCriticalMessage('Create grid lines file failed!!!')
+            return
+        for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
+            localStartPoint = QgsPoint(localX, localOrigin.y())
+            localEndPoint = QgsPoint(localX, localTerminus.y())
+            crsStartPoint = localTransformer.map(localStartPoint)
+            crsEndPoint = localTransformer.map(localEndPoint)
+            feature = QgsFeature(fields)
+            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+            feature.setAttribute(local_x, localX)
+            lines.addFeature(feature)
+        for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
+            localStartPoint = QgsPoint(localOrigin.x(), localY)
+            localEndPoint = QgsPoint(localTerminus.x(), localY)
+            crsStartPoint = localTransformer.map(localStartPoint)
+            crsEndPoint = localTransformer.map(localEndPoint)
+            feature = QgsFeature(fields)
+            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+            feature.setAttribute(local_y, localY)
+            lines.addFeature(feature)
+        del lines
 
     def enableMapTool(self, status):
         if not self.initialised:
@@ -238,3 +269,30 @@ class GridModule(QObject):
             return
         crsPoint = self.localTransformer.map(self.dock.localPoint())
         self.dock.setCrsPoint(crsPoint)
+
+
+    def selectLayerForLocal(self):
+        if not self.initialised:
+            return
+        dialog = SelectLayerDialog(self.settings.iface, QgsMapLayer.VectorLayer, QGis.Point)
+        if dialog.exec_():
+            self.addLocalToLayer(dialog.layer())
+
+
+    def addLocalToLayer(self, layer):
+        if not self.initialised:
+            return
+        if layer.startEditing():
+            layer.dataProvider().addAttributes([self.settings.fieldDefinitions['local_x'], self.settings.fieldDefinitions['local_y']])
+            ok = layer.commitChanges()
+            local_x = self.settings.fieldDefinitions['local_x'].name()
+            local_y = self.settings.fieldDefinitions['local_y'].name()
+            for feature in layer.getFeatures():
+                geom = feature.geometry()
+                if geom.type() == QGis.Point:
+                    localPoint = self.crsTransformer.map(geom.asPoint())
+                    feature.setAttribute(local_x, localPoint.x())
+                    feature.setAttribute(local_y, localPoint.y())
+            ok = layer.commitChanges()
+            return ok
+        return False

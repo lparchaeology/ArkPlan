@@ -59,8 +59,8 @@ class Settings(QObject):
     gridPointsBaseNameDefault = 'grid_pt'
     gridLinesBaseNameDefault = 'grid_pl'
     gridPolygonsBaseNameDefault = 'grid_pg'
-    gridPointsFieldX = 'x'
-    gridPointsFieldY = 'y'
+    gridPointsFieldX = 'local_x'
+    gridPointsFieldY = 'local_y'
 
     # Contexts
     contextsGroupNameDefault = 'Context Data'
@@ -94,6 +94,7 @@ class Settings(QObject):
                          'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
                          'local_x'   : QgsField('local_x',    QVariant.Double, '',   4, 3, 'Local Grid X'),
                          'local_y'   : QgsField('local_y',    QVariant.Double, '',   4, 3, 'Local Grid Y'),
+                         'grid_line' : QgsField('grid_line',  QVariant.Double, '',   4, 3, 'Local Grid Line'),
                          'crs_x'     : QgsField('crs_x',      QVariant.Double, '',   6, 3, 'CRS X'),
                          'crs_y'     : QgsField('crs_y',      QVariant.Double, '',   6, 3, 'CRS y'),
                          'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
@@ -105,7 +106,7 @@ class Settings(QObject):
     contextPolygonsFields = contextLinesFields
     contextSchematicFields = contextLinesFields
     baselinePointFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
-    gridPointFields = ['id', 'category', 'local_x', 'local_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
+    gridPointFields = ['id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by']
 
     def __init__(self, iface, pluginPath):
         super(Settings, self).__init__()

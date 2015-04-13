@@ -126,20 +126,28 @@ class LayerCollection:
                 pass
             elif layerId == self.pointsLayerId:
                 self.pointsLayer = None
+                self.pointsLayerId = ''
             elif layerId == self.linesLayerId:
                 self.linesLayer = None
+                self.linesLayerId = ''
             elif layerId == self.polygonsLayerId:
                 self.polygonsLayer = None
+                self.polygonsLayerId = ''
             elif layerId == self.scopeLayerId:
                 self.scopeLayer = None
+                self.scopeLayerId = ''
             elif layerId == self.pointsBufferId:
                 self.pointsBuffer = None
+                self.pointsBufferId = ''
             elif layerId == self.linesBufferId:
                 self.linesBuffer = None
+                self.linesBufferId = ''
             elif layerId == self.polygonsBufferId:
                 self.polygonsBuffer = None
+                self.polygonsBufferId = ''
             elif layerId == self.scopeBufferId:
                 self.scopeBuffer = None
+                self.scopeBufferId = ''
 
     def _addLayerToLegend(self, layer, group):
         if (layer is not None and layer.isValid()):

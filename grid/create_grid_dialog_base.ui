@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>205</height>
+    <height>239</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="originLabel">
+      <widget class="QLabel" name="crsOriginLabel">
        <property name="text">
         <string>Origin Coordinates:</string>
        </property>
@@ -30,7 +30,7 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QPushButton" name="axisFromMapButton">
+      <widget class="QPushButton" name="crsTerminusFromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
@@ -57,7 +57,7 @@
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QSpinBox" name="spinBox_2">
+      <widget class="QSpinBox" name="localOriginNorthingSpin">
        <property name="maximum">
         <number>9999</number>
        </property>
@@ -70,7 +70,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="axisLabel">
+      <widget class="QLabel" name="crsTerminusLabel">
        <property name="text">
         <string>Terminus Coordinates:</string>
        </property>
@@ -80,7 +80,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="originEastingSpin">
+      <widget class="QSpinBox" name="localOriginEastingSpin">
        <property name="maximum">
         <number>9999</number>
        </property>
@@ -93,14 +93,17 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="originLabel_2">
+      <widget class="QLabel" name="localOriginLabel">
        <property name="text">
         <string>Local Origin:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localOriginEastingSpin</cstring>
        </property>
       </widget>
      </item>
      <item row="0" column="3">
-      <widget class="QPushButton" name="originFromMapButton">
+      <widget class="QPushButton" name="crsOriginFromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
@@ -127,15 +130,61 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="terminusEastingSpin"/>
+      <widget class="QSpinBox" name="localTerminusEastingSpin">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>200</number>
+       </property>
+      </widget>
      </item>
      <item row="3" column="2">
-      <widget class="QSpinBox" name="terminusNorthingSpin"/>
+      <widget class="QSpinBox" name="localTerminusNorthingSpin">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>300</number>
+       </property>
+      </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="terminusLabel">
+      <widget class="QLabel" name="localTerminusLabel">
        <property name="text">
         <string>Local Terminus:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localTerminusEastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="localIntervalSpin">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="localIntervalLabel">
+       <property name="text">
+        <string>Grid Interval:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localIntervalSpin</cstring>
        </property>
       </widget>
      </item>
@@ -180,10 +229,15 @@
  <tabstops>
   <tabstop>crsOriginEastingSpin</tabstop>
   <tabstop>crsOriginNorthingSpin</tabstop>
-  <tabstop>originFromMapButton</tabstop>
+  <tabstop>crsOriginFromMapButton</tabstop>
   <tabstop>crsTerminusEastingSpin</tabstop>
   <tabstop>crsTerminusNorthingSpin</tabstop>
-  <tabstop>axisFromMapButton</tabstop>
+  <tabstop>crsTerminusFromMapButton</tabstop>
+  <tabstop>localOriginEastingSpin</tabstop>
+  <tabstop>localOriginNorthingSpin</tabstop>
+  <tabstop>localTerminusEastingSpin</tabstop>
+  <tabstop>localTerminusNorthingSpin</tabstop>
+  <tabstop>localIntervalSpin</tabstop>
   <tabstop>cancelButton</tabstop>
   <tabstop>createGridButton</tabstop>
  </tabstops>

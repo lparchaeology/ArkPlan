@@ -54,8 +54,10 @@ class LayerManager:
 
 
     def unload(self):
-        self.contexts.unload()
-        self.grid.unload()
+        if self.contexts is not None:
+            self.contexts.unload()
+        if self.grid is not None:
+            self.grid.unload()
 
 
     def _groupIndexChanged(self, oldIndex, newIndex):

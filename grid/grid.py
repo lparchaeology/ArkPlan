@@ -150,8 +150,26 @@ class GridModule(QObject):
 
     def showCreateGridDialog(self):
         dialog = CreateGridDialog(self, self.settings.iface.mainWindow())
-        return dialog.exec_()
+        if dialog.exec_():
+            crsOrigin = QgsPoint(dialog.crsOriginEastingSpin.value(), dialog.crsOriginNorthingSpin.value())
+            crsTerminus = QgsPoint(dialog.crsTerminusEastingSpin.value(), dialog.crsTerminusNorthingSpin.value())
+            localOrigin = QgsPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
+            localTerminus = QgsPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
+            self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value()
 
+    def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
+        localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
+        fields = [QgsField(self.settings.gridPointsFieldX, QVariant.Int), QgsField((self.settings.gridPointsFieldY, QVariant.Int)]
+        writer = QgsVectorFileWriter("my_shapes.shp", "CP1250", fields, QGis.WKBPoint, None, "ESRI Shapefile")
+        if writer.hasError() != QgsVectorFileWriter.NoError:
+            self.settings.showCriticalMessage('Create grid_pt failed!!!')
+            return
+        fet = QgsFeature()
+        fet.setGeometry(QgsGeometry.fromPoint(QgsPoint(10,10)))
+        fet.setAttribute(self.settings.gridPointsFieldX, x)
+        fet.setAttribute(self.settings.gridPointsFieldY, y)
+        writer.addFeature(fet)
+        del writer
 
     def enableMapTool(self, status):
         if not self.initialised:

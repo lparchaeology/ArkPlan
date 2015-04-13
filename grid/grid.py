@@ -273,26 +273,28 @@ class GridModule(QObject):
 
     def selectLayerForLocal(self):
         if not self.initialised:
-            return
-        dialog = SelectLayerDialog(self.settings.iface, QgsMapLayer.VectorLayer, QGis.Point)
-        if dialog.exec_():
-            self.addLocalToLayer(dialog.layer())
+            self.initialise()
+        if self.initialised:
+            dialog = SelectLayerDialog(self.settings.iface, QgsMapLayer.VectorLayer, QGis.Point)
+            if dialog.exec_():
+                self.addLocalToLayer(dialog.layer())
 
 
     def addLocalToLayer(self, layer):
         if not self.initialised:
             return
+        local_x = self.settings.fieldDefinitions['local_x'].name()
+        local_y = self.settings.fieldDefinitions['local_y'].name()
+        layer.dataProvider().addAttributes([self.settings.fieldDefinitions['local_x'], self.settings.fieldDefinitions['local_y']])
         if layer.startEditing():
-            layer.dataProvider().addAttributes([self.settings.fieldDefinitions['local_x'], self.settings.fieldDefinitions['local_y']])
-            ok = layer.commitChanges()
-            local_x = self.settings.fieldDefinitions['local_x'].name()
-            local_y = self.settings.fieldDefinitions['local_y'].name()
+            local_x_idx = layer.fieldNameIndex(local_x)
+            local_y_idx = layer.fieldNameIndex(local_y)
             for feature in layer.getFeatures():
                 geom = feature.geometry()
                 if geom.type() == QGis.Point:
                     localPoint = self.crsTransformer.map(geom.asPoint())
-                    feature.setAttribute(local_x, localPoint.x())
-                    feature.setAttribute(local_y, localPoint.y())
+                    layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
+                    layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
             ok = layer.commitChanges()
             return ok
         return False

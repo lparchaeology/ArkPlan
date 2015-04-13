@@ -158,7 +158,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs(), self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
+        georefDialog = GeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs().authid(), self.settings.gridPointsLayerName(), self.settings.gridPointsFieldX, self.settings.gridPointsFieldY)
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])

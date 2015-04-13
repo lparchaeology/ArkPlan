@@ -32,10 +32,6 @@ from qgis.gui import QgsMessageBar
 
 # Project setting utilities
 
-def projectCrs():
-    # TODO Find why this doesn't work!
-    return QgsProject.instance().readEntry('SpatialRefSys', '/ProjectCRSProj4String', u'')[0]
-
 def defaultSnappingMode():
     defaultSnappingModeString = QSettings().value('/qgis/digitizing/default_snap_mode', 'to vertex')
     defaultSnappingMode = QgsSnapper.SnapToVertex

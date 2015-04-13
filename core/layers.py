@@ -108,7 +108,7 @@ class LayerManager:
     def _createContextsCollection(self):
         cs = LayerCollectionSettings()
         cs.collectionDir = self._settings.contextsDir()
-        cs.collectionCrs = self._settings.projectCrs()
+        cs.collectionCrs = self._settings.projectCrs().authid()
         cs.collectionGroupName = self._settings.contextsGroupName()
         cs.bufferGroupName = self._settings.contextsBufferGroupName()
         cs.bufferSuffix = self._settings.bufferSuffix
@@ -135,7 +135,7 @@ class LayerManager:
     def _createGridCollection(self):
         gs = LayerCollectionSettings()
         gs.collectionDir = self._settings.gridDir()
-        gs.collectionCrs = self._settings.projectCrs()
+        gs.collectionCrs = self._settings.projectCrs().authid()
         gs.collectionGroupName = self._settings.gridGroupName()
         gs.bufferGroupName = self._settings.gridGroupName()
         gs.bufferSuffix = self._settings.bufferSuffix

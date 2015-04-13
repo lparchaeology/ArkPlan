@@ -388,9 +388,7 @@ class Settings(QObject):
 
 
     def projectCrs(self):
-        return u'EPSG:27700'
-        # TODO Find why this doesn't work!
-        # return unicode(QgsProject.instance().readEntry('SpatialRefSys', '/ProjectCRSProj4String', u'')[0])
+        self.iface.mapCanvas().mapRenderer().destinationCrs()
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

@@ -24,12 +24,13 @@
 
 import math
 
-from PyQt4.QtCore import Qt, QObject
+from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint
 
+from ..core.utils import *
 from ..core.settings import Settings
 from ..core.layers import LayerManager
 
@@ -153,23 +154,55 @@ class GridModule(QObject):
         if dialog.exec_():
             crsOrigin = QgsPoint(dialog.crsOriginEastingSpin.value(), dialog.crsOriginNorthingSpin.value())
             crsTerminus = QgsPoint(dialog.crsTerminusEastingSpin.value(), dialog.crsTerminusNorthingSpin.value())
-            localOrigin = QgsPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
-            localTerminus = QgsPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
-            self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value()
+            localOrigin = QPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
+            localTerminus = QPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
+            self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value())
+
+
+
+    #def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
+        #localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
+        #fields = [QgsField(self.settings.gridPointsFieldX, QVariant.Int), QgsField(self.settings.gridPointsFieldY, QVariant.Int)]
+        #pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
+        #pointsUri = 'point?crs=' + self.settings.projectCrs() + '&index=yes'
+        #points = QgsVectorLayer(pointsUri, self.settings.gridPointsLayerName(), 'memory')
+        #if (points is not None and points.isValid()):
+            #points.dataProvider().addAttributes(fields)
+            #for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
+                #for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
+                    #localPoint = QgsPoint(localX,localY)
+                    #crsPoint = localTransformer.map(localPoint)
+                    #feature = QgsFeature()
+                    #feature.setFields()
+                    #feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
+                    #feature.setAttribute(self.settings.gridPointsFieldX, localX)
+                    #feature.setAttribute(self.settings.gridPointsFieldY, localY)
+                    #points.dataProvider().addFeature(feature)
+        #else:
+            #self.settings.showCriticalMessage('Create grid points file failed!!!')
 
     def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
         localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
-        fields = [QgsField(self.settings.gridPointsFieldX, QVariant.Int), QgsField((self.settings.gridPointsFieldY, QVariant.Int)]
-        writer = QgsVectorFileWriter("my_shapes.shp", "CP1250", fields, QGis.WKBPoint, None, "ESRI Shapefile")
-        if writer.hasError() != QgsVectorFileWriter.NoError:
-            self.settings.showCriticalMessage('Create grid_pt failed!!!')
+        fields = QgsFields()
+        fields.append(QgsField('local_x', QVariant.Double, '', 4, 3, 'Local Grid X'))
+        fields.append(QgsField('local_y', QVariant.Double, '', 4, 3, 'Local Grid Y'))
+        pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
+        projectCrs = self.settings.iface.mapCanvas().mapRenderer().destinationCrs()
+        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, projectCrs, 'ESRI Shapefile')
+        if points.hasError() != QgsVectorFileWriter.NoError:
+            self.settings.showCriticalMessage('Create grid points file failed!!!')
             return
-        fet = QgsFeature()
-        fet.setGeometry(QgsGeometry.fromPoint(QgsPoint(10,10)))
-        fet.setAttribute(self.settings.gridPointsFieldX, x)
-        fet.setAttribute(self.settings.gridPointsFieldY, y)
-        writer.addFeature(fet)
-        del writer
+        for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
+            for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
+                localPoint = QgsPoint(localX,localY)
+                crsPoint = localTransformer.map(localPoint)
+                feature = QgsFeature()
+                feature.setFields(fields)
+                feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
+                feature.setAttribute(self.settings.gridPointsFieldX, localX)
+                feature.setAttribute(self.settings.gridPointsFieldY, localY)
+                points.addFeature(feature)
+        del points
 
     def enableMapTool(self, status):
         if not self.initialised:

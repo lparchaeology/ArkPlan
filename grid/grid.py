@@ -91,7 +91,7 @@ class GridModule(QObject):
         self.identifyGridAction = self.settings.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
-        self.addLocalAction = self.settings.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
+        self.addLocalAction = self.settings.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/images/themes/default/mActionNewAttribute.png', False)
         self.addLocalAction.triggered.connect(self.selectLayerForLocal)
 
         self.dock = GridDock()

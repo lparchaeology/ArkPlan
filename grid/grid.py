@@ -161,30 +161,9 @@ class GridModule(QObject):
             crsTerminus = QgsPoint(dialog.crsTerminusEastingSpin.value(), dialog.crsTerminusNorthingSpin.value())
             localOrigin = QPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
             localTerminus = QPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
-            self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value())
+            if self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value()):
+                self.settings.showMessage('Grid files successfully created')
 
-
-
-    #def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
-        #localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
-        #fields = [QgsField(self.settings.gridPointsFieldX, QVariant.Int), QgsField(self.settings.gridPointsFieldY, QVariant.Int)]
-        #pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
-        #pointsUri = 'point?crs=' + self.settings.projectCrs() + '&index=yes'
-        #points = QgsVectorLayer(pointsUri, self.settings.gridPointsLayerName(), 'memory')
-        #if (points is not None and points.isValid()):
-            #points.dataProvider().addAttributes(fields)
-            #for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
-                #for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
-                    #localPoint = QgsPoint(localX,localY)
-                    #crsPoint = localTransformer.map(localPoint)
-                    #feature = QgsFeature()
-                    #feature.setFields()
-                    #feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
-                    #feature.setAttribute(self.settings.gridPointsFieldX, localX)
-                    #feature.setAttribute(self.settings.gridPointsFieldY, localY)
-                    #points.dataProvider().addFeature(feature)
-        #else:
-            #self.settings.showCriticalMessage('Create grid points file failed!!!')
 
     def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
         localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
@@ -195,7 +174,7 @@ class GridModule(QObject):
         local_y = self.settings.fieldDefinitions['local_y'].name()
 
         pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
-        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
+        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, self.settings.projectCrs(), 'ESRI Shapefile')
         if points.hasError() != QgsVectorFileWriter.NoError:
             self.settings.showCriticalMessage('Create grid points file failed!!!')
             return
@@ -210,30 +189,52 @@ class GridModule(QObject):
                 points.addFeature(feature)
         del points
 
-        linesPath = self.settings.gridPath() + '/' + self.settings.gridLinesLayerName() + '.shp'
-        lines = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
-        if lines.hasError() != QgsVectorFileWriter.NoError:
-            self.settings.showCriticalMessage('Create grid lines file failed!!!')
-            return
-        for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
-            localStartPoint = QgsPoint(localX, localOrigin.y())
-            localEndPoint = QgsPoint(localX, localTerminus.y())
-            crsStartPoint = localTransformer.map(localStartPoint)
-            crsEndPoint = localTransformer.map(localEndPoint)
-            feature = QgsFeature(fields)
-            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
-            feature.setAttribute(local_x, localX)
-            lines.addFeature(feature)
-        for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
-            localStartPoint = QgsPoint(localOrigin.x(), localY)
-            localEndPoint = QgsPoint(localTerminus.x(), localY)
-            crsStartPoint = localTransformer.map(localStartPoint)
-            crsEndPoint = localTransformer.map(localEndPoint)
-            feature = QgsFeature(fields)
-            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
-            feature.setAttribute(local_y, localY)
-            lines.addFeature(feature)
-        del lines
+        if self.settings.gridLinesLayerName():
+            linesPath = self.settings.gridPath() + '/' + self.settings.gridLinesLayerName() + '.shp'
+            lines = QgsVectorFileWriter(linesPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
+            if lines.hasError() != QgsVectorFileWriter.NoError:
+                self.settings.showCriticalMessage('Create grid lines file failed!!!')
+                return
+            for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
+                localStartPoint = QgsPoint(localX, localOrigin.y())
+                localEndPoint = QgsPoint(localX, localTerminus.y())
+                crsStartPoint = localTransformer.map(localStartPoint)
+                crsEndPoint = localTransformer.map(localEndPoint)
+                feature = QgsFeature(fields)
+                feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+                feature.setAttribute(local_x, localX)
+                lines.addFeature(feature)
+            for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
+                localStartPoint = QgsPoint(localOrigin.x(), localY)
+                localEndPoint = QgsPoint(localTerminus.x(), localY)
+                crsStartPoint = localTransformer.map(localStartPoint)
+                crsEndPoint = localTransformer.map(localEndPoint)
+                feature = QgsFeature(fields)
+                feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+                feature.setAttribute(local_y, localY)
+                lines.addFeature(feature)
+            del lines
+
+        if self.settings.gridPolygonsLayerName():
+            polygonsPath = self.settings.gridPath() + '/' + self.settings.gridPolygonsLayerName() + '.shp'
+            polygons = QgsVectorFileWriter(polygonsPath, 'System', fields, QGis.WKBPolygon, self.settings.projectCrs(), 'ESRI Shapefile')
+            if polygons.hasError() != QgsVectorFileWriter.NoError:
+                self.settings.showCriticalMessage('Create grid polygons file failed!!!')
+                return
+            for localX in range(localOrigin.x(), localTerminus.x(), localInterval):
+                for localY in range(localOrigin.y(), localTerminus.y(), localInterval):
+                    localPoint = QgsPoint(localX, localY)
+                    points = []
+                    points.append(localTransformer.map(QgsPoint(localPoint.x(), localPoint.y())))
+                    points.append(localTransformer.map(QgsPoint(localPoint.x(), localPoint.y() + localInterval)))
+                    points.append(localTransformer.map(QgsPoint(localPoint.x() + localInterval, localPoint.y() + localInterval)))
+                    points.append(localTransformer.map(QgsPoint(localPoint.x() + localInterval, localPoint.y())))
+                    feature = QgsFeature(fields)
+                    feature.setGeometry(QgsGeometry.fromPolygon([points]))
+                    feature.setAttribute(local_x, localX)
+                    feature.setAttribute(local_y, localY)
+                    polygons.addFeature(feature)
+            del polygons
 
     def enableMapTool(self, status):
         if not self.initialised:

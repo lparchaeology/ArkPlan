@@ -109,10 +109,10 @@ class Plan(QObject):
 
     def initialiseBuffers(self):
         self.layers.contexts.createBuffers()
-        self.dock.setSchematicsBuffer(self.layers.contexts.scopeBuffer)
+        self.dock.setSchematicsBuffer(self.layers.contexts.schemaBuffer)
         self.dock.setPolygonsBuffer(self.layers.contexts.polygonsBuffer)
         self.dock.setLinesBuffer(self.layers.contexts.linesBuffer)
-        self.dock.setSchematicsLayer(self.layers.contexts.scopeLayer)
+        self.dock.setSchematicsLayer(self.layers.contexts.schemaLayer)
         self.dock.setPolygonsLayer(self.layers.contexts.polygonsLayer)
         self.dock.setLinesLayer(self.layers.contexts.linesLayer)
 
@@ -196,7 +196,7 @@ class Plan(QObject):
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.scopeBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(typeAttribute, self.layers.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):

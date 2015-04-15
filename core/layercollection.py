@@ -30,32 +30,28 @@ import utils
 
 class LayerCollectionSettings:
 
-    collectionDir = QDir()
-    collectionCrs = ''
-    collectionGroupName = ''
     bufferGroupName = ''
     bufferSuffix = ''
 
+    pointsLayerProvider = ''
     pointsLayerName = ''
     pointsLayerPath = ''
     pointsStylePath = ''
-    pointsLayerFields = QgsFields()
 
+    linesLayerProvider = ''
     linesLayerName = ''
     linesLayerPath = ''
     linesStylePath = ''
-    linesLayerFields = QgsFields()
 
+    polygonsLayerProvider = ''
     polygonsLayerName = ''
     polygonsLayerPath = ''
     polygonsStylePath = ''
-    polygonsLayerFields = QgsFields()
 
-    # Scope, Boundary, Reach, Dimension, Schematic???
-    scopeLayerName = ''
-    scopeLayerPath = ''
-    scopeStylePath = ''
-    scopeLayerFields = QgsFields()
+    schemaLayerProvider = ''
+    schemaLayerName = ''
+    schemaLayerPath = ''
+    schemaStylePath = ''
 
 
 class LayerCollection:
@@ -66,8 +62,8 @@ class LayerCollection:
     linesLayerId = ''
     polygonsLayer = None
     polygonsLayerId = ''
-    scopeLayer = None
-    scopeLayerId = ''
+    schemaLayer = None
+    schemaLayerId = ''
 
     pointsBuffer = None
     pointsBufferId = ''
@@ -75,8 +71,8 @@ class LayerCollection:
     linesBufferId = ''
     polygonsBuffer = None
     polygonsBufferId = ''
-    scopeBuffer = None
-    scopeBufferId = ''
+    schemaBuffer = None
+    schemaBufferId = ''
 
     # Internal variables
 
@@ -108,8 +104,8 @@ class LayerCollection:
             QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
         if self.polygonsBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
-        if self.scopeBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.scopeBuffer.id())
+        if self.schemaBuffer is not None:
+            QgsMapLayerRegistry.instance().removeMapLayer(self.schemaBuffer.id())
         if self._bufferGroupIndex >= 0:
             self._iface.legendInterface().removeGroup(self._bufferGroupIndex)
 
@@ -133,9 +129,9 @@ class LayerCollection:
             elif layerId == self.polygonsLayerId:
                 self.polygonsLayer = None
                 self.polygonsLayerId = ''
-            elif layerId == self.scopeLayerId:
-                self.scopeLayer = None
-                self.scopeLayerId = ''
+            elif layerId == self.schemaLayerId:
+                self.schemaLayer = None
+                self.schemaLayerId = ''
             elif layerId == self.pointsBufferId:
                 self.pointsBuffer = None
                 self.pointsBufferId = ''
@@ -145,9 +141,9 @@ class LayerCollection:
             elif layerId == self.polygonsBufferId:
                 self.polygonsBuffer = None
                 self.polygonsBufferId = ''
-            elif layerId == self.scopeBufferId:
-                self.scopeBuffer = None
-                self.scopeBufferId = ''
+            elif layerId == self.schemaBufferId:
+                self.schemaBuffer = None
+                self.schemaBufferId = ''
 
     def _addLayerToLegend(self, layer, group):
         if (layer is not None and layer.isValid()):
@@ -157,7 +153,7 @@ class LayerCollection:
             return ret
         return layer
 
-    def _loadLayer(self, layerName, layerPath, stylePath, groupIndex):
+    def _loadLayer(self, layerName, layerPath, layerProvider, stylePath, groupIndex):
         if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
             return None, ''
         # If the layer is already loaded, use it and return
@@ -166,7 +162,7 @@ class LayerCollection:
             self._iface.legendInterface().moveLayer(layerList[0], groupIndex)
             return layerList[0], layerList[0].id()
         # Otherwise load the layer and add it to the legend
-        layer = QgsVectorLayer(layerPath, layerName, "ogr")
+        layer = QgsVectorLayer(layerPath, layerName, layerProvider)
         if (layer is not None and layer.isValid()):
             self._setDefaultSnapping(layer)
             if (stylePath is not None and stylePath != ''):
@@ -181,10 +177,10 @@ class LayerCollection:
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
             self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings.collectionGroupName)
-        self.scopeLayer, self.scopeLayerId = self._loadLayer(self._settings.scopeLayerName, self._settings.scopeLayerPath, self._settings.scopeStylePath, self._collectionGroupIndex)
-        self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsStylePath, self._collectionGroupIndex)
-        self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesStylePath, self._collectionGroupIndex)
-        self.pointsLayer, self.pointsLayerId = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsStylePath, self._collectionGroupIndex)
+        self.schemaLayer, self.schemaLayerId = self._loadLayer(self._settings.schemaLayerName, self._settings.schemaLayerPath, self._settings.schemaLayerProvider, self._settings.schemaStylePath, self._collectionGroupIndex)
+        self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsLayerProvider, self._settings.polygonsStylePath, self._collectionGroupIndex)
+        self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesLayerProvider, self._settings.linesStylePath, self._collectionGroupIndex)
+        self.pointsLayer, self.pointsLayerId = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsLayerProvider, self._settings.pointsStylePath, self._collectionGroupIndex)
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
@@ -196,8 +192,8 @@ class LayerCollection:
         if (self._bufferGroupIndex < 0):
             self._bufferGroupIndex = utils.getGroupIndex(self._iface, self._settings.bufferGroupName)
 
-        if (self.scopeBuffer is None or not self.scopeBuffer.isValid()):
-            self.scopeBuffer, self.scopeBufferId = self._createBufferLayer(self.scopeLayer)
+        if (self.schemaBuffer is None or not self.schemaBuffer.isValid()):
+            self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
             self.polygonsBuffer, self.polygonsBufferId = self._createBufferLayer(self.polygonsLayer)
@@ -240,7 +236,7 @@ class LayerCollection:
         return self.isCollectionEditable()
 
     def isCollectionEditable(self):
-        return self._isLayerEditable(self.pointsLayer) and self._isLayerEditable(self.linesLayer) and self._isLayerEditable(self.polygonsLayer) and self._isLayerEditable(self.scopeLayer)
+        return self._isLayerEditable(self.pointsLayer) and self._isLayerEditable(self.linesLayer) and self._isLayerEditable(self.polygonsLayer) and self._isLayerEditable(self.schemaLayer)
 
     def _isLayerEditable(self, layer):
         if (layer.type() != QgsMapLayer.VectorLayer):
@@ -305,14 +301,14 @@ class LayerCollection:
             self._clearBuffer('lines', self.linesBuffer, undoMessage)
         if self._copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage):
             self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        if self._copyBuffer('scope', self.scopeBuffer, self.scopeLayer, undoMessage):
-            self._clearBuffer('scope', self.scopeBuffer, undoMessage)
+        if self._copyBuffer('schema', self.schemaBuffer, self.schemaLayer, undoMessage):
+            self._clearBuffer('schema', self.schemaBuffer, undoMessage)
 
     def _clearBuffers(self, undoMessage):
         self._clearBuffer('levels', self.pointsBuffer, undoMessage)
         self._clearBuffer('lines', self.linesBuffer, undoMessage)
         self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        self._clearBuffer('scope', self.scopeBuffer, undoMessage)
+        self._clearBuffer('schema', self.schemaBuffer, undoMessage)
 
 
     def showPoints(self, status):
@@ -324,8 +320,8 @@ class LayerCollection:
     def showPolygons(self, status):
         self._iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
 
-    def showScope(self, status):
-        self._iface.legendInterface().setLayerVisible(self.scopeLayer, status)
+    def showSchema(self, status):
+        self._iface.legendInterface().setLayerVisible(self.schemaLayer, status)
 
 
     def applyFilter(self, field, valueList):
@@ -345,7 +341,7 @@ class LayerCollection:
         self._applyLayerFilter(self.pointsLayer, self.filter)
         self._applyLayerFilter(self.linesLayer, self.filter)
         self._applyLayerFilter(self.polygonsLayer, self.filter)
-        self._applyLayerFilter(self.scopeLayer, self.filter)
+        self._applyLayerFilter(self.schemaLayer, self.filter)
 
 
     def _applyLayerFilter(self, layer, filter):
@@ -372,23 +368,15 @@ class LayerCollection:
 
 
     def zoomToCollection(self):
-        self.pointsLayer.updateExtents()
-        self.linesLayer.updateExtents()
-        self.polygonsLayer.updateExtents()
-        self.scopeLayer.updateExtents()
-        self.pointsBuffer.updateExtents()
-        self.linesBuffer.updateExtents()
-        self.polygonsBuffer.updateExtents()
-        self.scopeBuffer.updateExtents()
         extent = QgsRectangle()
         extent = self._extendExtent(extent, self.pointsLayer)
         extent = self._extendExtent(extent, self.linesLayer)
         extent = self._extendExtent(extent, self.polygonsLayer)
-        extent = self._extendExtent(extent, self.scopeLayer)
+        extent = self._extendExtent(extent, self.schemaLayer)
         extent = self._extendExtent(extent, self.pointsBuffer)
         extent = self._extendExtent(extent, self.linesBuffer)
         extent = self._extendExtent(extent, self.polygonsBuffer)
-        extent = self._extendExtent(extent, self.scopeBuffer)
+        extent = self._extendExtent(extent, self.schemaBuffer)
         if (extent is not None and not extent.isNull()):
             extent.scale(1.05)
             self._iface.mapCanvas().setExtent(extent)
@@ -396,9 +384,10 @@ class LayerCollection:
 
 
     def _extendExtent(self, extent, layer):
-        layerExtent = QgsRectangle()
-        if (layer is not None and layer.isValid() and layer.featureCount() > 0 and self._iface.legendInterface().isLayerVisible(layer)):
-            layerExtent = layer.extent()
+        if (layer is None or not layer.isValid() or layer.featureCount() == 0 or not self._iface.legendInterface().isLayerVisible(layer)):
+            return extent
+        layer.updateExtents()
+        layerExtent = layer.extent()
         if (extent is None and layerExtent is None):
             return QgsRectangle()
         elif (extent is None or extent.isNull()):

@@ -101,7 +101,7 @@ class Filter(QObject):
         self.dock.showPointsChanged.connect(self.layers.contexts.showPoints)
         self.dock.showLinesChanged.connect(self.layers.contexts.showLines)
         self.dock.showPolygonsChanged.connect(self.layers.contexts.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.layers.contexts.showScope)
+        self.dock.showSchematicsChanged.connect(self.layers.contexts.showSchema)
 
         self.initialised = True
 

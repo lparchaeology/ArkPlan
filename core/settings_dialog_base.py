@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'core/settings_dialog_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.3
+# Created: Wed Apr 15 08:22:52 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -166,9 +167,9 @@ class Ui_SettingsDialogBase(object):
         self.gridLayout_3.addWidget(self.contextsFolderLabel, 0, 0, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout_3.addItem(spacerItem2, 10, 1, 1, 1)
-        self.contextsScopeNameLabel = QtGui.QLabel(self.contextsTab)
-        self.contextsScopeNameLabel.setObjectName(_fromUtf8("contextsScopeNameLabel"))
-        self.gridLayout_3.addWidget(self.contextsScopeNameLabel, 9, 0, 1, 1)
+        self.contextsSchemaNameLabel = QtGui.QLabel(self.contextsTab)
+        self.contextsSchemaNameLabel.setObjectName(_fromUtf8("contextsSchemaNameLabel"))
+        self.gridLayout_3.addWidget(self.contextsSchemaNameLabel, 9, 0, 1, 1)
         self.contextsPointsNameEdit = QtGui.QLineEdit(self.contextsTab)
         self.contextsPointsNameEdit.setObjectName(_fromUtf8("contextsPointsNameEdit"))
         self.gridLayout_3.addWidget(self.contextsPointsNameEdit, 4, 1, 1, 1)
@@ -184,9 +185,9 @@ class Ui_SettingsDialogBase(object):
         self.contextsLinesNameLabel = QtGui.QLabel(self.contextsTab)
         self.contextsLinesNameLabel.setObjectName(_fromUtf8("contextsLinesNameLabel"))
         self.gridLayout_3.addWidget(self.contextsLinesNameLabel, 6, 0, 1, 1)
-        self.contextsScopeNameEdit = QtGui.QLineEdit(self.contextsTab)
-        self.contextsScopeNameEdit.setObjectName(_fromUtf8("contextsScopeNameEdit"))
-        self.gridLayout_3.addWidget(self.contextsScopeNameEdit, 9, 1, 1, 1)
+        self.contextsSchemaNameEdit = QtGui.QLineEdit(self.contextsTab)
+        self.contextsSchemaNameEdit.setObjectName(_fromUtf8("contextsSchemaNameEdit"))
+        self.gridLayout_3.addWidget(self.contextsSchemaNameEdit, 9, 1, 1, 1)
         self.contextsLinesNameEdit = QtGui.QLineEdit(self.contextsTab)
         self.contextsLinesNameEdit.setObjectName(_fromUtf8("contextsLinesNameEdit"))
         self.gridLayout_3.addWidget(self.contextsLinesNameEdit, 6, 1, 1, 1)
@@ -257,7 +258,7 @@ class Ui_SettingsDialogBase(object):
         self.siteCodeLabel.setBuddy(self.siteCodeEdit)
         self.prependSiteCodeLabel.setBuddy(self.prependSiteCodeCheck)
         self.contextsFolderLabel.setBuddy(self.contextsFolderEdit)
-        self.contextsScopeNameLabel.setBuddy(self.contextsScopeNameEdit)
+        self.contextsSchemaNameLabel.setBuddy(self.contextsSchemaNameEdit)
         self.contextsGroupNameLabel.setBuddy(self.contextsGroupNameEdit)
         self.contextsLinesNameLabel.setBuddy(self.contextsLinesNameEdit)
         self.contextsPointNameLabel.setBuddy(self.contextsPointsNameEdit)
@@ -296,7 +297,7 @@ class Ui_SettingsDialogBase(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.gridTab), _translate("SettingsDialogBase", "Grid", None))
         self.contextsFolderButton.setText(_translate("SettingsDialogBase", "...", None))
         self.contextsFolderLabel.setText(_translate("SettingsDialogBase", "Contexts Folder:", None))
-        self.contextsScopeNameLabel.setText(_translate("SettingsDialogBase", "Scope Base Name:", None))
+        self.contextsSchemaNameLabel.setText(_translate("SettingsDialogBase", "Schema Base Name:", None))
         self.contextsGroupNameLabel.setText(_translate("SettingsDialogBase", "Group Name:", None))
         self.contextsLinesNameLabel.setText(_translate("SettingsDialogBase", "Lines Base Name:", None))
         self.contextsPointNameLabel.setText(_translate("SettingsDialogBase", "Points Base Name:", None))

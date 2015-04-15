@@ -70,7 +70,7 @@ class Settings(QObject):
     contextsPointsBaseNameDefault = 'context_pt'
     contextsLinesBaseNameDefault = 'context_pl'
     contextsPolygonsBaseNameDefault = 'context_pg'
-    contextsScopeBaseNameDefault = 'context_mpg'
+    contextsSchemaBaseNameDefault = 'context_mpg'
 
 
     contextAttributeName = 'context'
@@ -339,14 +339,14 @@ class Settings(QObject):
     def contextsPolygonsLayerName(self):
         return self._layerName(self.contextsPolygonsBaseName())
 
-    def contextsScopeBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsScopeBaseName', self.contextsScopeBaseNameDefault)[0]
+    def contextsSchemaBaseName(self):
+        return QgsProject.instance().readEntry(self.pluginName, 'contextsSchemaBaseName', self.contextsSchemaBaseNameDefault)[0]
 
-    def setContextsScopeBaseName(self, contextsScopeBaseName):
-        self._setProjectEntry('contextsScopeBaseName', contextsScopeBaseName, self.contextsScopeBaseNameDefault)
+    def setContextsSchemaBaseName(self, contextsSchemaBaseName):
+        self._setProjectEntry('contextsSchemaBaseName', contextsSchemaBaseName, self.contextsSchemaBaseNameDefault)
 
-    def contextsScopeLayerName(self):
-        return self._layerName(self.contextsScopeBaseName())
+    def contextsSchemaLayerName(self):
+        return self._layerName(self.contextsSchemaBaseName())
 
 
     # Plan settings
@@ -456,7 +456,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.contextsPointsNameEdit.setText(settings.contextsPointsBaseName())
         self.contextsLinesNameEdit.setText(settings.contextsLinesBaseName())
         self.contextsPolygonsNameEdit.setText(settings.contextsPolygonsBaseName())
-        self.contextsScopeNameEdit.setText(settings.contextsScopeBaseName())
+        self.contextsSchemaNameEdit.setText(settings.contextsSchemaBaseName())
 
         # Plan tab settings
         self.planFolderEdit.setText(settings.planPath())
@@ -489,7 +489,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._settings.setContextsPointsBaseName(self.contextsPointsNameEdit.text())
         self._settings.setContextsLinesBaseName(self.contextsLinesNameEdit.text())
         self._settings.setContextsPolygonsBaseName(self.contextsPolygonsNameEdit.text())
-        self._settings.setContextsScopeBaseName(self.contextsScopeNameEdit.text())
+        self._settings.setContextsSchemaBaseName(self.contextsSchemaNameEdit.text())
 
         # Plan tab settings
         self._settings.setPlanPath(self.planFolderEdit.text())

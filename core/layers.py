@@ -47,9 +47,9 @@ class LayerManager:
 
 
     def initialise(self):
-        self.contexts = self._createContextsCollection()
+        self.contexts = self._createCollection('contexts')
         self.contexts.initialise()
-        self.grid = self._createGridCollection()
+        self.grid = self._createCollection('grid')
         self.grid.initialise()
 
 
@@ -105,47 +105,27 @@ class LayerManager:
         return ''
 
 
-    def _createContextsCollection(self):
-        cs = LayerCollectionSettings()
-        cs.collectionGroupName = self._settings.contextsGroupName()
-        cs.bufferGroupName = self._settings.contextsBufferGroupName()
-        cs.bufferSuffix = self._settings.bufferSuffix
-        cs.pointsLayerProvider = 'ogr'
-        cs.pointsLayerName = self._settings.contextsPointsLayerName()
-        cs.pointsLayerPath = self._shapeFile(self._settings.contextsPath(), cs.pointsLayerName)
-        cs.pointsStylePath = self._styleFile(self._settings.contextsPath(), cs.pointsLayerName, self._settings.contextsPointsBaseName(), self._settings.contextsPointsBaseNameDefault)
-        cs.linesLayerProvider = 'ogr'
-        cs.linesLayerName = self._settings.contextsLinesLayerName()
-        cs.linesLayerPath = self._shapeFile(self._settings.contextsPath(), cs.linesLayerName)
-        cs.linesStylePath = self._styleFile(self._settings.contextsPath(), cs.linesLayerName, self._settings.contextsLinesBaseName(), self._settings.contextsLinesBaseNameDefault)
-        cs.polygonsLayerProvider = 'ogr'
-        cs.polygonsLayerName = self._settings.contextsPolygonsLayerName()
-        cs.polygonsLayerPath = self._shapeFile(self._settings.contextsPath(), cs.polygonsLayerName)
-        cs.polygonsStylePath = self._styleFile(self._settings.contextsPath(), cs.polygonsLayerName, self._settings.contextsPolygonsBaseName(), self._settings.contextsPolygonsBaseNameDefault)
-        cs.schemaLayerProvider = 'ogr'
-        cs.schemaLayerName = self._settings.contextsSchemaLayerName()
-        cs.schemaLayerPath = self._shapeFile(self._settings.contextsPath(), cs.schemaLayerName)
-        cs.schemaStylePath = self._styleFile(self._settings.contextsPath(), cs.schemaLayerName, self._settings.contextsSchemaBaseName(), self._settings.contextsSchemaBaseNameDefault)
-        cc = LayerCollection(self._settings.iface, cs)
-        return cc
+    def _createCollection(self, module):
+        path = self._settings.modulePath(module)
+        lcs = LayerCollectionSettings()
+        lcs.collectionGroupName = self._settings.layersGroupName(module)
+        lcs.buffersGroupName = self._settings.buffersGroupName(module)
+        lcs.bufferSuffix = self._settings.bufferSuffix
+        lcs.pointsLayerProvider = 'ogr'
+        lcs.pointsLayerName = self._settings.pointsLayerName(module)
+        lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
+        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, self._settings.pointsBaseName(module), self._settings.pointsBaseNameDefault(module))
+        lcs.linesLayerProvider = 'ogr'
+        lcs.linesLayerName = self._settings.linesLayerName(module)
+        lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
+        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, self._settings.linesBaseName(module), self._settings.linesBaseNameDefault(module))
+        lcs.polygonsLayerProvider = 'ogr'
+        lcs.polygonsLayerName = self._settings.polygonsLayerName(module)
+        lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
+        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, self._settings.polygonsBaseName(module), self._settings.polygonsBaseNameDefault(module))
+        lcs.schemaLayerProvider = 'ogr'
+        lcs.schemaLayerName = self._settings.schemaLayerName(module)
+        lcs.schemaLayerPath = self._shapeFile(self._settings.modulePath(module), lcs.schemaLayerName)
+        lcs.schemaStylePath = self._styleFile(self._settings.modulePath(module), lcs.schemaLayerName, self._settings.schemaBaseName(module), self._settings.schemaBaseNameDefault(module))
+        return LayerCollection(self._settings.iface, lcs)
 
-
-    def _createGridCollection(self):
-        gs = LayerCollectionSettings()
-        gs.collectionGroupName = self._settings.gridGroupName()
-        gs.bufferGroupName = self._settings.gridGroupName()
-        gs.bufferSuffix = self._settings.bufferSuffix
-        gs.pointsLayerProvider = 'ogr'
-        gs.pointsLayerName = self._settings.gridPointsLayerName()
-        gs.pointsLayerPath = self._shapeFile(self._settings.gridPath(), gs.pointsLayerName)
-        gs.pointsStylePath = self._styleFile(self._settings.gridPath(), gs.pointsLayerName, self._settings.gridPointsBaseName(), self._settings.gridPointsBaseNameDefault)
-        gs.linesLayerProvider = 'ogr'
-        gs.linesLayerName = self._settings.gridLinesLayerName()
-        gs.linesLayerPath = self._shapeFile(self._settings.gridPath(), gs.linesLayerName)
-        gs.linesStylePath = self._styleFile(self._settings.gridPath(), gs.linesLayerName, self._settings.gridLinesBaseName(), self._settings.gridLinesBaseNameDefault)
-        gs.polygonsLayerProvider = 'ogr'
-        gs.polygonsLayerName = self._settings.gridPolygonsLayerName()
-        gs.polygonsLayerPath = self._shapeFile(self._settings.gridPath(), gs.polygonsLayerName)
-        gs.polygonsStylePath = self._styleFile(self._settings.gridPath(), gs.polygonsLayerName, self._settings.gridPolygonsBaseName(), self._settings.gridPolygonsBaseNameDefault)
-        gc = LayerCollection(self._settings.iface, gs)
-        return gc

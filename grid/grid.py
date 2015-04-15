@@ -146,8 +146,8 @@ class GridModule(QObject):
 
     def transformPoints(self, feature):
         crsPoint = feature.geometry().asPoint()
-        localX = feature.attribute(self.settings.gridPointsFieldX)
-        localY = feature.attribute(self.settings.gridPointsFieldY)
+        localX = feature.attribute(self.settings.fieldDefinitions['local_x'].name())
+        localY = feature.attribute(self.settings.fieldDefinitions['local_y'].name())
         localPoint = QgsPoint(localX, localY)
         return crsPoint, localPoint
 
@@ -173,7 +173,7 @@ class GridModule(QObject):
         local_x = self.settings.fieldDefinitions['local_x'].name()
         local_y = self.settings.fieldDefinitions['local_y'].name()
 
-        pointsPath = self.settings.gridPath() + '/' + self.settings.gridPointsLayerName() + '.shp'
+        pointsPath = self.settings.modulePath('grid') + '/' + self.settings.pointsLayerName('grid') + '.shp'
         points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, self.settings.projectCrs(), 'ESRI Shapefile')
         if points.hasError() != QgsVectorFileWriter.NoError:
             self.settings.showCriticalMessage('Create grid points file failed!!!')
@@ -190,7 +190,7 @@ class GridModule(QObject):
         del points
 
         if self.settings.gridLinesLayerName():
-            linesPath = self.settings.gridPath() + '/' + self.settings.gridLinesLayerName() + '.shp'
+            linesPath = self.settings.modulePath('grid') + '/' + self.settings.linesLayerName('grid') + '.shp'
             lines = QgsVectorFileWriter(linesPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
             if lines.hasError() != QgsVectorFileWriter.NoError:
                 self.settings.showCriticalMessage('Create grid lines file failed!!!')
@@ -216,7 +216,7 @@ class GridModule(QObject):
             del lines
 
         if self.settings.gridPolygonsLayerName():
-            polygonsPath = self.settings.gridPath() + '/' + self.settings.gridPolygonsLayerName() + '.shp'
+            polygonsPath = self.settings.modulePath('grid') + '/' + self.settings.polygonsLayerName('grid') + '.shp'
             polygons = QgsVectorFileWriter(polygonsPath, 'System', fields, QGis.WKBPolygon, self.settings.projectCrs(), 'ESRI Shapefile')
             if polygons.hasError() != QgsVectorFileWriter.NoError:
                 self.settings.showCriticalMessage('Create grid polygons file failed!!!')

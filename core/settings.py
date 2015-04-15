@@ -31,6 +31,7 @@ from qgis.gui import QgsMessageBar
 
 from settings_dialog_base import *
 
+
 class Settings(QObject):
 
     # Signal when the project changes so modules can reload
@@ -53,25 +54,8 @@ class Settings(QObject):
 
     bufferSuffix = '_mem'
 
-    # Grid
-    gridGroupNameDefault = 'Grid'
-    gridGroupIndex = -1
-    gridPointsBaseNameDefault = 'grid_pt'
-    gridLinesBaseNameDefault = 'grid_pl'
-    gridPolygonsBaseNameDefault = 'grid_pg'
-    gridPointsFieldX = 'local_x'
-    gridPointsFieldY = 'local_y'
-
-    # Contexts
-    contextsGroupNameDefault = 'Context Data'
-    contextsGroupIndex = -1
-    contextsBufferGroupNameDefault = 'Edit Context Data'
-    contextsBufferGroupIndex = -1
-    contextsPointsBaseNameDefault = 'context_pt'
-    contextsLinesBaseNameDefault = 'context_pl'
-    contextsPolygonsBaseNameDefault = 'context_pg'
-    contextsSchemaBaseNameDefault = 'context_mpg'
-
+    moduleDefaults = { 'contexts' : { 'path' : '', 'layersGroupName' : 'Context Data', 'buffersGroupName' : 'Edit Context Data', 'pointsBaseName' : 'context_pt', 'linesBaseName' : 'context_pl', 'polygonsBaseName' : 'context_pg', 'schemaBaseName' : 'context_mpg' },
+                       'grid' : { 'path' : '', 'layersGroupName' : 'Grid', 'buffersGroupName' : '', 'pointsBaseName' : 'grid_pt', 'linesBaseName' : 'grid_pl', 'polygonsBaseName' : 'grid_pg', 'schemaBaseName' : '' } }
 
     contextAttributeName = 'context'
     contextAttributeSize = 5
@@ -94,7 +78,6 @@ class Settings(QObject):
                          'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
                          'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
                          'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
-                         'grid_line' : QgsField('grid_line',  QVariant.Double, '',  10, 3, 'Local Grid Line'),
                          'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
                          'crs_y'     : QgsField('crs_y',      QVariant.Double, '',  10, 3, 'CRS y'),
                          'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
@@ -244,115 +227,85 @@ class Settings(QObject):
         QgsProject.instance().writeEntry(self.pluginName, 'stylePath', absolutePath)
 
 
-    # Grid Settings
+    # Module settings
 
-    def gridDir(self):
-        return QDir(self.gridPath())
+    def _getModuleEntry(self, module, key):
+        return QgsProject.instance().readEntry(self.pluginName, module + '/' + key, self.moduleDefaults[module][key])[0]
 
-    def gridPath(self):
-        path =  QgsProject.instance().readEntry(self.pluginName, 'gridPath', '')[0]
+    def _setModuleEntry(self, module, key, value):
+        self._setProjectEntry(module + '/' + key, value, self.moduleDefaults[module][key])
+
+    def moduleDir(self, module):
+        return QDir(self.modulePath(module))
+
+    def modulePath(self, module):
+        path =  self._getModuleEntry(module, 'path')
         if (not path):
             return self.projectPath()
         return path
 
-    def setGridPath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'gridPath', absolutePath)
+    def setModulePath(self, module, absolutePath):
+        self._setModuleEntry(module, 'path', absolutePath)
 
-    def gridGroupName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'gridGroupName', self.gridGroupNameDefault)[0]
+    def layersGroupName(self, module):
+        return self._getModuleEntry(module, 'layersGroupName')
 
-    def setGridGroupName(self, gridGroupName):
-        self._setProjectEntry('gridGroupName', gridGroupName, self.gridGroupNameDefault)
+    def setLayersGroupName(self, module, layersGroupName):
+        self._setModuleEntry(module, 'layersGroupName', layersGroupName)
 
-    def gridPointsBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'gridPointsBaseName', self.gridPointsBaseNameDefault)[0]
+    def buffersGroupName(self, module):
+        return self._getModuleEntry(module, 'buffersGroupName')
 
-    def setGridPointsBaseName(self, gridPointsBaseName):
-        self._setProjectEntry('gridPointsBaseName', gridPointsBaseName, self.gridPolygonsBaseNameDefault)
+    def setBuffersGroupName(self, module, buffersGroupName):
+        self._setModuleEntry(module, 'buffersGroupName', buffersGroupName)
 
-    def gridPointsLayerName(self):
-        return self._layerName(self.gridPointsBaseName())
+    def pointsBaseNameDefault(self, module):
+        return self.moduleDefaults[module]['pointsBaseName']
 
-    def gridLinesBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'gridLinesBaseName', self.gridLinesBaseNameDefault)[0]
+    def pointsBaseName(self, module):
+        return self._getModuleEntry(module, 'pointsBaseName')
 
-    def setGridLinesBaseName(self, gridLinesBaseName):
-        self._setProjectEntry('gridLinesBaseName', gridLinesBaseName, self.gridPolygonsBaseNameDefault)
+    def setPointsBaseName(self, module, pointsBaseName):
+        self._setModuleEntry(module, 'pointsBaseName', pointsBaseName)
 
-    def gridLinesLayerName(self):
-        return self._layerName(self.gridLinesBaseName())
+    def pointsLayerName(self, module):
+        return self._layerName(self.pointsBaseName(module))
 
-    def gridPolygonsBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'gridPolygonsBaseName', self.gridPolygonsBaseNameDefault)[0]
+    def linesBaseNameDefault(self, module):
+        return self.moduleDefaults[module]['linesBaseName']
 
-    def setGridPolygonsBaseName(self, gridPolygonsBaseName):
-        self._setProjectEntry('gridPolygonsBaseName', gridPolygonsBaseName, self.gridPolygonsBaseNameDefault)
+    def linesBaseName(self, module):
+        return self._getModuleEntry(module, 'linesBaseName')
 
-    def gridPolygonsLayerName(self):
-        return self._layerName(self.gridPolygonsBaseName())
+    def setLinesBaseName(self, module, linesBaseName):
+        self._setModuleEntry(module, 'linesBaseName', linesBaseName)
 
+    def linesLayerName(self, module):
+        return self._layerName(self.linesBaseName(module))
 
-    # Contexts settings
+    def polygonsBaseNameDefault(self, module):
+        return self.moduleDefaults[module]['polygonsBaseName']
 
-    def contextsDir(self):
-        return QDir(self.contextsPath())
+    def polygonsBaseName(self, module):
+        return self._getModuleEntry(module, 'polygonsBaseName')
 
-    def contextsPath(self):
-        path =  QgsProject.instance().readEntry(self.pluginName, 'contextsPath', '')[0]
-        if (not path):
-            return self.projectPath()
-        return path
+    def setPolygonsBaseName(self, module, polygonsBaseName):
+        self._setModuleEntry(module, 'polygonsBaseName', polygonsBaseName)
 
-    def setContextsPath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'contextsPath', absolutePath)
+    def polygonsLayerName(self, module):
+        return self._layerName(self.polygonsBaseName(module))
 
-    def contextsGroupName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsGroupName', self.contextsGroupNameDefault)[0]
+    def schemaBaseNameDefault(self, module):
+        return self.moduleDefaults[module]['schemaBaseName']
 
-    def setContextsGroupName(self, contextsGroupName):
-        self._setProjectEntry('contextsGroupName', contextsGroupName, self.contextsGroupNameDefault)
+    def schemaBaseName(self, module):
+        return self._getModuleEntry(module, 'schemaBaseName')
 
-    def contextsBufferGroupName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsBufferGroupName', self.contextsBufferGroupNameDefault)[0]
+    def setSchemaBaseName(self, module, schemaBaseName):
+        self._setModuleEntry(module, 'schemaBaseName', schemaBaseName)
 
-    def setContextsBufferGroupName(self, contextsBufferGroupName):
-        self._setProjectEntry('contextsBufferGroupName', contextsBufferGroupName, self.contextsBufferGroupNameDefault)
-
-    def contextsPointsBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsPointsBaseName', self.contextsPointsBaseNameDefault)[0]
-
-    def setContextsPointsBaseName(self, contextsPointsBaseName):
-        self._setProjectEntry('contextsPointsBaseName', contextsPointsBaseName, self.contextsPolygonsBaseNameDefault)
-
-    def contextsPointsLayerName(self):
-        return self._layerName(self.contextsPointsBaseName())
-
-    def contextsLinesBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsLinesBaseName', self.contextsLinesBaseNameDefault)[0]
-
-    def setContextsLinesBaseName(self, contextsLinesBaseName):
-        self._setProjectEntry('contextsLinesBaseName', contextsLinesBaseName, self.contextsPolygonsBaseNameDefault)
-
-    def contextsLinesLayerName(self):
-        return self._layerName(self.contextsLinesBaseName())
-
-    def contextsPolygonsBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsPolygonsBaseName', self.contextsPolygonsBaseNameDefault)[0]
-
-    def setContextsPolygonsBaseName(self, contextsPolygonsBaseName):
-        self._setProjectEntry('contextsPolygonsBaseName', contextsPolygonsBaseName, self.contextsPolygonsBaseNameDefault)
-
-    def contextsPolygonsLayerName(self):
-        return self._layerName(self.contextsPolygonsBaseName())
-
-    def contextsSchemaBaseName(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'contextsSchemaBaseName', self.contextsSchemaBaseNameDefault)[0]
-
-    def setContextsSchemaBaseName(self, contextsSchemaBaseName):
-        self._setProjectEntry('contextsSchemaBaseName', contextsSchemaBaseName, self.contextsSchemaBaseNameDefault)
-
-    def contextsSchemaLayerName(self):
-        return self._layerName(self.contextsSchemaBaseName())
+    def schemaLayerName(self, module):
+        return self._layerName(self.schemaBaseName(module))
 
 
     # Plan settings
@@ -446,33 +399,32 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
             self.styleFolderEdit.setText(settings.stylePath())
             self.styleFolderEdit.setEnabled(True)
             self.styleFolderButton.setEnabled(True)
+        self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
+        self.styleFolderButton.clicked.connect(self._selectStyleFolder)
 
         # Grid tab settings
-        self.gridFolderEdit.setText(settings.gridPath())
+        self.gridFolderEdit.setText(settings.modulePath('grid'))
         self.gridFolderButton.clicked.connect(self._selectGridFolder)
-        self.gridGroupNameEdit.setText(settings.gridGroupName())
-        self.gridPointsNameEdit.setText(settings.gridPointsBaseName())
-        self.gridLinesNameEdit.setText(settings.gridLinesBaseName())
-        self.gridPolygonsNameEdit.setText(settings.gridPolygonsBaseName())
+        self.gridGroupNameEdit.setText(settings.layersGroupName('grid'))
+        self.gridPointsNameEdit.setText(settings.pointsBaseName('grid'))
+        self.gridLinesNameEdit.setText(settings.linesBaseName('grid'))
+        self.gridPolygonsNameEdit.setText(settings.polygonsBaseName('grid'))
 
         # Context tab settings
-        self.contextsFolderEdit.setText(settings.contextsPath())
+        self.contextsFolderEdit.setText(settings.modulePath('contexts'))
         self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
-        self.contextsGroupNameEdit.setText(settings.contextsGroupName())
-        self.contextsBufferGroupNameEdit.setText(settings.contextsBufferGroupName())
-        self.contextsPointsNameEdit.setText(settings.contextsPointsBaseName())
-        self.contextsLinesNameEdit.setText(settings.contextsLinesBaseName())
-        self.contextsPolygonsNameEdit.setText(settings.contextsPolygonsBaseName())
-        self.contextsSchemaNameEdit.setText(settings.contextsSchemaBaseName())
+        self.contextsGroupNameEdit.setText(settings.layersGroupName('contexts'))
+        self.contextsBufferGroupNameEdit.setText(settings.buffersGroupName('contexts'))
+        self.contextsPointsNameEdit.setText(settings.pointsBaseName('contexts'))
+        self.contextsLinesNameEdit.setText(settings.linesBaseName('contexts'))
+        self.contextsPolygonsNameEdit.setText(settings.polygonsBaseName('contexts'))
+        self.contextsSchemaNameEdit.setText(settings.schemaBaseName('contexts'))
 
         # Plan tab settings
         self.planFolderEdit.setText(settings.planPath())
+        self.planFolderButton.clicked.connect(self._selectPlanFolder)
         self.separatePlansCheck.setChecked(settings.separatePlanFolders())
         self.planTransparencySpin.setValue(settings.planTransparency())
-
-        self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
-        self.styleFolderButton.clicked.connect(self._selectStyleFolder)
-        self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
         # Project tab settings
@@ -484,20 +436,20 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._settings.setStylePath(self.styleFolderEdit.text())
 
         # Grid tab settings
-        self._settings.setGridPath(self.gridFolderEdit.text())
-        self._settings.setGridGroupName(self.gridGroupNameEdit.text())
-        self._settings.setGridPointsBaseName(self.gridPointsNameEdit.text())
-        self._settings.setGridLinesBaseName(self.gridLinesNameEdit.text())
-        self._settings.setGridPolygonsBaseName(self.gridPolygonsNameEdit.text())
+        self._settings.setModulePath('grid', self.gridFolderEdit.text())
+        self._settings.setLayersGroupName('grid', self.gridGroupNameEdit.text())
+        self._settings.setPointsBaseName('grid', self.gridPointsNameEdit.text())
+        self._settings.setLinesBaseName('grid', self.gridLinesNameEdit.text())
+        self._settings.setPolygonsBaseName('grid', self.gridPolygonsNameEdit.text())
 
         # Contexts tab settings
-        self._settings.setContextsPath(self.contextsFolderEdit.text())
-        self._settings.setContextsGroupName(self.contextsGroupNameEdit.text())
-        self._settings.setContextsBufferGroupName(self.contextsBufferGroupNameEdit.text())
-        self._settings.setContextsPointsBaseName(self.contextsPointsNameEdit.text())
-        self._settings.setContextsLinesBaseName(self.contextsLinesNameEdit.text())
-        self._settings.setContextsPolygonsBaseName(self.contextsPolygonsNameEdit.text())
-        self._settings.setContextsSchemaBaseName(self.contextsSchemaNameEdit.text())
+        self._settings.setModulePath('contexts', self.contextsFolderEdit.text())
+        self._settings.setLayersGroupName('contexts', self.contextsGroupNameEdit.text())
+        self._settings.setBuffersGroupName('contexts', self.contextsBufferGroupNameEdit.text())
+        self._settings.setPointsBaseName('contexts', self.contextsPointsNameEdit.text())
+        self._settings.setLinesBaseName('contexts', self.contextsLinesNameEdit.text())
+        self._settings.setPolygonsBaseName('contexts', self.contextsPolygonsNameEdit.text())
+        self._settings.setSchemaBaseName('contexts', self.contextsSchemaNameEdit.text())
 
         # Plan tab settings
         self._settings.setPlanPath(self.planFolderEdit.text())

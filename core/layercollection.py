@@ -30,7 +30,7 @@ import utils
 
 class LayerCollectionSettings:
 
-    bufferGroupName = ''
+    buffersGroupName = ''
     bufferSuffix = ''
 
     pointsLayerProvider = ''
@@ -79,7 +79,7 @@ class LayerCollection:
     _iface = None # QgsInterface()
     _settings = LayerCollectionSettings()
     _collectionGroupIndex =-1
-    _bufferGroupIndex = -1
+    _buffersGroupIndex = -1
 
     filter = ''
 
@@ -106,14 +106,14 @@ class LayerCollection:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
         if self.schemaBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.schemaBuffer.id())
-        if self._bufferGroupIndex >= 0:
-            self._iface.legendInterface().removeGroup(self._bufferGroupIndex)
+        if self._buffersGroupIndex >= 0:
+            self._iface.legendInterface().removeGroup(self._buffersGroupIndex)
 
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self._collectionGroupIndex):
             self._collectionGroupIndex = newIndex
-        elif (oldIndex == self._bufferGroupIndex):
-            self._bufferGroupIndex = newIndex
+        elif (oldIndex == self._buffersGroupIndex):
+            self._buffersGroupIndex = newIndex
 
     # If a layer is removed from the registry, (i.e. closed), we can't use it anymore
     def _layersRemoved(self, layerList):
@@ -189,8 +189,8 @@ class LayerCollection:
     # Setup the in-memory buffer layers
     def createBuffers(self):
 
-        if (self._bufferGroupIndex < 0):
-            self._bufferGroupIndex = utils.getGroupIndex(self._iface, self._settings.bufferGroupName)
+        if (self._buffersGroupIndex < 0):
+            self._buffersGroupIndex = utils.getGroupIndex(self._iface, self._settings.buffersGroupName)
 
         if (self.schemaBuffer is None or not self.schemaBuffer.isValid()):
             self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer)
@@ -208,7 +208,7 @@ class LayerCollection:
         if (layer is not None and layer.isValid()):
             buffer = self._createMemoryLayer(layer)
             if (buffer is not None and buffer.isValid()):
-                buffer = self._addLayerToLegend(buffer, self._bufferGroupIndex)
+                buffer = self._addLayerToLegend(buffer, self._buffersGroupIndex)
                 buffer.startEditing()
                 return buffer, buffer.id()
         return None, ''
@@ -304,7 +304,7 @@ class LayerCollection:
         if self._copyBuffer('schema', self.schemaBuffer, self.schemaLayer, undoMessage):
             self._clearBuffer('schema', self.schemaBuffer, undoMessage)
 
-    def _clearBuffers(self, undoMessage):
+    def clearBuffers(self, undoMessage):
         self._clearBuffer('levels', self.pointsBuffer, undoMessage)
         self._clearBuffer('lines', self.linesBuffer, undoMessage)
         self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)

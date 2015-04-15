@@ -162,7 +162,7 @@ class Settings(QObject):
     def configure(self):
         ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.siteDir().exists() and self.planDir().exists()):
+        if (self.projectDir().exists() and self.planDir().exists()):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -196,16 +196,22 @@ class Settings(QObject):
         return baseName
 
 
-    # Site settings
+    # Project settings
 
-    def siteDir(self):
-        return QDir(self.sitePath())
+    def projectDir(self):
+        return QDir(self.projectPath())
 
-    def sitePath(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'sitePath', '')[0]
+    def projectPath(self):
+        return QgsProject.instance().readEntry(self.pluginName, 'projectPath', '')[0]
 
-    def setSitePath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'sitePath', absolutePath)
+    def setProjectPath(self, absolutePath):
+        QgsProject.instance().writeEntry(self.pluginName, 'projectPath', absolutePath)
+
+    def multiSiteProject(self):
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'multiSiteProject', False)[0]
+
+    def setMultiSiteProject(self, multiSite):
+        QgsProject.instance().writeEntry(self.pluginName, 'multiSiteProject', multiSite)
 
     def siteCode(self):
         return QgsProject.instance().readEntry(self.pluginName, 'siteCode', '')[0]
@@ -246,7 +252,7 @@ class Settings(QObject):
     def gridPath(self):
         path =  QgsProject.instance().readEntry(self.pluginName, 'gridPath', '')[0]
         if (not path):
-            return self.sitePath()
+            return self.projectPath()
         return path
 
     def setGridPath(self, absolutePath):
@@ -294,7 +300,7 @@ class Settings(QObject):
     def contextsPath(self):
         path =  QgsProject.instance().readEntry(self.pluginName, 'contextsPath', '')[0]
         if (not path):
-            return self.sitePath()
+            return self.projectPath()
         return path
 
     def setContextsPath(self, absolutePath):
@@ -429,9 +435,10 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
         self.setupUi(self)
 
-        # Site tab settings
-        self.siteFolderEdit.setText(settings.sitePath())
-        self.siteFolderButton.clicked.connect(self._selectSiteFolder)
+        # Project tab settings
+        self.projectFolderEdit.setText(settings.projectPath())
+        self.projectFolderButton.clicked.connect(self._selectProjectFolder)
+        self.multiSiteCheck.setChecked(settings.multiSiteProject())
         self.siteCodeEdit.setText(settings.siteCode())
         self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
         if settings.useCustomStyles():
@@ -468,8 +475,9 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
 
     def accept(self):
-        # Site tab settings
-        self._settings.setSitePath(self.siteFolderEdit.text())
+        # Project tab settings
+        self._settings.setProjectPath(self.projectFolderEdit.text())
+        self._settings.setMultiSiteProject(self.multiSiteCheck.isChecked())
         self._settings.setSiteCode(self.siteCodeEdit.text())
         self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
         self._settings.setUseCustomStyles(self.styleFolderEdit.text() != '')
@@ -498,10 +506,10 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
         return super(SettingsDialog, self).accept()
 
-    def _selectSiteFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Site Folder'), self.siteFolderEdit.text()))
+    def _selectProjectFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))
         if folderName:
-            self.siteFolderEdit.setText(folderName)
+            self.projectFolderEdit.setText(folderName)
 
     def _selectGridFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))

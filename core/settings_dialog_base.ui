@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
-    <height>354</height>
+    <width>526</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,15 +19,18 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="siteTab">
+     <widget class="QWidget" name="projectTab">
       <attribute name="title">
-       <string>Site</string>
+       <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0">
-        <widget class="QLabel" name="siteFolderLabel">
+        <widget class="QLabel" name="projectFolderLabel">
          <property name="text">
-          <string>Site Folder:</string>
+          <string>Project Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>projectFolderEdit</cstring>
          </property>
         </widget>
        </item>
@@ -52,12 +55,15 @@
          <property name="text">
           <string>Custom Styles Folder:</string>
          </property>
+         <property name="buddy">
+          <cstring>styleFolderEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="siteCodeLabel">
          <property name="text">
-          <string>Site Code:</string>
+          <string>Default Site Code:</string>
          </property>
          <property name="buddy">
           <cstring>siteCodeEdit</cstring>
@@ -68,6 +74,9 @@
         <widget class="QLabel" name="defaultStylesLabel">
          <property name="text">
           <string>Use Default Styles:</string>
+         </property>
+         <property name="buddy">
+          <cstring>defaultStylesCheck</cstring>
          </property>
         </widget>
        </item>
@@ -92,7 +101,7 @@
         </widget>
        </item>
        <item row="5" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <layout class="QHBoxLayout" name="styleFolderLayout">
          <item>
           <widget class="QLineEdit" name="styleFolderEdit">
            <property name="enabled">
@@ -129,12 +138,12 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <layout class="QHBoxLayout" name="siteFolderLayout">
+        <layout class="QHBoxLayout" name="projectFolderLayout">
          <item>
-          <widget class="QLineEdit" name="siteFolderEdit"/>
+          <widget class="QLineEdit" name="projectFolderEdit"/>
          </item>
          <item>
-          <widget class="QPushButton" name="siteFolderButton">
+          <widget class="QPushButton" name="projectFolderButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -147,6 +156,23 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="multiSiteCheck">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="multiSiteLabel">
+         <property name="text">
+          <string>Multi-site Project</string>
+         </property>
+         <property name="buddy">
+          <cstring>multiSiteCheck</cstring>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -180,12 +206,18 @@
          <property name="text">
           <string>Folder:</string>
          </property>
+         <property name="buddy">
+          <cstring>gridFolderEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="gridPolygonsNameLabel">
          <property name="text">
           <string>Polygons Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridPolygonsNameEdit</cstring>
          </property>
         </widget>
        </item>
@@ -196,6 +228,9 @@
         <widget class="QLabel" name="gridLinesNameLabel">
          <property name="text">
           <string>Lines Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridLinesNameEdit</cstring>
          </property>
         </widget>
        </item>
@@ -223,6 +258,9 @@
          <property name="text">
           <string>Points Base Name:</string>
          </property>
+         <property name="buddy">
+          <cstring>gridPointsNameEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="1" column="1">
@@ -232,6 +270,9 @@
         <widget class="QLabel" name="gridGroupNameLabel">
          <property name="text">
           <string>Group Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridGroupNameEdit</cstring>
          </property>
         </widget>
        </item>
@@ -271,19 +312,6 @@
           <cstring>contextsFolderEdit</cstring>
          </property>
         </widget>
-       </item>
-       <item row="10" column="1">
-        <spacer name="contextsTabSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item row="9" column="0">
         <widget class="QLabel" name="contextsSchemaNameLabel">
@@ -350,6 +378,19 @@
          </property>
         </widget>
        </item>
+       <item row="10" column="1">
+        <spacer name="contextsTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="contextsBufferGroupNameEdit"/>
        </item>
@@ -357,6 +398,9 @@
         <widget class="QLabel" name="contextsBufferGroupNameLabel">
          <property name="text">
           <string>Buffer Group Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextsBufferGroupNameEdit</cstring>
          </property>
         </widget>
        </item>
@@ -490,11 +534,33 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>projectFolderEdit</tabstop>
+  <tabstop>projectFolderButton</tabstop>
+  <tabstop>multiSiteCheck</tabstop>
+  <tabstop>siteCodeEdit</tabstop>
+  <tabstop>prependSiteCodeCheck</tabstop>
+  <tabstop>defaultStylesCheck</tabstop>
+  <tabstop>styleFolderEdit</tabstop>
+  <tabstop>styleFolderButton</tabstop>
+  <tabstop>gridFolderEdit</tabstop>
+  <tabstop>gridFolderButton</tabstop>
+  <tabstop>gridGroupNameEdit</tabstop>
+  <tabstop>gridPointsNameEdit</tabstop>
+  <tabstop>gridLinesNameEdit</tabstop>
+  <tabstop>gridPolygonsNameEdit</tabstop>
   <tabstop>contextsFolderEdit</tabstop>
   <tabstop>contextsFolderButton</tabstop>
+  <tabstop>contextsGroupNameEdit</tabstop>
+  <tabstop>contextsBufferGroupNameEdit</tabstop>
+  <tabstop>contextsPointsNameEdit</tabstop>
+  <tabstop>contextsLinesNameEdit</tabstop>
+  <tabstop>contextsPolygonsNameEdit</tabstop>
+  <tabstop>contextsSchemaNameEdit</tabstop>
   <tabstop>planFolderEdit</tabstop>
   <tabstop>planFolderButton</tabstop>
+  <tabstop>separatePlansCheck</tabstop>
   <tabstop>planTransparencySpin</tabstop>
+  <tabstop>tabWidget</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

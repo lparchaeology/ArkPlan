@@ -26,7 +26,7 @@ import csv
 from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QDir
 from PyQt4.QtGui import QSortFilterProxyModel
 
-from ..core.settings import Settings
+from ..core.project import Project
 
 class TableModel(QAbstractTableModel):
 
@@ -234,9 +234,9 @@ class DataManager(QObject):
     _groupProxyModel = QSortFilterProxyModel()
 
 
-    def __init__(self, settings):
+    def __init__(self, project):
         super(DataManager, self).__init__()
-        self.settings = settings
+        self.project = project
         self._contextProxyModel.setSourceModel(self._contextModel)
         self._subGroupProxyModel.setSourceModel(self._subGroupModel)
         self._groupProxyModel.setSourceModel(self._groupModel)
@@ -249,12 +249,12 @@ class DataManager(QObject):
         self._groupModel.clear()
         subToGroup = {}
         subToGroup[0] = 0
-        with open(self.settings.modulePath('contexts') + '/' + self._arkGroupDataFilename) as csvFile:
+        with open(self.project.modulePath('contexts') + '/' + self._arkGroupDataFilename) as csvFile:
             reader = csv.DictReader(csvFile)
             for record in reader:
                 pass
                 self._groupModel.addGroup(record)
-        with open(self.settings.modulePath('contexts') + '/' + self._arkSubGroupDataFilename) as csvFile:
+        with open(self.project.modulePath('contexts') + '/' + self._arkSubGroupDataFilename) as csvFile:
             reader = csv.DictReader(csvFile)
             for record in reader:
                 sub_group_string = record['sub_group']
@@ -265,7 +265,7 @@ class DataManager(QObject):
                     group_no = int(group_string.split('_')[-1])
                 subToGroup[sub_group_no] = group_no
                 self._subGroupModel.addSubGroup(record)
-        with open(self.settings.modulePath('contexts') + '/' + self._arkContextDataFilename) as csvFile:
+        with open(self.project.modulePath('contexts') + '/' + self._arkContextDataFilename) as csvFile:
             reader = csv.DictReader(csvFile)
             for record in reader:
                 context_string = record['context']

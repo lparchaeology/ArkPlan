@@ -24,15 +24,15 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant, pyqtSignal
-from PyQt4.QtGui import QDialog, QFileDialog, QIcon, QAction
+from PyQt4.QtGui import  QIcon, QAction
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
 from qgis.gui import QgsMessageBar
 
-from settings_dialog_base import *
+from settings_dialog import SettingsDialog
 
 
-class Settings(QObject):
+class Project(QObject):
 
     # Signal when the project changes so modules can reload
     projectChanged = pyqtSignal()
@@ -45,7 +45,7 @@ class Settings(QObject):
 
     menuName = ''
     toolbar = None  # QToolBar()
-    settingsAction = None  # QAction()
+    projectAction = None  # QAction()
 
     projectGroupName = 'Ark'
     projectGroupIndex = -1
@@ -92,7 +92,7 @@ class Settings(QObject):
     gridPointFields = ['id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by']
 
     def __init__(self, iface, pluginPath):
-        super(Settings, self).__init__()
+        super(Project, self).__init__()
         self.iface = iface
 
         self.pluginName = self.tr(u'Ark')
@@ -105,15 +105,15 @@ class Settings(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.settingsAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
-        self.settingsAction.triggered.connect(self.showSettingsDialog)
+        self.projectAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
+        self.projectAction.triggered.connect(self.showSettingsDialog)
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        self.iface.removePluginMenu(self.menuName, self.settingsAction)
-        self.iface.removeToolBarIcon(self.settingsAction)
+        self.iface.removePluginMenu(self.menuName, self.projectAction)
+        self.iface.removeToolBarIcon(self.projectAction)
 
-    # Initialise settings for the project the first time they are needed
+    # Initialise project the first time it is needed
     def initialise(self):
         if not self.isConfigured():
             self.configure()
@@ -376,116 +376,3 @@ class Settings(QObject):
         if tolerance is None:
             return 0.0
         return tolerance
-
-
-class SettingsDialog(QDialog, Ui_SettingsDialogBase):
-
-    _settings = None # PluginSettings()
-
-    def __init__(self, settings, parent=None):
-        super(SettingsDialog, self).__init__(parent)
-        self._settings = settings
-
-        self.setupUi(self)
-
-        # Project tab settings
-        self.projectFolderEdit.setText(settings.projectPath())
-        self.projectFolderButton.clicked.connect(self._selectProjectFolder)
-        self.multiSiteCheck.setChecked(settings.multiSiteProject())
-        self.siteCodeEdit.setText(settings.siteCode())
-        self.prependSiteCodeCheck.setChecked(settings.prependSiteCode())
-        if settings.useCustomStyles():
-            self.defaultStylesCheck.setChecked(False)
-            self.styleFolderEdit.setText(settings.stylePath())
-            self.styleFolderEdit.setEnabled(True)
-            self.styleFolderButton.setEnabled(True)
-        self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
-        self.styleFolderButton.clicked.connect(self._selectStyleFolder)
-
-        # Grid tab settings
-        self.gridFolderEdit.setText(settings.modulePath('grid'))
-        self.gridFolderButton.clicked.connect(self._selectGridFolder)
-        self.gridGroupNameEdit.setText(settings.layersGroupName('grid'))
-        self.gridPointsNameEdit.setText(settings.pointsBaseName('grid'))
-        self.gridLinesNameEdit.setText(settings.linesBaseName('grid'))
-        self.gridPolygonsNameEdit.setText(settings.polygonsBaseName('grid'))
-
-        # Context tab settings
-        self.contextsFolderEdit.setText(settings.modulePath('contexts'))
-        self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
-        self.contextsGroupNameEdit.setText(settings.layersGroupName('contexts'))
-        self.contextsBufferGroupNameEdit.setText(settings.buffersGroupName('contexts'))
-        self.contextsPointsNameEdit.setText(settings.pointsBaseName('contexts'))
-        self.contextsLinesNameEdit.setText(settings.linesBaseName('contexts'))
-        self.contextsPolygonsNameEdit.setText(settings.polygonsBaseName('contexts'))
-        self.contextsSchemaNameEdit.setText(settings.schemaBaseName('contexts'))
-
-        # Plan tab settings
-        self.planFolderEdit.setText(settings.planPath())
-        self.planFolderButton.clicked.connect(self._selectPlanFolder)
-        self.separatePlansCheck.setChecked(settings.separatePlanFolders())
-        self.planTransparencySpin.setValue(settings.planTransparency())
-
-    def accept(self):
-        # Project tab settings
-        self._settings.setProjectPath(self.projectFolderEdit.text())
-        self._settings.setMultiSiteProject(self.multiSiteCheck.isChecked())
-        self._settings.setSiteCode(self.siteCodeEdit.text())
-        self._settings.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
-        self._settings.setUseCustomStyles(self.styleFolderEdit.text() != '')
-        self._settings.setStylePath(self.styleFolderEdit.text())
-
-        # Grid tab settings
-        self._settings.setModulePath('grid', self.gridFolderEdit.text())
-        self._settings.setLayersGroupName('grid', self.gridGroupNameEdit.text())
-        self._settings.setPointsBaseName('grid', self.gridPointsNameEdit.text())
-        self._settings.setLinesBaseName('grid', self.gridLinesNameEdit.text())
-        self._settings.setPolygonsBaseName('grid', self.gridPolygonsNameEdit.text())
-
-        # Contexts tab settings
-        self._settings.setModulePath('contexts', self.contextsFolderEdit.text())
-        self._settings.setLayersGroupName('contexts', self.contextsGroupNameEdit.text())
-        self._settings.setBuffersGroupName('contexts', self.contextsBufferGroupNameEdit.text())
-        self._settings.setPointsBaseName('contexts', self.contextsPointsNameEdit.text())
-        self._settings.setLinesBaseName('contexts', self.contextsLinesNameEdit.text())
-        self._settings.setPolygonsBaseName('contexts', self.contextsPolygonsNameEdit.text())
-        self._settings.setSchemaBaseName('contexts', self.contextsSchemaNameEdit.text())
-
-        # Plan tab settings
-        self._settings.setPlanPath(self.planFolderEdit.text())
-        self._settings.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
-        self._settings.setPlanTransparency(self.planTransparencySpin.value())
-
-        return super(SettingsDialog, self).accept()
-
-    def _selectProjectFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))
-        if folderName:
-            self.projectFolderEdit.setText(folderName)
-
-    def _selectGridFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))
-        if folderName:
-            self.gridFolderEdit.setText(folderName)
-
-    def _toggleDefaultStyle(self, useDefault):
-        if useDefault:
-            self.styleFolderEdit.setText('')
-        self.styleFolderEdit.setEnabled(not useDefault)
-        self.styleFolderButton.setEnabled(not useDefault)
-
-    def _selectStyleFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Style Folder'), self.styleFolderEdit.text()))
-        if folderName:
-            self.styleFolderEdit.setText(folderName)
-
-    def _selectContextsFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Contexts Folder'), self.contextsFolderEdit.text()))
-        if folderName:
-            self.contextsFolderEdit.setText(folderName)
-
-    def _selectPlanFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))
-        if folderName:
-            self.planFolderEdit.setText(folderName)
-

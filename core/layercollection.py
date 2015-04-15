@@ -240,17 +240,17 @@ class LayerCollection:
 
     def _isLayerEditable(self, layer):
         if (layer.type() != QgsMapLayer.VectorLayer):
-            self._settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Not a vector layer')
+            utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Not a vector layer')
             return False
         if (layer.isModified()):
-            self._settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Has pending modifications')
+            utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Has pending modifications')
             return False
         # We don't check here as can turn filter off temporarily
         #if (layer.subsetString()):
-        #    self._settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Filter is applied')
+        #    utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Filter is applied')
         #    return False
         if (len(layer.vectorJoins()) > 0):
-            self._settings.showCriticalMessage('Cannot edit layer ' + layer.name() + ' - Layer has joins')
+            utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Layer has joins')
             return False
         return True
 
@@ -348,19 +348,19 @@ class LayerCollection:
         if (layer is None):
             return
         if (self._iface.mapCanvas().isDrawing()):
-            self._settings.showMessage('Cannot apply filter: Canvas is drawing')
+            utils.showMessage(self._iface, 'Cannot apply filter: Canvas is drawing')
             return
         if (layer.type() != QgsMapLayer.VectorLayer):
-            self._settings.showMessage('Cannot apply filter: Not a vector layer')
+            utils.showMessage(self._iface, 'Cannot apply filter: Not a vector layer')
             return
         if (layer.isEditable()):
-            self._settings.showMessage('Cannot apply filter: Layer is in editing mode')
+            utils.showMessage(self._iface, 'Cannot apply filter: Layer is in editing mode')
             return
         if (not layer.dataProvider().supportsSubsetString()):
-            self._settings.showMessage('Cannot apply filter: Subsets not supported by layer')
+            utils.showMessage(self._iface, 'Cannot apply filter: Subsets not supported by layer')
             return
         if (len(layer.vectorJoins()) > 0):
-            self._settings.showMessage('Cannot apply filter: Layer has joins')
+            utils.showMessage(self._iface, 'Cannot apply filter: Layer has joins')
             return
         layer.setSubsetString(filter)
         self._iface.mapCanvas().refresh()

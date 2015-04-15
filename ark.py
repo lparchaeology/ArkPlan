@@ -25,7 +25,7 @@ import os.path
 
 import resources_rc
 
-from .core.settings import Settings
+from .core.project import Project
 from .core.layers import LayerManager
 
 from .grid.grid import GridModule
@@ -36,7 +36,7 @@ class Ark:
     """QGIS Plugin Implementation."""
 
     # Common plugin objects
-    settings = None # Settings()
+    project = None # Project()
     layers = None  # LayerManager()
 
     # Modules
@@ -45,15 +45,15 @@ class Ark:
     filterModule = None  # Filter()
 
     def __init__(self, iface):
-        self.settings = Settings(iface, os.path.dirname(__file__))
-        self.layers = LayerManager(self.settings)
-        self.gridModule = GridModule(self.settings, self.layers)
-        self.planModule = Plan(self.settings, self.layers)
-        self.filterModule = Filter(self.settings, self.layers)
+        self.project = Project(iface, os.path.dirname(__file__))
+        self.layers = LayerManager(self.project)
+        self.gridModule = GridModule(self.project, self.layers)
+        self.planModule = Plan(self.project, self.layers)
+        self.filterModule = Filter(self.project, self.layers)
 
     # Load the plugin
     def initGui(self):
-        self.settings.load()
+        self.project.load()
         self.gridModule.load()
         self.planModule.load()
         self.filterModule.load()
@@ -70,5 +70,5 @@ class Ark:
         self.filterModule.unload()
 
         # Removes the plugin menu item and icon from QGIS GUI.
-        self.settings.unload()
+        self.project.unload()
 

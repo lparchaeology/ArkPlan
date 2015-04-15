@@ -26,7 +26,7 @@ from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
 
-from settings import *
+from project import *
 from layercollection import *
 
 class LayerManager:
@@ -37,13 +37,13 @@ class LayerManager:
 
     # Internal variables
 
-    _settings = None # Settings()
+    _project = None # Project()
 
 
-    def __init__(self, settings):
-        self._settings = settings
+    def __init__(self, project):
+        self._project = project
         # If the legend indexes change make sure we stay updated
-        self._settings.iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+        self._project.iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
 
     def initialise(self):
@@ -61,23 +61,23 @@ class LayerManager:
 
 
     def _groupIndexChanged(self, oldIndex, newIndex):
-        if (oldIndex == self._settings.projectGroupIndex):
-            self._settings.projectGroupIndex = newIndex
+        if (oldIndex == self._project.projectGroupIndex):
+            self._project.projectGroupIndex = newIndex
 
 
     def loadGeoLayer(self, geoFile):
         #TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self._settings.planTransparency()/100.0)
+        self.geoLayer.renderer().setOpacity(self._project.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
-        if (self._settings.planGroupIndex < 0):
-            self._settings.planGroupIndex = self.getGroupIndex(self._settings.planGroupName)
-        self._settings.iface.legendInterface().moveLayer(self.geoLayer, self._settings.planGroupIndex)
-        self._settings.iface.mapCanvas().setExtent(self.geoLayer.extent())
+        if (self._project.planGroupIndex < 0):
+            self._project.planGroupIndex = self.getGroupIndex(self._project.planGroupName)
+        self._project.iface.legendInterface().moveLayer(self.geoLayer, self._project.planGroupIndex)
+        self._project.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
 
     def applyContextFilter(self, contextList):
-        self.contexts.applyFieldFilter(self._settings.contextAttributeName, contextList)
+        self.contexts.applyFieldFilter(self._project.contextAttributeName, contextList)
 
 
     def _shapeFile(self, layerPath, layerName):
@@ -90,15 +90,15 @@ class LayerManager:
         if QFile.exists(filePath):
             return filePath
         # Next see if the base name has a style in the styles folder (which may be a special folder, the site folder or the plugin folder)
-        filePath = self._settings.stylePath() + '/' + baseName + '.qml'
+        filePath = self._project.stylePath() + '/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # Next see if the default name has a style in the style folder
-        filePath = self._settings.stylePath() + '/' + defaultName + '.qml'
+        filePath = self._project.stylePath() + '/' + defaultName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self._settings.stylePath() + '/' + defaultName + '.qml'
+        filePath = self._project.stylePath() + '/' + defaultName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!
@@ -106,26 +106,26 @@ class LayerManager:
 
 
     def _createCollection(self, module):
-        path = self._settings.modulePath(module)
+        path = self._project.modulePath(module)
         lcs = LayerCollectionSettings()
-        lcs.collectionGroupName = self._settings.layersGroupName(module)
-        lcs.buffersGroupName = self._settings.buffersGroupName(module)
-        lcs.bufferSuffix = self._settings.bufferSuffix
+        lcs.collectionGroupName = self._project.layersGroupName(module)
+        lcs.buffersGroupName = self._project.buffersGroupName(module)
+        lcs.bufferSuffix = self._project.bufferSuffix
         lcs.pointsLayerProvider = 'ogr'
-        lcs.pointsLayerName = self._settings.pointsLayerName(module)
+        lcs.pointsLayerName = self._project.pointsLayerName(module)
         lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
-        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, self._settings.pointsBaseName(module), self._settings.pointsBaseNameDefault(module))
+        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, self._project.pointsBaseName(module), self._project.pointsBaseNameDefault(module))
         lcs.linesLayerProvider = 'ogr'
-        lcs.linesLayerName = self._settings.linesLayerName(module)
+        lcs.linesLayerName = self._project.linesLayerName(module)
         lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
-        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, self._settings.linesBaseName(module), self._settings.linesBaseNameDefault(module))
+        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, self._project.linesBaseName(module), self._project.linesBaseNameDefault(module))
         lcs.polygonsLayerProvider = 'ogr'
-        lcs.polygonsLayerName = self._settings.polygonsLayerName(module)
+        lcs.polygonsLayerName = self._project.polygonsLayerName(module)
         lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
-        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, self._settings.polygonsBaseName(module), self._settings.polygonsBaseNameDefault(module))
+        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, self._project.polygonsBaseName(module), self._project.polygonsBaseNameDefault(module))
         lcs.schemaLayerProvider = 'ogr'
-        lcs.schemaLayerName = self._settings.schemaLayerName(module)
-        lcs.schemaLayerPath = self._shapeFile(self._settings.modulePath(module), lcs.schemaLayerName)
-        lcs.schemaStylePath = self._styleFile(self._settings.modulePath(module), lcs.schemaLayerName, self._settings.schemaBaseName(module), self._settings.schemaBaseNameDefault(module))
-        return LayerCollection(self._settings.iface, lcs)
+        lcs.schemaLayerName = self._project.schemaLayerName(module)
+        lcs.schemaLayerPath = self._shapeFile(self._project.modulePath(module), lcs.schemaLayerName)
+        lcs.schemaStylePath = self._styleFile(self._project.modulePath(module), lcs.schemaLayerName, self._project.schemaBaseName(module), self._project.schemaBaseNameDefault(module))
+        return LayerCollection(self._project.iface, lcs)
 

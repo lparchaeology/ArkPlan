@@ -32,11 +32,8 @@ from data_dialog_base import *
 
 class DataDialog(QDialog, Ui_DataDialog):
 
-    _settings = None # PluginSettings()
-
-    def __init__(self, settings, parent=None):
+    def __init__(self, parent=None):
         super(DataDialog, self).__init__(parent)
-        self._settings = settings
 
         self.setupUi(self)
 

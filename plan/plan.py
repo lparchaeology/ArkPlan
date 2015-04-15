@@ -26,7 +26,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
 
-from ..core.settings import Settings
+from ..core.project import Project
 from ..core.layers import LayerManager
 from ..core.map_tools import *
 
@@ -38,7 +38,7 @@ from plan_util import *
 class Plan(QObject):
 
     # Project settings
-    settings = None # Settings()
+    project = None # Project()
 
     # Internal variables
     initialised = False
@@ -52,19 +52,19 @@ class Plan(QObject):
     levelsMapTool = None
     currentMapTool = None
 
-    def __init__(self, settings, layers):
+    def __init__(self, project, layers):
         super(Plan, self).__init__()
-        self.settings = settings
+        self.project = project
         # If the project gets changed, make sure we update too
-        self.settings.projectChanged.connect(self.loadProject)
+        self.project.projectChanged.connect(self.loadProject)
         # If the map tool changes make sure we stay updated
-        self.settings.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
+        self.project.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
         self.layers = layers
 
     # Load the module when plugin is loaded
     def load(self):
         self.dock = PlanDock()
-        self.dock.load(self.settings.iface, Qt.RightDockWidgetArea, self.settings.createMenuAction(self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png', True))
+        self.dock.load(self.project.iface, Qt.RightDockWidgetArea, self.project.createMenuAction(self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png', True))
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
@@ -99,8 +99,8 @@ class Plan(QObject):
         if self.initialised:
             return
 
-        self.settings.initialise()
-        if (not self.settings.isConfigured()):
+        self.project.initialise()
+        if (not self.project.isConfigured()):
             return
         self.layers.initialise()
 
@@ -129,13 +129,13 @@ class Plan(QObject):
         self.dock.setSource(str(number))
 
     def loadRawPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.settings.rawPlanPath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.project.rawPlanPath(),
                                                        self.tr('Image Files (*.png *.tif *.tiff)')))
         if fileName:
             self.georeferencePlan(QFileInfo(fileName))
 
     def loadGeoPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.settings.processedPlanPath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.project.processedPlanPath(),
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
@@ -158,7 +158,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.settings.planDir(), self.settings.separatePlanFolders(), self.settings.projectCrs().authid(), self.settings.pointsLayerName('grid'), self.settings.fieldDefinitions['local_x'].name(), self.settings.fieldDefinitions['local_y'].name())
+        georefDialog = GeorefDialog(rawFile, self.project.planDir(), self.project.separatePlanFolders(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldDefinitions['local_x'].name(), self.project.fieldDefinitions['local_y'].name())
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
@@ -177,34 +177,34 @@ class Plan(QObject):
         #TODO disable all snapping
         self.createMapTool(typeAttribute, self.layers.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
         self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
         self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
         self.createMapTool(typeAttribute, self.layers.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
         self.createMapTool(typeAttribute, self.layers.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
-        self.settings.iface.mapCanvas().setMapTool(self.currentMapTool)
+        self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):
         #TODO configure snapping
-        self.settings.iface.mapCanvas().setCurrentLayer(layer)
-        self.settings.iface.legendInterface().setCurrentLayer(layer)
+        self.project.iface.mapCanvas().setCurrentLayer(layer)
+        self.project.iface.legendInterface().setCurrentLayer(layer)
         self.deleteMapTool()
-        self.currentMapTool = QgsMapToolAddFeature(self.settings.iface.mapCanvas(), self.settings.iface, featureType, toolName)
+        self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, featureType, toolName)
         self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
@@ -217,6 +217,6 @@ class Plan(QObject):
 
     def deleteMapTool(self):
         if self.currentMapTool is not None:
-            self.settings.iface.mapCanvas().unsetMapTool(self.currentMapTool)
+            self.project.iface.mapCanvas().unsetMapTool(self.currentMapTool)
             del self.currentMapTool
             self.currentMapTool = None

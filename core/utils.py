@@ -30,6 +30,17 @@ from PyQt4.QtGui import QIcon, QAction
 from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog
 from qgis.gui import QgsMessageBar
 
+# Message utilities
+
+def showMessage(iface, text, level=QgsMessageBar.INFO, duration=0):
+    iface.messageBar().pushMessage(text, level, duration)
+
+def showCriticalMessage(iface, text, duration=0):
+    iface.messageBar().pushMessage(text, QgsMessageBar.CRITICAL, duration)
+
+def showStatusMessage(iface, text):
+    iface.mainWindow().statusBar().showMessage(text)
+
 # Project setting utilities
 
 def defaultSnappingMode():

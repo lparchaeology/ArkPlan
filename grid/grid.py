@@ -31,7 +31,7 @@ from qgis.core import *
 from qgis.gui import QgsMapToolEmitPoint
 
 from ..core.utils import *
-from ..core.settings import Settings
+from ..core.project import Project
 from ..core.layers import LayerManager
 
 from ..core.select_layer_dialog import SelectLayerDialog
@@ -68,16 +68,16 @@ class LinearTransformer():
 
 class GridModule(QObject):
 
-    settings = None # Settings()
+    project = None # Project()
     layers = None  # LayerManager()
 
     # Internal variables
     mapTool = None  # QgsMapToolEmitPoint()
     initialised = False
 
-    def __init__(self, settings, layers):
+    def __init__(self, project, layers):
         super(GridModule, self).__init__()
-        self.settings = settings
+        self.project = project
         self.layers = layers
 
 
@@ -85,17 +85,17 @@ class GridModule(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.createGridAction = self.settings.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
+        self.createGridAction = self.project.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
         self.createGridAction.triggered.connect(self.showCreateGridDialog)
 
-        self.identifyGridAction = self.settings.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
+        self.identifyGridAction = self.project.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
-        self.addLocalAction = self.settings.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/images/themes/default/mActionNewAttribute.png', False)
+        self.addLocalAction = self.project.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/images/themes/default/mActionNewAttribute.png', False)
         self.addLocalAction.triggered.connect(self.selectLayerForLocal)
 
         self.dock = GridDock()
-        self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
+        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
         self.dock.convertCrsSelected.connect(self.convertCrs)
         self.dock.convertLocalSelected.connect(self.convertLocal)
@@ -103,9 +103,9 @@ class GridModule(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        self.settings.iface.removeToolBarIcon(self.addLocalAction)
-        self.settings.iface.removeToolBarIcon(self.createGridAction)
-        self.settings.iface.removeToolBarIcon(self.identifyGridAction)
+        self.project.iface.removeToolBarIcon(self.addLocalAction)
+        self.project.iface.removeToolBarIcon(self.createGridAction)
+        self.project.iface.removeToolBarIcon(self.identifyGridAction)
         self.dock.unload()
 
 
@@ -118,9 +118,9 @@ class GridModule(QObject):
         if self.initialised:
             return
 
-        if (not self.settings.isConfigured()):
-            self.settings.configure()
-        if (not self.settings.isConfigured()):
+        if (not self.project.isConfigured()):
+            self.project.configure()
+        if (not self.project.isConfigured()):
             return
         self.layers.initialise()
         if self.layers.grid.pointsLayer is None:
@@ -137,7 +137,7 @@ class GridModule(QObject):
         self.crsTransformer = LinearTransformer(crs1, local1, crs2, local2)
         self.localTransformer = LinearTransformer(local1, crs1, local2, crs2)
 
-        self.mapTool = QgsMapToolEmitPoint(self.settings.iface.mapCanvas())
+        self.mapTool = QgsMapToolEmitPoint(self.project.iface.mapCanvas())
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
         self.dock.setReadOnly(False)
@@ -146,8 +146,8 @@ class GridModule(QObject):
 
     def transformPoints(self, feature):
         crsPoint = feature.geometry().asPoint()
-        localX = feature.attribute(self.settings.fieldDefinitions['local_x'].name())
-        localY = feature.attribute(self.settings.fieldDefinitions['local_y'].name())
+        localX = feature.attribute(self.project.fieldDefinitions['local_x'].name())
+        localY = feature.attribute(self.project.fieldDefinitions['local_y'].name())
         localPoint = QgsPoint(localX, localY)
         return crsPoint, localPoint
 
@@ -155,28 +155,28 @@ class GridModule(QObject):
     # Grid methods
 
     def showCreateGridDialog(self):
-        dialog = CreateGridDialog(self, self.settings.iface.mainWindow())
+        dialog = CreateGridDialog(self, self.project.iface.mainWindow())
         if dialog.exec_():
             crsOrigin = QgsPoint(dialog.crsOriginEastingSpin.value(), dialog.crsOriginNorthingSpin.value())
             crsTerminus = QgsPoint(dialog.crsTerminusEastingSpin.value(), dialog.crsTerminusNorthingSpin.value())
             localOrigin = QPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
             localTerminus = QPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
             if self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value()):
-                self.settings.showMessage('Grid files successfully created')
+                self.project.showMessage('Grid files successfully created')
 
 
     def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
         localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
         fields = QgsFields()
-        fields.append(self.settings.fieldDefinitions['local_x'])
-        fields.append(self.settings.fieldDefinitions['local_y'])
-        local_x = self.settings.fieldDefinitions['local_x'].name()
-        local_y = self.settings.fieldDefinitions['local_y'].name()
+        fields.append(self.project.fieldDefinitions['local_x'])
+        fields.append(self.project.fieldDefinitions['local_y'])
+        local_x = self.project.fieldDefinitions['local_x'].name()
+        local_y = self.project.fieldDefinitions['local_y'].name()
 
-        pointsPath = self.settings.modulePath('grid') + '/' + self.settings.pointsLayerName('grid') + '.shp'
-        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, self.settings.projectCrs(), 'ESRI Shapefile')
+        pointsPath = self.project.modulePath('grid') + '/' + self.project.pointsLayerName('grid') + '.shp'
+        points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, self.project.projectCrs(), 'ESRI Shapefile')
         if points.hasError() != QgsVectorFileWriter.NoError:
-            self.settings.showCriticalMessage('Create grid points file failed!!!')
+            self.project.showCriticalMessage('Create grid points file failed!!!')
             return
         for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
             for localY in range(localOrigin.y(), localTerminus.y() + 1, localInterval):
@@ -189,11 +189,11 @@ class GridModule(QObject):
                 points.addFeature(feature)
         del points
 
-        if self.settings.gridLinesLayerName():
-            linesPath = self.settings.modulePath('grid') + '/' + self.settings.linesLayerName('grid') + '.shp'
-            lines = QgsVectorFileWriter(linesPath, 'System', fields, QGis.WKBLineString, self.settings.projectCrs(), 'ESRI Shapefile')
+        if self.project.gridLinesLayerName():
+            linesPath = self.project.modulePath('grid') + '/' + self.project.linesLayerName('grid') + '.shp'
+            lines = QgsVectorFileWriter(linesPath, 'System', fields, QGis.WKBLineString, self.project.projectCrs(), 'ESRI Shapefile')
             if lines.hasError() != QgsVectorFileWriter.NoError:
-                self.settings.showCriticalMessage('Create grid lines file failed!!!')
+                self.project.showCriticalMessage('Create grid lines file failed!!!')
                 return
             for localX in range(localOrigin.x(), localTerminus.x() + 1, localInterval):
                 localStartPoint = QgsPoint(localX, localOrigin.y())
@@ -215,11 +215,11 @@ class GridModule(QObject):
                 lines.addFeature(feature)
             del lines
 
-        if self.settings.gridPolygonsLayerName():
-            polygonsPath = self.settings.modulePath('grid') + '/' + self.settings.polygonsLayerName('grid') + '.shp'
-            polygons = QgsVectorFileWriter(polygonsPath, 'System', fields, QGis.WKBPolygon, self.settings.projectCrs(), 'ESRI Shapefile')
+        if self.project.gridPolygonsLayerName():
+            polygonsPath = self.project.modulePath('grid') + '/' + self.project.polygonsLayerName('grid') + '.shp'
+            polygons = QgsVectorFileWriter(polygonsPath, 'System', fields, QGis.WKBPolygon, self.project.projectCrs(), 'ESRI Shapefile')
             if polygons.hasError() != QgsVectorFileWriter.NoError:
-                self.settings.showCriticalMessage('Create grid polygons file failed!!!')
+                self.project.showCriticalMessage('Create grid polygons file failed!!!')
                 return
             for localX in range(localOrigin.x(), localTerminus.x(), localInterval):
                 for localY in range(localOrigin.y(), localTerminus.y(), localInterval):
@@ -241,9 +241,9 @@ class GridModule(QObject):
             self.initialise()
         if self.initialised:
             if status:
-                self.settings.iface.mapCanvas().setMapTool(self.mapTool)
+                self.project.iface.mapCanvas().setMapTool(self.mapTool)
             else:
-                self.settings.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.project.iface.mapCanvas().unsetMapTool(self.mapTool)
         elif status:
             self.identifyGridAction.setChecked(False)
 
@@ -276,7 +276,7 @@ class GridModule(QObject):
         if not self.initialised:
             self.initialise()
         if self.initialised:
-            dialog = SelectLayerDialog(self.settings.iface, QgsMapLayer.VectorLayer, QGis.Point)
+            dialog = SelectLayerDialog(self.project.iface, QgsMapLayer.VectorLayer, QGis.Point)
             if dialog.exec_():
                 self.addLocalToLayer(dialog.layer())
 
@@ -284,9 +284,9 @@ class GridModule(QObject):
     def addLocalToLayer(self, layer):
         if not self.initialised:
             return
-        local_x = self.settings.fieldDefinitions['local_x'].name()
-        local_y = self.settings.fieldDefinitions['local_y'].name()
-        layer.dataProvider().addAttributes([self.settings.fieldDefinitions['local_x'], self.settings.fieldDefinitions['local_y']])
+        local_x = self.project.fieldDefinitions['local_x'].name()
+        local_y = self.project.fieldDefinitions['local_y'].name()
+        layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_x'], self.project.fieldDefinitions['local_y']])
         if layer.startEditing():
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)

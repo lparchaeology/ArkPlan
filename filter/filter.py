@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
-from ..core.settings import Settings
+from ..core.project import Project
 from ..core.layers import LayerManager
 from ..core.data_model import *
 from ..core.map_tools import MapToolIndentifyFeatures
@@ -38,7 +38,7 @@ from filter_dock import FilterDock
 
 class Filter(QObject):
 
-    settings = None # Settings()
+    project = None # Project()
     layers = None  # LayerManager()
     data = None  # DataManager()
 
@@ -49,22 +49,22 @@ class Filter(QObject):
 
     identifyMapTool = None  # MapToolIndentifyFeatures()
 
-    def __init__(self, settings, layers):
+    def __init__(self, project, layers):
         super(Filter, self).__init__()
-        self.settings = settings
+        self.project = project
         self.layers = layers
-        self.data = DataManager(settings)
+        self.data = DataManager(project)
 
 
     # Standard Dock methods
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.settings.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+        self.identifyAction = self.project.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
-        self.dock.load(self.settings.iface, Qt.LeftDockWidgetArea, self.settings.createMenuAction(self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png', True))
+        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png', True))
         self.dock.toggled.connect(self.run)
 
         self.dock.contextFilterChanged.connect(self.applyContextFilter)
@@ -76,7 +76,7 @@ class Filter(QObject):
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomSelected.connect(self.zoomFilter)
 
-        self.identifyMapTool = MapToolIndentifyFeatures(self.settings.iface.mapCanvas())
+        self.identifyMapTool = MapToolIndentifyFeatures(self.project.iface.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
@@ -95,8 +95,8 @@ class Filter(QObject):
         if self.initialised:
             return
 
-        if (not self.settings.isConfigured()):
-            self.settings.configure()
+        if (not self.project.isConfigured()):
+            self.project.configure()
         self.layers.initialise()
         self.dock.showPointsChanged.connect(self.layers.contexts.showPoints)
         self.dock.showLinesChanged.connect(self.layers.contexts.showLines)
@@ -162,13 +162,13 @@ class Filter(QObject):
         if checked:
             if not self.dataLoaded:
                 self.data.loadData()
-            self.settings.iface.mapCanvas().setMapTool(self.identifyMapTool)
+            self.project.iface.mapCanvas().setMapTool(self.identifyMapTool)
         else:
-            self.settings.iface.mapCanvas().unsetMapTool(self.identifyMapTool)
+            self.project.iface.mapCanvas().unsetMapTool(self.identifyMapTool)
 
 
     def showIdentifyDialog(self, feature):
-        context = feature.attribute(self.settings.contextAttributeName)
+        context = feature.attribute(self.project.contextAttributeName)
         self.showDataDialogList([context])
 
 
@@ -182,7 +182,7 @@ class Filter(QObject):
         for context in contextList:
             subList.append(self.data.subGroupForContext(context))
             groupList.append(self.data.groupForContext(context))
-        dataDialog = DataDialog(self, self.settings.iface.mainWindow())
+        dataDialog = DataDialog(self.project.iface.mainWindow())
         dataDialog.contextTableView.setModel(self.data._contextProxyModel)
         self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(contextList))
         dataDialog.contextTableView.resizeColumnsToContents()

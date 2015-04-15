@@ -77,7 +77,7 @@ class LayerManager:
 
 
     def applyContextFilter(self, contextList):
-        self.contexts.applyFilter(self._settings.contextAttributeName, contextList)
+        self.contexts.applyFieldFilter(self._settings.contextAttributeName, contextList)
 
 
     def _shapeFile(self, layerPath, layerName):

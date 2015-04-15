@@ -112,7 +112,7 @@ class Filter(QObject):
         del self.contextList[:]
         self.contextList = contextList
         self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.filter)
+        self.dock.displayFilter(self.layers.contexts.filter)
 
 
     def applySubGroupFilter(self, subList):
@@ -120,7 +120,7 @@ class Filter(QObject):
         for sub in subList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
         self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.filter)
+        self.dock.displayFilter(self.layers.contexts.filter)
 
 
     def applyGroupFilter(self, groupList):
@@ -128,7 +128,7 @@ class Filter(QObject):
         for group in groupList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
         self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.filter)
+        self.dock.displayFilter(self.layers.contexts.filter)
 
 
     def clearFilter(self):
@@ -137,13 +137,13 @@ class Filter(QObject):
 
 
     def applyFilter(self, filter):
-        self.layers.applyFilter(filter)
-        self.dock.displayFilter(self.layers.filter)
+        self.layers.contexts.applyFilter(filter)
+        self.dock.displayFilter(self.layers.contexts.filter)
 
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.layers.linesLayer)
-        dialog.setExpressionText(self.layers.filter)
+        dialog = QgsExpressionBuilderDialog(self.layers.contexts.linesLayer)
+        dialog.setExpressionText(self.layers.contexts.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
@@ -155,7 +155,7 @@ class Filter(QObject):
 
 
     def zoomFilter(self):
-        self.layers.zoomToLayers(False)
+        self.layers.contexts.zoomToExtent()
 
 
     def triggerIdentifyAction(self, checked):

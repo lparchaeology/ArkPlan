@@ -324,7 +324,7 @@ class LayerCollection:
         self._iface.legendInterface().setLayerVisible(self.schemaLayer, status)
 
 
-    def applyFilter(self, field, valueList):
+    def applyFieldFilter(self, field, valueList):
         # TODO string versus decimal field type!
         clause = '"' + field + '" = %d'
         filter = ''
@@ -333,7 +333,7 @@ class LayerCollection:
             for value in valueList[1:]:
                 filter += ' or '
                 filter += clause % value
-        self.contexts.applyFilter(filter)
+        self.applyFilter(filter)
 
 
     def applyFilter(self, filter):
@@ -367,7 +367,15 @@ class LayerCollection:
         self._iface.legendInterface().refreshLayerSymbology(layer)
 
 
-    def zoomToCollection(self):
+    def zoomToExtent(self):
+        extent = self.extent()
+        if (extent is not None and not extent.isNull()):
+            extent.scale(1.05)
+            self._iface.mapCanvas().setExtent(extent)
+            self._iface.mapCanvas().refresh()
+
+
+    def extent(self):
         extent = QgsRectangle()
         extent = self._extendExtent(extent, self.pointsLayer)
         extent = self._extendExtent(extent, self.linesLayer)
@@ -377,10 +385,7 @@ class LayerCollection:
         extent = self._extendExtent(extent, self.linesBuffer)
         extent = self._extendExtent(extent, self.polygonsBuffer)
         extent = self._extendExtent(extent, self.schemaBuffer)
-        if (extent is not None and not extent.isNull()):
-            extent.scale(1.05)
-            self._iface.mapCanvas().setExtent(extent)
-            self._iface.mapCanvas().refresh()
+        return extent
 
 
     def _extendExtent(self, extent, layer):

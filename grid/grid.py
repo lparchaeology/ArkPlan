@@ -91,8 +91,8 @@ class GridModule(QObject):
         self.identifyGridAction = self.project.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
-        self.addLocalAction = self.project.createMenuAction(self.tr(u'Add Local Coords To Layer'), ':/images/themes/default/mActionNewAttribute.png', False)
-        self.addLocalAction.triggered.connect(self.selectLayerForLocal)
+        self.addLocalAction = self.project.createMenuAction(self.tr(u'Update Layer Local Coordinates'), ':/images/themes/default/mActionNewAttribute.png', False)
+        self.addLocalAction.triggered.connect(self.selectLayerForLocalCoords)
 
         self.dock = GridDock()
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
@@ -272,22 +272,25 @@ class GridModule(QObject):
         self.dock.setCrsPoint(crsPoint)
 
 
-    def selectLayerForLocal(self):
+    def selectLayerForLocalCoords(self):
         if not self.initialised:
             self.initialise()
         if self.initialised:
             dialog = SelectLayerDialog(self.project.iface, QgsMapLayer.VectorLayer, QGis.Point)
             if dialog.exec_():
-                self.addLocalToLayer(dialog.layer())
+                self.updateLayerLocalCoords(dialog.layer())
 
 
-    def addLocalToLayer(self, layer):
+    def updateLayerLocalCoords(self, layer):
         if not self.initialised:
             return
         local_x = self.project.fieldDefinitions['local_x'].name()
         local_y = self.project.fieldDefinitions['local_y'].name()
-        layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_x'], self.project.fieldDefinitions['local_y']])
         if layer.startEditing():
+            if not layer.fieldNameIndex(local_x):
+                layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_x']])
+            if not layer.fieldNameIndex(local_y):
+                layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_y']])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
             for feature in layer.getFeatures():
@@ -296,6 +299,5 @@ class GridModule(QObject):
                     localPoint = self.crsTransformer.map(geom.asPoint())
                     layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
                     layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
-            ok = layer.commitChanges()
-            return ok
+            return layer.commitChanges()
         return False

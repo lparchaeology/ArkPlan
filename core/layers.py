@@ -38,6 +38,7 @@ class LayerManager:
     # Internal variables
 
     _project = None # Project()
+    _configured = False
 
 
     def __init__(self, project):
@@ -46,11 +47,8 @@ class LayerManager:
         self._project.iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
 
-    def initialise(self):
-        self.contexts = self._createCollection('contexts')
-        self.contexts.initialise()
-        self.grid = self._createCollection('grid')
-        self.grid.initialise()
+    def load(self):
+        pass
 
 
     def unload(self):
@@ -58,6 +56,23 @@ class LayerManager:
             self.contexts.unload()
         if self.grid is not None:
             self.grid.unload()
+
+
+    def configure(self):
+        if not self._project.isConfigured():
+            self._project.configure()
+        if self._project.isConfigured():
+            self.grid = self._createCollection('grid')
+            self.contexts = self._createCollection('contexts')
+            self._configured = True
+
+
+    def initialise(self):
+        if not self._configured:
+            self.configure()
+        if not self._configured:
+            self.grid.initialise()
+            self.contexts.initialise()
 
 
     def _groupIndexChanged(self, oldIndex, newIndex):

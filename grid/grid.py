@@ -122,6 +122,11 @@ class GridModule(QObject):
             self.project.configure()
         if (not self.project.isConfigured()):
             return
+
+        self.layers.configure()
+        # Check if files exist or need creating
+        # Run create if needed
+
         self.layers.initialise()
         if self.layers.grid.pointsLayer is None:
             return

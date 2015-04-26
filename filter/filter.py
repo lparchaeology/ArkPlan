@@ -29,7 +29,6 @@ from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..core.project import Project
-from ..core.layers import LayerManager
 from ..core.data_model import *
 from ..core.map_tools import MapToolIndentifyFeatures
 
@@ -39,7 +38,6 @@ from filter_dock import FilterDock
 class Filter(QObject):
 
     project = None # Project()
-    layers = None  # LayerManager()
     data = None  # DataManager()
 
     # Internal variables
@@ -49,10 +47,9 @@ class Filter(QObject):
 
     identifyMapTool = None  # MapToolIndentifyFeatures()
 
-    def __init__(self, project, layers):
+    def __init__(self, project):
         super(Filter, self).__init__()
         self.project = project
-        self.layers = layers
         self.data = DataManager(project)
 
 
@@ -95,13 +92,13 @@ class Filter(QObject):
         if self.initialised:
             return
 
-        if (not self.project.isConfigured()):
-            self.project.configure()
-        self.layers.initialise()
-        self.dock.showPointsChanged.connect(self.layers.contexts.showPoints)
-        self.dock.showLinesChanged.connect(self.layers.contexts.showLines)
-        self.dock.showPolygonsChanged.connect(self.layers.contexts.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.layers.contexts.showSchema)
+        self.project.initialise()
+        if (not self.project.isInitialised()):
+            return
+        self.dock.showPointsChanged.connect(self.project.contexts.showPoints)
+        self.dock.showLinesChanged.connect(self.project.contexts.showLines)
+        self.dock.showPolygonsChanged.connect(self.project.contexts.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.project.contexts.showSchema)
 
         self.initialised = True
 
@@ -111,24 +108,24 @@ class Filter(QObject):
     def applyContextFilter(self, contextList):
         del self.contextList[:]
         self.contextList = contextList
-        self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.contexts.filter)
+        self.project.applyContextFilter(self.contextList)
+        self.dock.displayFilter(self.project.contexts.filter)
 
 
     def applySubGroupFilter(self, subList):
         del self.contextList[:]
         for sub in subList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.contexts.filter)
+        self.project.applyContextFilter(self.contextList)
+        self.dock.displayFilter(self.project.contexts.filter)
 
 
     def applyGroupFilter(self, groupList):
         del self.contextList[:]
         for group in groupList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.layers.applyContextFilter(self.contextList)
-        self.dock.displayFilter(self.layers.contexts.filter)
+        self.project.applyContextFilter(self.contextList)
+        self.dock.displayFilter(self.project.contexts.filter)
 
 
     def clearFilter(self):
@@ -137,13 +134,13 @@ class Filter(QObject):
 
 
     def applyFilter(self, filter):
-        self.layers.contexts.applyFilter(filter)
-        self.dock.displayFilter(self.layers.contexts.filter)
+        self.project.contexts.applyFilter(filter)
+        self.dock.displayFilter(self.project.contexts.filter)
 
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.layers.contexts.linesLayer)
-        dialog.setExpressionText(self.layers.contexts.filter)
+        dialog = QgsExpressionBuilderDialog(self.project.contexts.linesLayer)
+        dialog.setExpressionText(self.project.contexts.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
@@ -155,7 +152,7 @@ class Filter(QObject):
 
 
     def zoomFilter(self):
-        self.layers.contexts.zoomToExtent()
+        self.project.contexts.zoomToExtent()
 
 
     def triggerIdentifyAction(self, checked):

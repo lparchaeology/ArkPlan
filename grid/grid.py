@@ -32,7 +32,6 @@ from qgis.gui import QgsMapToolEmitPoint
 
 from ..core.utils import *
 from ..core.project import Project
-from ..core.layers import LayerManager
 
 from ..core.select_layer_dialog import SelectLayerDialog
 from create_grid_dialog import CreateGridDialog
@@ -69,16 +68,14 @@ class LinearTransformer():
 class GridModule(QObject):
 
     project = None # Project()
-    layers = None  # LayerManager()
 
     # Internal variables
     mapTool = None  # QgsMapToolEmitPoint()
     initialised = False
 
-    def __init__(self, project, layers):
+    def __init__(self, project):
         super(GridModule, self).__init__()
         self.project = project
-        self.layers = layers
 
 
     # Standard Dock methods
@@ -118,25 +115,20 @@ class GridModule(QObject):
         if self.initialised:
             return
 
-        if (not self.project.isConfigured()):
-            self.project.configure()
-        if (not self.project.isConfigured()):
+        if (not self.project.initialise()):
             return
 
-        self.layers.configure()
         # Check if files exist or need creating
         # Run create if needed
 
-        self.layers.initialise()
-        if self.layers.grid.pointsLayer is None:
+        if self.project.grid.pointsLayer is None:
             return
 
         features = []
-        for feature in self.layers.grid.pointsLayer.getFeatures():
+        for feature in self.project.grid.pointsLayer.getFeatures():
             features.append(feature)
         if len(features) < 2:
             return
-        self.layers.grid.pointsLayer.removeSelection()
         crs1, local1 = self.transformPoints(features[0])
         crs2, local2 = self.transformPoints(features[1])
         self.crsTransformer = LinearTransformer(crs1, local1, crs2, local2)

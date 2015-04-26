@@ -92,7 +92,7 @@ class LayerCollection:
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
     def initialise(self):
-        self.loadCollection()
+        return self.loadCollection()
 
     def unload(self):
         self.unloadBuffers()
@@ -173,7 +173,6 @@ class LayerCollection:
         return None, ''
 
     # Load the collection layers if not already loaded
-    # TODO Ask to create if don't already exist
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
             self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings.collectionGroupName)
@@ -181,6 +180,8 @@ class LayerCollection:
         self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsLayerProvider, self._settings.polygonsStylePath, self._collectionGroupIndex)
         self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesLayerProvider, self._settings.linesStylePath, self._collectionGroupIndex)
         self.pointsLayer, self.pointsLayerId = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsLayerProvider, self._settings.pointsStylePath, self._collectionGroupIndex)
+        # TODO actually check if is OK
+        return True
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
@@ -239,6 +240,9 @@ class LayerCollection:
         return self._isLayerEditable(self.pointsLayer) and self._isLayerEditable(self.linesLayer) and self._isLayerEditable(self.polygonsLayer) and self._isLayerEditable(self.schemaLayer)
 
     def _isLayerEditable(self, layer):
+        if (layer is None or not layer.isValid()):
+            utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Not a valid layer')
+            return False
         if (layer.type() != QgsMapLayer.VectorLayer):
             utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Not a vector layer')
             return False
@@ -255,6 +259,8 @@ class LayerCollection:
         return True
 
     def _clearBuffer(self, type, buffer, undoMessage=''):
+        if (buffer is None or not buffer.isValid()):
+            return
         message = undoMessage
         if (not undoMessage):
             message = 'Clear buffer'
@@ -272,6 +278,8 @@ class LayerCollection:
 
     def _copyBuffer(self, type, buffer, layer, undoMessage=''):
         ok = False
+        if (buffer is None or not buffer.isValid() or layer is None or not layer.isValid()):
+            return ok
         message = undoMessage
         if (not undoMessage):
             message = 'Merge data'

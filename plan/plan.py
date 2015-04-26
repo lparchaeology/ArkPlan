@@ -27,7 +27,6 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import *
 
 from ..core.project import Project
-from ..core.layers import LayerManager
 from ..core.map_tools import *
 
 from ..georef.georef_dialog import GeorefDialog
@@ -47,19 +46,16 @@ class Plan(QObject):
     source = '0'
     comment = ''
 
-    layers = None  # LayerManager
-
     levelsMapTool = None
     currentMapTool = None
 
-    def __init__(self, project, layers):
+    def __init__(self, project):
         super(Plan, self).__init__()
         self.project = project
         # If the project gets changed, make sure we update too
         self.project.projectChanged.connect(self.loadProject)
         # If the map tool changes make sure we stay updated
         self.project.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
-        self.layers = layers
 
     # Load the module when plugin is loaded
     def load(self):
@@ -100,21 +96,20 @@ class Plan(QObject):
             return
 
         self.project.initialise()
-        if (not self.project.isConfigured()):
+        if (not self.project.isInitialised()):
             return
-        self.layers.initialise()
 
         self.initialiseBuffers()
         self.initialised = True
 
     def initialiseBuffers(self):
-        self.layers.contexts.createBuffers()
-        self.dock.setSchematicsBuffer(self.layers.contexts.schemaBuffer)
-        self.dock.setPolygonsBuffer(self.layers.contexts.polygonsBuffer)
-        self.dock.setLinesBuffer(self.layers.contexts.linesBuffer)
-        self.dock.setSchematicsLayer(self.layers.contexts.schemaLayer)
-        self.dock.setPolygonsLayer(self.layers.contexts.polygonsLayer)
-        self.dock.setLinesLayer(self.layers.contexts.linesLayer)
+        self.project.contexts.createBuffers()
+        self.dock.setSchematicsBuffer(self.project.contexts.schemaBuffer)
+        self.dock.setPolygonsBuffer(self.project.contexts.polygonsBuffer)
+        self.dock.setLinesBuffer(self.project.contexts.linesBuffer)
+        self.dock.setSchematicsLayer(self.project.contexts.schemaLayer)
+        self.dock.setPolygonsLayer(self.project.contexts.polygonsLayer)
+        self.dock.setLinesLayer(self.project.contexts.linesLayer)
 
     def loadProject(self):
         if not self.initialised:
@@ -141,7 +136,7 @@ class Plan(QObject):
             geoFile = QFileInfo(fileName)
             md = planMetadata(geoFile.completeBaseName())
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
-            self.layers.loadGeoLayer(geoFile)
+            self.project.loadGeoLayer(geoFile)
 
     def setSite(self, siteCode):
         self.siteCode = siteCode
@@ -162,41 +157,41 @@ class Plan(QObject):
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
-            self.layers.loadGeoLayer(georefDialog.geoRefFile())
+            self.project.loadGeoLayer(georefDialog.geoRefFile())
 
     # Layer Methods
 
     def mergeBuffers(self):
-        if self.layers.contexts.okToMergeBuffers():
-            self.layers.contexts.mergeBuffers('Merge context ' + str(self.context))
+        if self.project.contexts.okToMergeBuffers():
+            self.project.contexts.mergeBuffers('Merge context ' + str(self.context))
 
     def clearBuffers(self):
-        self.layers.contexts.clearBuffers('Clear buffer data ' + str(self.context))
+        self.project.contexts.clearBuffers('Clear buffer data ' + str(self.context))
 
     def enableLevelsMode(self, typeAttribute):
         #TODO disable all snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
+        self.createMapTool(typeAttribute, self.project.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineSegmentMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.createMapTool(typeAttribute, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.createMapTool(typeAttribute, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enablePolygonMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.createMapTool(typeAttribute, self.project.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableSchematicMode(self, typeAttribute):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.layers.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(typeAttribute, self.project.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):

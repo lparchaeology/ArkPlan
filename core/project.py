@@ -23,12 +23,13 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QDir, QObject, QVariant, pyqtSignal
+from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
 from qgis.gui import QgsMessageBar
 
+from layercollection import *
 from settings_dialog import SettingsDialog
 
 
@@ -53,6 +54,10 @@ class Project(QObject):
     planGroupIndex = -1
 
     bufferSuffix = '_mem'
+
+    geoLayer = None  #QgsRasterLayer()
+    contexts = None  # LayerCollection()
+    grid = None  # LayerCollection()
 
     moduleDefaults = { 'contexts' : { 'path' : '', 'layersGroupName' : 'Context Data', 'buffersGroupName' : 'Edit Context Data', 'pointsBaseName' : 'context_pt', 'linesBaseName' : 'context_pl', 'polygonsBaseName' : 'context_pg', 'schemaBaseName' : 'context_mpg' },
                        'grid' : { 'path' : '', 'layersGroupName' : 'Grid', 'buffersGroupName' : '', 'pointsBaseName' : 'grid_pt', 'linesBaseName' : 'grid_pl', 'polygonsBaseName' : 'grid_pg', 'schemaBaseName' : '' } }
@@ -91,6 +96,9 @@ class Project(QObject):
     baselinePointFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
     gridPointFields = ['id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by']
 
+    # Private settings
+    _initialised = False
+
     def __init__(self, iface, pluginPath):
         super(Project, self).__init__()
         self.iface = iface
@@ -103,6 +111,9 @@ class Project(QObject):
         self.toolbar = self.iface.addToolBar(self.pluginName)
         self.toolbar.setObjectName(self.pluginName)
 
+        # If the legend indexes change make sure we stay updated
+        self.iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+
     # Load the module when plugin is loaded
     def load(self):
         self.projectAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
@@ -110,18 +121,49 @@ class Project(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
+        if self.contexts is not None:
+            self.contexts.unload()
+        if self.grid is not None:
+            self.grid.unload()
         self.iface.removePluginMenu(self.menuName, self.projectAction)
         self.iface.removeToolBarIcon(self.projectAction)
 
-    # Initialise project the first time it is needed
-    def initialise(self):
-        if not self.isConfigured():
-            self.configure()
+    # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
+    def configure(self):
         if self.isConfigured():
+            return
+        ret = self.showSettingsDialog()
+        # TODO more validation, check if files exist, etc
+        if (self.projectDir().exists() and self.planDir().exists()):
+            self._setIsConfigured(True)
+        else:
+            self._setIsConfigured(False)
+            self.showCriticalMessage('ARK Project not configured, unable to continue!')
+
+    def isConfigured(self):
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'configured', False)[0]
+
+    def _setIsConfigured(self, configured):
+        QgsProject.instance().writeEntry(self.pluginName, 'configured', configured)
+        if not configured:
+            self._initialised = False
+
+    # Initialise project the first time it is needed, i.e. load the data layers
+    def initialise(self):
+        if self._initialised:
+            return True
+        self.configure()
+        if self.isConfigured():
+            self.grid = self._createCollection('grid')
+            self.contexts = self._createCollection('contexts')
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-        else:
-            self.showCriticalMessage('ARK Project not configured, unable to continue!')
+            if (self.grid.initialise() and self.contexts.initialise()):
+                self._initialised = True
+        return self._initialised
+
+    def isInitialised(self):
+        return self._initialised
 
     def projectLoad(self):
         self.projectChanged.emit()
@@ -136,19 +178,9 @@ class Project(QObject):
         self.iface.addPluginToMenu(self.menuName, action)
         return action
 
-    def isConfigured(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'configured', False)[0]
-
-    def _setIsConfigured(self, configured):
-        QgsProject.instance().writeEntry(self.pluginName, 'configured', configured)
-
-    def configure(self):
-        ret = self.showSettingsDialog()
-        # TODO more validation, check if files exist, etc
-        if (self.projectDir().exists() and self.planDir().exists()):
-            self._setIsConfigured(True)
-        else:
-            self._setIsConfigured(False)
+    def _groupIndexChanged(self, oldIndex, newIndex):
+        if (oldIndex == self.projectGroupIndex):
+            self.projectGroupIndex = newIndex
 
     # Convenience logging functions
 
@@ -178,6 +210,66 @@ class Project(QObject):
             return self.siteCode() + '_' + baseName
         return baseName
 
+    def loadGeoLayer(self, geoFile):
+        #TODO Check if already loaded, remove old one?
+        self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
+        self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
+        QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
+        if (self.planGroupIndex < 0):
+            self.planGroupIndex = self.getGroupIndex(self.planGroupName)
+        self.iface.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
+        self.iface.mapCanvas().setExtent(self.geoLayer.extent())
+
+    def applyContextFilter(self, contextList):
+        self.contexts.applyFieldFilter(self.contextAttributeName, contextList)
+
+    def _shapeFile(self, layerPath, layerName):
+        return layerPath + '/' + layerName + '.shp'
+
+    def _styleFile(self, layerPath, layerName, baseName, defaultName):
+        # First see if the layer itself has a default style saved
+        filePath = layerPath + '/' + layerName + '.qml'
+        if QFile.exists(filePath):
+            return filePath
+        # Next see if the base name has a style in the styles folder (which may be a special folder, the site folder or the plugin folder)
+        filePath = self.stylePath() + '/' + baseName + '.qml'
+        if QFile.exists(filePath):
+            return filePath
+        # Next see if the default name has a style in the style folder
+        filePath = self.stylePath() + '/' + defaultName + '.qml'
+        if QFile.exists(filePath):
+            return filePath
+        # Finally, check the plugin folder for the default style
+        filePath = self.stylePath() + '/' + defaultName + '.qml'
+        if QFile.exists(filePath):
+            return filePath
+        # If we didn't find that then something is wrong!
+        return ''
+
+
+    def _createCollection(self, module):
+        path = self.modulePath(module)
+        lcs = LayerCollectionSettings()
+        lcs.collectionGroupName = self.layersGroupName(module)
+        lcs.buffersGroupName = self.buffersGroupName(module)
+        lcs.bufferSuffix = self.bufferSuffix
+        lcs.pointsLayerProvider = 'ogr'
+        lcs.pointsLayerName = self.pointsLayerName(module)
+        lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
+        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, self.pointsBaseName(module), self.pointsBaseNameDefault(module))
+        lcs.linesLayerProvider = 'ogr'
+        lcs.linesLayerName = self.linesLayerName(module)
+        lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
+        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, self.linesBaseName(module), self.linesBaseNameDefault(module))
+        lcs.polygonsLayerProvider = 'ogr'
+        lcs.polygonsLayerName = self.polygonsLayerName(module)
+        lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
+        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
+        lcs.schemaLayerProvider = 'ogr'
+        lcs.schemaLayerName = self.schemaLayerName(module)
+        lcs.schemaLayerPath = self._shapeFile(self.modulePath(module), lcs.schemaLayerName)
+        lcs.schemaStylePath = self._styleFile(self.modulePath(module), lcs.schemaLayerName, self.schemaBaseName(module), self.schemaBaseNameDefault(module))
+        return LayerCollection(self.iface, lcs)
 
     # Project settings
 

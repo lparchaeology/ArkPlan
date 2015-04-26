@@ -26,7 +26,6 @@ import os.path
 import resources_rc
 
 from .core.project import Project
-from .core.layers import LayerManager
 
 from .grid.grid import GridModule
 from .plan.plan import Plan
@@ -37,19 +36,17 @@ class Ark:
 
     # Common plugin objects
     project = None # Project()
-    layers = None  # LayerManager()
 
     # Modules
-    gridModule = None  # Plan()
+    gridModule = None  # Grid()
     planModule = None  # Plan()
     filterModule = None  # Filter()
 
     def __init__(self, iface):
         self.project = Project(iface, os.path.dirname(__file__))
-        self.layers = LayerManager(self.project)
-        self.gridModule = GridModule(self.project, self.layers)
-        self.planModule = Plan(self.project, self.layers)
-        self.filterModule = Filter(self.project, self.layers)
+        self.gridModule = GridModule(self.project)
+        self.planModule = Plan(self.project)
+        self.filterModule = Filter(self.project)
 
     # Load the plugin
     def initGui(self):
@@ -61,9 +58,6 @@ class Ark:
     # Unload the plugin
     def unload(self):
 
-        # Remove the layers from the legend
-        self.layers.unload()
-
         # Unload the modules
         self.gridModule.unload()
         self.planModule.unload()
@@ -71,4 +65,3 @@ class Ark:
 
         # Removes the plugin menu item and icon from QGIS GUI.
         self.project.unload()
-

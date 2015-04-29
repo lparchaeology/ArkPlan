@@ -24,10 +24,10 @@
 
 import os.path
 
-from PyQt4.QtCore import QSettings
+from PyQt4.QtCore import QSettings, QFile
 from PyQt4.QtGui import QIcon, QAction
 
-from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayerRegistry
+from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
 from qgis.gui import QgsMessageBar
 
 # Message utilities
@@ -67,6 +67,26 @@ def defaultSnappingTolerance():
     return tolerance
 
 # Layer management utilities
+
+def createShapefile(filePath, fields, wkbType, crs):
+    ok = False
+    if (filePath is None or filePath == '' or QFile.exists(filePath)):
+        return ok
+    layer = QgsVectorFileWriter(filePath, fields, wkbType, crs, 'ESRI Shapefile')
+    if layer.hasError() == QgsVectorFileWriter.NoError:
+        ok = True
+    del layer
+    return ok
+
+def createMemoryLayer(self, layer):
+    if (layer is not None and layer.isValid()):
+        uri = wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
+        layer = QgsVectorLayer(uri, layer.name() + self._settings.bufferSuffix, 'memory')
+        if (layer is not None and layer.isValid()):
+            layer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
+            layer.loadNamedStyle(layer.styleURI())
+        return layer
+    return None
 
 def getGroupIndex(iface, groupName):
     groupIndex = -1

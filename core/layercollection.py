@@ -78,7 +78,7 @@ class LayerCollection:
 
     _iface = None # QgsInterface()
     _settings = LayerCollectionSettings()
-    _collectionGroupIndex =-1
+    _collectionGroupIndex = -1
     _buffersGroupIndex = -1
 
     filter = ''
@@ -219,31 +219,12 @@ class LayerCollection:
 
     def _createBufferLayer(self, layer):
         if (layer is not None and layer.isValid()):
-            buffer = self._createMemoryLayer(layer)
+            buffer = utils._createMemoryLayer(layer)
             if (buffer is not None and buffer.isValid()):
                 buffer = self._addLayerToLegend(buffer, self._buffersGroupIndex)
                 buffer.startEditing()
                 return buffer, buffer.id()
         return None, ''
-
-    def _createLayer(self, type, name, provider, attributes, layerPath, stylePath):
-        layer = QgsVectorLayer(layerPath, name, provider)
-        if (layer is not None and layer.isValid()):
-            layer.dataProvider().addAttributes(attributes)
-            layer.loadNamedStyle(stylePath)
-            self._setDefaultSnapping(layer)
-            # TODO save layer??? crs???
-        return layer
-
-    def _createMemoryLayer(self, layer):
-        if (layer is not None and layer.isValid()):
-            uri = utils.wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
-            buffer = QgsVectorLayer(uri, layer.name() + self._settings.bufferSuffix, 'memory')
-            if (buffer is not None and buffer.isValid()):
-                buffer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
-                buffer.loadNamedStyle(layer.styleURI())
-            return buffer
-        return None
 
     def okToMergeBuffers(self):
         return self.isCollectionEditable()

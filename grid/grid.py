@@ -143,8 +143,8 @@ class GridModule(QObject):
 
     def transformPoints(self, feature):
         crsPoint = feature.geometry().asPoint()
-        localX = feature.attribute(self.project.fieldDefinitions['local_x'].name())
-        localY = feature.attribute(self.project.fieldDefinitions['local_y'].name())
+        localX = feature.attribute(self.project.fieldName('local_x'))
+        localY = feature.attribute(self.project.fieldName('local_y'))
         localPoint = QgsPoint(localX, localY)
         return crsPoint, localPoint
 
@@ -165,10 +165,10 @@ class GridModule(QObject):
     def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
         localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
         fields = QgsFields()
-        fields.append(self.project.fieldDefinitions['local_x'])
-        fields.append(self.project.fieldDefinitions['local_y'])
-        local_x = self.project.fieldDefinitions['local_x'].name()
-        local_y = self.project.fieldDefinitions['local_y'].name()
+        fields.append(self.project.field('local_x'))
+        fields.append(self.project.field('local_y'))
+        local_x = self.project.fieldName('local_x')
+        local_y = self.project.fieldName('local_y')
 
         pointsPath = self.project.modulePath('grid') + '/' + self.project.pointsLayerName('grid') + '.shp'
         points = QgsVectorFileWriter(pointsPath, 'System', fields, QGis.WKBPoint, self.project.projectCrs(), 'ESRI Shapefile')
@@ -281,13 +281,13 @@ class GridModule(QObject):
     def updateLayerLocalCoords(self, layer):
         if not self.initialised:
             return
-        local_x = self.project.fieldDefinitions['local_x'].name()
-        local_y = self.project.fieldDefinitions['local_y'].name()
+        local_x = self.project.fieldName('local_x')
+        local_y = self.project.fieldName('local_y')
         if layer.startEditing():
             if not layer.fieldNameIndex(local_x):
-                layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_x']])
+                layer.dataProvider().addAttributes([self.project.field('local_x')])
             if not layer.fieldNameIndex(local_y):
-                layer.dataProvider().addAttributes([self.project.fieldDefinitions['local_y']])
+                layer.dataProvider().addAttributes([self.project.field('local_y')])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
             for feature in layer.getFeatures():

@@ -153,7 +153,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.project.planDir(), self.project.separatePlanFolders(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldDefinitions['local_x'].name(), self.project.fieldDefinitions['local_y'].name())
+        georefDialog = GeorefDialog(rawFile, self.project.planDir(), self.project.separatePlanFolders(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
             md = georefDialog.metadata()
             self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
@@ -200,7 +200,13 @@ class Plan(QObject):
         self.project.iface.legendInterface().setCurrentLayer(layer)
         self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, featureType, toolName)
-        self.currentMapTool.setDefaultAttributes({0 : self.context, 1 : self.source, 2 : typeAttribute, 3 : self.comment})
+        defaults = {}
+        defaults.append(layer.fieldNameIndex(self.project.fieldName('site')), self.siteCode)
+        defaults.append(layer.fieldNameIndex(self.project.fieldName('context')), self.context)
+        defaults.append(layer.fieldNameIndex(self.project.fieldName('source')), self.source)
+        defaults.append(layer.fieldNameIndex(self.project.fieldName('category')), typeAttribute)
+        defaults.append(layer.fieldNameIndex(self.project.fieldName('comment')), self.comment)
+        self.currentMapTool.setDefaultAttributes(defaults)
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)

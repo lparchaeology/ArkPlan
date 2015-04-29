@@ -165,7 +165,7 @@ class Filter(QObject):
 
 
     def showIdentifyDialog(self, feature):
-        context = feature.attribute(self.project.contextAttributeName)
+        context = feature.attribute(self.project.fieldName('context'))
         self.showDataDialogList([context])
 
 

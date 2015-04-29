@@ -53,48 +53,57 @@ class Project(QObject):
     planGroupName = 'Context Plans'
     planGroupIndex = -1
 
-    bufferSuffix = '_mem'
-
     geoLayer = None  #QgsRasterLayer()
     contexts = None  # LayerCollection()
     grid = None  # LayerCollection()
 
-    moduleDefaults = { 'contexts' : { 'path' : '', 'layersGroupName' : 'Context Data', 'buffersGroupName' : 'Edit Context Data', 'pointsBaseName' : 'context_pt', 'linesBaseName' : 'context_pl', 'polygonsBaseName' : 'context_pg', 'schemaBaseName' : 'context_mpg' },
-                       'grid' : { 'path' : '', 'layersGroupName' : 'Grid', 'buffersGroupName' : '', 'pointsBaseName' : 'grid_pt', 'linesBaseName' : 'grid_pl', 'polygonsBaseName' : 'grid_pg', 'schemaBaseName' : '' } }
+    fieldDefaults = {
+        'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
+        'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
+        'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
+        'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
+        'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
+        'source'    : QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
+        'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
+        'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
+        'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
+        'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
+        'crs_y'     : QgsField('crs_y',      QVariant.Double, '',  10, 3, 'CRS y'),
+        'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
+        'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
+        'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')
+    }
 
-    contextAttributeName = 'context'
-    contextAttributeSize = 5
-    sourceAttributeName = 'source'
-    sourceAttributeSize = 30
-    typeAttributeName = 'type'
-    typeAttributeSize = 10
-    commentAttributeName = 'comment'
-    commentAttributeSize = 100
-    elevationAttributeName = 'elevation'
-    elevationAttributeSize = 5
-    elevationAttributePrecision = 2
-
-    fieldDefinitions = { 'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
-                         'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
-                         'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
-                         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
-                         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
-                         'source'    : QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
-                         'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
-                         'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
-                         'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
-                         'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
-                         'crs_y'     : QgsField('crs_y',      QVariant.Double, '',  10, 3, 'CRS y'),
-                         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-                         'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
-                         'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By') }
-
-    contextPointFields = ['context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
-    contextLinesFields = ['context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
-    contextPolygonsFields = contextLinesFields
-    contextSchematicFields = contextLinesFields
-    baselinePointFields = ['id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by']
-    gridPointFields = ['id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by']
+    moduleDefaults = {
+        'contexts' : {
+            'path' : '',
+            'layersGroupName'  : 'Context Data',
+            'buffersGroupName' : 'Edit Context Data',
+            'bufferSuffix'     : '_mem',
+            'pointsBaseName'   : 'context_pt',
+            'linesBaseName'    : 'context_pl',
+            'polygonsBaseName' : 'context_pg',
+            'schemaBaseName'   : 'context_mpg'
+            'pointsFields'     : ['site', 'context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'schemaFields'     : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+        },
+        'grid' : {
+            'path' : '',
+            'layersGroupName'  : 'Grid',
+            'buffersGroupName' : '',
+            'bufferSuffix'     : '',
+            'pointsBaseName'   : 'grid_pt',
+            'linesBaseName'    : 'grid_pl',
+            'polygonsBaseName' : 'grid_pg',
+            'schemaBaseName'   : '',
+            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'schemaFields'     : []
+        }
+    }
 
     # Private settings
     _initialised = False
@@ -134,7 +143,7 @@ class Project(QObject):
             return
         ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.projectDir().exists() and self.planDir().exists()):
+        if (self.projectDir().exists() and self.planDir().exists() and self.styleDir().exists() and self.moduleDir('grid').exists() and self.moduleDir('contexts').exists()):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -148,14 +157,16 @@ class Project(QObject):
         if not configured:
             self._initialised = False
 
-    # Initialise project the first time it is needed, i.e. load the data layers
+    # Initialise project the first time it is needed, i.e. load the configuration
     def initialise(self):
         if self._initialised:
             return True
         self.configure()
         if self.isConfigured():
             self.grid = self._createCollection('grid')
+            self._createCollectionLayers(self.grid._settings)
             self.contexts = self._createCollection('contexts')
+            self._createCollectionLayers(self.contexts._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
             if (self.grid.initialise() and self.contexts.initialise()):
@@ -221,7 +232,7 @@ class Project(QObject):
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
     def applyContextFilter(self, contextList):
-        self.contexts.applyFieldFilter(self.contextAttributeName, contextList)
+        self.contexts.applyFieldFilter(self.fieldName('context'), contextList)
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
@@ -246,30 +257,59 @@ class Project(QObject):
         # If we didn't find that then something is wrong!
         return ''
 
-
     def _createCollection(self, module):
         path = self.modulePath(module)
         lcs = LayerCollectionSettings()
         lcs.collectionGroupName = self.layersGroupName(module)
         lcs.buffersGroupName = self.buffersGroupName(module)
-        lcs.bufferSuffix = self.bufferSuffix
-        lcs.pointsLayerProvider = 'ogr'
-        lcs.pointsLayerName = self.pointsLayerName(module)
-        lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
-        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, self.pointsBaseName(module), self.pointsBaseNameDefault(module))
-        lcs.linesLayerProvider = 'ogr'
-        lcs.linesLayerName = self.linesLayerName(module)
-        lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
-        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, self.linesBaseName(module), self.linesBaseNameDefault(module))
-        lcs.polygonsLayerProvider = 'ogr'
-        lcs.polygonsLayerName = self.polygonsLayerName(module)
-        lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
-        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
-        lcs.schemaLayerProvider = 'ogr'
-        lcs.schemaLayerName = self.schemaLayerName(module)
-        lcs.schemaLayerPath = self._shapeFile(self.modulePath(module), lcs.schemaLayerName)
-        lcs.schemaStylePath = self._styleFile(self.modulePath(module), lcs.schemaLayerName, self.schemaBaseName(module), self.schemaBaseNameDefault(module))
+        lcs.bufferSuffix = self._moduleDefault(module, 'bufferSuffix')
+        layerName = self.pointsLayerName(module)
+        if layerName:
+            lcs.pointsLayerProvider = 'ogr'
+            lcs.pointsLayerName = layerName
+            lcs.pointsLayerPath = self._shapeFile(path, layerName)
+            lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(module), self.pointsBaseNameDefault(module))
+        layerName = self.linesLayerName(module)
+        if layerName:
+            lcs.linesLayerProvider = 'ogr'
+            lcs.linesLayerName = layerName
+            lcs.linesLayerPath = self._shapeFile(path, layerName)
+            lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(module), self.linesBaseNameDefault(module))
+        layerName = self.polygonsLayerName(module)
+        if layerName:
+            lcs.polygonsLayerProvider = 'ogr'
+            lcs.polygonsLayerName = layerName
+            lcs.polygonsLayerPath = self._shapeFile(path, layerName)
+            lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
+        layerName = self.schemaLayerName(module)
+        if layerName:
+            lcs.schemaLayerProvider = 'ogr'
+            lcs.schemaLayerName = layerName
+            lcs.schemaLayerPath = self._shapeFile(self.modulePath(module), layerName)
+            lcs.schemaStylePath = self._styleFile(self.modulePath(module), layerName, self.schemaBaseName(module), self.schemaBaseNameDefault(module))
         return LayerCollection(self.iface, lcs)
+
+    def _createCollectionLayers(self, settings):
+        utils._createShapefile(settings.pointsLayerPath, self._layerFields(settings.pointsFields), QGis.WKBPoint, self.projectCrs())
+        utils._createShapefile(settings.linesLayerPath, self._layerFields(settings.linesFields), QGis.WKBLine, self.projectCrs())
+        utils._createShapefile(settings.polygonsLayerPath, self._layerFields(settings.polygonsFields), QGis.WKBPolygon, self.projectCrs())
+        utils._createShapefile(settings.schemaLayerPath, self._layerFields(settings.schemaFields), QGis.WKBMultiPolygon, self.projectCrs())
+
+    def _layerFields(self, module, fieldsKey):
+        fieldKeys = self._moduleDefault(module, fieldsKey)
+        fields = QgsFields()
+        for fieldKey in fieldKeys:
+            field = fieldDefaults[fieldKey]
+            fields.append(field)
+        return fields
+
+    # Field settings
+
+    def field(self, fieldKey):
+        self.fieldDefaults[fieldKey]
+
+    def fieldName(self, fieldKey):
+        self.fieldDefaults[fieldKey].name()
 
     # Project settings
 
@@ -321,17 +361,20 @@ class Project(QObject):
 
     # Module settings
 
-    def _getModuleEntry(self, module, key):
-        return QgsProject.instance().readEntry(self.pluginName, module + '/' + key, self.moduleDefaults[module][key])[0]
+    def _moduleDefault(module, key):
+        return self.moduleDefaults[module][key]
+
+    def _moduleEntry(self, module, key):
+        return QgsProject.instance().readEntry(self.pluginName, module + '/' + key, self._moduleDefault(module, key))[0]
 
     def _setModuleEntry(self, module, key, value):
-        self._setProjectEntry(module + '/' + key, value, self.moduleDefaults[module][key])
+        self._setProjectEntry(module + '/' + key, value, self._moduleDefault(module, key))
 
     def moduleDir(self, module):
         return QDir(self.modulePath(module))
 
     def modulePath(self, module):
-        path =  self._getModuleEntry(module, 'path')
+        path =  self._moduleEntry(module, 'path')
         if (not path):
             return self.projectPath()
         return path
@@ -340,22 +383,22 @@ class Project(QObject):
         self._setModuleEntry(module, 'path', absolutePath)
 
     def layersGroupName(self, module):
-        return self._getModuleEntry(module, 'layersGroupName')
+        return self._moduleEntry(module, 'layersGroupName')
 
     def setLayersGroupName(self, module, layersGroupName):
         self._setModuleEntry(module, 'layersGroupName', layersGroupName)
 
     def buffersGroupName(self, module):
-        return self._getModuleEntry(module, 'buffersGroupName')
+        return self._moduleEntry(module, 'buffersGroupName')
 
     def setBuffersGroupName(self, module, buffersGroupName):
         self._setModuleEntry(module, 'buffersGroupName', buffersGroupName)
 
     def pointsBaseNameDefault(self, module):
-        return self.moduleDefaults[module]['pointsBaseName']
+        return self._moduleDefault(module, 'pointsBaseName')
 
     def pointsBaseName(self, module):
-        return self._getModuleEntry(module, 'pointsBaseName')
+        return self._moduleEntry(module, 'pointsBaseName')
 
     def setPointsBaseName(self, module, pointsBaseName):
         self._setModuleEntry(module, 'pointsBaseName', pointsBaseName)
@@ -364,10 +407,10 @@ class Project(QObject):
         return self._layerName(self.pointsBaseName(module))
 
     def linesBaseNameDefault(self, module):
-        return self.moduleDefaults[module]['linesBaseName']
+        return self._moduleDefault(module, 'linesBaseName')
 
     def linesBaseName(self, module):
-        return self._getModuleEntry(module, 'linesBaseName')
+        return self._moduleEntry(module, 'linesBaseName')
 
     def setLinesBaseName(self, module, linesBaseName):
         self._setModuleEntry(module, 'linesBaseName', linesBaseName)
@@ -376,10 +419,10 @@ class Project(QObject):
         return self._layerName(self.linesBaseName(module))
 
     def polygonsBaseNameDefault(self, module):
-        return self.moduleDefaults[module]['polygonsBaseName']
+        return self._moduleDefault(module, 'polygonsBaseName')
 
     def polygonsBaseName(self, module):
-        return self._getModuleEntry(module, 'polygonsBaseName')
+        return self._moduleEntry(module, 'polygonsBaseName')
 
     def setPolygonsBaseName(self, module, polygonsBaseName):
         self._setModuleEntry(module, 'polygonsBaseName', polygonsBaseName)
@@ -388,10 +431,10 @@ class Project(QObject):
         return self._layerName(self.polygonsBaseName(module))
 
     def schemaBaseNameDefault(self, module):
-        return self.moduleDefaults[module]['schemaBaseName']
+        return self._moduleDefault(module, 'schemaBaseName')
 
     def schemaBaseName(self, module):
-        return self._getModuleEntry(module, 'schemaBaseName')
+        return self._moduleEntry(module, 'schemaBaseName')
 
     def setSchemaBaseName(self, module, schemaBaseName):
         self._setModuleEntry(module, 'schemaBaseName', schemaBaseName)

@@ -109,6 +109,16 @@ class LayerCollection:
         if self._buffersGroupIndex >= 0:
             self._iface.legendInterface().removeGroup(self._buffersGroupIndex)
 
+    def _removeOldBuffers(self):
+        layerId = utils.getLayerId(self._settings.pointsLayerName + self._settings.bufferSuffix)
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
+        layerId = utils.getLayerId(self._settings.linesLayerName + self._settings.bufferSuffix)
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
+        layerId = utils.getLayerId(self._settings.polygonsLayerName + self._settings.bufferSuffix)
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
+        layerId = utils.getLayerId(self._settings.schemaLayerName + self._settings.bufferSuffix)
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
+
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self._collectionGroupIndex):
             self._collectionGroupIndex = newIndex
@@ -189,6 +199,8 @@ class LayerCollection:
 
     # Setup the in-memory buffer layers
     def createBuffers(self):
+
+        self._removeOldBuffers()
 
         if (self._buffersGroupIndex < 0):
             self._buffersGroupIndex = utils.getGroupIndex(self._iface, self._settings.buffersGroupName)

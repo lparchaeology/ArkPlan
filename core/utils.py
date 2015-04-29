@@ -27,7 +27,7 @@ import os.path
 from PyQt4.QtCore import QSettings
 from PyQt4.QtGui import QIcon, QAction
 
-from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog
+from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayerRegistry
 from qgis.gui import QgsMessageBar
 
 # Message utilities
@@ -78,6 +78,12 @@ def getGroupIndex(iface, groupName):
     if (groupIndex < 0):
         groupIndex = iface.legendInterface().addGroup(groupName)
     return groupIndex
+
+def getLayerId(layerName):
+    layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
+    if (len(layerList) > 0):
+        return layerList[0].id()
+    return None
 
 def wkbToMemoryType(wkbType):
     if (wkbType == QGis.WKBPoint):

@@ -186,7 +186,7 @@ class GridModule(QObject):
                 points.addFeature(feature)
         del points
 
-        if self.project.gridLinesLayerName():
+        if self.project.linesLayerName('grid'):
             linesPath = self.project.modulePath('grid') + '/' + self.project.linesLayerName('grid') + '.shp'
             lines = QgsVectorFileWriter(linesPath, 'System', fields, QGis.WKBLineString, self.project.projectCrs(), 'ESRI Shapefile')
             if lines.hasError() != QgsVectorFileWriter.NoError:
@@ -212,7 +212,7 @@ class GridModule(QObject):
                 lines.addFeature(feature)
             del lines
 
-        if self.project.gridPolygonsLayerName():
+        if self.project.polygonsLayerName('grid'):
             polygonsPath = self.project.modulePath('grid') + '/' + self.project.polygonsLayerName('grid') + '.shp'
             polygons = QgsVectorFileWriter(polygonsPath, 'System', fields, QGis.WKBPolygon, self.project.projectCrs(), 'ESRI Shapefile')
             if polygons.hasError() != QgsVectorFileWriter.NoError:

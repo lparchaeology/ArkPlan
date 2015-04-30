@@ -72,20 +72,20 @@ def createShapefile(filePath, fields, wkbType, crs):
     ok = False
     if (filePath is None or filePath == '' or QFile.exists(filePath)):
         return ok
-    layer = QgsVectorFileWriter(filePath, fields, wkbType, crs, 'ESRI Shapefile')
+    layer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs, 'ESRI Shapefile')
     if layer.hasError() == QgsVectorFileWriter.NoError:
         ok = True
     del layer
     return ok
 
-def createMemoryLayer(self, layer):
+def createMemoryLayer(layer, name, stylePath):
     if (layer is not None and layer.isValid()):
         uri = wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
-        layer = QgsVectorLayer(uri, layer.name() + self._settings.bufferSuffix, 'memory')
-        if (layer is not None and layer.isValid()):
-            layer.dataProvider().addAttributes(layer.dataProvider().fields().toList())
-            layer.loadNamedStyle(layer.styleURI())
-        return layer
+        mem = QgsVectorLayer(uri, name, 'memory')
+        if (mem is not None and mem.isValid()):
+            mem.dataProvider().addAttributes(layer.dataProvider().fields().toList())
+            mem.loadNamedStyle(stylePath)
+        return mem
     return None
 
 def getGroupIndex(iface, groupName):

@@ -201,11 +201,11 @@ class Plan(QObject):
         self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, featureType, toolName)
         defaults = {}
-        defaults.append(layer.fieldNameIndex(self.project.fieldName('site')), self.siteCode)
-        defaults.append(layer.fieldNameIndex(self.project.fieldName('context')), self.context)
-        defaults.append(layer.fieldNameIndex(self.project.fieldName('source')), self.source)
-        defaults.append(layer.fieldNameIndex(self.project.fieldName('category')), typeAttribute)
-        defaults.append(layer.fieldNameIndex(self.project.fieldName('comment')), self.comment)
+        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
+        defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context
+        defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
+        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = typeAttribute
+        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
         self.currentMapTool.setDefaultAttributes(defaults)
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)

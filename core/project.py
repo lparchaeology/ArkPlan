@@ -63,8 +63,8 @@ class Project(QObject):
         'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
-        'source'    : QgsField('source',     QVariant.String, '',  50, 0, 'Source'),
-        'file'      : QgsField('file',       QVariant.String, '',  30, 0, 'File'),
+        'source'    : QgsField('source',     QVariant.String, '',  10, 0, 'Source'),
+        'file'      : QgsField('file',       QVariant.String, '',  50, 0, 'File'),
         'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
         'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
         'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
@@ -83,7 +83,7 @@ class Project(QObject):
             'pointsBaseName'   : 'context_pt',
             'linesBaseName'    : 'context_pl',
             'polygonsBaseName' : 'context_pg',
-            'schemaBaseName'   : 'context_mpg'
+            'schemaBaseName'   : 'context_mpg',
             'pointsFields'     : ['site', 'context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
@@ -164,9 +164,9 @@ class Project(QObject):
         self.configure()
         if self.isConfigured():
             self.grid = self._createCollection('grid')
-            self._createCollectionLayers(self.grid._settings)
+            self._createCollectionLayers('grid', self.grid._settings)
             self.contexts = self._createCollection('contexts')
-            self._createCollectionLayers(self.contexts._settings)
+            self._createCollectionLayers('contexts', self.contexts._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
             if (self.grid.initialise() and self.contexts.initialise()):
@@ -217,7 +217,7 @@ class Project(QObject):
             QgsProject.instance().writeEntry(self.pluginName, key, value)
 
     def _layerName(self, baseName):
-        if (self.prependSiteCode() and self.siteCode()):
+        if (baseName and self.prependSiteCode() and self.siteCode()):
             return self.siteCode() + '_' + baseName
         return baseName
 
@@ -289,27 +289,27 @@ class Project(QObject):
             lcs.schemaStylePath = self._styleFile(self.modulePath(module), layerName, self.schemaBaseName(module), self.schemaBaseNameDefault(module))
         return LayerCollection(self.iface, lcs)
 
-    def _createCollectionLayers(self, settings):
-        utils._createShapefile(settings.pointsLayerPath, self._layerFields(settings.pointsFields), QGis.WKBPoint, self.projectCrs())
-        utils._createShapefile(settings.linesLayerPath, self._layerFields(settings.linesFields), QGis.WKBLine, self.projectCrs())
-        utils._createShapefile(settings.polygonsLayerPath, self._layerFields(settings.polygonsFields), QGis.WKBPolygon, self.projectCrs())
-        utils._createShapefile(settings.schemaLayerPath, self._layerFields(settings.schemaFields), QGis.WKBMultiPolygon, self.projectCrs())
+    def _createCollectionLayers(self, module, settings):
+        utils.createShapefile(settings.pointsLayerPath, self._layerFields(module, 'pointsFields'), QGis.WKBPoint, self.projectCrs())
+        utils.createShapefile(settings.linesLayerPath, self._layerFields(module, 'linesFields'), QGis.WKBLineString, self.projectCrs())
+        utils.createShapefile(settings.polygonsLayerPath, self._layerFields(module, 'polygonsFields'), QGis.WKBPolygon, self.projectCrs())
+        utils.createShapefile(settings.schemaLayerPath, self._layerFields(module, 'schemaFields'), QGis.WKBMultiPolygon, self.projectCrs())
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)
         fields = QgsFields()
         for fieldKey in fieldKeys:
-            field = fieldDefaults[fieldKey]
+            field = self.fieldDefaults[fieldKey]
             fields.append(field)
         return fields
 
     # Field settings
 
     def field(self, fieldKey):
-        self.fieldDefaults[fieldKey]
+        return self.fieldDefaults[fieldKey]
 
     def fieldName(self, fieldKey):
-        self.fieldDefaults[fieldKey].name()
+        return self.fieldDefaults[fieldKey].name()
 
     # Project settings
 
@@ -361,7 +361,7 @@ class Project(QObject):
 
     # Module settings
 
-    def _moduleDefault(module, key):
+    def _moduleDefault(self, module, key):
         return self.moduleDefaults[module][key]
 
     def _moduleEntry(self, module, key):

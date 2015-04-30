@@ -206,20 +206,20 @@ class LayerCollection:
             self._buffersGroupIndex = utils.getGroupIndex(self._iface, self._settings.buffersGroupName)
 
         if (self.schemaBuffer is None or not self.schemaBuffer.isValid()):
-            self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer)
+            self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer, self._settings.schemaStylePath)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
-            self.polygonsBuffer, self.polygonsBufferId = self._createBufferLayer(self.polygonsLayer)
+            self.polygonsBuffer, self.polygonsBufferId = self._createBufferLayer(self.polygonsLayer, self._settings.polygonsStylePath)
 
         if (self.linesBuffer is None or not self.linesBuffer.isValid()):
-            self.linesBuffer, self.linesBufferId = self._createBufferLayer(self.linesLayer)
+            self.linesBuffer, self.linesBufferId = self._createBufferLayer(self.linesLayer, self._settings.linesStylePath)
 
         if (self.pointsBuffer is None or not self.pointsBuffer.isValid()):
-            self.pointsBuffer, self.pointsBufferId = self._createBufferLayer(self.pointsLayer)
+            self.pointsBuffer, self.pointsBufferId = self._createBufferLayer(self.pointsLayer, self._settings.pointsStylePath)
 
-    def _createBufferLayer(self, layer):
+    def _createBufferLayer(self, layer, stylePath):
         if (layer is not None and layer.isValid()):
-            buffer = utils._createMemoryLayer(layer)
+            buffer = utils.createMemoryLayer(layer, layer.name() + self._settings.bufferSuffix, stylePath)
             if (buffer is not None and buffer.isValid()):
                 buffer = self._addLayerToLegend(buffer, self._buffersGroupIndex)
                 buffer.startEditing()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'filter/filter_dock_base.ui'
 #
-# Created: Wed Mar  4 15:46:25 2015
+# Created: Thu Apr 30 12:40:23 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,9 +43,11 @@ class Ui_FilterDock(object):
         self.clearFilterButton.setObjectName(_fromUtf8("clearFilterButton"))
         self.gridLayout_2.addWidget(self.clearFilterButton, 0, 3, 1, 1)
         self.loadDataButton = QtGui.QPushButton(self.FilterDockContents)
+        self.loadDataButton.setEnabled(False)
         self.loadDataButton.setObjectName(_fromUtf8("loadDataButton"))
         self.gridLayout_2.addWidget(self.loadDataButton, 1, 1, 1, 1)
         self.showDataButton = QtGui.QPushButton(self.FilterDockContents)
+        self.showDataButton.setEnabled(False)
         self.showDataButton.setObjectName(_fromUtf8("showDataButton"))
         self.gridLayout_2.addWidget(self.showDataButton, 1, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)

@@ -157,8 +157,8 @@ class Filter(QObject):
 
     def triggerIdentifyAction(self, checked):
         if checked:
-            if not self.dataLoaded:
-                self.data.loadData()
+            #if not self.dataLoaded:
+                #self.data.loadData()
             self.project.iface.mapCanvas().setMapTool(self.identifyMapTool)
         else:
             self.project.iface.mapCanvas().unsetMapTool(self.identifyMapTool)

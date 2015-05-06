@@ -264,7 +264,7 @@ class QgsMapToolSnap(QgsMapTool):
 class QgsMapToolCapture(QgsMapToolSnap):
 
     _iface = None
-    _useLayerGeometry = False
+    _useCurrentLayerGeometry = False
     _geometryType = QGis.NoGeometry
     _mapPointList = []  #QList<QgsPoint>
     _rubberBand = None  #QgsRubberBand()
@@ -282,7 +282,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
         self._iface = iface
         self._geometryType = geometryType
         if (geometryType == QGis.UnknownGeometry):
-            self._useLayerGeometry = True
+            self._useCurrentLayerGeometry = True
         self.setCursor(capture_point_cursor)
 
     def __del__(self):
@@ -294,7 +294,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
         geometryType = self.geometryType()
         self._rubberBand = self._createRubberBand(geometryType)
         self._moveRubberBand = self._createRubberBand(geometryType, True)
-        if (self._useLayerGeometry == True):
+        if (self._useCurrentLayerGeometry == True):
             self._iface.currentLayerChanged.connect(self._currentLayerChanged)
 
     def deactivate(self):
@@ -308,18 +308,18 @@ class QgsMapToolCapture(QgsMapToolSnap):
         if (self._zoomRubberBand is not None):
             self.canvas().scene().removeItem(self._zoomRubberBand)
             self._zoomRubberBand = None
-        if (self._useLayerGeometry == True):
+        if (self._useCurrentLayerGeometry == True):
             self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
         super(QgsMapToolCapture, self).deactivate()
 
     def geometryType(self):
-        if (self._useLayerGeometry and self._isVectorLayer()):
+        if (self._useCurrentLayerGeometry and self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer):
             return self.canvas().currentLayer().geometryType()
         else:
             return self._geometryType
 
     def _currentLayerChanged(self, layer):
-        if (not self._useLayerGeometry):
+        if (not self._useCurrentLayerGeometry):
             return
         #TODO Update rubber bands
         if (self._rubberBand is not None):
@@ -531,9 +531,6 @@ class QgsMapToolCapture(QgsMapToolSnap):
     def validationFinished(self):
         self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))
 
-    def _isVectorLayer(self):
-        return (self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer)
-
 
 class QgsMapToolAddFeature(QgsMapToolCapture):
 
@@ -543,6 +540,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
     Line = 3
     Polygon = 4
 
+    _layer = None  # QgsVectorLayer()
     _featureType = 0  # NoFeature
     _defaultAttributes = {}  # QMap<int, QList<QVariant> >
 
@@ -556,20 +554,29 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
     _queryMin = 0
     _queryMax = 0
 
-    def __init__(self, canvas, iface, featureType=0, toolName=''):
+    def __init__(self, canvas, iface, layer, featureType=0, toolName=''):
         geometryType = QGis.UnknownGeometry
-        if (featureType == QgsMapToolAddFeature.Point):
-            geometryType = QGis.Point
-        elif (featureType == QgsMapToolAddFeature.Segment or featureType == QgsMapToolAddFeature.Line):
-            geometryType = QGis.Line
-        elif (featureType == QgsMapToolAddFeature.Polygon):
-            geometryType = QGis.Polygon
+        if (layer is not None and layer.isValid()):
+            geometryType = layer.geometryType()
         super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
+        self._layer = layer
+
+        if (featureType == QgsMapToolAddFeature.NoFeature):
+            if (geometryType == QGis.Point):
+                self._featureType = QgsMapToolAddFeature.Point
+            elif (geometryType == QGis.Line):
+                self._featureType = QgsMapToolAddFeature.Line
+            elif (geometryType == QGis.Polygon):
+                self._featureType = QgsMapToolAddFeature.Polygon
+            else:
+                self._featureType = QgsMapToolAddFeature.NoFeature
+        else:
+            self._featureType = featureType
+
         if (toolName):
             self.mToolName = toolName
         else:
             self.mToolName = self.tr('Add feature')
-        self._featureType = featureType
 
     def isEditTool(self):
         return True
@@ -590,9 +597,8 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
     def activate(self):
         super(QgsMapToolAddFeature, self).activate()
-        vlayer = self._currentVectorLayer()
-        if (vlayer is not None and vlayer.geometryType() == QGis.NoGeometry):
-            self._addFeatureAction(vlayer, QgsFeature(), False)
+        if (self._layer is not None and self._layer.geometryType() == QGis.NoGeometry):
+            self._addFeatureAction(QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
         wasDragging = self._dragging
@@ -630,31 +636,30 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             self.resetCapturing()
             return
 
-        if (not self._isVectorLayer()):
+        if (self._layer.type() != QgsMapLayer.VectorLayer):
             self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not a vector layer'), QgsMessageBar.CRITICAL)
             self.resetCapturing()
             return
-        vlayer = self._currentVectorLayer()
 
-        if (not vlayer.isEditable()):
+        if (not self._layer.isEditable()):
             self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not editable'), QgsMessageBar.CRITICAL)
             self.resetCapturing()
             return
 
-        if (vlayer.geometryType() != self.geometryType()):
+        if (self._layer.geometryType() != self.geometryType()):
             self.messageEmitted.emit(self.tr('Cannot add feature: The geometry type of this layer is different than the capture tool.'), QgsMessageBar.CRITICAL)
             self.resetCapturing()
             return;
 
-        provider = vlayer.dataProvider()
+        provider = self._layer.dataProvider()
         if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
             self.resetCapturing()
             self.messageEmitted.emit(self.tr('Cannot add feature: The data provider for this layer does not support the addition of features.'), QgsMessageBar.CRITICAL)
             return
 
-        layerWKBType = vlayer.wkbType()
+        layerWKBType = self._layer.wkbType()
         layerPoints = self._layerPoints()
-        feature = QgsFeature(vlayer.pendingFields(), 0)
+        feature = QgsFeature(self._layer.pendingFields(), 0)
         geometry = None
 
         self.resetCapturing()
@@ -670,7 +675,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             else:
                 value, ok = QInputDialog.getText(None, self._queryTitle, self._queryLabel, text=self._queryAttributeDefault)
             if ok:
-                idx = vlayer.pendingFields().fieldNameIndex(self._queryAttributeName)
+                idx = self._layer.pendingFields().fieldNameIndex(self._queryAttributeName)
                 self._defaultAttributes[idx] = value
             else:
                 return
@@ -714,7 +719,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 self.messageEmitted.emit(reason, QgsMessageBar.CRITICAL)
                 return
 
-        featureSaved = self._addFeatureAction(vlayer, feature, False)
+        featureSaved = self._addFeatureAction(feature, False)
 
         if (featureSaved and self._featureType != QgsMapToolAddFeature.Point):
             #add points to other features to keep topology up-to-date
@@ -731,13 +736,13 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                     if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
                         vl.self._addTopologicalPoints(feature.geometry())
             elif (topologicalEditing):
-                vlayer.self._addTopologicalPoints(feature.geometry())
+                self._layer.self._addTopologicalPoints(feature.geometry())
 
         self.canvas().refresh()
 
 
-    def _addFeatureAction(self, vlayer, feature, showModal=True):
-        action = QgsFeatureAction(self.tr('add feature'), feature, vlayer, -1, -1, self._iface, self)
+    def _addFeatureAction(self, feature, showModal=True):
+        action = QgsFeatureAction(self.tr('add feature'), feature, self._layer, -1, -1, self._iface, self)
         res = action.addFeature(self._defaultAttributes, showModal)
         if (showModal):
             action = None
@@ -746,29 +751,20 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
     def _addTopologicalPoints(self, geometry):
         if self.canvas() is None:
             return 1
-        vlayer = self._currentVectorLayer()
-        if vlayer is None:
+        if self._layer is None:
             return 2
         for point in geometry:
-            vlayer.self._addTopologicalPoints(point)
+            self._layer.self._addTopologicalPoints(point)
         return 0
 
     def _layerPoints(self):
         layerPoints = []
-        vlayer = self._currentVectorLayer()
-        if vlayer is None:
+        if self._layer is None:
             return layerPoints
         for mapPoint in self._mapPointList:
-            layerPoint = self.toLayerCoordinates(vlayer, mapPoint)
+            layerPoint = self.toLayerCoordinates(self._layer, mapPoint)
             layerPoints.append(layerPoint)
         return layerPoints
-
-    def _currentVectorLayer(self):
-        layer = self.canvas().currentLayer()
-        if (layer.type() == QgsMapLayer.VectorLayer):
-            return layer
-        else:
-            return None
 
 
 # TODO Clean up this and fix dialog problems

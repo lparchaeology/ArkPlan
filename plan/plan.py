@@ -205,7 +205,7 @@ class Plan(QObject):
         self.project.iface.mapCanvas().setCurrentLayer(layer)
         self.project.iface.legendInterface().setCurrentLayer(layer)
         self.deleteMapTool()
-        self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, featureType, toolName)
+        self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, layer, featureType, toolName)
         defaults = {}
         defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
         defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context

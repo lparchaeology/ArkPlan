@@ -233,6 +233,60 @@ class GridModule(QObject):
                     polygons.addFeature(feature)
             del polygons
 
+    def _addGridPointsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, localFieldX='local_x', localFieldY='local_x', crsFieldX='crs_x', crsFieldY='crs_y'):
+        if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
+            return
+        features = []
+        for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
+            for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
+                localPoint = QgsPoint(localX, localY)
+                crsPoint = localTransformer.map(localPoint)
+                feature = QgsFeature(layer.dataProvider().fields())
+                feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
+                feature.setAttribute(layer.fieldNameIndex(localFieldX), localX)
+                feature.setAttribute(layer.fieldNameIndex(localFieldY), localY)
+                feature.setAttribute(layer.fieldNameIndex(crsFieldX), crsPoint.x())
+                feature.setAttribute(layer.fieldNameIndex(crsFieldY), crsPoint.y())
+                features.append(feature)
+        layer.dataProvider.addFeatures(features)
+
+    def _addGridLinesToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, localFieldX='local_x', localFieldY='local_x', crsFieldX='crs_x', crsFieldY='crs_y'):
+        if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Line):
+            return
+        features = []
+        for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
+            for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
+                localPoint = QgsPoint(localX, localY)
+                crsPoint = localTransformer.map(localPoint)
+                feature = QgsFeature(layer.dataProvider().fields())
+                feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
+                feature.setAttribute(layer.fieldNameIndex(localFieldX), localX)
+                feature.setAttribute(layer.fieldNameIndex(localFieldY), localY)
+                feature.setAttribute(layer.fieldNameIndex(crsFieldX), crsPoint.x())
+                feature.setAttribute(layer.fieldNameIndex(crsFieldY), crsPoint.y())
+                features.append(feature)
+            for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
+                localStartPoint = QgsPoint(localX, localOrigin.y())
+                localEndPoint = QgsPoint(localX, localTerminus.y())
+                crsStartPoint = localTransformer.map(localStartPoint)
+                crsEndPoint = localTransformer.map(localEndPoint)
+                feature = QgsFeature(fields)
+                feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+                feature.setAttribute(layer.fieldNameIndex(localFieldX), localX)
+                feature.setAttribute(layer.fieldNameIndex(crsFieldX), crsPoint.x())
+                features.append(feature)
+            for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
+                localStartPoint = QgsPoint(localOrigin.x(), localY)
+                localEndPoint = QgsPoint(localTerminus.x(), localY)
+                crsStartPoint = localTransformer.map(localStartPoint)
+                crsEndPoint = localTransformer.map(localEndPoint)
+                feature = QgsFeature(fields)
+                feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+                feature.setAttribute(layer.fieldNameIndex(localFieldY), localY)
+                feature.setAttribute(layer.fieldNameIndex(crsFieldY), crsPoint.y())
+                features.append(feature)
+        layer.dataProvider.addFeatures(features)
+
     def enableMapTool(self, status):
         if not self.initialised:
             self.initialise()

@@ -43,6 +43,7 @@ class Plan(QObject):
     initialised = False
     siteCode = ''
     context = 0
+    category = ''
     source = '0'
     sourceFile = ''
     comment = ''
@@ -67,10 +68,15 @@ class Plan(QObject):
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
         self.dock.siteChanged.connect(self.setSite)
+        self.dock.siteChanged.connect(self.updateMapToolAttributes)
         self.dock.contextChanged.connect(self.setContext)
+        self.dock.contextChanged.connect(self.updateMapToolAttributes)
         self.dock.sourceChanged.connect(self.setSource)
+        self.dock.sourceChanged.connect(self.updateMapToolAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
+        self.dock.sourceFileChanged.connect(self.updateMapToolAttributes)
         self.dock.commentChanged.connect(self.setComment)
+        self.dock.commentChanged.connect(self.updateMapToolAttributes)
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
@@ -174,46 +180,40 @@ class Plan(QObject):
     def clearBuffers(self):
         self.project.contexts.clearBuffers('Clear buffer data ' + str(self.context))
 
-    def enableLevelsMode(self, typeAttribute):
+    def enableLevelsMode(self, category):
         #TODO disable all snapping
-        self.createMapTool(typeAttribute, self.project.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
+        self.createMapTool(category, self.project.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableLineSegmentMode(self, typeAttribute):
+    def enableLineSegmentMode(self, category):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.createMapTool(category, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableLineMode(self, typeAttribute):
+    def enableLineMode(self, category):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.createMapTool(category, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enablePolygonMode(self, typeAttribute):
+    def enablePolygonMode(self, category):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.project.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.createMapTool(category, self.project.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableSchematicMode(self, typeAttribute):
+    def enableSchematicMode(self, category):
         #TODO configure snapping
-        self.createMapTool(typeAttribute, self.project.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(category, self.project.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def createMapTool(self, typeAttribute, layer, featureType, snappingEnabled, toolName):
+    def createMapTool(self, category, layer, featureType, snappingEnabled, toolName):
         #TODO configure snapping
         self.project.iface.mapCanvas().setCurrentLayer(layer)
         self.project.iface.legendInterface().setCurrentLayer(layer)
         self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, layer, featureType, toolName)
-        defaults = {}
-        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
-        defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context
-        defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
-        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
-        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = typeAttribute
-        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
-        self.currentMapTool.setDefaultAttributes(defaults)
+        self.category = category
+        self.updateMapToolAttributes()
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)
@@ -228,3 +228,18 @@ class Plan(QObject):
             self.project.iface.mapCanvas().unsetMapTool(self.currentMapTool)
             del self.currentMapTool
             self.currentMapTool = None
+            self.category = ''
+
+    def updateMapToolAttributes(self):
+        if self.currentMapTool is not None:
+            layer = self.currentMapTool.layer()
+            if (layer is None or not layer.isValid()):
+                return
+            defaults = {}
+            defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
+            defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context
+            defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
+            defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
+            defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self.category
+            defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
+            self.currentMapTool.setDefaultAttributes(defaults)

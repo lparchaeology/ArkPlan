@@ -578,6 +578,9 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
         else:
             self.mToolName = self.tr('Add feature')
 
+    def layer(self):
+        return self._layer
+
     def isEditTool(self):
         return True
 

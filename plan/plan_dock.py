@@ -41,6 +41,7 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     siteChanged = pyqtSignal('QString')
     contextChanged = pyqtSignal(int)
     sourceChanged = pyqtSignal('QString')
+    sourceFileChanged = pyqtSignal('QString')
     commentChanged = pyqtSignal('QString')
 
     selectedLineMode = pyqtSignal('QString')
@@ -66,6 +67,7 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_siteEdit.textChanged.connect(self.siteChanged)
         self.m_contextSpin.valueChanged.connect(self.contextChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
+        self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
 
         self.m_extentTool.clicked.connect(self.extentSelected)
@@ -113,6 +115,9 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
+
+    def setSourceFile(self, sourceFile):
+        self.m_sourceFileEdit.setText(sourceFile)
 
     def setComment(self, comment):
         self.m_commentEdit.setText(comment)

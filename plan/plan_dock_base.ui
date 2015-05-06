@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>389</width>
-    <height>735</height>
+    <height>776</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,7 +41,7 @@
          <x>0</x>
          <y>0</y>
          <width>363</width>
-         <height>683</height>
+         <height>724</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -76,6 +76,9 @@
             <widget class="QLabel" name="m_siteLabel">
              <property name="text">
               <string>Site Code</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_siteEdit</cstring>
              </property>
             </widget>
            </item>
@@ -123,14 +126,14 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QLineEdit" name="m_commentEdit">
              <property name="readOnly">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="m_commentLabel">
              <property name="text">
               <string>Comment</string>
@@ -139,6 +142,19 @@
               <cstring>m_commentEdit</cstring>
              </property>
             </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="m_sourceFileLabel">
+             <property name="text">
+              <string>Source File:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_sourceFileEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="m_sourceFileEdit"/>
            </item>
           </layout>
          </widget>
@@ -710,6 +726,47 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>m_loadRawButton</tabstop>
+  <tabstop>m_loadGeoButton</tabstop>
+  <tabstop>m_siteEdit</tabstop>
+  <tabstop>m_contextSpin</tabstop>
+  <tabstop>m_sourceEdit</tabstop>
+  <tabstop>m_sourceFileEdit</tabstop>
+  <tabstop>m_commentEdit</tabstop>
+  <tabstop>m_extentTool</tabstop>
+  <tabstop>m_verticalEdgeTool</tabstop>
+  <tabstop>m_uncertainEdgeTool</tabstop>
+  <tabstop>m_limitOfExcavationTool</tabstop>
+  <tabstop>m_verticalTruncationTool</tabstop>
+  <tabstop>m_truncationTool</tabstop>
+  <tabstop>m_breakOfSlopeTool</tabstop>
+  <tabstop>m_verticalBreakOfSlopeTool</tabstop>
+  <tabstop>m_hachureTool</tabstop>
+  <tabstop>m_undercutTool</tabstop>
+  <tabstop>m_returnOfSlopeTool</tabstop>
+  <tabstop>m_cbmTool</tabstop>
+  <tabstop>m_brickTool</tabstop>
+  <tabstop>m_tileTool</tabstop>
+  <tabstop>m_mortarTool</tabstop>
+  <tabstop>m_charcoalTool</tabstop>
+  <tabstop>m_stoneTool</tabstop>
+  <tabstop>m_potTool</tabstop>
+  <tabstop>m_flintTool</tabstop>
+  <tabstop>m_levelTool</tabstop>
+  <tabstop>m_schematicTool</tabstop>
+  <tabstop>m_clearTool</tabstop>
+  <tabstop>m_snapLinesBufferTool</tabstop>
+  <tabstop>m_snapPolygonsBufferTool</tabstop>
+  <tabstop>m_snapSchematicsBufferTool</tabstop>
+  <tabstop>m_snapLinesLayerTool</tabstop>
+  <tabstop>m_snapPolygonsLayerTool</tabstop>
+  <tabstop>m_snapSchematicsLayerTool</tabstop>
+  <tabstop>m_topologicalTool</tabstop>
+  <tabstop>m_clearButton</tabstop>
+  <tabstop>m_mergeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
  <buttongroups>

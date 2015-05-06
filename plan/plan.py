@@ -44,6 +44,7 @@ class Plan(QObject):
     siteCode = ''
     context = 0
     source = '0'
+    sourceFile = ''
     comment = ''
 
     levelsMapTool = None
@@ -68,6 +69,7 @@ class Plan(QObject):
         self.dock.siteChanged.connect(self.setSite)
         self.dock.contextChanged.connect(self.setContext)
         self.dock.sourceChanged.connect(self.setSource)
+        self.dock.sourceFileChanged.connect(self.setSourceFile)
         self.dock.commentChanged.connect(self.setComment)
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
@@ -99,6 +101,7 @@ class Plan(QObject):
         if (not self.project.isInitialised()):
             return
 
+        self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
         self.initialised = True
 
@@ -146,6 +149,9 @@ class Plan(QObject):
 
     def setSource(self, source):
         self.source = source
+
+    def setSourceFile(self, sourceFile):
+        self.sourceFile = sourceFile
 
     def setComment(self, comment):
         self.comment = comment
@@ -204,6 +210,7 @@ class Plan(QObject):
         defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
         defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context
         defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
+        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = typeAttribute
         defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
         self.currentMapTool.setDefaultAttributes(defaults)

@@ -56,6 +56,7 @@ class Project(QObject):
     geoLayer = None  #QgsRasterLayer()
     contexts = None  # LayerCollection()
     grid = None  # LayerCollection()
+    base = None  # LayerCollection()
 
     fieldDefaults = {
         'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
@@ -102,6 +103,20 @@ class Project(QObject):
             'linesFields'      : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
             'schemaFields'     : []
+        },
+        'base' : {
+            'path' : '',
+            'layersGroupName'  : 'Base',
+            'buffersGroupName' : 'Edit Base Data',
+            'bufferSuffix'     : '_mem',
+            'pointsBaseName'   : 'base_pt',
+            'linesBaseName'    : 'base_pl',
+            'polygonsBaseName' : '',
+            'schemaBaseName'   : '',
+            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'elevation', 'source', 'file', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'id', 'category', 'source', 'file', 'created_on', 'created_by'],
+            'polygonsFields'   : [],
+            'schemaFields'     : []
         }
     }
 
@@ -134,6 +149,8 @@ class Project(QObject):
             self.contexts.unload()
         if self.grid is not None:
             self.grid.unload()
+        if self.base is not None:
+            self.base.unload()
         self.iface.removePluginMenu(self.menuName, self.projectAction)
         self.iface.removeToolBarIcon(self.projectAction)
 
@@ -143,7 +160,7 @@ class Project(QObject):
             return
         ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.projectDir().exists() and self.planDir().exists() and self.styleDir().exists() and self.moduleDir('grid').exists() and self.moduleDir('contexts').exists()):
+        if (self.projectDir().exists() and self.planDir().exists() and self.styleDir().exists() and self.moduleDir('grid').exists() and self.moduleDir('contexts').exists()) and self.moduleDir('base').exists():
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -167,9 +184,11 @@ class Project(QObject):
             self._createCollectionLayers('grid', self.grid._settings)
             self.contexts = self._createCollection('contexts')
             self._createCollectionLayers('contexts', self.contexts._settings)
+            self.base = self._createCollection('base')
+            self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.contexts.initialise()):
+            if (self.grid.initialise() and self.contexts.initialise() and self.base.initialise()):
                 self._initialised = True
         return self._initialised
 

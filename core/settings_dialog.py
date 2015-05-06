@@ -60,6 +60,13 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.gridLinesNameEdit.setText(project.linesBaseName('grid'))
         self.gridPolygonsNameEdit.setText(project.polygonsBaseName('grid'))
 
+        # Base tab settings
+        self.baseFolderEdit.setText(project.modulePath('base'))
+        self.baseFolderButton.clicked.connect(self._selectBaseFolder)
+        self.baseGroupNameEdit.setText(project.layersGroupName('base'))
+        self.basePointsNameEdit.setText(project.pointsBaseName('base'))
+        self.baseLinesNameEdit.setText(project.linesBaseName('base'))
+
         # Context tab settings
         self.contextsFolderEdit.setText(project.modulePath('contexts'))
         self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
@@ -92,6 +99,12 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLinesBaseName('grid', self.gridLinesNameEdit.text())
         self._project.setPolygonsBaseName('grid', self.gridPolygonsNameEdit.text())
 
+        # Base tab settings
+        self._project.setModulePath('base', self.gridFolderEdit.text())
+        self._project.setLayersGroupName('base', self.gridGroupNameEdit.text())
+        self._project.setPointsBaseName('base', self.gridPointsNameEdit.text())
+        self._project.setLinesBaseName('base', self.gridLinesNameEdit.text())
+
         # Contexts tab settings
         self._project.setModulePath('contexts', self.contextsFolderEdit.text())
         self._project.setLayersGroupName('contexts', self.contextsGroupNameEdit.text())
@@ -117,6 +130,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Grid Folder'), self.gridFolderEdit.text()))
         if folderName:
             self.gridFolderEdit.setText(folderName)
+
+    def _selectBaseFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Base Folder'), self.baseFolderEdit.text()))
+        if folderName:
+            self.baseFolderEdit.setText(folderName)
 
     def _toggleDefaultStyle(self, useDefault):
         if useDefault:

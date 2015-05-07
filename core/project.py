@@ -77,7 +77,8 @@ class Project(QObject):
 
     moduleDefaults = {
         'contexts' : {
-            'path' : '',
+            'path'             : '',
+            'pathSuffix'       : 'vectors/contexts',
             'layersGroupName'  : 'Context Data',
             'buffersGroupName' : 'Edit Context Data',
             'bufferSuffix'     : '_mem',
@@ -91,7 +92,8 @@ class Project(QObject):
             'schemaFields'     : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
         },
         'grid' : {
-            'path' : '',
+            'path'             : '',
+            'pathSuffix'       : 'vectors/grid',
             'layersGroupName'  : 'Grid',
             'buffersGroupName' : '',
             'bufferSuffix'     : '',
@@ -105,7 +107,8 @@ class Project(QObject):
             'schemaFields'     : []
         },
         'base' : {
-            'path' : '',
+            'path'             : '',
+            'pathSuffix'       : 'vectors/base',
             'layersGroupName'  : 'Base',
             'buffersGroupName' : 'Edit Base Data',
             'bufferSuffix'     : '_mem',
@@ -117,6 +120,11 @@ class Project(QObject):
             'linesFields'      : ['site', 'id', 'category', 'source', 'file', 'created_on', 'created_by'],
             'polygonsFields'   : [],
             'schemaFields'     : []
+        },
+        'plan' : {
+            'path'             : '',
+            'pathSuffix'       : 'plans',
+            'layersGroupName'  : 'Context Plans'
         }
     }
 
@@ -160,7 +168,9 @@ class Project(QObject):
             return
         ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.projectDir().exists() and self.planDir().exists() and self.styleDir().exists() and self.moduleDir('grid').exists() and self.moduleDir('contexts').exists()) and self.moduleDir('base').exists():
+        if (self.projectDir().mkpath('.') and
+            self.planDir().mkpath('.') and self.planDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
+            self.moduleDir('grid').mkpath('.') and self.moduleDir('contexts').mkpath('.') and self.moduleDir('base').mkpath('.')):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -395,7 +405,16 @@ class Project(QObject):
     def modulePath(self, module):
         path =  self._moduleEntry(module, 'path')
         if (not path):
-            return self.projectPath()
+            return self.modulePathDefault(module)
+        return path
+
+    def modulePathDefault(self, module):
+        path = self._moduleDefault(module, 'path')
+        if not path:
+            path = self.projectPath()
+            suffix = self._moduleDefault(module, 'pathSuffix')
+            if path and suffix:
+                path = path + '/' + suffix
         return path
 
     def setModulePath(self, module, absolutePath):
@@ -467,23 +486,24 @@ class Project(QObject):
     def planDir(self):
         return QDir(self.planPath())
 
+    def rawPlanDir(self):
+        return QDir(self.rawPlanPath())
+
+    def processedPlanDir(self):
+        return QDir(self.processedPlanPath())
+
     def rawPlanPath(self):
         if self.separatePlanFolders():
-            dir = QDir(self.planPath() + '/raw')
-            if dir.exists():
-                return dir.absolutePath()
+            return QDir(self.planPath() + '/raw').absolutePath()
         return self.planPath()
 
     def processedPlanPath(self):
         if self.separatePlanFolders():
-            dir = QDir(self.planPath() + '/processed')
-            if (not dir.exists()):
-                self.planDir().mkdir('processed')
-            return dir.absolutePath()
+            return QDir(self.planPath() + '/processed').absolutePath()
         return self.planPath()
 
     def planPath(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'planPath', '')[0]
+        return self.modulePath('plan')
 
     def setPlanPath(self, absolutePath):
         QgsProject.instance().writeEntry(self.pluginName, 'planPath', absolutePath)

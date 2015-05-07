@@ -502,7 +502,7 @@ class Project(QObject):
 
 
     def projectCrs(self):
-        self.iface.mapCanvas().mapRenderer().destinationCrs()
+        return self.iface.mapCanvas().mapSettings().destinationCrs()
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

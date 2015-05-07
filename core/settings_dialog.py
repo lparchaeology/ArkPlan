@@ -100,10 +100,10 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setPolygonsBaseName('grid', self.gridPolygonsNameEdit.text())
 
         # Base tab settings
-        self._project.setModulePath('base', self.gridFolderEdit.text())
-        self._project.setLayersGroupName('base', self.gridGroupNameEdit.text())
-        self._project.setPointsBaseName('base', self.gridPointsNameEdit.text())
-        self._project.setLinesBaseName('base', self.gridLinesNameEdit.text())
+        self._project.setModulePath('base', self.baseFolderEdit.text())
+        self._project.setLayersGroupName('base', self.baseGroupNameEdit.text())
+        self._project.setPointsBaseName('base', self.basePointsNameEdit.text())
+        self._project.setLinesBaseName('base', self.baseLinesNameEdit.text())
 
         # Contexts tab settings
         self._project.setModulePath('contexts', self.contextsFolderEdit.text())

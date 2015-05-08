@@ -264,7 +264,7 @@ class Project(QObject):
         self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = self.getGroupIndex(self.planGroupName)
+            self.planGroupIndex = utils.getGroupIndex(self.planGroupName)
         self.iface.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 

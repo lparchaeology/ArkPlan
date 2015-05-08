@@ -338,18 +338,25 @@ class GridModule(QObject):
             return
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
+        crs_x = self.project.fieldName('crs_x')
+        crs_y = self.project.fieldName('crs_y')
         if layer.startEditing():
-            if not layer.fieldNameIndex(local_x):
+            if layer.fieldNameIndex(local_x) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_x')])
-            if not layer.fieldNameIndex(local_y):
+            if layer.fieldNameIndex(local_y) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_y')])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
+            crs_x_idx = layer.fieldNameIndex(crs_x)
+            crs_y_idx = layer.fieldNameIndex(crs_y)
             for feature in layer.getFeatures():
                 geom = feature.geometry()
                 if geom.type() == QGis.Point:
-                    localPoint = self.crsTransformer.map(geom.asPoint())
+                    crsPoint = geom.asPoint()
+                    localPoint = self.crsTransformer.map(crsPoint)
                     layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
                     layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
+                    layer.changeAttributeValue(feature.id(), crs_x_idx, crsPoint.x())
+                    layer.changeAttributeValue(feature.id(), crs_y_idx, crsPoint.y())
             return layer.commitChanges()
         return False

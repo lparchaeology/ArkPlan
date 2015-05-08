@@ -152,6 +152,7 @@ class GridModule(QObject):
     # Grid methods
 
     def showCreateGridDialog(self):
+        self.initialise()
         dialog = CreateGridDialog(self, self.project.iface.mainWindow())
         if dialog.exec_():
             crsOrigin = QgsPoint(dialog.crsOriginEastingSpin.value(), dialog.crsOriginNorthingSpin.value())

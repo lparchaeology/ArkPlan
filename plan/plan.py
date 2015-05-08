@@ -42,7 +42,7 @@ class Plan(QObject):
     # Internal variables
     initialised = False
     siteCode = ''
-    context = 0
+    number = 0
     category = ''
     source = '0'
     sourceFile = ''
@@ -68,15 +68,15 @@ class Plan(QObject):
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
         self.dock.siteChanged.connect(self.setSite)
-        self.dock.siteChanged.connect(self.updateMapToolAttributes)
-        self.dock.contextChanged.connect(self.setContext)
-        self.dock.contextChanged.connect(self.updateMapToolAttributes)
+        self.dock.siteChanged.connect(self.updateContextAttributes)
+        self.dock.numberChanged.connect(self.setNumber)
+        self.dock.numberChanged.connect(self.updateContextAttributes)
         self.dock.sourceChanged.connect(self.setSource)
-        self.dock.sourceChanged.connect(self.updateMapToolAttributes)
+        self.dock.sourceChanged.connect(self.updateContextAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
-        self.dock.sourceFileChanged.connect(self.updateMapToolAttributes)
+        self.dock.sourceFileChanged.connect(self.updateContextAttributes)
         self.dock.commentChanged.connect(self.setComment)
-        self.dock.commentChanged.connect(self.updateMapToolAttributes)
+        self.dock.commentChanged.connect(self.updateContextAttributes)
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
@@ -129,7 +129,7 @@ class Plan(QObject):
 
     def setMetadata(self, siteCode, type, number, easting, northing, suffix):
         self.dock.setSite(siteCode)
-        self.dock.setContext(number)
+        self.dock.setNumber(number)
         self.dock.setSource(str(number))
 
     def loadRawPlan(self):
@@ -150,8 +150,8 @@ class Plan(QObject):
     def setSite(self, siteCode):
         self.siteCode = siteCode
 
-    def setContext(self, context):
-        self.context = context
+    def setNumber(self, number):
+        self.number = number
 
     def setSource(self, source):
         self.source = source
@@ -175,10 +175,10 @@ class Plan(QObject):
 
     def mergeBuffers(self):
         if self.project.contexts.okToMergeBuffers():
-            self.project.contexts.mergeBuffers('Merge context ' + str(self.context))
+            self.project.contexts.mergeBuffers('Merge context ' + str(self.number))
 
     def clearBuffers(self):
-        self.project.contexts.clearBuffers('Clear buffer data ' + str(self.context))
+        self.project.contexts.clearBuffers('Clear buffer data ' + str(self.number))
 
     def enableLevelsMode(self, category):
         #TODO disable all snapping
@@ -213,7 +213,7 @@ class Plan(QObject):
         self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, layer, featureType, toolName)
         self.category = category
-        self.updateMapToolAttributes()
+        self.updateContextAttributes()
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)
@@ -230,14 +230,14 @@ class Plan(QObject):
             self.currentMapTool = None
             self.category = ''
 
-    def updateMapToolAttributes(self):
+    def updateContextAttributes(self):
         if self.currentMapTool is not None:
             layer = self.currentMapTool.layer()
             if (layer is None or not layer.isValid()):
                 return
             defaults = {}
             defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
-            defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.context
+            defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.number
             defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
             defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
             defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self.category

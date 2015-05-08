@@ -39,7 +39,7 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadGeoFileSelected = pyqtSignal()
 
     siteChanged = pyqtSignal('QString')
-    contextChanged = pyqtSignal(int)
+    numberChanged = pyqtSignal(int)
     sourceChanged = pyqtSignal('QString')
     sourceFileChanged = pyqtSignal('QString')
     commentChanged = pyqtSignal('QString')
@@ -65,7 +65,7 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_loadGeoButton.clicked.connect(self.loadGeoFileSelected)
 
         self.m_siteEdit.textChanged.connect(self.siteChanged)
-        self.m_contextSpin.valueChanged.connect(self.contextChanged)
+        self.m_numberSpin.valueChanged.connect(self.numberChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
@@ -98,6 +98,11 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_clearTool.setVisible(False)
 
+        self.m_sectionPinTool.clicked.connect(self.sectionPinSelected)
+        self.m_sectionLineTool.clicked.connect(self.sectionLineSelected)
+        self.m_basePointTool.clicked.connect(self.basePointSelected)
+        self.m_baseLineTool.clicked.connect(self.baseLineSelected)
+
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
 
@@ -110,8 +115,8 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setSite(self, name):
         self.m_siteEdit.setText(name)
 
-    def setContext(self, context):
-        self.m_contextSpin.setValue(context)
+    def setNumber(self, number):
+        self.m_numberSpin.setValue(number)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
@@ -190,6 +195,18 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def schematicSelected(self):
         self.selectedSchematicMode.emit("sch")
+
+    def sectionPinSelected(self):
+        self.selectedLevelsMode.emit("sec")
+
+    def sectionLineSelected(self):
+        self.selectedLineMode.emit("sln")
+
+    def basePointSelected(self):
+        self.selectedLevelsMode.emit("bpt")
+
+    def baseLineSelected(self):
+        self.selectedLineMode.emit("bln")
 
     # Snapping Tools
 

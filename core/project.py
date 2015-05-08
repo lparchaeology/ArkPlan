@@ -149,7 +149,13 @@ class Project(QObject):
     # Load the module when plugin is loaded
     def load(self):
         self.projectAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
-        self.projectAction.triggered.connect(self.showSettingsDialog)
+        self.projectAction.triggered.connect(self.triggerSettingsDialog)
+
+    def triggerSettingsDialog(self):
+        if self.isConfigured():
+            self.showSettingsDialog()
+        else:
+            self.configure()
 
     # Unload the module when plugin is unloaded
     def unload(self):
@@ -166,9 +172,8 @@ class Project(QObject):
     def configure(self):
         if self.isConfigured():
             return
-        ret = self.showSettingsDialog()
         # TODO more validation, check if files exist, etc
-        if (self.projectDir().mkpath('.') and
+        if (self.showSettingsDialog() and self.siteCode() and self.projectDir().mkpath('.') and self.siteCode() and
             self.planDir().mkpath('.') and self.planDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
             self.moduleDir('grid').mkpath('.') and self.moduleDir('contexts').mkpath('.') and self.moduleDir('base').mkpath('.')):
             self._setIsConfigured(True)

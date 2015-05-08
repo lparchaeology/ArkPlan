@@ -23,7 +23,7 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, pyqtSignal
+from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
@@ -71,7 +71,7 @@ class Project(QObject):
         'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
         'crs_y'     : QgsField('crs_y',      QVariant.Double, '',  10, 3, 'CRS y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-        'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59Z'
+        'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
         'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')
     }
 
@@ -101,9 +101,9 @@ class Project(QObject):
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'base' : {
@@ -221,6 +221,9 @@ class Project(QObject):
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.projectGroupIndex):
             self.projectGroupIndex = newIndex
+
+    def timestamp(self):
+        return QDateTime.currentDateTimeUtc().toString(Qt.ISODate)
 
     # Convenience logging functions
 

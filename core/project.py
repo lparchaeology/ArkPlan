@@ -80,7 +80,7 @@ class Project(QObject):
             'path'             : '',
             'pathSuffix'       : 'vectors/contexts',
             'layersGroupName'  : 'Context Data',
-            'buffersGroupName' : 'Edit Context Data',
+            'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
             'pointsBaseName'   : 'context_pt',
             'linesBaseName'    : 'context_pl',
@@ -109,8 +109,8 @@ class Project(QObject):
         'base' : {
             'path'             : '',
             'pathSuffix'       : 'vectors/base',
-            'layersGroupName'  : 'Base',
-            'buffersGroupName' : 'Edit Base Data',
+            'layersGroupName'  : 'Base Data',
+            'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
@@ -488,6 +488,13 @@ class Project(QObject):
     def schemaLayerName(self, module):
         return self._layerName(self.schemaBaseName(module))
 
+    def collection(self, module):
+        if module == 'contexts':
+            return self.contexts
+        elif module == 'grid':
+            return self.grid
+        elif module == 'base':
+            return self.base
 
     # Plan settings
 

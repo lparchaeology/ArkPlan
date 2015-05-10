@@ -44,11 +44,11 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     sourceFileChanged = pyqtSignal('QString')
     commentChanged = pyqtSignal('QString')
 
-    selectedLineMode = pyqtSignal('QString')
-    selectedPolygonMode = pyqtSignal('QString')
-    selectedLineSegmentMode = pyqtSignal('QString')
-    selectedSchematicMode = pyqtSignal('QString')
-    selectedLevelsMode = pyqtSignal('QString')
+    selectedLineMode = pyqtSignal(str, str)
+    selectedPolygonMode = pyqtSignal(str, str)
+    selectedLineSegmentMode = pyqtSignal(str, str)
+    selectedSchematicMode = pyqtSignal(str, str)
+    selectedLevelsMode = pyqtSignal(str, str)
 
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
@@ -134,79 +134,79 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_clearTool.setChecked(True)
 
     def extentSelected(self):
-        self.selectedLineMode.emit("ext")
+        self.selectedLineMode.emit('contexts', 'ext')
 
     def breakOfSlopeSelected(self):
-        self.selectedLineMode.emit("bos")
+        self.selectedLineMode.emit('contexts', 'bos')
 
     def limitOfExcavationSelected(self):
-        self.selectedLineMode.emit("loe")
+        self.selectedLineMode.emit('contexts', 'loe')
 
     def truncationSelected(self):
-        self.selectedLineMode.emit("trn")
+        self.selectedLineMode.emit('contexts', 'trn')
 
     def uncertainEdgeSelected(self):
-        self.selectedLineMode.emit("ueg")
+        self.selectedLineMode.emit('contexts', 'ueg')
 
     def verticalBreakOfSlopeSelected(self):
-        self.selectedLineMode.emit("vbs")
+        self.selectedLineMode.emit('contexts', 'vbs')
 
     def verticalEdgeSelected(self):
-        self.selectedLineMode.emit("veg")
+        self.selectedLineMode.emit('contexts', 'veg')
 
     def verticalTruncationSelected(self):
-        self.selectedLineMode.emit("vtr")
+        self.selectedLineMode.emit('contexts', 'vtr')
 
     def brickSelected(self):
-        self.selectedPolygonMode.emit("brk")
+        self.selectedPolygonMode.emit('contexts', 'brk')
 
     def cbmSelected(self):
-        self.selectedPolygonMode.emit("cbm")
+        self.selectedPolygonMode.emit('contexts', 'cbm')
 
     def charcoalSelected(self):
-        self.selectedPolygonMode.emit("cha")
+        self.selectedPolygonMode.emit('contexts', 'cha')
 
     def flintSelected(self):
-        self.selectedPolygonMode.emit("fli")
+        self.selectedPolygonMode.emit('contexts', 'fli')
 
     def mortarSelected(self):
-        self.selectedPolygonMode.emit("mtr")
+        self.selectedPolygonMode.emit('contexts', 'mtr')
 
     def potSelected(self):
-        self.selectedPolygonMode.emit("pot")
+        self.selectedPolygonMode.emit('contexts', 'pot')
 
     def stoneSelected(self):
-        self.selectedPolygonMode.emit("sto")
+        self.selectedPolygonMode.emit('contexts', 'sto')
 
     def tileSelected(self):
-        self.selectedPolygonMode.emit("til")
+        self.selectedPolygonMode.emit('contexts', 'til')
 
     def hachureSelected(self):
-        self.selectedLineSegmentMode.emit("hch")
+        self.selectedLineSegmentMode.emit('contexts', 'hch')
 
     def undercutSelected(self):
-        self.selectedLineSegmentMode.emit("unc")
+        self.selectedLineSegmentMode.emit('contexts', 'unc')
 
     def returnOfSlopeSelected(self):
-        self.selectedLineSegmentMode.emit("ros")
+        self.selectedLineSegmentMode.emit('contexts', 'ros')
 
     def levelsSelected(self):
-        self.selectedLevelsMode.emit("lvl")
+        self.selectedLevelsMode.emit('contexts', 'lvl')
 
     def schematicSelected(self):
-        self.selectedSchematicMode.emit("sch")
+        self.selectedSchematicMode.emit('contexts', 'sch')
 
     def sectionPinSelected(self):
-        self.selectedLevelsMode.emit("sec")
+        self.selectedLevelsMode.emit('base', 'sec')
 
     def sectionLineSelected(self):
-        self.selectedLineMode.emit("sln")
+        self.selectedLineMode.emit('base', 'sln')
 
     def basePointSelected(self):
-        self.selectedLevelsMode.emit("bpt")
+        self.selectedLevelsMode.emit('base', 'bpt')
 
     def baseLineSelected(self):
-        self.selectedLineMode.emit("bln")
+        self.selectedLineMode.emit('base', 'bln')
 
     # Snapping Tools
 

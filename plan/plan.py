@@ -113,6 +113,7 @@ class Plan(QObject):
 
     def initialiseBuffers(self):
         self.project.contexts.createBuffers()
+        self.project.base.createBuffers()
         self.dock.setSchematicsBuffer(self.project.contexts.schemaBuffer)
         self.dock.setPolygonsBuffer(self.project.contexts.polygonsBuffer)
         self.dock.setLinesBuffer(self.project.contexts.linesBuffer)
@@ -175,35 +176,38 @@ class Plan(QObject):
 
     def mergeBuffers(self):
         if self.project.contexts.okToMergeBuffers():
-            self.project.contexts.mergeBuffers('Merge context ' + str(self.number))
+            self.project.contexts.mergeBuffers('Merge context data ' + str(self.number))
+        if self.project.base.okToMergeBuffers():
+            self.project.base.mergeBuffers('Merge base data ' + str(self.number))
 
     def clearBuffers(self):
-        self.project.contexts.clearBuffers('Clear buffer data ' + str(self.number))
+        self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.number))
+        self.project.base.clearBuffers('Clear base buffer data ' + str(self.number))
 
-    def enableLevelsMode(self, category):
+    def enableLevelsMode(self, module, category):
         #TODO disable all snapping
-        self.createMapTool(category, self.project.contexts.pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
+        self.createMapTool(category, self.project.collection(module).pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableLineSegmentMode(self, category):
+    def enableLineSegmentMode(self, module, category):
         #TODO configure snapping
-        self.createMapTool(category, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
+        self.createMapTool(category, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableLineMode(self, category):
+    def enableLineMode(self, module, category):
         #TODO configure snapping
-        self.createMapTool(category, self.project.contexts.linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
+        self.createMapTool(category, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enablePolygonMode(self, category):
+    def enablePolygonMode(self, module, category):
         #TODO configure snapping
-        self.createMapTool(category, self.project.contexts.polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
+        self.createMapTool(category, self.project.collection(module).polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
-    def enableSchematicMode(self, category):
+    def enableSchematicMode(self, module, category):
         #TODO configure snapping
-        self.createMapTool(category, self.project.contexts.schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
+        self.createMapTool(category, self.project.collection(module).schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def createMapTool(self, category, layer, featureType, snappingEnabled, toolName):

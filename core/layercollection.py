@@ -230,9 +230,15 @@ class LayerCollection:
         return self.isCollectionEditable()
 
     def isCollectionEditable(self):
-        return self._isLayerEditable(self.pointsLayer) and self._isLayerEditable(self.linesLayer) and self._isLayerEditable(self.polygonsLayer) and self._isLayerEditable(self.schemaLayer)
+        return ((self.pointsLayer is None or self._isLayerEditable(self.pointsLayer)) and
+                (self.linesLayer is None or self._isLayerEditable(self.linesLayer)) and
+                (self.polygonsLayer is None or self._isLayerEditable(self.polygonsLayer)) and
+                (self.schemaLayer is None or self._isLayerEditable(self.schemaLayer)))
 
     def _isLayerEditable(self, layer):
+        if (layer is None or not layer.isValid()):
+            utils.showCriticalMessage(self._iface, 'Cannot edit layer - Not a layer object')
+            return False
         if (layer is None or not layer.isValid()):
             utils.showCriticalMessage(self._iface, 'Cannot edit layer ' + layer.name() + ' - Not a valid layer')
             return False

@@ -131,10 +131,11 @@ class Plan(QObject):
 
     # Plan Tools
 
-    def setMetadata(self, siteCode, type, number, easting, northing, suffix):
+    def setMetadata(self, siteCode, type, number, file, easting, northing, suffix):
         self.dock.setSite(siteCode)
         self.dock.setNumber(number)
         self.dock.setSource(str(number))
+        self.dock.setSourceFile(file)
 
     def loadRawPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.project.rawPlanPath(),
@@ -148,7 +149,7 @@ class Plan(QObject):
         if fileName:
             geoFile = QFileInfo(fileName)
             md = planMetadata(geoFile.completeBaseName())
-            self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
+            self.setMetadata(md[0], md[1], md[2], geoFile.completeBaseName(), md[3], md[4], md[5])
             self.project.loadGeoLayer(geoFile)
 
     def setSite(self, siteCode):
@@ -174,9 +175,10 @@ class Plan(QObject):
     def georeferencePlan(self, rawFile):
         georefDialog = GeorefDialog(rawFile, self.project.planDir(), self.project.separatePlanFolders(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
+            geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
-            self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
-            self.project.loadGeoLayer(georefDialog.geoRefFile())
+            self.setMetadata(md[0], md[1], md[2], geoFile.completeBaseName(), md[3], md[4], md[5])
+            self.project.loadGeoLayer(geoFile)
 
     # Layer Methods
 

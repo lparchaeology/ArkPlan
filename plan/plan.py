@@ -47,6 +47,7 @@ class Plan(QObject):
     source = '0'
     sourceFile = ''
     comment = ''
+    createdBy = ''
 
     levelsMapTool = None
     currentMapTool = None
@@ -77,6 +78,8 @@ class Plan(QObject):
         self.dock.sourceFileChanged.connect(self.updateContextAttributes)
         self.dock.commentChanged.connect(self.setComment)
         self.dock.commentChanged.connect(self.updateContextAttributes)
+        self.dock.createdByChanged.connect(self.setCreatedBy)
+        self.dock.createdByChanged.connect(self.updateContextAttributes)
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
@@ -163,6 +166,9 @@ class Plan(QObject):
     def setComment(self, comment):
         self.comment = comment
 
+    def setCreatedBy(self, creator):
+        self.createdBy = creator
+
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
@@ -246,4 +252,5 @@ class Plan(QObject):
             defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
             defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self.category
             defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
+            defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self.createdBy
             self.currentMapTool.setDefaultAttributes(defaults)

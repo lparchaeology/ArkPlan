@@ -38,11 +38,12 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
 
-    siteChanged = pyqtSignal('QString')
+    siteChanged = pyqtSignal(str)
     numberChanged = pyqtSignal(int)
-    sourceChanged = pyqtSignal('QString')
-    sourceFileChanged = pyqtSignal('QString')
-    commentChanged = pyqtSignal('QString')
+    sourceChanged = pyqtSignal(str)
+    sourceFileChanged = pyqtSignal(str)
+    commentChanged = pyqtSignal(str)
+    createdByChanged = pyqtSignal(str)
 
     selectedLineMode = pyqtSignal(str, str)
     selectedPolygonMode = pyqtSignal(str, str)
@@ -69,6 +70,7 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
+        self.m_createdByEdit.textChanged.connect(self.createdByChanged)
 
         self.m_extentTool.clicked.connect(self.extentSelected)
         self.m_breakOfSlopeTool.clicked.connect(self.breakOfSlopeSelected)
@@ -126,6 +128,9 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def setComment(self, comment):
         self.m_commentEdit.setText(comment)
+
+    def setCreatedBy(self, creator):
+        self.m_createdByEdit.setText(creator)
 
     # Drawing Tools
 

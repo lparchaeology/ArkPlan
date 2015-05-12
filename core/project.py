@@ -537,7 +537,10 @@ class Project(QObject):
 
 
     def projectCrs(self):
-        return self.iface.mapCanvas().mapSettings().destinationCrs()
+        if QGis.QGIS_VERSION_INT >= 20400:
+            return self.iface.mapCanvas().mapSettings().destinationCrs()
+        else:
+            return self.iface.mapCanvas().mapRenderer().destinationCrs()
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

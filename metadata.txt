@@ -10,7 +10,7 @@
 name=Ark
 qgisMinimumVersion=2.0
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.1.3
+version=0.1.4
 author=John Layt / L - P: Heritage LLP
 email=john@layt.net
 

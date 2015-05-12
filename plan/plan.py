@@ -41,6 +41,7 @@ class Plan(QObject):
 
     # Internal variables
     initialised = False
+    module = ''
     siteCode = ''
     number = 0
     category = ''
@@ -69,17 +70,17 @@ class Plan(QObject):
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
         self.dock.siteChanged.connect(self.setSite)
-        self.dock.siteChanged.connect(self.updateContextAttributes)
+        self.dock.siteChanged.connect(self.updateDefaultAttributes)
         self.dock.numberChanged.connect(self.setNumber)
-        self.dock.numberChanged.connect(self.updateContextAttributes)
+        self.dock.numberChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceChanged.connect(self.setSource)
-        self.dock.sourceChanged.connect(self.updateContextAttributes)
+        self.dock.sourceChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
-        self.dock.sourceFileChanged.connect(self.updateContextAttributes)
+        self.dock.sourceFileChanged.connect(self.updateDefaultAttributes)
         self.dock.commentChanged.connect(self.setComment)
-        self.dock.commentChanged.connect(self.updateContextAttributes)
+        self.dock.commentChanged.connect(self.updateDefaultAttributes)
         self.dock.createdByChanged.connect(self.setCreatedBy)
-        self.dock.createdByChanged.connect(self.updateContextAttributes)
+        self.dock.createdByChanged.connect(self.updateDefaultAttributes)
 
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
@@ -194,27 +195,32 @@ class Plan(QObject):
 
     def enableLevelsMode(self, module, category):
         #TODO disable all snapping
+        self.module = module
         self.createMapTool(category, self.project.collection(module).pointsBuffer, QgsMapToolAddFeature.Point, False, self.tr('Add level'))
         self.currentMapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -100, 100, 2)
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineSegmentMode(self, module, category):
         #TODO configure snapping
+        self.module = module
         self.createMapTool(category, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Segment, True, self.tr('Add line segment feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableLineMode(self, module, category):
         #TODO configure snapping
+        self.module = module
         self.createMapTool(category, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Line, True, self.tr('Add line feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enablePolygonMode(self, module, category):
         #TODO configure snapping
+        self.module = module
         self.createMapTool(category, self.project.collection(module).polygonsBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add polygon feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
     def enableSchematicMode(self, module, category):
         #TODO configure snapping
+        self.module = module
         self.createMapTool(category, self.project.collection(module).schemaBuffer, QgsMapToolAddFeature.Polygon, True, self.tr('Add schematic feature'))
         self.project.iface.mapCanvas().setMapTool(self.currentMapTool)
 
@@ -225,7 +231,7 @@ class Plan(QObject):
         self.deleteMapTool()
         self.currentMapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, layer, featureType, toolName)
         self.category = category
-        self.updateContextAttributes()
+        self.updateDefaultAttributes()
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)
@@ -242,14 +248,15 @@ class Plan(QObject):
             self.currentMapTool = None
             self.category = ''
 
-    def updateContextAttributes(self):
+    def updateDefaultAttributes(self):
         if self.currentMapTool is not None:
             layer = self.currentMapTool.layer()
             if (layer is None or not layer.isValid()):
                 return
             defaults = {}
             defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
-            defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.number
+            if module = 'contexts':
+                defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.number
             defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
             defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
             defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self.category

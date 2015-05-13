@@ -610,78 +610,53 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             pass
         elif (self._featureType == QgsMapToolAddFeature.Point):
             if (e.button() == Qt.LeftButton):
-                self._captureFeature()
+                self._addFeature()
         else:
             if (e.button() == Qt.LeftButton):
                 if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) == 2):
-                    self._captureFeature()
+                    self._addFeature()
             elif (e.button() == Qt.RightButton):
-                self._captureFeature()
+                self._addFeature()
 
-    def _captureFeature(self):
-        #points: bail out if there is not exactly one vertex
-        if (self._featureType == QgsMapToolAddFeature.Point and len(self._mapPointList) != 1):
-            self.resetCapturing()
-            return
-
-        #segments: bail out if there are not exactly two vertices
-        if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) != 2):
-            self.resetCapturing()
-            return
-
-        #lines: bail out if there are not at least two vertices
-        if (self._featureType == QgsMapToolAddFeature.Line and len(self._mapPointList) < 2):
-            self.resetCapturing()
-            return
-
-        #polygons: bail out if there are not at least three vertices
-        if (self._featureType == QgsMapToolAddFeature.Polygon and len(self._mapPointList) < 3):
-            self.resetCapturing()
-            return
-
-        if (self._layer.type() != QgsMapLayer.VectorLayer):
-            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not a vector layer'), QgsMessageBar.CRITICAL)
-            self.resetCapturing()
-            return
-
-        if (not self._layer.isEditable()):
-            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not editable'), QgsMessageBar.CRITICAL)
-            self.resetCapturing()
-            return
-
-        if (self._layer.geometryType() != self.geometryType()):
-            self.messageEmitted.emit(self.tr('Cannot add feature: The geometry type of this layer is different than the capture tool.'), QgsMessageBar.CRITICAL)
-            self.resetCapturing()
-            return;
-
-        provider = self._layer.dataProvider()
-        if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
-            self.resetCapturing()
-            self.messageEmitted.emit(self.tr('Cannot add feature: The data provider for this layer does not support the addition of features.'), QgsMessageBar.CRITICAL)
-            return
-
-        layerWKBType = self._layer.wkbType()
-        layerPoints = self._layerPoints()
-        feature = QgsFeature(self._layer.pendingFields(), 0)
-        geometry = None
-
+    def _addFeature(self):
+        if self._queryForAttribute():
+            self.addFeature(self._featureType, self._mapPointList, self._defaultAttributes, self._layer)
         self.resetCapturing()
 
-        #TODO Eventually merge this with the input action?
-        if self._queryAttributeName:
-            ok = False
-            value = None
-            if self._queryType == QVariant.Double:
-                value, ok = QInputDialog.getDouble(None, self._queryTitle, self._queryLabel, self._queryAttributeDefault, self._queryMin, self._queryMax, self._queryDecimals)
-            elif self._queryType == QVariant.Int:
-                value, ok = QInputDialog.getInt(None, self._queryTitle, self._queryLabel, self._queryAttributeDefault, self._queryMin, self._queryMax)
-            else:
-                value, ok = QInputDialog.getText(None, self._queryTitle, self._queryLabel, text=self._queryAttributeDefault)
-            if ok:
-                idx = self._layer.pendingFields().indexFromName(self._queryAttributeName)
-                self._defaultAttributes[idx] = value
-            else:
-                return
+    def addFeature(self, featureType, mapPointList, attributes, layer):
+        #points: bail out if there is not exactly one vertex
+        if (featureType == QgsMapToolAddFeature.Point and len(mapPointList) != 1):
+            return False
+
+        #segments: bail out if there are not exactly two vertices
+        if (featureType == QgsMapToolAddFeature.Segment and len(mapPointList) != 2):
+            return False
+
+        #lines: bail out if there are not at least two vertices
+        if (featureType == QgsMapToolAddFeature.Line and len(mapPointList) < 2):
+            return False
+
+        #polygons: bail out if there are not at least three vertices
+        if (featureType == QgsMapToolAddFeature.Polygon and len(mapPointList) < 3):
+            return False
+
+        if (layer.type() != QgsMapLayer.VectorLayer):
+            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not a vector layer'), QgsMessageBar.CRITICAL)
+            return False
+
+        if (not layer.isEditable()):
+            self.messageEmitted.emit(self.tr('Cannot add feature: Current layer not editable'), QgsMessageBar.CRITICAL)
+            return False
+
+        provider = layer.dataProvider()
+        if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
+            self.messageEmitted.emit(self.tr('Cannot add feature: The data provider for this layer does not support the addition of features.'), QgsMessageBar.CRITICAL)
+            return False
+
+        layerWKBType = layer.wkbType()
+        layerPoints = self._layerPoints(mapPointList, layer)
+        feature = QgsFeature(layer.pendingFields(), 0)
+        geometry = None
 
         if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
             geometry = QgsGeometry.fromPoint(layerPoints[0])
@@ -697,14 +672,14 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             geometry = QgsGeometry.fromMultiPolygon([layerPoints])
         else:
             self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
-            return
+            return False
 
         if (geometry is None):
             self.messageEmitted.emit(self.tr('Cannot add feature. Invalid geometry'), QgsMessageBar.CRITICAL)
-            return
+            return False
         feature.setGeometry(geometry)
 
-        if (self._featureType == QgsMapToolAddFeature.Polygon):
+        if (featureType == QgsMapToolAddFeature.Polygon):
 
             avoidIntersectionsReturn = feature.geometry().avoidIntersections()
             if (avoidIntersectionsReturn == 1):
@@ -720,11 +695,11 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                 else:
                     reason = self.tr('The feature cannot be added because it\'s geometry collapsed due to intersection avoidance')
                 self.messageEmitted.emit(reason, QgsMessageBar.CRITICAL)
-                return
+                return False
 
-        featureSaved = self._addFeatureAction(feature, False)
+        featureSaved = self._addFeatureAction(feature, attributes, layer, False)
 
-        if (featureSaved and self._featureType != QgsMapToolAddFeature.Point):
+        if (featureSaved and featureType != QgsMapToolAddFeature.Point):
             #add points to other features to keep topology up-to-date
             topologicalEditing = QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
 
@@ -737,37 +712,119 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
                     vl = QgsMapLayerRegistry.instance().mapLayer(str(intersectionLayer))
                     #can only add topological points if background layer is editable...
                     if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
-                        vl.self._addTopologicalPoints(feature.geometry())
+                        vl.self._addTopologicalPoints(feature.geometry(), layer)
             elif (topologicalEditing):
-                self._layer.self._addTopologicalPoints(feature.geometry())
+                self._layer.self._addTopologicalPoints(feature.geometry(), layer)
 
         self.canvas().refresh()
 
+        return True
 
-    def _addFeatureAction(self, feature, showModal=True):
-        action = QgsFeatureAction(self.tr('add feature'), feature, self._layer, -1, -1, self._iface, self)
-        res = action.addFeature(self._defaultAttributes, showModal)
+    def _queryForAttribute(self):
+        #TODO Eventually merge this with the input action?
+        value = None
+        ok = True
+        if self._queryAttributeName:
+            value, ok = self._getValue(self._queryTitle, self._queryLabel, self._queryType, self._queryAttributeDefault, self._queryMin, self._queryMax, self._queryDecimals)
+            if ok:
+                idx = self._layer.pendingFields().fieldNameIndex(self._queryAttributeName)
+                self._defaultAttributes[idx] = value
+        return ok
+
+    def _getValue(self, title, label, valueType=QVariant.String, defaultValue='', minValue=0, maxValue=0, decimals=0):
+        if valueType == QVariant.Double:
+            return QInputDialog.getDouble(None, title, label, defaultValue, minValue, maxValue, decimals)
+        elif valueType == QVariant.Int:
+            return QInputDialog.getInt(None, title, label, defaultValue, minValue, maxValue)
+        else:
+            return QInputDialog.getText(None, title, label, text=defaultValue)
+
+    def _addFeatureAction(self, feature, attributes, layer, showModal=True):
+        action = QgsFeatureAction(self.tr('add feature'), feature, layer, -1, -1, self._iface, self)
+        res = action.addFeature(attributes, showModal)
         if (showModal):
             action = None
         return res
 
-    def _addTopologicalPoints(self, geometry):
+    def _addTopologicalPoints(self, geometry, layer):
         if self.canvas() is None:
             return 1
-        if self._layer is None:
+        if layer is None:
             return 2
         for point in geometry:
-            self._layer.self._addTopologicalPoints(point)
+            layer.self._addTopologicalPoints(point)
         return 0
 
-    def _layerPoints(self):
+    def _layerPoints(self, mapPointList, layer):
         layerPoints = []
-        if self._layer is None:
+        if layer is None:
             return layerPoints
-        for mapPoint in self._mapPointList:
-            layerPoint = self.toLayerCoordinates(self._layer, mapPoint)
-            layerPoints.append(layerPoint)
+        for mapPoint in mapPointList:
+            layerPoints.append(self.toLayerCoordinates(layer, mapPoint))
         return layerPoints
+
+
+class ArkMapToolAddBaseline(QgsMapToolAddFeature):
+
+    _pointLayer = None  # QgsVectorLayer()
+    _pointAttributes = {}  # QMap<int, QList<QVariant> >
+    _idFieldName = ''
+
+    _pointQueryField = None  # QgsField
+    _pointQueryTitle = ''
+    _pointQueryLabel = ''
+    _pointDefaultValue = ''
+    _pointQueryMin = 0
+    _pointQueryMax = 0
+    _pointQueryDecimals = 0
+    _pointQueryValues = []
+
+    def __init__(self, canvas, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
+        super(QgsMapToolAddFeature, self).__init__(canvas, iface, lineLayer, toolName)
+        self._pointLayer = pointLayer
+
+    def pointLayer(self):
+        return self._pointLayer
+
+    def setPointAttributes(self, attributes):
+        self._pointAttributes = attributes
+
+    def setPointQuery(self, field, title, label, defaultValue, minValue, maxValue):
+            self._pointQueryField = field
+            self._pointQueryTitle = title
+            self._pointQueryLabel = label
+            self._pointDefaultValue = defaultValue
+            self._pointQueryMin = minValue
+            self._pointQueryMax = maxValue
+
+    def canvasReleaseEvent(self, e):
+        wasDragging = self._dragging
+        mapPointList = self._mapPointList
+        super(ArkMapToolAddBaseline, self).canvasReleaseEvent(e)
+        if (wasDragging):
+            pass
+        elif (e.button() == Qt.LeftButton):
+            self._capturePointData()
+        elif (e.button() == Qt.RightButton):
+            for mapPoint in mapPointList:
+                self.addFeature(QgsMapToolAddFeature.Point, [mapPoint], self._pointLayer)
+
+    def _capturePointData(self):
+        if self._pointQueryField:
+            value, ok = self._getValue(self._pointQueryTitle, self._pointQueryLabel, self._pointQueryField.type(), self._pointDefaultValue, self._pointQueryMin, self._pointQueryMax, self._pointQueryField.precision())
+            if ok:
+                self._pointQueryValues.append(value)
+            else:
+                self._pointQueryValues.append(None)
+
+    def _addPointFeature(self, mapPointList):
+        for i in range(0, len(mapPointList)):
+            idx = self._pointLayer.pendingFields().fieldNameIndex(self._idFieldName)
+            self._pointAttributes[idx] = 'SSS' + '.' + str(i + 1)
+            if self._pointQueryField:
+                idx = self._pointLayer.pendingFields().fieldNameIndex(self._pointQueryField.name())
+                self._pointAttributes[idx] = self._pointQueryValues[i]
+            self.addFeature(QgsMapToolAddFeature.Point, [mapPointList[i]], self._pointLayer)
 
 
 # TODO Clean up this and fix dialog problems

@@ -678,7 +678,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             else:
                 value, ok = QInputDialog.getText(None, self._queryTitle, self._queryLabel, text=self._queryAttributeDefault)
             if ok:
-                idx = self._layer.pendingFields().fieldNameIndex(self._queryAttributeName)
+                idx = self._layer.pendingFields().indexFromName(self._queryAttributeName)
                 self._defaultAttributes[idx] = value
             else:
                 return

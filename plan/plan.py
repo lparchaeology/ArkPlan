@@ -255,7 +255,7 @@ class Plan(QObject):
                 return
             defaults = {}
             defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
-            if module = 'contexts':
+            if self.module == 'contexts':
                 defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.number
             defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
             defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile

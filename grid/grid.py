@@ -33,7 +33,7 @@ from qgis.gui import QgsMapToolEmitPoint
 from ..core.utils import *
 from ..core.project import Project
 
-from ..core.select_layer_dialog import SelectLayerDialog
+from update_layer_dialog import UpdateLayerDialog
 from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
 
@@ -88,8 +88,8 @@ class GridModule(QObject):
         self.identifyGridAction = self.project.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
         self.identifyGridAction.toggled.connect(self.enableMapTool)
 
-        self.addLocalAction = self.project.createMenuAction(self.tr(u'Update Layer Local Coordinates'), ':/images/themes/default/mActionNewAttribute.png', False)
-        self.addLocalAction.triggered.connect(self.selectLayerForLocalCoords)
+        self.updateLayerAction = self.project.createMenuAction(self.tr(u'Update Layer Coordinates'), ':/images/themes/default/mActionNewAttribute.png', False)
+        self.updateLayerAction.triggered.connect(self.showUpdateLayerDialog)
 
         self.dock = GridDock()
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
@@ -100,7 +100,7 @@ class GridModule(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        self.project.iface.removeToolBarIcon(self.addLocalAction)
+        self.project.iface.removeToolBarIcon(self.updateLayerAction)
         self.project.iface.removeToolBarIcon(self.createGridAction)
         self.project.iface.removeToolBarIcon(self.identifyGridAction)
         self.dock.unload()
@@ -325,16 +325,16 @@ class GridModule(QObject):
         self.dock.setCrsPoint(crsPoint)
 
 
-    def selectLayerForLocalCoords(self):
+    def showUpdateLayerDialog(self):
         if not self.initialised:
             self.initialise()
         if self.initialised:
-            dialog = SelectLayerDialog(self.project.iface, QgsMapLayer.VectorLayer, QGis.Point)
+            dialog = UpdateLayerDialog(self.project.iface)
             if dialog.exec_():
-                self.updateLayerLocalCoords(dialog.layer())
+                self.updateLayerCoordinates(dialog.layer())
 
 
-    def updateLayerLocalCoords(self, layer):
+    def updateLayerCoordinates(self, layer):
         if not self.initialised:
             return
         local_x = self.project.fieldName('local_x')

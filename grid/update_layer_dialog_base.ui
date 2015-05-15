@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>293</width>
-    <height>332</height>
+    <width>292</width>
+    <height>237</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,6 +39,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="createCrsFieldsCheck">
+     <property name="text">
+      <string>Create CRS fields if they don't exist</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string/>
@@ -52,59 +59,15 @@
         <property name="text">
          <string>Update fields from geometry</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="updateGeometryFromLocalButton">
-        <property name="text">
-         <string>Update geometry from Local fields</string>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="updateGeometryFromCrsButton">
+       <widget class="QRadioButton" name="updateGeometryButton">
         <property name="text">
-         <string>Update geometry from CRS fields</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="updateLocalFieldsButton">
-        <property name="text">
-         <string>Update Local fields from CRS fields</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="updateCrsFieldsButton">
-        <property name="text">
-         <string>Update CRS fields from Local fields</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string/>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="createLocalFields">
-        <property name="text">
-         <string>Create Local fields if they don't exist</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="createCrsFields">
-        <property name="text">
-         <string>Create CRS fields if they don't exist</string>
+         <string>Update geometry from local fields</string>
         </property>
        </widget>
       </item>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/update_layer_dialog_base.ui'
 #
-# Created: Thu May 14 16:16:29 2015
+# Created: Fri May 15 11:32:43 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_UpdateLayerDialog(object):
     def setupUi(self, UpdateLayerDialog):
         UpdateLayerDialog.setObjectName(_fromUtf8("UpdateLayerDialog"))
-        UpdateLayerDialog.resize(293, 332)
+        UpdateLayerDialog.resize(299, 346)
         self.verticalLayout_3 = QtGui.QVBoxLayout(UpdateLayerDialog)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.headerLabel = QtGui.QLabel(UpdateLayerDialog)
@@ -49,6 +49,7 @@ class Ui_UpdateLayerDialog(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.updateFieldsButton = QtGui.QRadioButton(self.groupBox)
+        self.updateFieldsButton.setChecked(True)
         self.updateFieldsButton.setObjectName(_fromUtf8("updateFieldsButton"))
         self.verticalLayout.addWidget(self.updateFieldsButton)
         self.updateGeometryFromLocalButton = QtGui.QRadioButton(self.groupBox)
@@ -70,12 +71,13 @@ class Ui_UpdateLayerDialog(object):
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.createLocalFields = QtGui.QCheckBox(self.groupBox_2)
-        self.createLocalFields.setObjectName(_fromUtf8("createLocalFields"))
-        self.verticalLayout_2.addWidget(self.createLocalFields)
-        self.createCrsFields = QtGui.QCheckBox(self.groupBox_2)
-        self.createCrsFields.setObjectName(_fromUtf8("createCrsFields"))
-        self.verticalLayout_2.addWidget(self.createCrsFields)
+        self.createLocalFieldsCheck = QtGui.QCheckBox(self.groupBox_2)
+        self.createLocalFieldsCheck.setChecked(True)
+        self.createLocalFieldsCheck.setObjectName(_fromUtf8("createLocalFieldsCheck"))
+        self.verticalLayout_2.addWidget(self.createLocalFieldsCheck)
+        self.createCrsFieldsCheck = QtGui.QCheckBox(self.groupBox_2)
+        self.createCrsFieldsCheck.setObjectName(_fromUtf8("createCrsFieldsCheck"))
+        self.verticalLayout_2.addWidget(self.createCrsFieldsCheck)
         self.verticalLayout_3.addWidget(self.groupBox_2)
         spacerItem = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem)
@@ -99,6 +101,6 @@ class Ui_UpdateLayerDialog(object):
         self.updateGeometryFromCrsButton.setText(_translate("UpdateLayerDialog", "Update geometry from CRS fields", None))
         self.updateLocalFieldsButton.setText(_translate("UpdateLayerDialog", "Update Local fields from CRS fields", None))
         self.updateCrsFieldsButton.setText(_translate("UpdateLayerDialog", "Update CRS fields from Local fields", None))
-        self.createLocalFields.setText(_translate("UpdateLayerDialog", "Create Local fields if they don\'t exist", None))
-        self.createCrsFields.setText(_translate("UpdateLayerDialog", "Create CRS fields if they don\'t exist", None))
+        self.createLocalFieldsCheck.setText(_translate("UpdateLayerDialog", "Create Local fields if they don\'t exist", None))
+        self.createCrsFieldsCheck.setText(_translate("UpdateLayerDialog", "Create CRS fields if they don\'t exist", None))
 

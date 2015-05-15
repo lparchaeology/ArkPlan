@@ -331,10 +331,10 @@ class GridModule(QObject):
         if self.initialised:
             dialog = UpdateLayerDialog(self.project.iface)
             if dialog.exec_():
-                self.updateLayerCoordinates(dialog.layer())
+                self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.updateFields(), dialog.createLocalFields(), dialog.createCrsFields())
 
 
-    def updateLayerCoordinates(self, layer):
+    def updateLayerCoordinates(self, layer, updateGeometry, updateFields, createLocalFields, createCrsFields):
         if not self.initialised:
             return
         local_x = self.project.fieldName('local_x')
@@ -342,7 +342,7 @@ class GridModule(QObject):
         crs_x = self.project.fieldName('crs_x')
         crs_y = self.project.fieldName('crs_y')
         if layer.startEditing():
-            if layer.fieldNameIndex(local_x) < 0:
+            if (layer.fieldNameIndex(local_x) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_x')])
             if layer.fieldNameIndex(local_y) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_y')])

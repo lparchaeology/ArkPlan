@@ -25,51 +25,43 @@
 from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
-from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry
+from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 from qgis.gui import QgsMapLayerComboBox
 
 from update_layer_dialog_base import *
 
 class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
 
-    _layerName = ''
-    _layerId = -1
-    _layerType = None
-    _geometryType = None
     _iface = None
 
     def __init__(self, iface, parent=None):
         super(UpdateLayerDialog, self).__init__(parent)
         self.setupUi(self)
-        self.layerComboBox.currentIndexChanged.connect(self.layerChanged)
+        self.layerComboBox.currentIndexChanged.connect(self._layerChanged)
         self._iface = iface
         self.layerComboBox.clear()
         for layer in self._iface.legendInterface().layers():
-            if layer.type() == QgsMapLayer.VectorLayer:
+            if (layer.type() == QgsMapLayer.VectorLayer and (layer.dataProvider().capabilities() & QgsVectorDataProvider.ChangeAttributeValues)):
                 if (layer.geometryType() == QGis.Point or layer.geometryType() == QGis.NoGeometry):
                     self.layerComboBox.addItem(layer.name(), layer.id())
-        self.layerChanged(self.layerComboBox.currentIndex())
 
     def layer(self):
         return QgsMapLayerRegistry.instance().mapLayer(self.layerId())
 
     def layerName(self):
-        return self._layerName
+        return self.layerComboBox.currentText()
 
     def layerId(self):
-        return self._layerId
+        return self.layerComboBox.itemData(self.layerComboBox.currentIndex())
 
-    def layerChanged(self, index):
-        self._layerName = self.layerComboBox.currentText()
-        self._layerId = self.layerComboBox.itemData(self.layerComboBox.currentIndex())
-        if self.layer().geometryType() == QGis.Point:
-            self._toggleUpdateType(True)
-        elif self.layer().geometryType() == QGis.NoGeometry:
-            self._toggleUpdateType(True)
+    def updateGeometry(self):
+        return self.updateGeometryButton.isChecked()
 
-    def _toggleUpdateType(self, hasGeometry):
-        self.updateFieldsButton.setEnabled(hasGeometry)
-        self.updateGeometryFromLocalButton.setEnabled(hasGeometry)
-        self.updateGeometryFromCrsButton.setEnabled(hasGeometry)
-        self.updateLocalFieldsButton.setDisabled(hasGeometry)
-        self.updateCrsFieldsButton.setDisabled(hasGeometry)
+    def updateFields(self):
+        return self.updateFieldsButton.isChecked()
+
+    def createLocalFields(self):
+        return self.createLocalFieldsCheck.isChecked()
+
+    def createCrsFields(self):
+        return self.createCrsFieldsCheck.isChecked()

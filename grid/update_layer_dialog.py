@@ -32,15 +32,10 @@ from update_layer_dialog_base import *
 
 class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
 
-    _iface = None
-
     def __init__(self, iface, parent=None):
         super(UpdateLayerDialog, self).__init__(parent)
         self.setupUi(self)
-        self.layerComboBox.currentIndexChanged.connect(self._layerChanged)
-        self._iface = iface
-        self.layerComboBox.clear()
-        for layer in self._iface.legendInterface().layers():
+        for layer in iface.legendInterface().layers():
             if (layer.type() == QgsMapLayer.VectorLayer and (layer.dataProvider().capabilities() & QgsVectorDataProvider.ChangeAttributeValues)):
                 if (layer.geometryType() == QGis.Point or layer.geometryType() == QGis.NoGeometry):
                     self.layerComboBox.addItem(layer.name(), layer.id())

@@ -331,33 +331,40 @@ class GridModule(QObject):
         if self.initialised:
             dialog = UpdateLayerDialog(self.project.iface)
             if dialog.exec_():
-                self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.updateFields(), dialog.createLocalFields(), dialog.createCrsFields())
+                self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.createCrsFields())
 
 
-    def updateLayerCoordinates(self, layer, updateGeometry, updateFields, createLocalFields, createCrsFields):
-        if not self.initialised:
-            return
+    def updateLayerCoordinates(self, layer, updateGeometry, createCrsFields):
+        if (not self.initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
+            return False
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
         crs_x = self.project.fieldName('crs_x')
         crs_y = self.project.fieldName('crs_y')
         if layer.startEditing():
-            if (layer.fieldNameIndex(local_x) < 0:
+            if layer.fieldNameIndex(local_x) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_x')])
             if layer.fieldNameIndex(local_y) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_y')])
+            if (createCrsFields and layer.fieldNameIndex(crs_x) < 0):
+                layer.dataProvider().addAttributes([self.project.field('crs_x')])
+            if (createCrsFields and layer.fieldNameIndex(crs_y) < 0):
+                layer.dataProvider().addAttributes([self.project.field('crs_y')])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
             crs_x_idx = layer.fieldNameIndex(crs_x)
             crs_y_idx = layer.fieldNameIndex(crs_y)
+            if updateGeometry:
+                for feature in layer.getFeatures():
+                    localPoint = QgsPoint(feature.attribute(local_x), feature.attribute(local_y))
+                    crsPoint = self.localTransformer.map(localPoint)
+                    layer.changeGeometry(feature.id(), QgsGeometry.fromPoint(crsPoint))
             for feature in layer.getFeatures():
-                geom = feature.geometry()
-                if geom.type() == QGis.Point:
-                    crsPoint = geom.asPoint()
-                    localPoint = self.crsTransformer.map(crsPoint)
-                    layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
-                    layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
-                    layer.changeAttributeValue(feature.id(), crs_x_idx, crsPoint.x())
-                    layer.changeAttributeValue(feature.id(), crs_y_idx, crsPoint.y())
+                crsPoint = feature.geometry().asPoint()
+                localPoint = self.crsTransformer.map(crsPoint)
+                layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
+                layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
+                layer.changeAttributeValue(feature.id(), crs_x_idx, crsPoint.x())
+                layer.changeAttributeValue(feature.id(), crs_y_idx, crsPoint.y())
             return layer.commitChanges()
         return False

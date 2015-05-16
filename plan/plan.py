@@ -194,33 +194,33 @@ class Plan(QObject):
         self.project.base.clearBuffers('Clear base buffer data ' + str(self.number))
 
     def enableLevelsMode(self, module, category):
-        mapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).pointsBuffer, QgsMapToolAddFeature.Point, self.tr('Add level'))
+        mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).pointsBuffer, ArkMapToolAddFeature.Point, self.tr('Add level'))
         mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -1000, 1000, 2)
         self.enableMapTool(module, category, mapTool, True)
         #TODO configure snapping
 
     def enableLineSegmentMode(self, module, category):
-        mapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Segment, self.tr('Add line segment'))
+        mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Segment, self.tr('Add line segment'))
         self.enableMapTool(module, category, mapTool, True)
         #TODO configure snapping
 
     def enableLineMode(self, module, category):
-        mapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Line, self.tr('Add line'))
+        mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add line'))
         self.enableMapTool(module, category, mapTool, True)
         #TODO configure snapping
 
     def enablePolygonMode(self, module, category):
-        mapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).polygonsBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add polygon'))
+        mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).polygonsBuffer, ArkMapToolAddFeature.Polygon, self.tr('Add polygon'))
         self.enableMapTool(module, category, mapTool, True)
         #TODO configure snapping
 
     def enableSchematicMode(self, module, category):
-        mapTool = QgsMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).schemaBuffer, QgsMapToolAddFeature.Polygon, self.tr('Add schema'))
+        mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).schemaBuffer, ArkMapToolAddFeature.Polygon, self.tr('Add schema'))
         self.enableMapTool(module, category, mapTool, True)
         #TODO configure snapping
 
     def enableSectionMode(self, module, category):
-        mapTool = ArkMapToolAddBaseline(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, QgsMapToolAddFeature.Line, self.tr('Add section'))
+        mapTool = ArkMapToolAddBaseline(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self.enableMapTool(module, category, mapTool, True)
@@ -232,6 +232,8 @@ class Plan(QObject):
         self.category = category
         self.currentMapTool = mapTool
         self.updateDefaultAttributes()
+        self.currentMapTool.setPanningEnabled(True)
+        self.currentMapTool.setZoomingEnabled(True)
         if snappingEnabled:
             self.currentMapTool.setSnappingEnabled(True)
             self.currentMapTool.setShowSnappableVertices(True)

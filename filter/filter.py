@@ -30,7 +30,7 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..core.project import Project
 from ..core.data_model import *
-from ..core.map_tools import MapToolIndentifyFeatures
+from ..core.map_tools import ArkMapToolIndentifyFeatures
 
 from data_dialog import DataDialog
 from filter_dock import FilterDock
@@ -45,7 +45,7 @@ class Filter(QObject):
     dataLoaded = False
     contextList = []
 
-    identifyMapTool = None  # MapToolIndentifyFeatures()
+    identifyMapTool = None  # ArkMapToolIndentifyFeatures()
 
     def __init__(self, project):
         super(Filter, self).__init__()
@@ -73,7 +73,7 @@ class Filter(QObject):
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomSelected.connect(self.zoomFilter)
 
-        self.identifyMapTool = MapToolIndentifyFeatures(self.project.iface.mapCanvas())
+        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.iface.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 

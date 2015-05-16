@@ -58,12 +58,12 @@ capture_point_cursor_xpm = [
 capture_point_cursor = QCursor(QPixmap(capture_point_cursor_xpm), 8, 8)
 
 
-class MapToolIndentifyFeatures(QgsMapToolIdentify):
+class ArkMapToolIndentifyFeatures(QgsMapToolIdentify):
 
     featureIdentified = pyqtSignal(QgsFeature)
 
     def __init__(self, canvas):
-        super(MapToolIndentifyFeatures, self).__init__(canvas)
+        super(ArkMapToolIndentifyFeatures, self).__init__(canvas)
         mToolName = self.tr('Identify feature')
 
     def canvasReleaseEvent(self, e):
@@ -80,10 +80,17 @@ class MapToolIndentifyFeatures(QgsMapToolIdentify):
             self.canvas().unsetMapTool(self)
 
 
-# Tool to show snapping points
-class QgsMapToolSnap(QgsMapTool):
+# Tool to interact with map, including panning, zooming, and snapping
+class ArkMapToolInteractive(QgsMapTool):
 
     _active = False
+
+    _dragging = False
+    _panningEnabled = False
+
+    _zoomingEnabled = False
+    _zoomRubberBand = None  #QgsRubberBand()
+    _zoomRect = None # QRect()
 
     _snappingEnabled = False
     _snapper = None  #QgsMapCanvasSnapper()
@@ -94,7 +101,7 @@ class QgsMapToolSnap(QgsMapTool):
     _snappableMarkers = []  # [QgsVertexMarker()]
 
     def __init__(self, canvas, snappingEnabled=False, showSnappableVertices=False):
-        super(QgsMapToolSnap, self).__init__(canvas)
+        super(ArkMapToolInteractive, self).__init__(canvas)
         self._snappingEnabled = snappingEnabled
         self._showSnappableVertices = showSnappableVertices
 
@@ -106,7 +113,7 @@ class QgsMapToolSnap(QgsMapTool):
         return self._active
 
     def activate(self):
-        super(QgsMapToolSnap, self).activate()
+        super(ArkMapToolInteractive, self).activate()
         self._active = True
         self._startSnapping()
 
@@ -114,7 +121,22 @@ class QgsMapToolSnap(QgsMapTool):
         self._active = False
         if self._snappingEnabled:
             self._stopSnapping()
-        super(QgsMapToolSnap, self).deactivate()
+        if (self._zoomRubberBand is not None):
+            self.canvas().scene().removeItem(self._zoomRubberBand)
+            self._zoomRubberBand = None
+        super(ArkMapToolInteractive, self).deactivate()
+
+    def panningEnabled(self):
+        return self._panningEnabled
+
+    def setPanningEnabled(self, enabled):
+        self._panningEnabled = enabled
+
+    def zoomingEnabled(self):
+        return self._zoomingEnabled
+
+    def setZoomingEnabled(self, enabled):
+        self._zoomingEnabled = enabled
 
     def snappingEnabled(self):
         return self._snappingEnabled
@@ -170,14 +192,77 @@ class QgsMapToolSnap(QgsMapTool):
         QgsProject.instance().snapSettingsChanged.disconnect(self._layersChanged)
 
     def canvasMoveEvent(self, e):
-        super(QgsMapToolSnap, self).canvasMoveEvent(e)
-        if (not self._active or not self._snappingEnabled):
+        super(ArkMapToolInteractive, self).canvasMoveEvent(e)
+        if not self._active:
             return
-        mapPoint, snapped = self._snapCursorPoint(e.pos())
-        if (snapped):
-            self._createSnappingMarker(mapPoint)
-        else:
-            self._deleteSnappingMarker()
+        e.ignore()
+        if (self._panningEnabled and e.buttons() & Qt.LeftButton):
+            # Pan map mode
+            if not self._dragging:
+                self._dragging = True
+                self.setCursor(QCursor(Qt.ClosedHandCursor))
+            self.canvas().panAction(e)
+            e.accept()
+        elif (self._zoomingEnabled and e.buttons() & Qt.RightButton):
+            # Zoom map mode
+            if not self._dragging:
+                self._dragging = True
+                self.setCursor(QCursor(Qt.ClosedHandCursor))
+                self._zoomRubberBand = QgsRubberBand(self.canvas(), QGis.Polygon)
+                color = QColor(Qt.blue)
+                color.setAlpha(63)
+                self._zoomRubberBand.setColor(color)
+                self._zoomRect = QRect(0, 0, 0, 0)
+                self._zoomRect.setTopLeft(e.pos())
+            self._zoomRect.setBottomRight(e.pos())
+            if self._zoomRubberBand is not None:
+                self._zoomRubberBand.setToCanvasRectangle(self._zoomRect)
+                self._zoomRubberBand.show()
+            e.accept()
+        elif self._snappingEnabled:
+            mapPoint, snapped = self._snapCursorPoint(e.pos())
+            if (snapped):
+                self._createSnappingMarker(mapPoint)
+            else:
+                self._deleteSnappingMarker()
+
+    def canvasReleaseEvent(self, e):
+        super(ArkMapToolInteractive, self).canvasReleaseEvent(e)
+        e.ignore()
+        if (e.button() == Qt.LeftButton):
+            if self._dragging:
+                # Pan map mode
+                self.canvas().panActionEnd(e.pos())
+                self.setCursor(capture_point_cursor)
+                self._dragging = False
+                e.accept()
+        elif (e.button() == Qt.RightButton):
+            if self._dragging:
+                # Zoom mode
+                self._zoomRect.setBottomRight(e.pos())
+                if (self._zoomRect.topLeft() != self._zoomRect.bottomRight()):
+                    coordinateTransform = self.canvas().getCoordinateTransform()
+                    ll = coordinateTransform.toMapCoordinates(self._zoomRect.left(), self._zoomRect.bottom())
+                    ur = coordinateTransform.toMapCoordinates(self._zoomRect.right(), self._zoomRect.top())
+                    r = QgsRectangle()
+                    r.setXMinimum(ll.x())
+                    r.setYMinimum(ll.y())
+                    r.setXMaximum(ur.x())
+                    r.setYMaximum(ur.y())
+                    r.normalize()
+                    if (r.width() != 0 and r.height() != 0):
+                        self.canvas().setExtent(r)
+                        self.canvas().refresh()
+                self._dragging = False
+                if (self._zoomRubberBand is not None):
+                    self.canvas().scene().removeItem(self._zoomRubberBand)
+                    self._zoomRubberBand = None
+                e.accept()
+
+    def keyPressEvent(self, e):
+        if (e.key() == Qt.Key_Escape):
+            self.canvas().unsetMapTool(self)
+            e.accept()
 
     def _snapCursorPoint(self, cursorPoint):
         res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
@@ -261,7 +346,7 @@ class QgsMapToolSnap(QgsMapTool):
 
 
 # Tool to capture and show mouse clicks as geometry using map points
-class QgsMapToolCapture(QgsMapToolSnap):
+class ArkMapToolCapture(ArkMapToolInteractive):
 
     _iface = None
     _useCurrentLayerGeometry = False
@@ -269,16 +354,13 @@ class QgsMapToolCapture(QgsMapToolSnap):
     _mapPointList = []  #QList<QgsPoint>
     _rubberBand = None  #QgsRubberBand()
     _moveRubberBand = None  #QgsRubberBand()
-    _zoomRubberBand = None  #QgsRubberBand()
-    _zoomRect = None # QRect()
-    _dragging = False
     _tip = ''
     _validator = None  #QgsGeometryValidator()
     _geometryErrors = []  #QList<QgsGeometry.Error>
     _geometryErrorMarkers = []  #QList<QgsVertexMarker>
 
     def __init__(self, canvas, iface, geometryType=QGis.UnknownGeometry):
-        super(QgsMapToolCapture, self).__init__(canvas)
+        super(ArkMapToolCapture, self).__init__(canvas)
         self._iface = iface
         self._geometryType = geometryType
         if (geometryType == QGis.UnknownGeometry):
@@ -287,10 +369,10 @@ class QgsMapToolCapture(QgsMapToolSnap):
 
     def __del__(self):
         self.deactivate();
-        super(QgsMapToolCapture, self).__del__()
+        super(ArkMapToolCapture, self).__del__()
 
     def activate(self):
-        super(QgsMapToolCapture, self).activate()
+        super(ArkMapToolCapture, self).activate()
         geometryType = self.geometryType()
         self._rubberBand = self._createRubberBand(geometryType)
         self._moveRubberBand = self._createRubberBand(geometryType, True)
@@ -305,12 +387,9 @@ class QgsMapToolCapture(QgsMapToolSnap):
         if (self._moveRubberBand is not None):
             self.canvas().scene().removeItem(self._moveRubberBand)
             self._moveRubberBand = None
-        if (self._zoomRubberBand is not None):
-            self.canvas().scene().removeItem(self._zoomRubberBand)
-            self._zoomRubberBand = None
         if (self._useCurrentLayerGeometry == True):
             self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
-        super(QgsMapToolCapture, self).deactivate()
+        super(ArkMapToolCapture, self).deactivate()
 
     def geometryType(self):
         if (self._useCurrentLayerGeometry and self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer):
@@ -331,72 +410,28 @@ class QgsMapToolCapture(QgsMapToolSnap):
         self.canvas().refresh()
 
     def canvasMoveEvent(self, e):
-        super(QgsMapToolCapture, self).canvasMoveEvent(e)
-        if (e.buttons() & Qt.LeftButton):
-            # Pan map mode
-            if not self._dragging:
-                self._dragging = True
-                self.setCursor(QCursor(Qt.ClosedHandCursor))
-            self.canvas().panAction(e)
-        elif (e.buttons() & Qt.RightButton):
-            # Zoom map mode
-            if not self._dragging:
-                self._dragging = True
-                self.setCursor(QCursor(Qt.ClosedHandCursor))
-                self._zoomRubberBand = QgsRubberBand(self.canvas(), QGis.Polygon)
-                color = QColor(Qt.blue)
-                color.setAlpha(63)
-                self._zoomRubberBand.setColor(color)
-                self._zoomRect = QRect(0, 0, 0, 0)
-                self._zoomRect.setTopLeft(e.pos())
-            self._zoomRect.setBottomRight(e.pos())
-            if self._zoomRubberBand is not None:
-                self._zoomRubberBand.setToCanvasRectangle(self._zoomRect)
-                self._zoomRubberBand.show()
-        elif (self._moveRubberBand is not None):
+        super(ArkMapToolCapture, self).canvasMoveEvent(e)
+        if e.isAccepted():
+            return
+        if (self._moveRubberBand is not None):
             # Capture mode
             mapPoint, snapped = self._snapCursorPoint(e.pos())
             self._moveRubberBand.movePoint(mapPoint)
 
     def canvasReleaseEvent(self, e):
-        super(QgsMapToolCapture, self).canvasReleaseEvent(e)
+        super(ArkMapToolCapture, self).canvasReleaseEvent(e)
+        if e.isAccepted():
+            return
         if (e.button() == Qt.LeftButton):
-            if self._dragging:
-                # Pan map mode
-                self.canvas().panActionEnd(e.pos())
-                self.setCursor(capture_point_cursor)
-                self._dragging = False
-            else:
-                # Capture mode
-                self._addVertex(e.pos())
-        elif (e.button() == Qt.RightButton):
-            if self._dragging:
-                # Zoom mode
-                self._zoomRect.setBottomRight(e.pos())
-                if (self._zoomRect.topLeft() != self._zoomRect.bottomRight()):
-                    coordinateTransform = self.canvas().getCoordinateTransform()
-                    ll = coordinateTransform.toMapCoordinates(self._zoomRect.left(), self._zoomRect.bottom())
-                    ur = coordinateTransform.toMapCoordinates(self._zoomRect.right(), self._zoomRect.top())
-                    r = QgsRectangle()
-                    r.setXMinimum(ll.x())
-                    r.setYMinimum(ll.y())
-                    r.setXMaximum(ur.x())
-                    r.setYMaximum(ur.y())
-                    r.normalize()
-                    if (r.width() != 0 and r.height() != 0):
-                        self.canvas().setExtent(r)
-                        self.canvas().refresh()
-                self._dragging = False
-                if (self._zoomRubberBand is not None):
-                    self.canvas().scene().removeItem(self._zoomRubberBand)
-                    self._zoomRubberBand = None
-
+            # Capture mode
+            self._addVertex(e.pos())
 
     def keyPressEvent(self, e):
-        super(QgsMapToolCapture, self).keyPressEvent(e)
         if (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
             self._undo()
-            e.ignore()
+            e.accept()
+        else:
+            super(ArkMapToolCapture, self).keyPressEvent(e)
 
     def _createRubberBand(self, geometryType, moveBand=False):
         settings = QSettings()
@@ -532,7 +567,7 @@ class QgsMapToolCapture(QgsMapToolSnap):
         self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))
 
 
-class QgsMapToolAddFeature(QgsMapToolCapture):
+class ArkMapToolAddFeature(ArkMapToolCapture):
 
     NoFeature = 0
     Point = 1
@@ -558,18 +593,18 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
         geometryType = QGis.UnknownGeometry
         if (layer is not None and layer.isValid()):
             geometryType = layer.geometryType()
-        super(QgsMapToolAddFeature, self).__init__(canvas, iface, geometryType)
+        super(ArkMapToolAddFeature, self).__init__(canvas, iface, geometryType)
         self._layer = layer
 
-        if (featureType == QgsMapToolAddFeature.NoFeature):
+        if (featureType == ArkMapToolAddFeature.NoFeature):
             if (geometryType == QGis.Point):
-                self._featureType = QgsMapToolAddFeature.Point
+                self._featureType = ArkMapToolAddFeature.Point
             elif (geometryType == QGis.Line):
-                self._featureType = QgsMapToolAddFeature.Line
+                self._featureType = ArkMapToolAddFeature.Line
             elif (geometryType == QGis.Polygon):
-                self._featureType = QgsMapToolAddFeature.Polygon
+                self._featureType = ArkMapToolAddFeature.Polygon
             else:
-                self._featureType = QgsMapToolAddFeature.NoFeature
+                self._featureType = ArkMapToolAddFeature.NoFeature
         else:
             self._featureType = featureType
 
@@ -599,24 +634,25 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             self._queryDecimals = decimals
 
     def activate(self):
-        super(QgsMapToolAddFeature, self).activate()
+        super(ArkMapToolAddFeature, self).activate()
         if (self._layer is not None and self._layer.geometryType() == QGis.NoGeometry):
             self._addFeatureAction(QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
-        wasDragging = self._dragging
-        super(QgsMapToolAddFeature, self).canvasReleaseEvent(e)
-        if (wasDragging):
-            pass
-        elif (self._featureType == QgsMapToolAddFeature.Point):
+        super(ArkMapToolAddFeature, self).canvasReleaseEvent(e)
+        if (e.isAccepted()):
+            return
+        if (self._featureType == ArkMapToolAddFeature.Point):
             if (e.button() == Qt.LeftButton):
                 self._addFeature()
+                e.accept()
         else:
             if (e.button() == Qt.LeftButton):
-                if (self._featureType == QgsMapToolAddFeature.Segment and len(self._mapPointList) == 2):
+                if (self._featureType == ArkMapToolAddFeature.Segment and len(self._mapPointList) == 2):
                     self._addFeature()
             elif (e.button() == Qt.RightButton):
                 self._addFeature()
+                e.accept()
 
     def _addFeature(self):
         if self._queryForAttribute():
@@ -625,19 +661,19 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
     def addFeature(self, featureType, mapPointList, attributes, layer):
         #points: bail out if there is not exactly one vertex
-        if (featureType == QgsMapToolAddFeature.Point and len(mapPointList) != 1):
+        if (featureType == ArkMapToolAddFeature.Point and len(mapPointList) != 1):
             return False
 
         #segments: bail out if there are not exactly two vertices
-        if (featureType == QgsMapToolAddFeature.Segment and len(mapPointList) != 2):
+        if (featureType == ArkMapToolAddFeature.Segment and len(mapPointList) != 2):
             return False
 
         #lines: bail out if there are not at least two vertices
-        if (featureType == QgsMapToolAddFeature.Line and len(mapPointList) < 2):
+        if (featureType == ArkMapToolAddFeature.Line and len(mapPointList) < 2):
             return False
 
         #polygons: bail out if there are not at least three vertices
-        if (featureType == QgsMapToolAddFeature.Polygon and len(mapPointList) < 3):
+        if (featureType == ArkMapToolAddFeature.Polygon and len(mapPointList) < 3):
             return False
 
         if (layer.type() != QgsMapLayer.VectorLayer):
@@ -679,7 +715,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
             return False
         feature.setGeometry(geometry)
 
-        if (featureType == QgsMapToolAddFeature.Polygon):
+        if (featureType == ArkMapToolAddFeature.Polygon):
 
             avoidIntersectionsReturn = feature.geometry().avoidIntersections()
             if (avoidIntersectionsReturn == 1):
@@ -699,7 +735,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
 
         featureSaved = self._addFeatureAction(feature, attributes, layer, False)
 
-        if (featureSaved and featureType != QgsMapToolAddFeature.Point):
+        if (featureSaved and featureType != ArkMapToolAddFeature.Point):
             #add points to other features to keep topology up-to-date
             topologicalEditing = QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
 
@@ -764,7 +800,7 @@ class QgsMapToolAddFeature(QgsMapToolCapture):
         return layerPoints
 
 
-class ArkMapToolAddBaseline(QgsMapToolAddFeature):
+class ArkMapToolAddBaseline(ArkMapToolAddFeature):
 
     _pointLayer = None  # QgsVectorLayer()
     _pointAttributes = {}  # QMap<int, QList<QVariant> >
@@ -780,7 +816,7 @@ class ArkMapToolAddBaseline(QgsMapToolAddFeature):
     _pointQueryValues = []
 
     def __init__(self, canvas, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
-        super(QgsMapToolAddFeature, self).__init__(canvas, iface, lineLayer, toolName)
+        super(ArkMapToolAddFeature, self).__init__(canvas, iface, lineLayer, toolName)
         self._pointLayer = pointLayer
 
     def pointLayer(self):
@@ -807,7 +843,7 @@ class ArkMapToolAddBaseline(QgsMapToolAddFeature):
             self._capturePointData()
         elif (e.button() == Qt.RightButton):
             for mapPoint in mapPointList:
-                self.addFeature(QgsMapToolAddFeature.Point, [mapPoint], self._pointLayer)
+                self.addFeature(ArkMapToolAddFeature.Point, [mapPoint], self._pointLayer)
 
     def _capturePointData(self):
         if self._pointQueryField:
@@ -824,7 +860,7 @@ class ArkMapToolAddBaseline(QgsMapToolAddFeature):
             if self._pointQueryField:
                 idx = self._pointLayer.pendingFields().fieldNameIndex(self._pointQueryField.name())
                 self._pointAttributes[idx] = self._pointQueryValues[i]
-            self.addFeature(QgsMapToolAddFeature.Point, [mapPointList[i]], self._pointLayer)
+            self.addFeature(ArkMapToolAddFeature.Point, [mapPointList[i]], self._pointLayer)
 
 
 # TODO Clean up this and fix dialog problems

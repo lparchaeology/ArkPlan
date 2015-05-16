@@ -345,6 +345,24 @@ class ArkMapToolInteractive(QgsMapTool):
         self._snappableVertices.simplify(0)
 
 
+# Tool to emit mouse clicks as map points
+class ArkMapToolEmitPoint(ArkMapToolInteractive):
+
+    canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
+
+    def __init__(self):
+        super(ArkMapToolCapture, self).__init__(canvas)
+
+    def canvasReleaseEvent(self, e):
+        super(ArkMapToolEmitPoint, self).canvasReleaseEvent(e)
+        if e.isAccepted():
+            return
+        # Emit mode
+        mapPoint = self._snapCursorPoint(e.pos())
+        canvasClicked(mapPoint, e.button()).emit()
+        e.accept()
+
+
 # Tool to capture and show mouse clicks as geometry using map points
 class ArkMapToolCapture(ArkMapToolInteractive):
 

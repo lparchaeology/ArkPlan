@@ -350,16 +350,16 @@ class ArkMapToolEmitPoint(ArkMapToolInteractive):
 
     canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
 
-    def __init__(self):
-        super(ArkMapToolCapture, self).__init__(canvas)
+    def __init__(self, canvas):
+        super(ArkMapToolEmitPoint, self).__init__(canvas)
 
     def canvasReleaseEvent(self, e):
         super(ArkMapToolEmitPoint, self).canvasReleaseEvent(e)
         if e.isAccepted():
             return
         # Emit mode
-        mapPoint = self._snapCursorPoint(e.pos())
-        canvasClicked(mapPoint, e.button()).emit()
+        mapPoint, snapped = self._snapCursorPoint(e.pos())
+        self.canvasClicked.emit(mapPoint, e.button())
         e.accept()
 
 

@@ -28,9 +28,9 @@ from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
-from qgis.gui import QgsMapToolEmitPoint
 
 from ..core.utils import *
+from ..core.map_tools import ArkMapToolEmitPoint
 from ..core.project import Project
 
 from update_layer_dialog import UpdateLayerDialog
@@ -70,7 +70,7 @@ class GridModule(QObject):
     project = None # Project()
 
     # Internal variables
-    mapTool = None  # QgsMapToolEmitPoint()
+    mapTool = None  #ArkMapToolEmitPoint()
     initialised = False
 
     def __init__(self, project):
@@ -134,7 +134,7 @@ class GridModule(QObject):
         self.crsTransformer = LinearTransformer(crs1, local1, crs2, local2)
         self.localTransformer = LinearTransformer(local1, crs1, local2, crs2)
 
-        self.mapTool = QgsMapToolEmitPoint(self.project.iface.mapCanvas())
+        self.mapTool = ArkMapToolEmitPoint(self.project.iface.mapCanvas())
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
         self.dock.setReadOnly(False)

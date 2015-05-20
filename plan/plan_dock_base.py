@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plan/plan_dock_base.ui'
 #
-# Created: Wed May 20 08:35:33 2015
+# Created: Wed May 20 08:54:08 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -354,6 +354,10 @@ class Ui_PlanDockWidget(object):
 
         self.retranslateUi(PlanDockWidget)
         QtCore.QMetaObject.connectSlotsByName(PlanDockWidget)
+        PlanDockWidget.setTabOrder(self.scrollArea, self.m_loadRawButton)
+        PlanDockWidget.setTabOrder(self.m_loadRawButton, self.m_loadGeoButton)
+        PlanDockWidget.setTabOrder(self.m_loadGeoButton, self.m_loadContextButton)
+        PlanDockWidget.setTabOrder(self.m_loadContextButton, self.m_siteEdit)
         PlanDockWidget.setTabOrder(self.m_siteEdit, self.m_numberSpin)
         PlanDockWidget.setTabOrder(self.m_numberSpin, self.m_sourceEdit)
         PlanDockWidget.setTabOrder(self.m_sourceEdit, self.m_sourceFileEdit)

@@ -21,8 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject
-from PyQt4.QtGui import QAction, QIcon, QFileDialog
+from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
 from qgis.core import *
 
@@ -69,6 +69,7 @@ class Plan(QObject):
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
+        self.dock.loadContextSelected.connect(self.loadContextPlans)
         self.dock.siteChanged.connect(self.setSite)
         self.dock.siteChanged.connect(self.updateDefaultAttributes)
         self.dock.numberChanged.connect(self.setNumber)
@@ -152,6 +153,20 @@ class Plan(QObject):
             md = planMetadata(geoFile.completeBaseName())
             self.setMetadata(md[0], md[1], md[2], geoFile.completeBaseName(), md[3], md[4], md[5])
             self.project.loadGeoLayer(geoFile)
+
+    def loadContextPlans(self):
+        context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all plans for:', 0, 0, 99999)
+        if (not ok or context == 0):
+            return
+        planDir = self.project.processedPlanDir()
+        planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
+        geoName = self.project.siteCode() + '*' + str(context) + '*_r.tif'
+        planDir.setNameFilters([geoName])
+        plans = planDir.entryInfoList()
+        for plan in plans:
+            md = planMetadata(plan.completeBaseName())
+            self.setMetadata(md[0], md[1], md[2], plan.completeBaseName(), md[3], md[4], md[5])
+            self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):
         self.siteCode = siteCode

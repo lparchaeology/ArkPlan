@@ -1,19 +1,31 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.8.1-Wien" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.8.1-Wien" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
-    <edittype widgetv2type="TextEdit" name="id">
+    <edittype widgetv2type="TextEdit" name="site">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="hand_machi">
+    <edittype widgetv2type="TextEdit" name="category">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="ditch_dept">
+    <edittype widgetv2type="TextEdit" name="local_x">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="x">
+    <edittype widgetv2type="TextEdit" name="local_y">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="y">
+    <edittype widgetv2type="TextEdit" name="crs_x">
+      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="crs_y">
+      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="source">
+      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="created_on">
+      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="created_by">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
   </edittypes>
@@ -22,7 +34,7 @@
       <symbol alpha="1" type="fill" name="0">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0"/>
-          <prop k="color" v="255,255,255,255"/>
+          <prop k="color" v="0,0,0,0"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0"/>
@@ -65,7 +77,7 @@
     <property key="labeling/distMapUnitMaxScale" value="0"/>
     <property key="labeling/distMapUnitMinScale" value="0"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value=" &quot;x&quot;  || ' / ' || &quot;y&quot; || '\nTP\nM\nC'"/>
+    <property key="labeling/fieldName" value=" &quot;local_x&quot;  || ' / ' || &quot;local_y&quot;"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="Gill Sans"/>
@@ -114,8 +126,8 @@
     <property key="labeling/reverseDirectionSymbol" value="false"/>
     <property key="labeling/rightDirectionSymbol" value=">"/>
     <property key="labeling/scaleMax" value="10000000"/>
-    <property key="labeling/scaleMin" value="1"/>
-    <property key="labeling/scaleVisibility" value="false"/>
+    <property key="labeling/scaleMin" value="100"/>
+    <property key="labeling/scaleVisibility" value="true"/>
     <property key="labeling/shadowBlendMode" value="6"/>
     <property key="labeling/shadowColorB" value="0"/>
     <property key="labeling/shadowColorG" value="0"/>

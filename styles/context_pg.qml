@@ -30,10 +30,11 @@
     <categories>
       <category render="true" symbol="0" value="brk" label="Brick"/>
       <category render="true" symbol="1" value="cbm" label="Ceramic Building Material"/>
-      <category render="true" symbol="2" value="mrt" label="Mortar"/>
-      <category render="true" symbol="3" value="til" label="Tile"/>
-      <category render="true" symbol="4" value="sto" label="Stone"/>
-      <category render="true" symbol="5" value="" label="UNKNOWN"/>
+      <category render="true" symbol="2" value="mtr" label="Mortar"/>
+      <category render="true" symbol="3" value="sto" label="Stone"/>
+      <category render="true" symbol="4" value="til" label="Tile"/>
+      <category render="true" symbol="5" value="tim" label="Timber"/>
+      <category render="true" symbol="6" value="" label="UNKNOWN"/>
     </categories>
     <symbols>
       <symbol alpha="1" type="fill" name="0">
@@ -84,21 +85,6 @@
       <symbol alpha="1" type="fill" name="3">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0"/>
-          <prop k="color" v="227,165,166,255"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.26"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="fill" name="4">
-        <layer pass="0" class="SimpleFill" locked="0">
-          <prop k="border_width_map_unit_scale" v="0,0"/>
           <prop k="color" v="213,213,213,255"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0,0"/>
@@ -124,7 +110,7 @@
           <prop k="offset_unit" v="MM"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <symbol alpha="1" type="line" name="@4@1">
+          <symbol alpha="1" type="line" name="@3@1">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -145,7 +131,37 @@
           </symbol>
         </layer>
       </symbol>
+      <symbol alpha="1" type="fill" name="4">
+        <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_map_unit_scale" v="0,0"/>
+          <prop k="color" v="227,165,166,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
+        </layer>
+      </symbol>
       <symbol alpha="1" type="fill" name="5">
+        <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_map_unit_scale" v="0,0"/>
+          <prop k="color" v="195,130,28,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="fill" name="6">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0"/>
           <prop k="color" v="255,0,222,255"/>
@@ -209,11 +225,11 @@
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/distMapUnitMaxScale" value="0"/>
     <property key="labeling/distMapUnitMinScale" value="0"/>
-    <property key="labeling/enabled" value="false"/>
+    <property key="labeling/enabled" value="true"/>
     <property key="labeling/fieldName" value=""/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
-    <property key="labeling/fontFamily" value=".Helvetica Neue DeskInterface"/>
+    <property key="labeling/fontFamily" value="Helvetica"/>
     <property key="labeling/fontItalic" value="false"/>
     <property key="labeling/fontLetterSpacing" value="0"/>
     <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -242,7 +258,7 @@
     <property key="labeling/minFeatureSize" value="0"/>
     <property key="labeling/multilineAlign" value="0"/>
     <property key="labeling/multilineHeight" value="1"/>
-    <property key="labeling/namedStyle" value=""/>
+    <property key="labeling/namedStyle" value="Regular"/>
     <property key="labeling/obstacle" value="true"/>
     <property key="labeling/placeDirectionSymbol" value="0"/>
     <property key="labeling/placement" value="1"/>

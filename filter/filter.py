@@ -105,26 +105,28 @@ class Filter(QObject):
 
     # Filter methods
 
-    def applyContextFilter(self, contextList):
+    def applyContextFilter(self, contextRange):
         del self.contextList[:]
-        self.contextList = contextList
-        self.project.applyContextFilter(self.contextList)
+        self.contextList = self._rangeToList(contextRange)
+        self.project.contexts.applyFieldFilterRange(self.project.fieldName('context'), contextRange)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
-    def applySubGroupFilter(self, subList):
+    def applySubGroupFilter(self, subRange):
         del self.contextList[:]
+        sublist = self._rangeToList(subRange)
         for sub in subList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.project.applyContextFilter(self.contextList)
+        self.project.contexts.applyFieldFilterList(self.project.fieldName('context'), self.contextList)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
-    def applyGroupFilter(self, groupList):
+    def applyGroupFilter(self, groupRange):
         del self.contextList[:]
+        groupList = self._rangeToList(groupRange)
         for group in groupList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.project.applyContextFilter(self.contextList)
+        self.project.contexts.applyFieldFilterList(self.project.fieldName('context'), self.contextList)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
@@ -190,6 +192,18 @@ class Filter(QObject):
         self.data._groupProxyModel.setFilterRegExp(self._listToRegExp(groupList))
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
+
+
+    def _rangeToList(self, valueRange):
+        lst = []
+        for clause in valueRange.split():
+            if clause.find('-') >= 0:
+                valueList = clause.split('-')
+                for i in range(int(valueList[0]), int(valueList[1])):
+                    lst.append(i)
+            else:
+                lst.append(int(clause))
+        return lst
 
 
     def _listToRegExp(self, lst):

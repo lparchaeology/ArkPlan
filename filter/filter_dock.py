@@ -31,9 +31,9 @@ import filter_dock_base
 
 class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
 
-    contextFilterChanged = pyqtSignal(list)
-    subGroupFilterChanged = pyqtSignal(list)
-    groupFilterChanged = pyqtSignal(list)
+    contextFilterChanged = pyqtSignal(str)
+    subGroupFilterChanged = pyqtSignal(str)
+    groupFilterChanged = pyqtSignal(str)
 
     buildFilterSelected = pyqtSignal()
     clearFilterSelected = pyqtSignal()
@@ -81,26 +81,20 @@ class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
     def _contextFilterSelected(self):
         self.subGroupFilterLineEdit.clear()
         self.groupFilterLineEdit.clear()
-        filter = self.contextFilterCombo.currentText()
-        filter = filter.replace(',', ' ')
-        contexts = [int(cxtStr) for cxtStr in filter.split()]
-        self.contextFilterChanged.emit(contexts)
+        contextRange = self._normaliseRange(self.contextFilterCombo.currentText())
+        self.contextFilterChanged.emit(contextRange)
 
     def _subGroupFilterSelected(self):
         self.contextFilterLineEdit.clear()
         self.groupFilterLineEdit.clear()
-        filter = self.subGroupFilterCombo.currentText()
-        filter = filter.replace(',', ' ')
-        subGroups = [int(cxtStr) for cxtStr in filter.split()]
-        self.subGroupFilterChanged.emit(subGroups)
+        subRange = self._normaliseRange(self.subGroupFilterCombo.currentText())
+        self.subGroupFilterChanged.emit(subRange)
 
     def _groupFilterSelected(self):
         self.contextFilterLineEdit.clear()
         self.subGroupFilterLineEdit.clear()
-        filter = self.groupFilterCombo.currentText()
-        filter = filter.replace(',', ' ')
-        groups = [int(cxtStr) for cxtStr in filter.split()]
-        self.groupFilterChanged.emit(groups)
+        groupRange = self._normaliseRange(self.groupFilterCombo.currentText())
+        self.groupFilterChanged.emit(groupRange)
 
     def _clearFilterClicked(self):
         self.contextFilterLineEdit.clear()
@@ -116,3 +110,8 @@ class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
 
     def displayFilter(self, filter):
         self.filterEdit.setText(filter)
+
+    def _normaliseRange(self, text):
+        filter = text.replace(' - ', '-')
+        filter = filter.replace(',', ' ')
+        return filter

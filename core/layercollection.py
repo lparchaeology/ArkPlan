@@ -331,7 +331,23 @@ class LayerCollection:
         self._iface.legendInterface().setLayerVisible(self.schemaLayer, status)
 
 
-    def applyFieldFilter(self, field, valueList):
+    def applyFieldFilterRange(self, field, valueRange):
+        # TODO string versus decimal field type!
+        filter = ''
+        for cxtStr in valueRange.split():
+            clause = ''
+            if cxtStr.find('-') >= 0:
+                cxtList = cxtStr.split('-')
+                clause = '("%s" >= %d and "%s" <= %d)' % (field, int(cxtList[0]), field, int(cxtList[1]))
+            else:
+                clause = '"%s" = %d' % (field, int(cxtStr))
+            if filter:
+                filter += ' or '
+            filter += clause
+        self.applyFilter(filter)
+
+
+    def applyFieldFilterList(self, field, valueList):
         # TODO string versus decimal field type!
         clause = '"' + field + '" = %d'
         filter = ''

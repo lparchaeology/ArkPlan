@@ -268,9 +268,6 @@ class Project(QObject):
         self.iface.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
-    def applyContextFilter(self, contextList):
-        self.contexts.applyFieldFilter(self.fieldName('context'), contextList)
-
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
 

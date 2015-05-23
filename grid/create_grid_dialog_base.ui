@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>239</height>
+    <width>461</width>
+    <height>367</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,25 +19,108 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="crsOriginLabel">
+     <item row="0" column="2">
+      <widget class="QLabel" name="crsNorthingLabel">
        <property name="text">
-        <string>Origin Coordinates:</string>
+        <string>CRS Northing</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="localNorthingLabel">
+       <property name="text">
+        <string>Local Northing</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QSpinBox" name="localEastingIntervalSpin">
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="localIntervalLabel">
+       <property name="text">
+        <string>Grid Interval:</string>
        </property>
        <property name="buddy">
-        <cstring>crsOriginEastingSpin</cstring>
+        <cstring>localEastingIntervalSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="crsOnAxisLabel">
+       <property name="text">
+        <string>On Axis:</string>
+       </property>
+       <property name="buddy">
+        <cstring>crsOnAxisXButton</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="localEastingLabel">
+       <property name="text">
+        <string>Local Easting</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QSpinBox" name="localTerminusEastingSpin">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>200</number>
        </property>
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QPushButton" name="crsTerminusFromMapButton">
+      <widget class="QPushButton" name="crsOriginFromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="crsTerminusEastingSpin">
+     <item row="3" column="0">
+      <widget class="QLabel" name="crsAxisLabel">
+       <property name="text">
+        <string>Axis Coordinates:</string>
+       </property>
+       <property name="buddy">
+        <cstring>crsAxisEastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QSpinBox" name="localOriginEastingSpin">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QDoubleSpinBox" name="crsAxisNorthingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -47,7 +130,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="crsTerminusNorthingSpin">
+      <widget class="QDoubleSpinBox" name="crsOriginNorthingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -56,7 +139,67 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="crsOriginEastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QSpinBox" name="localTerminusNorthingSpin">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>300</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="crsAxisEastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="localOriginLabel">
+       <property name="text">
+        <string>Local Origin:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localOriginEastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QPushButton" name="crsAxisFromMapButton">
+       <property name="text">
+        <string>From Map</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="localTerminusLabel">
+       <property name="text">
+        <string>Local Terminus:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localTerminusEastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
       <widget class="QSpinBox" name="localOriginNorthingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -70,103 +213,51 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="crsTerminusLabel">
+      <widget class="QLabel" name="crsOriginLabel">
        <property name="text">
-        <string>Terminus Coordinates:</string>
+        <string>Origin Coordinates:</string>
        </property>
        <property name="buddy">
-        <cstring>crsTerminusEastingSpin</cstring>
+        <cstring>crsOriginEastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QRadioButton" name="crsOnAxisYButton">
+       <property name="text">
+        <string>Y</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="localOriginEastingSpin">
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>100</number>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="localOriginLabel">
+      <widget class="QRadioButton" name="crsOnAxisXButton">
        <property name="text">
-        <string>Local Origin:</string>
+        <string>X</string>
        </property>
-       <property name="buddy">
-        <cstring>localOriginEastingSpin</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="crsOriginFromMapButton">
-       <property name="text">
-        <string>From Map</string>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="crsOriginEastingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QDoubleSpinBox" name="crsOriginNorthingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="localTerminusEastingSpin">
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>200</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QSpinBox" name="localTerminusNorthingSpin">
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>300</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="localTerminusLabel">
+      <widget class="QLabel" name="crsEastingLabel">
        <property name="text">
-        <string>Local Terminus:</string>
-       </property>
-       <property name="buddy">
-        <cstring>localTerminusEastingSpin</cstring>
+        <string>CRS Easting</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="localIntervalSpin">
+     <item row="4" column="0">
+      <widget class="QLabel" name="spacerLabel">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QSpinBox" name="localNorthingIntervalSpin">
+       <property name="suffix">
+        <string> m</string>
+       </property>
        <property name="maximum">
         <number>100</number>
        </property>
@@ -178,15 +269,15 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="localIntervalLabel">
+     <item row="9" column="0">
+      <widget class="QLabel" name="siteCodeLabel">
        <property name="text">
-        <string>Grid Interval:</string>
-       </property>
-       <property name="buddy">
-        <cstring>localIntervalSpin</cstring>
+        <string>Site Code:</string>
        </property>
       </widget>
+     </item>
+     <item row="9" column="1" colspan="3">
+      <widget class="QLineEdit" name="siteCodeEdit"/>
      </item>
     </layout>
    </item>
@@ -230,14 +321,17 @@
   <tabstop>crsOriginEastingSpin</tabstop>
   <tabstop>crsOriginNorthingSpin</tabstop>
   <tabstop>crsOriginFromMapButton</tabstop>
-  <tabstop>crsTerminusEastingSpin</tabstop>
-  <tabstop>crsTerminusNorthingSpin</tabstop>
-  <tabstop>crsTerminusFromMapButton</tabstop>
+  <tabstop>crsOnAxisXButton</tabstop>
+  <tabstop>crsOnAxisYButton</tabstop>
+  <tabstop>crsAxisEastingSpin</tabstop>
+  <tabstop>crsAxisNorthingSpin</tabstop>
+  <tabstop>crsAxisFromMapButton</tabstop>
   <tabstop>localOriginEastingSpin</tabstop>
   <tabstop>localOriginNorthingSpin</tabstop>
   <tabstop>localTerminusEastingSpin</tabstop>
   <tabstop>localTerminusNorthingSpin</tabstop>
-  <tabstop>localIntervalSpin</tabstop>
+  <tabstop>localEastingIntervalSpin</tabstop>
+  <tabstop>localNorthingIntervalSpin</tabstop>
   <tabstop>cancelButton</tabstop>
   <tabstop>createGridButton</tabstop>
  </tabstops>

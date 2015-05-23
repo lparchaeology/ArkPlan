@@ -260,6 +260,7 @@ class ArkMapToolInteractive(QgsMapTool):
                 e.accept()
 
     def keyPressEvent(self, e):
+        super(ArkMapToolInteractive, self).keyPressEvent(e)
         if (e.key() == Qt.Key_Escape):
             self.canvas().unsetMapTool(self)
             e.accept()
@@ -445,7 +446,10 @@ class ArkMapToolCapture(ArkMapToolInteractive):
             self._addVertex(e.pos())
 
     def keyPressEvent(self, e):
-        if (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
+        if (e.key() == Qt.Key_Escape):
+            self.resetCapturing()
+            e.accept()
+        elif (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
             self._undo()
             e.accept()
         else:

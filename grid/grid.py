@@ -72,6 +72,7 @@ class GridModule(QObject):
     # Internal variables
     mapTool = None  #ArkMapToolEmitPoint()
     initialised = False
+    createDialog = None  # QDialog
 
     def __init__(self, project):
         super(GridModule, self).__init__()
@@ -153,18 +154,39 @@ class GridModule(QObject):
 
     def showCreateGridDialog(self):
         self.initialise()
-        dialog = CreateGridDialog(self, self.project.iface.mainWindow())
-        if dialog.exec_():
-            crsOrigin = QgsPoint(dialog.crsOriginEastingSpin.value(), dialog.crsOriginNorthingSpin.value())
-            crsTerminus = QgsPoint(dialog.crsTerminusEastingSpin.value(), dialog.crsTerminusNorthingSpin.value())
-            localOrigin = QPoint(dialog.localOriginEastingSpin.value(), dialog.localOriginNorthingSpin.value())
-            localTerminus = QPoint(dialog.localTerminusEastingSpin.value(), dialog.localTerminusNorthingSpin.value())
-            if self.createGrid(crsOrigin, crsTerminus, localOrigin, localTerminus, dialog.localIntervalSpin.value()):
-                self.project.showMessage('Grid files successfully created')
+        if self.createDialog is None:
+            self.createDialog = CreateGridDialog(self.project, self.project.iface.mainWindow())
+            self.createDialog.accepted.connect(self.createGridDialogAccepted)
+        self.createDialog.show()
+        self.createDialog._showDialog()
 
 
-    def createGrid(self, crsOrigin, crsTerminus, localOrigin, localTerminus, localInterval):
-        localTransformer = LinearTransformer(localOrigin, crsOrigin, localTerminus, crsTerminus)
+    def createGridDialogAccepted(self):
+        if self.createGrid(self.createDialog.crsOriginPoint(), self.createDialog.crsAxisPoint(),
+                           self.createDialog.crsAxisPointType(),
+                           self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
+                           self.createDialog.localEastingInterval(), self.createDialog.localEastingInterval()):
+            self.project.iface.mapCanvas().refresh()
+            self.project.showMessage('Grid successfully created')
+
+
+    def createGrid(self, crsOrigin, crsAxis, crsAxisType, localOrigin, localTerminus, xInterval, yInterval):
+        axisGeometry = QgsGeometry.fromPolyline([crsOrigin, crsAxis])
+        crsAxisPoint = None
+        localAxisPoint = None
+        if crsAxisType == CreateGridDialog.PointOnYAxis:
+            if axisGeometry.length() < yInterval:
+                self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                return False
+            crsAxisPoint = axisGeometry.interpolate(yInterval).asPoint()
+            localAxisPoint = QgsPoint(localOrigin.x(), localOrigin.y() + yInterval)
+        else:
+            if axisGeometry.length() < xInterval:
+                self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                return False
+            crsAxisPoint = axisGeometry.interpolate(xInterval).asPoint()
+            localAxisPoint = QgsPoint(localOrigin.x() + xInterval, localOrigin.y())
+        localTransformer = LinearTransformer(localOrigin, crsOrigin, localAxisPoint, crsAxisPoint)
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
         crs_x = self.project.fieldName('crs_x')
@@ -173,10 +195,10 @@ class GridModule(QObject):
         points = self.project.grid.pointsLayer
         if (points is None or not points.isValid()):
             self.project.showCriticalMessage('Invalid grid points file, cannot create grid!')
-            return
+            return False
         self._addGridPointsToLayer(points, localTransformer,
-                                   localOrigin.x(), localInterval, (localTerminus.x() - localOrigin.x()) / localInterval,
-                                   localOrigin.y(), localInterval, (localTerminus.y() - localOrigin.y()) / localInterval,
+                                   localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
+                                   localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
                                    self._attributes(points, 'gpt'), local_x, local_y, crs_x, crs_y)
 
         if self.project.linesLayerName('grid'):
@@ -185,8 +207,8 @@ class GridModule(QObject):
                 self.project.showCriticalMessage('Invalid grid lines file!')
             else:
                 self._addGridLinesToLayer(lines, localTransformer,
-                                          localOrigin.x(), localInterval, (localTerminus.x() - localOrigin.x()) / localInterval,
-                                          localOrigin.y(), localInterval, (localTerminus.y() - localOrigin.y()) / localInterval,
+                                          localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
+                                          localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
                                           self._attributes(lines, 'gln'), local_x, local_y, crs_x, crs_y)
 
         if self.project.polygonsLayerName('grid'):
@@ -195,9 +217,10 @@ class GridModule(QObject):
                 self.project.showCriticalMessage('Invalid grid polygons file!')
             else:
                 self._addGridPolygonsToLayer(polygons, localTransformer,
-                                             localOrigin.x(), localInterval, (localTerminus.x() - localOrigin.x()) / localInterval,
-                                             localOrigin.y(), localInterval, (localTerminus.y() - localOrigin.y()) / localInterval,
+                                             localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
+                                             localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
                                              self._attributes(polygons, 'gpg'), local_x, local_y, crs_x, crs_y)
+        return True
 
 
     def _attributes(self, layer, category):

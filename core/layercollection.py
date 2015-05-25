@@ -219,7 +219,7 @@ class LayerCollection:
 
     def _createBufferLayer(self, layer, stylePath):
         if (layer is not None and layer.isValid()):
-            buffer = utils.createMemoryLayer(layer, layer.name() + self._settings.bufferSuffix, stylePath)
+            buffer = utils.cloneAsMemoryLayer(layer, layer.name() + self._settings.bufferSuffix, stylePath)
             if (buffer is not None and buffer.isValid()):
                 buffer = self._addLayerToLegend(buffer, self._buffersGroupIndex)
                 buffer.startEditing()

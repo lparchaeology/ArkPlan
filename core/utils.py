@@ -27,7 +27,7 @@ import os.path
 from PyQt4.QtCore import QSettings, QFile
 from PyQt4.QtGui import QIcon, QAction
 
-from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
+from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayer, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
 from qgis.gui import QgsMessageBar
 
 # Message utilities
@@ -78,15 +78,24 @@ def createShapefile(filePath, fields, wkbType, crs):
     del layer
     return ok
 
-def createMemoryLayer(layer, name, stylePath):
-    if (layer is not None and layer.isValid()):
-        uri = wkbToMemoryType(layer.wkbType()) + "?crs=" + layer.crs().authid() + "&index=yes"
-        mem = QgsVectorLayer(uri, name, 'memory')
-        if (mem is not None and mem.isValid()):
-            mem.dataProvider().addAttributes(layer.dataProvider().fields().toList())
-            mem.loadNamedStyle(stylePath)
-        return mem
+def cloneAsMemoryLayer(layer, name, styleURI=None):
+    if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
+        if not styleURI:
+            styleURI = layer.styleURI()
+        return createMemoryLayer(name, layer.wkbType(), layer.crs().authid(), layer.dataProvider().fields(), styleURI)
     return None
+
+def createMemoryLayer(name, wkbType, crsId, fields=None, styleURI=None):
+    uri = wkbToMemoryType(wkbType) + "?crs=" + crsId + "&index=yes"
+    mem = QgsVectorLayer(uri, name, 'memory')
+    if (mem is not None and mem.isValid()):
+        if fields:
+            mem.dataProvider().addAttributes(fields.toList())
+        else:
+            mem.dataProvider().addAttributes([QgsField('id', QVariant.String, '', 10, 0, 'ID')])
+        if styleURI:
+            mem.loadNamedStyle(styleURI)
+    return mem
 
 def getGroupIndex(iface, groupName):
     groupIndex = -1

@@ -34,12 +34,29 @@ import grid_dock_base
 
 class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
+    createGridSelected = pyqtSignal()
+    identifyGridSelected = pyqtSignal(bool)
+    updateLayerSelected = pyqtSignal()
     convertCrsSelected = pyqtSignal()
     convertLocalSelected = pyqtSignal()
 
     def __init__(self, parent=None):
         super(GridDock, self).__init__(parent)
         self.setupUi(self)
+
+        #FIXME Hack around resource file issue, clean-up when separate plugin
+        self.createGridAction.setIcon(QIcon(':/plugins/Ark/grid/get-hot-new-stuff.png'))
+        self.identifyGridAction.setIcon(QIcon(':/plugins/Ark/grid/snap-orthogonal.png'))
+        self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
+
+        self.createGridTool.setDefaultAction(self.createGridAction)
+        self.createGridAction.triggered.connect(self.createGridSelected)
+
+        self.identifyGridTool.setDefaultAction(self.identifyGridAction)
+        self.identifyGridAction.toggled.connect(self.identifyGridSelected)
+
+        self.updateLayerTool.setDefaultAction(self.updateLayerAction)
+        self.updateLayerAction.triggered.connect(self.updateLayerSelected)
 
         self.crsEastingSpin.editingFinished.connect(self.convertCrsSelected)
         self.crsNorthingSpin.editingFinished.connect(self.convertCrsSelected)
@@ -67,6 +84,8 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
 
     def setReadOnly(self, status):
+        self.identifyGridAction.setEnabled(not status)
+        self.updateLayerAction.setEnabled(not status)
         self.crsEastingSpin.setReadOnly(status)
         self.crsNorthingSpin.setReadOnly(status)
         self.localEastingSpin.setReadOnly(status)

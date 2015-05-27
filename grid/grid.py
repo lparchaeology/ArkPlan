@@ -83,27 +83,20 @@ class GridModule(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.createGridAction = self.project.createMenuAction(self.tr(u'Create New Grid'), ':/plugins/Ark/grid/get-hot-new-stuff.png', False)
-        self.createGridAction.triggered.connect(self.showCreateGridDialog)
-
-        self.identifyGridAction = self.project.createMenuAction(self.tr(u'Identify Grid Coordinates'), ':/plugins/Ark/grid/snap-orthogonal.png', True)
-        self.identifyGridAction.toggled.connect(self.enableMapTool)
-
-        self.updateLayerAction = self.project.createMenuAction(self.tr(u'Update Layer Coordinates'), ':/images/themes/default/mActionNewAttribute.png', False)
-        self.updateLayerAction.triggered.connect(self.showUpdateLayerDialog)
-
         self.dock = GridDock()
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
+        self.dock.createGridSelected.connect(self.showCreateGridDialog)
+        self.dock.identifyGridSelected.connect(self.enableMapTool)
+        self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
         self.dock.convertCrsSelected.connect(self.convertCrs)
         self.dock.convertLocalSelected.connect(self.convertLocal)
+        self.dock.setReadOnly(True)
+        self.dock.createGridTool.setEnabled(False)
 
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        self.project.iface.removeToolBarIcon(self.updateLayerAction)
-        self.project.iface.removeToolBarIcon(self.createGridAction)
-        self.project.iface.removeToolBarIcon(self.identifyGridAction)
         self.dock.unload()
 
 
@@ -117,7 +110,10 @@ class GridModule(QObject):
             return
 
         if (not self.project.initialise()):
+            self.dock.setReadOnly(True)
+            self.dock.createGridTool.setEnabled(False)
             return
+        self.dock.createGridTool.setEnabled(True)
 
         # Check if files exist or need creating
         # Run create if needed
@@ -136,6 +132,7 @@ class GridModule(QObject):
         self.localTransformer = LinearTransformer(local1, crs1, local2, crs2)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.iface.mapCanvas())
+        self.mapTool.setAction(self.dock.identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
         self.dock.setReadOnly(False)
@@ -167,6 +164,7 @@ class GridModule(QObject):
                            self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
                            self.createDialog.localEastingInterval(), self.createDialog.localEastingInterval()):
             self.project.iface.mapCanvas().refresh()
+            self.dock.setReadOnly(False)
             self.project.showMessage('Grid successfully created')
 
 
@@ -321,7 +319,7 @@ class GridModule(QObject):
             else:
                 self.project.iface.mapCanvas().unsetMapTool(self.mapTool)
         elif status:
-            self.identifyGridAction.setChecked(False)
+            self.dock.identifyGridAction.setChecked(False)
 
 
     def pointSelected(self, point, button):

@@ -37,6 +37,9 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     createGridSelected = pyqtSignal()
     identifyGridSelected = pyqtSignal(bool)
     updateLayerSelected = pyqtSignal()
+    copyMapPointSelected = pyqtSignal()
+    copyLocalPointSelected = pyqtSignal()
+    pasteMapPointSelected = pyqtSignal()
     convertMapSelected = pyqtSignal()
     convertLocalSelected = pyqtSignal()
 
@@ -48,6 +51,9 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.createGridAction.setIcon(QIcon(':/plugins/Ark/grid/get-hot-new-stuff.png'))
         self.identifyGridAction.setIcon(QIcon(':/plugins/Ark/grid/snap-orthogonal.png'))
         self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
+        self.copyMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
+        self.copyLocalPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
+        self.pasteMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditPaste.png'))
 
         self.createGridTool.setDefaultAction(self.createGridAction)
         self.createGridAction.triggered.connect(self.createGridSelected)
@@ -57,6 +63,15 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
         self.updateLayerTool.setDefaultAction(self.updateLayerAction)
         self.updateLayerAction.triggered.connect(self.updateLayerSelected)
+
+        self.copyMapPointTool.setDefaultAction(self.copyMapPointAction)
+        self.copyMapPointAction.triggered.connect(self.copyMapPointSelected)
+
+        self.copyLocalPointTool.setDefaultAction(self.copyLocalPointAction)
+        self.copyLocalPointAction.triggered.connect(self.copyLocalPointSelected)
+
+        self.pasteMapPointTool.setDefaultAction(self.pasteMapPointAction)
+        self.pasteMapPointAction.triggered.connect(self.pasteMapPointSelected)
 
         self.mapEastingSpin.editingFinished.connect(self.convertMapSelected)
         self.mapNorthingSpin.editingFinished.connect(self.convertMapSelected)
@@ -81,6 +96,8 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     def setReadOnly(self, status):
         self.identifyGridAction.setEnabled(not status)
         self.updateLayerAction.setEnabled(not status)
+        self.copyMapPointAction.setEnabled(not status)
+        self.pasteMapPointAction.setEnabled(not status)
         self.mapEastingSpin.setReadOnly(status)
         self.mapNorthingSpin.setReadOnly(status)
         self.localEastingSpin.setReadOnly(status)

@@ -25,7 +25,7 @@
 import math
 
 from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
-from PyQt4.QtGui import QAction, QIcon, QFileDialog
+from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
 
 from qgis.core import *
 
@@ -88,6 +88,9 @@ class GridModule(QObject):
         self.dock.createGridSelected.connect(self.showCreateGridDialog)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
+        self.dock.copyMapPointSelected.connect(self.copyMapPointToClipboard)
+        self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
+        self.dock.pasteMapPointSelected.connect(self.pasteMapPointFromClipboard)
         self.dock.convertMapSelected.connect(self.convertMapPoint)
         self.dock.convertLocalSelected.connect(self.convertLocalPoint)
         self.dock.setReadOnly(True)
@@ -370,3 +373,71 @@ class GridModule(QObject):
                 layer.changeAttributeValue(feature.id(), map_y_idx, mapPoint.y())
             return layer.commitChanges()
         return False
+
+    def copyMapPointToClipboard(self):
+        #TODO Use QgsClipboard when it becomes public
+        QApplication.clipboard().setText(self.mapPointAsWkt())
+
+    def copyLocalPointToClipboard(self):
+        #TODO Use QgsClipboard when it becomes public
+        QApplication.clipboard().setText(self.localPointAsWkt())
+
+    def pasteMapPointFromClipboard(self):
+        #TODO Use QgsClipboard when it becomes public
+        text = QApplication.clipboard().text().strip().upper()
+        self.project.logMessage('Clipboard = ' + text)
+        idx = text.find('POINT(')
+        if idx >= 0:
+            idx_l = idx + 5
+            idx_r = text.find(')', idx_l) + 1
+            self.project.logMessage('Wkt = ' + text[idx:idx_r])
+            text = text[idx_l:idx_r]
+            self.project.logMessage('Stripped = ' + text)
+        if (text[0] == '(' and text[len(text) - 1] == ')'):
+            self.project.logMessage('Brackets = ' + text)
+            coords = text[1:len(text) - 2].split()
+            self.project.logMessage('Coords = ' + str(coords))
+            point = QgsPoint(float(coords[0]), float(coords[1]))
+            self.setMapPoint(point)
+
+    def setMapPoint(self, mapPoint):
+        self.dock.setMapPoint(mapPoint)
+        self.convertMapPoint()
+
+    def setMapPointFromGeometry(self, geom):
+        if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
+            self.setMapPoint(geom.asPoint())
+
+    def setMapPointFromWkt(self, wkt):
+        self.setMapPointFromGeometry(QgsGeometry.fromWkt(wkt))
+
+    def mapPoint(self):
+        return self.dock.mapPoint()
+
+    def mapPointAsGeometry(self):
+        return QgsGeometry.fromPoint(self.mapPoint())
+
+    def mapPointAsWkt(self):
+        # Return the text so we don't have insignificant double values
+        return 'POINT(' + self.dock.mapEastingSpin.text() + ' ' + self.dock.mapNorthingSpin.text() + ')'
+
+    def setLocalPoint(self, localPoint):
+        self.dock.setLocalPoint(mapPoint)
+        self.convertLocalPoint()
+
+    def setLocalPointFromGeometry(self, geom):
+        if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
+            self.setLocalPoint(geom.asPoint())
+
+    def setLocalPointFromWkt(self, wkt):
+        self.setLocalPointFromGeometry(QgsGeometry.fromWkt(wkt))
+
+    def localPoint(self):
+        return self.dock.localPoint()
+
+    def localPointAsGeometry(self):
+        return QgsGeometry.fromPoint(self.localPoint())
+
+    def localPointAsWkt(self):
+        # Return the text so we don't have insignificant double values
+        return 'POINT(' + self.dock.localEastingSpin.text() + ' ' + self.dock.localNorthingSpin.text() + ')'

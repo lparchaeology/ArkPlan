@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>293</width>
-    <height>163</height>
+    <width>329</width>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,17 @@
         <property name="icon">
          <iconset resource="resources.qrc">
           <normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="pasteMapPointTool">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
         </property>
        </widget>
       </item>
@@ -145,6 +156,28 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="3">
+       <widget class="QToolButton" name="copyLocalPointTool">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QToolButton" name="copyMapPointTool">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -199,6 +232,54 @@
    </property>
    <property name="toolTip">
     <string>Update Layer Coordinates</string>
+   </property>
+  </action>
+  <action name="copyMapPointAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy Map Point</string>
+   </property>
+  </action>
+  <action name="pasteMapPointAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste Map Point</string>
+   </property>
+  </action>
+  <action name="copyLocalPointAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy Local Point</string>
+   </property>
+  </action>
+  <action name="pasteLocalPointAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste Local Point</string>
    </property>
   </action>
  </widget>

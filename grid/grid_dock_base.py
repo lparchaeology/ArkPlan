@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Thu May 28 08:48:36 2015
+# Created: Thu May 28 11:34:21 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_GridDock(object):
     def setupUi(self, GridDock):
         GridDock.setObjectName(_fromUtf8("GridDock"))
-        GridDock.resize(293, 163)
+        GridDock.resize(329, 174)
         self.GridDockContents = QtGui.QWidget()
         self.GridDockContents.setObjectName(_fromUtf8("GridDockContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.GridDockContents)
@@ -51,6 +51,12 @@ class Ui_GridDock(object):
         self.updateLayerTool.setIcon(icon2)
         self.updateLayerTool.setObjectName(_fromUtf8("updateLayerTool"))
         self.horizontalLayout.addWidget(self.updateLayerTool)
+        self.pasteMapPointTool = QtGui.QToolButton(self.GridDockContents)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkGrid/mActionEditPaste.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pasteMapPointTool.setIcon(icon3)
+        self.pasteMapPointTool.setObjectName(_fromUtf8("pasteMapPointTool"))
+        self.horizontalLayout.addWidget(self.pasteMapPointTool)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -88,6 +94,16 @@ class Ui_GridDock(object):
         self.localNorthingSpin.setMaximum(9999.99)
         self.localNorthingSpin.setObjectName(_fromUtf8("localNorthingSpin"))
         self.gridLayout.addWidget(self.localNorthingSpin, 1, 2, 1, 1)
+        self.copyLocalPointTool = QtGui.QToolButton(self.GridDockContents)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkGrid/mActionEditCopy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.copyLocalPointTool.setIcon(icon4)
+        self.copyLocalPointTool.setObjectName(_fromUtf8("copyLocalPointTool"))
+        self.gridLayout.addWidget(self.copyLocalPointTool, 1, 3, 1, 1)
+        self.copyMapPointTool = QtGui.QToolButton(self.GridDockContents)
+        self.copyMapPointTool.setIcon(icon4)
+        self.copyMapPointTool.setObjectName(_fromUtf8("copyMapPointTool"))
+        self.gridLayout.addWidget(self.copyMapPointTool, 0, 3, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         spacerItem1 = QtGui.QSpacerItem(20, 4, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
@@ -102,6 +118,18 @@ class Ui_GridDock(object):
         self.updateLayerAction = QtGui.QAction(GridDock)
         self.updateLayerAction.setIcon(icon2)
         self.updateLayerAction.setObjectName(_fromUtf8("updateLayerAction"))
+        self.copyMapPointAction = QtGui.QAction(GridDock)
+        self.copyMapPointAction.setIcon(icon4)
+        self.copyMapPointAction.setObjectName(_fromUtf8("copyMapPointAction"))
+        self.pasteMapPointAction = QtGui.QAction(GridDock)
+        self.pasteMapPointAction.setIcon(icon3)
+        self.pasteMapPointAction.setObjectName(_fromUtf8("pasteMapPointAction"))
+        self.copyLocalPointAction = QtGui.QAction(GridDock)
+        self.copyLocalPointAction.setIcon(icon4)
+        self.copyLocalPointAction.setObjectName(_fromUtf8("copyLocalPointAction"))
+        self.pasteLocalPointAction = QtGui.QAction(GridDock)
+        self.pasteLocalPointAction.setIcon(icon3)
+        self.pasteLocalPointAction.setObjectName(_fromUtf8("pasteLocalPointAction"))
         self.mapLabel.setBuddy(self.mapEastingSpin)
         self.localLabel.setBuddy(self.localEastingSpin)
 
@@ -113,14 +141,25 @@ class Ui_GridDock(object):
         self.createGridTool.setText(_translate("GridDock", "...", None))
         self.identifyGridTool.setText(_translate("GridDock", "...", None))
         self.updateLayerTool.setText(_translate("GridDock", "...", None))
+        self.pasteMapPointTool.setText(_translate("GridDock", "...", None))
         self.mapLabel.setText(_translate("GridDock", "Map:", None))
         self.localLabel.setText(_translate("GridDock", "Local:", None))
+        self.copyLocalPointTool.setText(_translate("GridDock", "...", None))
+        self.copyMapPointTool.setText(_translate("GridDock", "...", None))
         self.createGridAction.setText(_translate("GridDock", "New", None))
         self.createGridAction.setToolTip(_translate("GridDock", "Create New Grid", None))
         self.identifyGridAction.setText(_translate("GridDock", "Identify", None))
         self.identifyGridAction.setToolTip(_translate("GridDock", "Identify Grid Coordinates", None))
         self.updateLayerAction.setText(_translate("GridDock", "Update", None))
         self.updateLayerAction.setToolTip(_translate("GridDock", "Update Layer Coordinates", None))
+        self.copyMapPointAction.setText(_translate("GridDock", "Copy", None))
+        self.copyMapPointAction.setToolTip(_translate("GridDock", "Copy Map Point", None))
+        self.pasteMapPointAction.setText(_translate("GridDock", "Paste", None))
+        self.pasteMapPointAction.setToolTip(_translate("GridDock", "Paste Map Point", None))
+        self.copyLocalPointAction.setText(_translate("GridDock", "Copy", None))
+        self.copyLocalPointAction.setToolTip(_translate("GridDock", "Copy Local Point", None))
+        self.pasteLocalPointAction.setText(_translate("GridDock", "Paste", None))
+        self.pasteLocalPointAction.setToolTip(_translate("GridDock", "Paste Local Point", None))
 
 from ..core.dock import QgsDockWidget
 import resources_rc

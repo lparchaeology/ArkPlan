@@ -40,6 +40,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     copyMapPointSelected = pyqtSignal()
     copyLocalPointSelected = pyqtSignal()
     pasteMapPointSelected = pyqtSignal()
+    addMapPointSelected = pyqtSignal()
     convertMapSelected = pyqtSignal()
     convertLocalSelected = pyqtSignal()
 
@@ -54,6 +55,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.copyMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
         self.copyLocalPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
         self.pasteMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditPaste.png'))
+        self.addMapPointAction.setIcon(QIcon(':/images/themes/default/mActionCapturePoint.png'))
 
         self.createGridTool.setDefaultAction(self.createGridAction)
         self.createGridAction.triggered.connect(self.createGridSelected)
@@ -72,6 +74,9 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
         self.pasteMapPointTool.setDefaultAction(self.pasteMapPointAction)
         self.pasteMapPointAction.triggered.connect(self.pasteMapPointSelected)
+
+        self.addMapPointTool.setDefaultAction(self.addMapPointAction)
+        self.addMapPointAction.triggered.connect(self.addMapPointSelected)
 
         self.mapEastingSpin.editingFinished.connect(self.convertMapSelected)
         self.mapNorthingSpin.editingFinished.connect(self.convertMapSelected)
@@ -98,6 +103,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.updateLayerAction.setEnabled(not status)
         self.copyMapPointAction.setEnabled(not status)
         self.pasteMapPointAction.setEnabled(not status)
+        self.addMapPointAction.setEnabled(not status)
         self.mapEastingSpin.setReadOnly(status)
         self.mapNorthingSpin.setReadOnly(status)
         self.localEastingSpin.setReadOnly(status)

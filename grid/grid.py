@@ -91,6 +91,7 @@ class GridModule(QObject):
         self.dock.copyMapPointSelected.connect(self.copyMapPointToClipboard)
         self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
         self.dock.pasteMapPointSelected.connect(self.pasteMapPointFromClipboard)
+        self.dock.addMapPointSelected.connect(self.addMapPointToLayer)
         self.dock.convertMapSelected.connect(self.convertMapPoint)
         self.dock.convertLocalSelected.connect(self.convertLocalPoint)
         self.dock.setReadOnly(True)
@@ -400,6 +401,12 @@ class GridModule(QObject):
             point = QgsPoint(float(coords[0]), float(coords[1]))
             self.setMapPoint(point)
 
+    def addMapPointToLayer(self):
+        layer = self.project.iface.mapCanvas().currentLayer()
+        if (layer.geometryType() == QGis.Point and layer.isEditable()):
+            layer.addFeature(self.mapPointAsFeature(layer.pendingFields()))
+        self.project.iface.mapCanvas().refresh()
+
     def setMapPoint(self, mapPoint):
         self.dock.setMapPoint(mapPoint)
         self.convertMapPoint()
@@ -416,6 +423,11 @@ class GridModule(QObject):
 
     def mapPointAsGeometry(self):
         return QgsGeometry.fromPoint(self.mapPoint())
+
+    def mapPointAsFeature(self, fields):
+        feature = QgsFeature(fields)
+        feature.setGeometry(self.mapPointAsGeometry())
+        return feature
 
     def mapPointAsWkt(self):
         # Return the text so we don't have insignificant double values

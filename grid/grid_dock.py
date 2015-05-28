@@ -37,6 +37,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     createGridSelected = pyqtSignal()
     identifyGridSelected = pyqtSignal(bool)
     updateLayerSelected = pyqtSignal()
+    panMapSelected = pyqtSignal()
     copyMapPointSelected = pyqtSignal()
     copyLocalPointSelected = pyqtSignal()
     pasteMapPointSelected = pyqtSignal()
@@ -52,6 +53,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.createGridAction.setIcon(QIcon(':/plugins/Ark/grid/get-hot-new-stuff.png'))
         self.identifyGridAction.setIcon(QIcon(':/plugins/Ark/grid/snap-orthogonal.png'))
         self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
+        self.panToAction.setIcon(QIcon(':/images/themes/default/mActionPanToSelected.svg'))
         self.copyMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
         self.copyLocalPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
         self.pasteMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditPaste.png'))
@@ -65,6 +67,9 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
 
         self.updateLayerTool.setDefaultAction(self.updateLayerAction)
         self.updateLayerAction.triggered.connect(self.updateLayerSelected)
+
+        self.panToTool.setDefaultAction(self.panToAction)
+        self.panToAction.triggered.connect(self.panMapSelected)
 
         self.copyMapPointTool.setDefaultAction(self.copyMapPointAction)
         self.copyMapPointAction.triggered.connect(self.copyMapPointSelected)
@@ -101,6 +106,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     def setReadOnly(self, status):
         self.identifyGridAction.setEnabled(not status)
         self.updateLayerAction.setEnabled(not status)
+        self.panToAction.setEnabled(not status)
         self.copyMapPointAction.setEnabled(not status)
         self.pasteMapPointAction.setEnabled(not status)
         self.addMapPointAction.setEnabled(not status)

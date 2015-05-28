@@ -88,6 +88,7 @@ class GridModule(QObject):
         self.dock.createGridSelected.connect(self.showCreateGridDialog)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
+        self.dock.panMapSelected.connect(self.panMapToPoint)
         self.dock.copyMapPointSelected.connect(self.copyMapPointToClipboard)
         self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
         self.dock.pasteMapPointSelected.connect(self.pasteMapPointFromClipboard)
@@ -375,6 +376,9 @@ class GridModule(QObject):
             return layer.commitChanges()
         return False
 
+    def panMapToPoint(self):
+        self.project.iface.mapCanvas().zoomByFactor(1.0, self.mapPoint())
+
     def copyMapPointToClipboard(self):
         #TODO Use QgsClipboard when it becomes public
         QApplication.clipboard().setText(self.mapPointAsWkt())
@@ -428,6 +432,14 @@ class GridModule(QObject):
         feature = QgsFeature(fields)
         feature.setGeometry(self.mapPointAsGeometry())
         return feature
+
+    def mapPointAsLayer(self):
+        mem = QgsVectorLayer("point?crs=" + self.project.projectCrs().authid() + "&index=yes", 'point', 'memory')
+        if (mem is not None and mem.isValid()):
+            mem.dataProvider().addAttributes([QgsField('id', QVariant.String, '', 10, 0, 'ID')])
+            feature = self.mapPointAsFeature(mem.dataProvider().fields())
+            mem.dataProvider().addFeatures([feature])
+        return mem
 
     def mapPointAsWkt(self):
         # Return the text so we don't have insignificant double values

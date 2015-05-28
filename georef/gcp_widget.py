@@ -38,11 +38,11 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
 
     # Internal variables
     _localPoint = QPoint()
-    _crsPoint = QgsPoint()
+    _mapPoint = QgsPoint()
     _rawPoint = QPointF()
 
     _gridEditable = False
-    _crsEditable = False
+    _mapEditable = False
     _rawEditable = True
 
     _gcpItem = None  # QGraphicsItem
@@ -69,13 +69,13 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
         self.localXSpin.setValue(localPoint.x())
         self.localYSpin.setValue(localPoint.y())
 
-    def crsPoint(self):
-        return self._crsPoint
+    def mapPoint(self):
+        return self._mapPoint
 
-    def setCrsPoint(self, crsPoint):
-        self._crsPoint = crsPoint
-        self.crsXSpin.setValue(crsPoint.x())
-        self.crsYSpin.setValue(crsPoint.y())
+    def setMapPoint(self, mapPoint):
+        self._mapPoint = mapPoint
+        self.mapXSpin.setValue(mapPoint.x())
+        self.mapYSpin.setValue(mapPoint.y())
 
     def rawPoint(self):
         return self._rawPoint

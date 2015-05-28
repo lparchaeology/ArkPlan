@@ -39,9 +39,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="createCrsFieldsCheck">
+    <widget class="QCheckBox" name="createMapFieldsCheck">
      <property name="text">
-      <string>Create CRS fields if they don't exist</string>
+      <string>Create Map fields if they don't exist</string>
      </property>
     </widget>
    </item>

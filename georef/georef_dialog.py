@@ -163,11 +163,11 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         features = self.gridLayer.getFeatures()
         for feature in features:
             if feature.attributes()[self.gridXField] == self.gcpWidget1.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget1.localPoint().y():
-                   self.gcpWidget1.setCrsPoint(feature.geometry().asPoint())
+                   self.gcpWidget1.setMapPoint(feature.geometry().asPoint())
             if feature.attributes()[self.gridXField] == self.gcpWidget2.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget2.localPoint().y():
-                   self.gcpWidget2.setCrsPoint(feature.geometry().asPoint())
+                   self.gcpWidget2.setMapPoint(feature.geometry().asPoint())
             if feature.attributes()[self.gridXField] == self.gcpWidget3.localPoint().x() and feature.attributes()[self.gridYField] == self.gcpWidget3.localPoint().y():
-                   self.gcpWidget3.setCrsPoint(feature.geometry().asPoint())
+                   self.gcpWidget3.setMapPoint(feature.geometry().asPoint())
 
     def updateGeoFile(self):
         md = self.metadata()
@@ -258,9 +258,9 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalArgs = []
         self.gdalArgs.extend(['-of', 'GTiff'])
         self.gdalArgs.extend(['-a_srs', self.crt])
-        self.gdalArgs.extend(['-gcp', str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y()), str(self.gcpWidget1.crsPoint().x()), str(self.gcpWidget1.crsPoint().y())])
-        self.gdalArgs.extend(['-gcp', str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y()), str(self.gcpWidget2.crsPoint().x()), str(self.gcpWidget2.crsPoint().y())])
-        self.gdalArgs.extend(['-gcp', str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y()), str(self.gcpWidget3.crsPoint().x()), str(self.gcpWidget3.crsPoint().y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y()), str(self.gcpWidget1.mapPoint().x()), str(self.gcpWidget1.mapPoint().y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y()), str(self.gcpWidget2.mapPoint().x()), str(self.gcpWidget2.mapPoint().y())])
+        self.gdalArgs.extend(['-gcp', str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y()), str(self.gcpWidget3.mapPoint().x()), str(self.gcpWidget3.mapPoint().y())])
         self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png')
         self.gdalArgs.append(self.projectPlanFolder.absolutePath() + '/arkplan_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
@@ -350,15 +350,15 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             elif (vals[4] == '0'):
                 self.showText('not used point')
                 pass
-            elif (vals[0] == str(self.gcpWidget1.crsPoint().x()) and vals[1] == str(self.gcpWidget1.crsPoint().y())):
+            elif (vals[0] == str(self.gcpWidget1.mapPoint().x()) and vals[1] == str(self.gcpWidget1.mapPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix1 = QPointF(float(vals[2]), float(vals[3]))
-            elif (vals[0] == str(self.gcpWidget2.crsPoint().x()) and vals[1] == str(self.gcpWidget2.crsPoint().y())):
+            elif (vals[0] == str(self.gcpWidget2.mapPoint().x()) and vals[1] == str(self.gcpWidget2.mapPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix2 = QPointF(float(vals[2]), float(vals[3]))
-            elif (vals[0] == str(self.gcpWidget3.crsPoint().x()) and vals[1] == str(self.gcpWidget3.crsPoint().y())):
+            elif (vals[0] == str(self.gcpWidget3.mapPoint().x()) and vals[1] == str(self.gcpWidget3.mapPoint().y())):
                 self.showText('match point 1')
                 lines += 1
                 pix3 = QPointF(float(vals[2]), float(vals[3]))
@@ -383,8 +383,8 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             return
         outStream = QTextStream(outFile)
         outStream << 'mapX,mapY,pixelX,pixelY,enable\n'
-        outStream << ','.join([str(self.gcpWidget1.crsPoint().x()), str(self.gcpWidget1.crsPoint().y()), str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y())]) << ',1\n'
-        outStream << ','.join([str(self.gcpWidget2.crsPoint().x()), str(self.gcpWidget2.crsPoint().y()), str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y())]) << ',1\n'
-        outStream << ','.join([str(self.gcpWidget3.crsPoint().x()), str(self.gcpWidget3.crsPoint().y()), str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget1.mapPoint().x()), str(self.gcpWidget1.mapPoint().y()), str(self.gcpWidget1.rawPoint().x()), str(self.gcpWidget1.rawPoint().y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget2.mapPoint().x()), str(self.gcpWidget2.mapPoint().y()), str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y())]) << ',1\n'
+        outStream << ','.join([str(self.gcpWidget3.mapPoint().x()), str(self.gcpWidget3.mapPoint().y()), str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y())]) << ',1\n'
         outFile.close()
         self.showText('GCP file written')

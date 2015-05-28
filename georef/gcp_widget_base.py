@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'georef/gcp_widget_base.ui'
 #
-# Created: Tue Mar 10 10:46:33 2015
+# Created: Thu May 28 08:48:36 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,9 +43,9 @@ class Ui_GcpWidget(object):
         self.localLabel = QtGui.QLabel(GcpWidget)
         self.localLabel.setObjectName(_fromUtf8("localLabel"))
         self.gridLayout.addWidget(self.localLabel, 0, 1, 1, 1)
-        self.crsLabel = QtGui.QLabel(GcpWidget)
-        self.crsLabel.setObjectName(_fromUtf8("crsLabel"))
-        self.gridLayout.addWidget(self.crsLabel, 0, 2, 1, 1)
+        self.mapLabel = QtGui.QLabel(GcpWidget)
+        self.mapLabel.setObjectName(_fromUtf8("mapLabel"))
+        self.gridLayout.addWidget(self.mapLabel, 0, 2, 1, 1)
         self.rawLabel = QtGui.QLabel(GcpWidget)
         self.rawLabel.setObjectName(_fromUtf8("rawLabel"))
         self.gridLayout.addWidget(self.rawLabel, 0, 3, 1, 1)
@@ -57,12 +57,12 @@ class Ui_GcpWidget(object):
         self.localXSpin.setMaximum(9999)
         self.localXSpin.setObjectName(_fromUtf8("localXSpin"))
         self.gridLayout.addWidget(self.localXSpin, 1, 1, 1, 1)
-        self.crsXSpin = QtGui.QDoubleSpinBox(GcpWidget)
-        self.crsXSpin.setReadOnly(True)
-        self.crsXSpin.setDecimals(3)
-        self.crsXSpin.setMaximum(999999.999)
-        self.crsXSpin.setObjectName(_fromUtf8("crsXSpin"))
-        self.gridLayout.addWidget(self.crsXSpin, 1, 2, 1, 1)
+        self.mapXSpin = QtGui.QDoubleSpinBox(GcpWidget)
+        self.mapXSpin.setReadOnly(True)
+        self.mapXSpin.setDecimals(3)
+        self.mapXSpin.setMaximum(999999.999)
+        self.mapXSpin.setObjectName(_fromUtf8("mapXSpin"))
+        self.gridLayout.addWidget(self.mapXSpin, 1, 2, 1, 1)
         self.rawXSpin = QtGui.QDoubleSpinBox(GcpWidget)
         self.rawXSpin.setDecimals(1)
         self.rawXSpin.setMaximum(99999.9)
@@ -76,12 +76,12 @@ class Ui_GcpWidget(object):
         self.localYSpin.setMaximum(9999)
         self.localYSpin.setObjectName(_fromUtf8("localYSpin"))
         self.gridLayout.addWidget(self.localYSpin, 2, 1, 1, 1)
-        self.crsYSpin = QtGui.QDoubleSpinBox(GcpWidget)
-        self.crsYSpin.setReadOnly(True)
-        self.crsYSpin.setDecimals(3)
-        self.crsYSpin.setMaximum(999999.999)
-        self.crsYSpin.setObjectName(_fromUtf8("crsYSpin"))
-        self.gridLayout.addWidget(self.crsYSpin, 2, 2, 1, 1)
+        self.mapYSpin = QtGui.QDoubleSpinBox(GcpWidget)
+        self.mapYSpin.setReadOnly(True)
+        self.mapYSpin.setDecimals(3)
+        self.mapYSpin.setMaximum(999999.999)
+        self.mapYSpin.setObjectName(_fromUtf8("mapYSpin"))
+        self.gridLayout.addWidget(self.mapYSpin, 2, 2, 1, 1)
         self.rawYSpin = QtGui.QDoubleSpinBox(GcpWidget)
         self.rawYSpin.setDecimals(1)
         self.rawYSpin.setMaximum(99999.9)
@@ -96,7 +96,7 @@ class Ui_GcpWidget(object):
         GcpWidget.setWindowTitle(_translate("GcpWidget", "Form", None))
         self.autoButton.setText(_translate("GcpWidget", "Auto", None))
         self.localLabel.setText(_translate("GcpWidget", "Local:", None))
-        self.crsLabel.setText(_translate("GcpWidget", "CRS:", None))
+        self.mapLabel.setText(_translate("GcpWidget", "Map:", None))
         self.rawLabel.setText(_translate("GcpWidget", "Raw:", None))
         self.xLabel.setText(_translate("GcpWidget", "X:", None))
         self.yLabel.setText(_translate("GcpWidget", "Y:", None))

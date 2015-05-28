@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/update_layer_dialog_base.ui'
 #
-# Created: Sat May 16 14:23:07 2015
+# Created: Thu May 28 08:48:36 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,9 +42,9 @@ class Ui_UpdateLayerDialog(object):
         self.layerComboBox.setObjectName(_fromUtf8("layerComboBox"))
         self.horizontalLayout.addWidget(self.layerComboBox)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
-        self.createCrsFieldsCheck = QtGui.QCheckBox(UpdateLayerDialog)
-        self.createCrsFieldsCheck.setObjectName(_fromUtf8("createCrsFieldsCheck"))
-        self.verticalLayout_3.addWidget(self.createCrsFieldsCheck)
+        self.createMapFieldsCheck = QtGui.QCheckBox(UpdateLayerDialog)
+        self.createMapFieldsCheck.setObjectName(_fromUtf8("createMapFieldsCheck"))
+        self.verticalLayout_3.addWidget(self.createMapFieldsCheck)
         self.groupBox = QtGui.QGroupBox(UpdateLayerDialog)
         self.groupBox.setTitle(_fromUtf8(""))
         self.groupBox.setFlat(True)
@@ -76,7 +76,7 @@ class Ui_UpdateLayerDialog(object):
         UpdateLayerDialog.setWindowTitle(_translate("UpdateLayerDialog", "Dialog", None))
         self.headerLabel.setText(_translate("UpdateLayerDialog", "Update Layer Coordinates", None))
         self.layerLabel.setText(_translate("UpdateLayerDialog", "Layer:", None))
-        self.createCrsFieldsCheck.setText(_translate("UpdateLayerDialog", "Create CRS fields if they don\'t exist", None))
+        self.createMapFieldsCheck.setText(_translate("UpdateLayerDialog", "Create Map fields if they don\'t exist", None))
         self.updateFieldsButton.setText(_translate("UpdateLayerDialog", "Update fields from geometry", None))
         self.updateGeometryButton.setText(_translate("UpdateLayerDialog", "Update geometry from local fields", None))
 

@@ -78,7 +78,6 @@ class GridModule(QObject):
         super(GridModule, self).__init__()
         self.project = project
 
-
     # Standard Dock methods
 
     # Load the module when plugin is loaded
@@ -89,21 +88,18 @@ class GridModule(QObject):
         self.dock.createGridSelected.connect(self.showCreateGridDialog)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
-        self.dock.convertCrsSelected.connect(self.convertCrs)
-        self.dock.convertLocalSelected.connect(self.convertLocal)
+        self.dock.convertMapSelected.connect(self.convertMapPoint)
+        self.dock.convertLocalSelected.connect(self.convertLocalPoint)
         self.dock.setReadOnly(True)
         self.dock.createGridTool.setEnabled(False)
-
 
     # Unload the module when plugin is unloaded
     def unload(self):
         self.dock.unload()
 
-
     def run(self, checked):
         if checked:
             self.initialise()
-
 
     def initialise(self):
         if self.initialised:
@@ -126,10 +122,10 @@ class GridModule(QObject):
             features.append(feature)
         if len(features) < 2:
             return
-        crs1, local1 = self.transformPoints(features[0])
-        crs2, local2 = self.transformPoints(features[1])
-        self.crsTransformer = LinearTransformer(crs1, local1, crs2, local2)
-        self.localTransformer = LinearTransformer(local1, crs1, local2, crs2)
+        map1, local1 = self.transformPoints(features[0])
+        map2, local2 = self.transformPoints(features[1])
+        self.mapTransformer = LinearTransformer(map1, local1, map2, local2)
+        self.localTransformer = LinearTransformer(local1, map1, local2, map2)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.iface.mapCanvas())
         self.mapTool.setAction(self.dock.identifyGridAction)
@@ -138,14 +134,12 @@ class GridModule(QObject):
         self.dock.setReadOnly(False)
         self.initialised = True
 
-
     def transformPoints(self, feature):
-        crsPoint = feature.geometry().asPoint()
+        mapPoint = feature.geometry().asPoint()
         localX = feature.attribute(self.project.fieldName('local_x'))
         localY = feature.attribute(self.project.fieldName('local_y'))
         localPoint = QgsPoint(localX, localY)
-        return crsPoint, localPoint
-
+        return mapPoint, localPoint
 
     # Grid methods
 
@@ -157,38 +151,36 @@ class GridModule(QObject):
         self.createDialog.show()
         self.createDialog._showDialog()
 
-
     def createGridDialogAccepted(self):
-        if self.createGrid(self.createDialog.crsOriginPoint(), self.createDialog.crsAxisPoint(),
-                           self.createDialog.crsAxisPointType(),
+        if self.createGrid(self.createDialog.mapOriginPoint(), self.createDialog.mapAxisPoint(),
+                           self.createDialog.mapAxisPointType(),
                            self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
                            self.createDialog.localEastingInterval(), self.createDialog.localEastingInterval()):
             self.project.iface.mapCanvas().refresh()
             self.dock.setReadOnly(False)
             self.project.showMessage('Grid successfully created')
 
-
-    def createGrid(self, crsOrigin, crsAxis, crsAxisType, localOrigin, localTerminus, xInterval, yInterval):
-        axisGeometry = QgsGeometry.fromPolyline([crsOrigin, crsAxis])
-        crsAxisPoint = None
+    def createGrid(self, mapOrigin, mapAxis, mapAxisType, localOrigin, localTerminus, xInterval, yInterval):
+        axisGeometry = QgsGeometry.fromPolyline([mapOrigin, mapAxis])
+        mapAxisPoint = None
         localAxisPoint = None
-        if crsAxisType == CreateGridDialog.PointOnYAxis:
+        if mapAxisType == CreateGridDialog.PointOnYAxis:
             if axisGeometry.length() < yInterval:
                 self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
                 return False
-            crsAxisPoint = axisGeometry.interpolate(yInterval).asPoint()
+            mapAxisPoint = axisGeometry.interpolate(yInterval).asPoint()
             localAxisPoint = QgsPoint(localOrigin.x(), localOrigin.y() + yInterval)
         else:
             if axisGeometry.length() < xInterval:
                 self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
                 return False
-            crsAxisPoint = axisGeometry.interpolate(xInterval).asPoint()
+            mapAxisPoint = axisGeometry.interpolate(xInterval).asPoint()
             localAxisPoint = QgsPoint(localOrigin.x() + xInterval, localOrigin.y())
-        localTransformer = LinearTransformer(localOrigin, crsOrigin, localAxisPoint, crsAxisPoint)
+        localTransformer = LinearTransformer(localOrigin, mapOrigin, localAxisPoint, mapAxisPoint)
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
-        crs_x = self.project.fieldName('crs_x')
-        crs_y = self.project.fieldName('crs_y')
+        map_x = self.project.fieldName('map_x')
+        map_y = self.project.fieldName('map_y')
 
         points = self.project.grid.pointsLayer
         if (points is None or not points.isValid()):
@@ -197,7 +189,7 @@ class GridModule(QObject):
         self._addGridPointsToLayer(points, localTransformer,
                                    localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                    localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                   self._attributes(points, 'gpt'), local_x, local_y, crs_x, crs_y)
+                                   self._attributes(points, 'gpt'), local_x, local_y, map_x, map_y)
 
         if self.project.linesLayerName('grid'):
             lines = self.project.grid.linesLayer
@@ -207,7 +199,7 @@ class GridModule(QObject):
                 self._addGridLinesToLayer(lines, localTransformer,
                                           localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                           localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                          self._attributes(lines, 'gln'), local_x, local_y, crs_x, crs_y)
+                                          self._attributes(lines, 'gln'), local_x, local_y, map_x, map_y)
 
         if self.project.polygonsLayerName('grid'):
             polygons = self.project.grid.polygonsLayer
@@ -217,9 +209,8 @@ class GridModule(QObject):
                 self._addGridPolygonsToLayer(polygons, localTransformer,
                                              localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                              localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                             self._attributes(polygons, 'gpg'), local_x, local_y, crs_x, crs_y)
+                                             self._attributes(polygons, 'gpg'), local_x, local_y, map_x, map_y)
         return True
-
 
     def _attributes(self, layer, category):
         attributes = {}
@@ -230,32 +221,29 @@ class GridModule(QObject):
         attributes[layer.fieldNameIndex(self.project.fieldName('created_by'))] = 'Grid Tool'
         return attributes
 
-
     def _setAttributes(self, feature, attributes):
         for key in attributes.keys():
             feature.setAttribute(key, attributes[key])
 
-
-    def _addGridPointsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', crsFieldX='crs_x', crsFieldY='crs_y'):
+    def _addGridPointsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
         if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
             return
         features = []
         for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
             for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
                 localPoint = QgsPoint(localX, localY)
-                crsPoint = transformer.map(localPoint)
+                mapPoint = transformer.map(localPoint)
                 feature = QgsFeature(layer.dataProvider().fields())
-                feature.setGeometry(QgsGeometry.fromPoint(crsPoint))
+                feature.setGeometry(QgsGeometry.fromPoint(mapPoint))
                 self._setAttributes(feature, attributes)
                 feature.setAttribute(localFieldX, localX)
                 feature.setAttribute(localFieldY, localY)
-                feature.setAttribute(crsFieldX, crsPoint.x())
-                feature.setAttribute(crsFieldY, crsPoint.y())
+                feature.setAttribute(mapFieldX, mapPoint.x())
+                feature.setAttribute(mapFieldY, mapPoint.y())
                 features.append(feature)
         layer.dataProvider().addFeatures(features)
 
-
-    def _addGridLinesToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', crsFieldX='crs_x', crsFieldY='crs_y'):
+    def _addGridLinesToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
         if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Line):
             return
         features = []
@@ -264,36 +252,35 @@ class GridModule(QObject):
         for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
             localStartPoint = QgsPoint(localX, originY)
             localEndPoint = QgsPoint(localX, terminusY)
-            crsStartPoint = transformer.map(localStartPoint)
-            crsEndPoint = transformer.map(localEndPoint)
+            mapStartPoint = transformer.map(localStartPoint)
+            mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
-            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+            feature.setGeometry(QgsGeometry.fromPolyline([mapStartPoint, mapEndPoint]))
             self._setAttributes(feature, attributes)
             feature.setAttribute(localFieldX, localX)
-            feature.setAttribute(crsFieldX, crsStartPoint.x())
+            feature.setAttribute(mapFieldX, mapStartPoint.x())
             features.append(feature)
         for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
             localStartPoint = QgsPoint(originX, localY)
             localEndPoint = QgsPoint(terminusX, localY)
-            crsStartPoint = transformer.map(localStartPoint)
-            crsEndPoint = transformer.map(localEndPoint)
+            mapStartPoint = transformer.map(localStartPoint)
+            mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
-            feature.setGeometry(QgsGeometry.fromPolyline([crsStartPoint, crsEndPoint]))
+            feature.setGeometry(QgsGeometry.fromPolyline([mapStartPoint, mapEndPoint]))
             self._setAttributes(feature, attributes)
             feature.setAttribute(localFieldY, localY)
-            feature.setAttribute(crsFieldY, crsStartPoint.y())
+            feature.setAttribute(mapFieldY, mapStartPoint.y())
             features.append(feature)
         layer.dataProvider().addFeatures(features)
 
-
-    def _addGridPolygonsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', crsFieldX='crs_x', crsFieldY='crs_y'):
+    def _addGridPolygonsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
         if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Polygon):
             return
         features = []
         for localX in range(originX, originX + intervalX * repeatX, intervalX):
             for localY in range(originY, originY + intervalY * repeatY, intervalY):
                 localPoint = QgsPoint(localX, localY)
-                crsPoint = transformer.map(localPoint)
+                mapPoint = transformer.map(localPoint)
                 points = []
                 points.append(transformer.map(localPoint))
                 points.append(transformer.map(QgsPoint(localX, localY + intervalY)))
@@ -304,11 +291,10 @@ class GridModule(QObject):
                 self._setAttributes(feature, attributes)
                 feature.setAttribute(localFieldX, localX)
                 feature.setAttribute(localFieldY, localY)
-                feature.setAttribute(crsFieldX, crsPoint.x())
-                feature.setAttribute(crsFieldY, crsPoint.y())
+                feature.setAttribute(mapFieldX, mapPoint.x())
+                feature.setAttribute(mapFieldY, mapPoint.y())
                 features.append(feature)
         layer.dataProvider().addFeatures(features)
-
 
     def enableMapTool(self, status):
         if not self.initialised:
@@ -321,30 +307,26 @@ class GridModule(QObject):
         elif status:
             self.dock.identifyGridAction.setChecked(False)
 
-
     def pointSelected(self, point, button):
         if not self.initialised:
             return
         if (button == Qt.LeftButton):
             if not self.dock.menuAction().isChecked():
                 self.dock.menuAction().toggle()
-            self.dock.setCrsPoint(point)
-            self.convertCrs()
+            self.dock.setMapPoint(point)
+            self.convertMapPoint()
 
-
-    def convertCrs(self):
+    def convertMapPoint(self):
         if not self.initialised:
             return
-        localPoint = self.crsTransformer.map(self.dock.crsPoint())
+        localPoint = self.mapTransformer.map(self.dock.mapPoint())
         self.dock.setLocalPoint(localPoint)
 
-
-    def convertLocal(self):
+    def convertLocalPoint(self):
         if not self.initialised:
             return
-        crsPoint = self.localTransformer.map(self.dock.localPoint())
-        self.dock.setCrsPoint(crsPoint)
-
+        mapPoint = self.localTransformer.map(self.dock.localPoint())
+        self.dock.setMapPoint(mapPoint)
 
     def showUpdateLayerDialog(self):
         if not self.initialised:
@@ -352,40 +334,39 @@ class GridModule(QObject):
         if self.initialised:
             dialog = UpdateLayerDialog(self.project.iface)
             if dialog.exec_():
-                self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.createCrsFields())
+                self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.createMapFields())
 
-
-    def updateLayerCoordinates(self, layer, updateGeometry, createCrsFields):
+    def updateLayerCoordinates(self, layer, updateGeometry, createMapFields):
         if (not self.initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
             return False
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
-        crs_x = self.project.fieldName('crs_x')
-        crs_y = self.project.fieldName('crs_y')
+        map_x = self.project.fieldName('map_x')
+        map_y = self.project.fieldName('map_y')
         if layer.startEditing():
             if layer.fieldNameIndex(local_x) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_x')])
             if layer.fieldNameIndex(local_y) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_y')])
-            if (createCrsFields and layer.fieldNameIndex(crs_x) < 0):
-                layer.dataProvider().addAttributes([self.project.field('crs_x')])
-            if (createCrsFields and layer.fieldNameIndex(crs_y) < 0):
-                layer.dataProvider().addAttributes([self.project.field('crs_y')])
+            if (createMapFields and layer.fieldNameIndex(map_x) < 0):
+                layer.dataProvider().addAttributes([self.project.field('map_x')])
+            if (createMapFields and layer.fieldNameIndex(map_y) < 0):
+                layer.dataProvider().addAttributes([self.project.field('map_y')])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
-            crs_x_idx = layer.fieldNameIndex(crs_x)
-            crs_y_idx = layer.fieldNameIndex(crs_y)
+            map_x_idx = layer.fieldNameIndex(map_x)
+            map_y_idx = layer.fieldNameIndex(map_y)
             if updateGeometry:
                 for feature in layer.getFeatures():
                     localPoint = QgsPoint(feature.attribute(local_x), feature.attribute(local_y))
-                    crsPoint = self.localTransformer.map(localPoint)
-                    layer.changeGeometry(feature.id(), QgsGeometry.fromPoint(crsPoint))
+                    mapPoint = self.localTransformer.map(localPoint)
+                    layer.changeGeometry(feature.id(), QgsGeometry.fromPoint(mapPoint))
             for feature in layer.getFeatures():
-                crsPoint = feature.geometry().asPoint()
-                localPoint = self.crsTransformer.map(crsPoint)
+                mapPoint = feature.geometry().asPoint()
+                localPoint = self.mapTransformer.map(mapPoint)
                 layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
                 layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
-                layer.changeAttributeValue(feature.id(), crs_x_idx, crsPoint.x())
-                layer.changeAttributeValue(feature.id(), crs_y_idx, crsPoint.y())
+                layer.changeAttributeValue(feature.id(), map_x_idx, mapPoint.x())
+                layer.changeAttributeValue(feature.id(), map_y_idx, mapPoint.y())
             return layer.commitChanges()
         return False

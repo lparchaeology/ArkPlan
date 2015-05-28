@@ -68,17 +68,17 @@
     <item>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="crsLabel">
+       <widget class="QLabel" name="mapLabel">
         <property name="text">
-         <string>CRS:</string>
+         <string>Map:</string>
         </property>
         <property name="buddy">
-         <cstring>crsEastingSpin</cstring>
+         <cstring>mapEastingSpin</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="crsEastingSpin">
+       <widget class="QDoubleSpinBox" name="mapEastingSpin">
         <property name="readOnly">
          <bool>true</bool>
         </property>
@@ -97,7 +97,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="crsNorthingSpin">
+       <widget class="QDoubleSpinBox" name="mapNorthingSpin">
         <property name="readOnly">
          <bool>true</bool>
         </property>

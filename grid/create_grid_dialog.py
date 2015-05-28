@@ -47,8 +47,8 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         self._project = project
 
         self.setupUi(self)
-        self.crsOriginFromMapButton.clicked.connect(self.getOriginFromMap)
-        self.crsAxisFromMapButton.clicked.connect(self.getAxisFromMap)
+        self.mapOriginFromMapButton.clicked.connect(self.getOriginFromMap)
+        self.mapAxisFromMapButton.clicked.connect(self.getAxisFromMap)
         self.createGridButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)
 
@@ -57,14 +57,14 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         self._mapTool.canvasClicked.connect(self.pointSelected)
         self._mapTool.deactivated.connect(self.cancelGetPoint)
 
-    def crsOriginPoint(self):
-        return QgsPoint(self.crsOriginEastingSpin.value(), self.crsOriginNorthingSpin.value())
+    def mapOriginPoint(self):
+        return QgsPoint(self.mapOriginEastingSpin.value(), self.mapOriginNorthingSpin.value())
 
-    def crsAxisPoint(self):
-        return QgsPoint(self.crsAxisEastingSpin.value(), self.crsAxisNorthingSpin.value())
+    def mapAxisPoint(self):
+        return QgsPoint(self.mapAxisEastingSpin.value(), self.mapAxisNorthingSpin.value())
 
-    def crsAxisPointType(self):
-        if self.crsOnAxisYButton.isChecked():
+    def mapAxisPointType(self):
+        if self.mapOnAxisYButton.isChecked():
             return CreateGridDialog.PointOnYAxis
         else:
             return CreateGridDialog.PointOnXAxis
@@ -99,11 +99,11 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     def pointSelected(self, point, button):
         if (button == Qt.LeftButton):
             if self.getPoint == 'origin':
-                self.crsOriginEastingSpin.setValue(point.x())
-                self.crsOriginNorthingSpin.setValue(point.y())
+                self.mapOriginEastingSpin.setValue(point.x())
+                self.mapOriginNorthingSpin.setValue(point.y())
             elif self.getPoint == 'axis':
-                self.crsAxisEastingSpin.setValue(point.x())
-                self.crsAxisNorthingSpin.setValue(point.y())
+                self.mapAxisEastingSpin.setValue(point.x())
+                self.mapAxisNorthingSpin.setValue(point.y())
         self._project.iface.mapCanvas().unsetMapTool(self._mapTool)
         self._showDialog()
 

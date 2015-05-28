@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Wed May 27 15:39:16 2015
+# Created: Thu May 28 08:48:36 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,23 +56,23 @@ class Ui_GridDock(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.crsLabel = QtGui.QLabel(self.GridDockContents)
-        self.crsLabel.setObjectName(_fromUtf8("crsLabel"))
-        self.gridLayout.addWidget(self.crsLabel, 0, 0, 1, 1)
-        self.crsEastingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
-        self.crsEastingSpin.setReadOnly(True)
-        self.crsEastingSpin.setPrefix(_fromUtf8(""))
-        self.crsEastingSpin.setSuffix(_fromUtf8(""))
-        self.crsEastingSpin.setDecimals(3)
-        self.crsEastingSpin.setMaximum(999999.999)
-        self.crsEastingSpin.setObjectName(_fromUtf8("crsEastingSpin"))
-        self.gridLayout.addWidget(self.crsEastingSpin, 0, 1, 1, 1)
-        self.crsNorthingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
-        self.crsNorthingSpin.setReadOnly(True)
-        self.crsNorthingSpin.setDecimals(3)
-        self.crsNorthingSpin.setMaximum(999999.999)
-        self.crsNorthingSpin.setObjectName(_fromUtf8("crsNorthingSpin"))
-        self.gridLayout.addWidget(self.crsNorthingSpin, 0, 2, 1, 1)
+        self.mapLabel = QtGui.QLabel(self.GridDockContents)
+        self.mapLabel.setObjectName(_fromUtf8("mapLabel"))
+        self.gridLayout.addWidget(self.mapLabel, 0, 0, 1, 1)
+        self.mapEastingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
+        self.mapEastingSpin.setReadOnly(True)
+        self.mapEastingSpin.setPrefix(_fromUtf8(""))
+        self.mapEastingSpin.setSuffix(_fromUtf8(""))
+        self.mapEastingSpin.setDecimals(3)
+        self.mapEastingSpin.setMaximum(999999.999)
+        self.mapEastingSpin.setObjectName(_fromUtf8("mapEastingSpin"))
+        self.gridLayout.addWidget(self.mapEastingSpin, 0, 1, 1, 1)
+        self.mapNorthingSpin = QtGui.QDoubleSpinBox(self.GridDockContents)
+        self.mapNorthingSpin.setReadOnly(True)
+        self.mapNorthingSpin.setDecimals(3)
+        self.mapNorthingSpin.setMaximum(999999.999)
+        self.mapNorthingSpin.setObjectName(_fromUtf8("mapNorthingSpin"))
+        self.gridLayout.addWidget(self.mapNorthingSpin, 0, 2, 1, 1)
         self.localLabel = QtGui.QLabel(self.GridDockContents)
         self.localLabel.setObjectName(_fromUtf8("localLabel"))
         self.gridLayout.addWidget(self.localLabel, 1, 0, 1, 1)
@@ -102,7 +102,7 @@ class Ui_GridDock(object):
         self.updateLayerAction = QtGui.QAction(GridDock)
         self.updateLayerAction.setIcon(icon2)
         self.updateLayerAction.setObjectName(_fromUtf8("updateLayerAction"))
-        self.crsLabel.setBuddy(self.crsEastingSpin)
+        self.mapLabel.setBuddy(self.mapEastingSpin)
         self.localLabel.setBuddy(self.localEastingSpin)
 
         self.retranslateUi(GridDock)
@@ -113,7 +113,7 @@ class Ui_GridDock(object):
         self.createGridTool.setText(_translate("GridDock", "...", None))
         self.identifyGridTool.setText(_translate("GridDock", "...", None))
         self.updateLayerTool.setText(_translate("GridDock", "...", None))
-        self.crsLabel.setText(_translate("GridDock", "CRS:", None))
+        self.mapLabel.setText(_translate("GridDock", "Map:", None))
         self.localLabel.setText(_translate("GridDock", "Local:", None))
         self.createGridAction.setText(_translate("GridDock", "New", None))
         self.createGridAction.setToolTip(_translate("GridDock", "Create New Grid", None))

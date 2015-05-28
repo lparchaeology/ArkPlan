@@ -37,7 +37,7 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
     createGridSelected = pyqtSignal()
     identifyGridSelected = pyqtSignal(bool)
     updateLayerSelected = pyqtSignal()
-    convertCrsSelected = pyqtSignal()
+    convertMapSelected = pyqtSignal()
     convertLocalSelected = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -58,35 +58,30 @@ class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
         self.updateLayerTool.setDefaultAction(self.updateLayerAction)
         self.updateLayerAction.triggered.connect(self.updateLayerSelected)
 
-        self.crsEastingSpin.editingFinished.connect(self.convertCrsSelected)
-        self.crsNorthingSpin.editingFinished.connect(self.convertCrsSelected)
+        self.mapEastingSpin.editingFinished.connect(self.convertMapSelected)
+        self.mapNorthingSpin.editingFinished.connect(self.convertMapSelected)
 
         self.localEastingSpin.editingFinished.connect(self.convertLocalSelected)
         self.localNorthingSpin.editingFinished.connect(self.convertLocalSelected)
 
+    def mapPoint(self):
+        return QgsPoint(self.mapEastingSpin.value(), self.mapNorthingSpin.value())
 
-    def crsPoint(self):
-        return QgsPoint(self.crsEastingSpin.value(), self.crsNorthingSpin.value())
-
-
-    def setCrsPoint(self, point):
-        self.crsEastingSpin.setValue(point.x())
-        self.crsNorthingSpin.setValue(point.y())
-
+    def setMapPoint(self, point):
+        self.mapEastingSpin.setValue(point.x())
+        self.mapNorthingSpin.setValue(point.y())
 
     def localPoint(self):
         return QgsPoint(self.localEastingSpin.value(), self.localNorthingSpin.value())
-
 
     def setLocalPoint(self, point):
         self.localEastingSpin.setValue(point.x())
         self.localNorthingSpin.setValue(point.y())
 
-
     def setReadOnly(self, status):
         self.identifyGridAction.setEnabled(not status)
         self.updateLayerAction.setEnabled(not status)
-        self.crsEastingSpin.setReadOnly(status)
-        self.crsNorthingSpin.setReadOnly(status)
+        self.mapEastingSpin.setReadOnly(status)
+        self.mapNorthingSpin.setReadOnly(status)
         self.localEastingSpin.setReadOnly(status)
         self.localNorthingSpin.setReadOnly(status)

@@ -13,10 +13,10 @@
     <edittype widgetv2type="TextEdit" name="local_y">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="crs_x">
+    <edittype widgetv2type="TextEdit" name="map_x">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="crs_y">
+    <edittype widgetv2type="TextEdit" name="map_y">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="source">

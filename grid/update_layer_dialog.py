@@ -58,5 +58,5 @@ class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
     def createLocalFields(self):
         return self.createLocalFieldsCheck.isChecked()
 
-    def createCrsFields(self):
-        return self.createCrsFieldsCheck.isChecked()
+    def createMapFields(self):
+        return self.createMapFieldsCheck.isChecked()

@@ -68,8 +68,8 @@ class Project(QObject):
         'file'      : QgsField('file',       QVariant.String, '',  50, 0, 'File'),
         'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
         'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
-        'crs_x'     : QgsField('crs_x',      QVariant.Double, '',  10, 3, 'CRS X'),
-        'crs_y'     : QgsField('crs_y',      QVariant.Double, '',  10, 3, 'CRS y'),
+        'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
+        'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
         'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
         'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')
@@ -101,9 +101,9 @@ class Project(QObject):
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'source', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'base' : {
@@ -116,7 +116,7 @@ class Project(QObject):
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : '',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'crs_x', 'crs_y', 'elevation', 'source', 'file', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'id', 'category', 'source', 'file', 'created_on', 'created_by'],
             'polygonsFields'   : [],
             'schemaFields'     : []

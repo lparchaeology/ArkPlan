@@ -20,9 +20,9 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="2">
-      <widget class="QLabel" name="crsNorthingLabel">
+      <widget class="QLabel" name="mapNorthingLabel">
        <property name="text">
-        <string>CRS Northing</string>
+        <string>Map Northing</string>
        </property>
       </widget>
      </item>
@@ -60,12 +60,12 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="crsOnAxisLabel">
+      <widget class="QLabel" name="mapOnAxisLabel">
        <property name="text">
         <string>On Axis:</string>
        </property>
        <property name="buddy">
-        <cstring>crsOnAxisXButton</cstring>
+        <cstring>mapOnAxisXButton</cstring>
        </property>
       </widget>
      </item>
@@ -90,19 +90,19 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QPushButton" name="crsOriginFromMapButton">
+      <widget class="QPushButton" name="mapOriginFromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="crsAxisLabel">
+      <widget class="QLabel" name="mapAxisLabel">
        <property name="text">
         <string>Axis Coordinates:</string>
        </property>
        <property name="buddy">
-        <cstring>crsAxisEastingSpin</cstring>
+        <cstring>mapAxisEastingSpin</cstring>
        </property>
       </widget>
      </item>
@@ -120,7 +120,7 @@
       </widget>
      </item>
      <item row="3" column="2">
-      <widget class="QDoubleSpinBox" name="crsAxisNorthingSpin">
+      <widget class="QDoubleSpinBox" name="mapAxisNorthingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -130,7 +130,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="crsOriginNorthingSpin">
+      <widget class="QDoubleSpinBox" name="mapOriginNorthingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -140,7 +140,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="crsOriginEastingSpin">
+      <widget class="QDoubleSpinBox" name="mapOriginEastingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -163,7 +163,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="crsAxisEastingSpin">
+      <widget class="QDoubleSpinBox" name="mapAxisEastingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -183,7 +183,7 @@
       </widget>
      </item>
      <item row="3" column="3">
-      <widget class="QPushButton" name="crsAxisFromMapButton">
+      <widget class="QPushButton" name="mapAxisFromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
@@ -213,24 +213,24 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="crsOriginLabel">
+      <widget class="QLabel" name="mapOriginLabel">
        <property name="text">
         <string>Origin Coordinates:</string>
        </property>
        <property name="buddy">
-        <cstring>crsOriginEastingSpin</cstring>
+        <cstring>mapOriginEastingSpin</cstring>
        </property>
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QRadioButton" name="crsOnAxisYButton">
+      <widget class="QRadioButton" name="mapOnAxisYButton">
        <property name="text">
         <string>Y</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QRadioButton" name="crsOnAxisXButton">
+      <widget class="QRadioButton" name="mapOnAxisXButton">
        <property name="text">
         <string>X</string>
        </property>
@@ -240,9 +240,9 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="crsEastingLabel">
+      <widget class="QLabel" name="mapEastingLabel">
        <property name="text">
-        <string>CRS Easting</string>
+        <string>Map Easting</string>
        </property>
       </widget>
      </item>
@@ -318,14 +318,14 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>crsOriginEastingSpin</tabstop>
-  <tabstop>crsOriginNorthingSpin</tabstop>
-  <tabstop>crsOriginFromMapButton</tabstop>
-  <tabstop>crsOnAxisXButton</tabstop>
-  <tabstop>crsOnAxisYButton</tabstop>
-  <tabstop>crsAxisEastingSpin</tabstop>
-  <tabstop>crsAxisNorthingSpin</tabstop>
-  <tabstop>crsAxisFromMapButton</tabstop>
+  <tabstop>mapOriginEastingSpin</tabstop>
+  <tabstop>mapOriginNorthingSpin</tabstop>
+  <tabstop>mapOriginFromMapButton</tabstop>
+  <tabstop>mapOnAxisXButton</tabstop>
+  <tabstop>mapOnAxisYButton</tabstop>
+  <tabstop>mapAxisEastingSpin</tabstop>
+  <tabstop>mapAxisNorthingSpin</tabstop>
+  <tabstop>mapAxisFromMapButton</tabstop>
   <tabstop>localOriginEastingSpin</tabstop>
   <tabstop>localOriginNorthingSpin</tabstop>
   <tabstop>localTerminusEastingSpin</tabstop>

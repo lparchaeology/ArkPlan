@@ -351,8 +351,16 @@ class ArkMapToolEmitPoint(ArkMapToolInteractive):
 
     canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
 
+    _vertexMarker = None  # QgsVertexMarker
+
     def __init__(self, canvas):
         super(ArkMapToolEmitPoint, self).__init__(canvas)
+        self._vertexMarker = QgsVertexMarker(canvas)
+        self._vertexMarker.setIconType(QgsVertexMarker.ICON_NONE)
+
+    def deactivate(self):
+        self._vertexMarker.setCenter(QgsPoint())
+        super(ArkMapToolEmitPoint, self).deactivate()
 
     def canvasReleaseEvent(self, e):
         super(ArkMapToolEmitPoint, self).canvasReleaseEvent(e)
@@ -360,12 +368,24 @@ class ArkMapToolEmitPoint(ArkMapToolInteractive):
             return
         # Emit mode
         mapPoint, snapped = self._snapCursorPoint(e.pos())
+        self._vertexMarker.setCenter(mapPoint)
         self.canvasClicked.emit(mapPoint, e.button())
         e.accept()
+
+    def setVertexIcon(self, iconType, iconSize=None, penWidth=None, color=None):
+        self._vertexMarker.setIconType(iconType)
+        if iconSize is not None:
+            self._vertexMarker.setIconSize(iconSize)
+        if iconSize is not None:
+            self._vertexMarker.setPenWidth(penWidth)
+        if iconSize is not None:
+            self._vertexMarker.setColor(color)
 
 
 # Tool to capture and show mouse clicks as geometry using map points
 class ArkMapToolCapture(ArkMapToolInteractive):
+
+    canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
 
     _iface = None
     _useCurrentLayerGeometry = False
@@ -378,8 +398,8 @@ class ArkMapToolCapture(ArkMapToolInteractive):
     _geometryErrors = []  #QList<QgsGeometry.Error>
     _geometryErrorMarkers = []  #QList<QgsVertexMarker>
 
-    def __init__(self, canvas, iface, geometryType=QGis.UnknownGeometry):
-        super(ArkMapToolCapture, self).__init__(canvas)
+    def __init__(self, iface, geometryType=QGis.UnknownGeometry):
+        super(ArkMapToolCapture, self).__init__(iface.mapCanvas())
         self._iface = iface
         self._geometryType = geometryType
         if (geometryType == QGis.UnknownGeometry):
@@ -441,9 +461,12 @@ class ArkMapToolCapture(ArkMapToolInteractive):
         super(ArkMapToolCapture, self).canvasReleaseEvent(e)
         if e.isAccepted():
             return
+        mapPoint, snapped = self._snapCursorPoint(e.pos())
         if (e.button() == Qt.LeftButton):
             # Capture mode
-            self._addVertex(e.pos())
+            self._addVertex(mapPoint)
+        # Emit mode
+        self.canvasClicked.emit(mapPoint, e.button())
 
     def keyPressEvent(self, e):
         if (e.key() == Qt.Key_Escape):
@@ -473,8 +496,7 @@ class ArkMapToolCapture(ArkMapToolInteractive):
         rb.show()
         return rb
 
-    def _addVertex(self, pos):
-        mapPoint, snapped = self._snapCursorPoint(pos)
+    def _addVertex(self, mapPoint):
         self._mapPointList.append(mapPoint)
         self._rubberBand.addPoint(mapPoint)
         self._updateMoveRubberBand(mapPoint)
@@ -611,11 +633,11 @@ class ArkMapToolAddFeature(ArkMapToolCapture):
     _queryMin = 0
     _queryMax = 0
 
-    def __init__(self, canvas, iface, layer, featureType=0, toolName=''):
+    def __init__(self, iface, layer, featureType=0, toolName=''):
         geometryType = QGis.UnknownGeometry
         if (layer is not None and layer.isValid()):
             geometryType = layer.geometryType()
-        super(ArkMapToolAddFeature, self).__init__(canvas, iface, geometryType)
+        super(ArkMapToolAddFeature, self).__init__(iface, geometryType)
         self._layer = layer
 
         if (featureType == ArkMapToolAddFeature.NoFeature):
@@ -837,8 +859,8 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
     _pointQueryDecimals = 0
     _pointQueryValues = []
 
-    def __init__(self, canvas, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
-        super(ArkMapToolAddFeature, self).__init__(canvas, iface, lineLayer, toolName)
+    def __init__(self, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
+        super(ArkMapToolAddFeature, self).__init__(iface, lineLayer, toolName)
         self._pointLayer = pointLayer
 
     def pointLayer(self):

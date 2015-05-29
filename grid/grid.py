@@ -28,6 +28,7 @@ from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
 from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
 
 from qgis.core import *
+from qgis.gui import QgsVertexMarker
 
 from ..core.utils import *
 from ..core.map_tools import ArkMapToolEmitPoint
@@ -133,6 +134,7 @@ class GridModule(QObject):
         self.localTransformer = LinearTransformer(local1, map1, local2, map2)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.iface.mapCanvas())
+        self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
         self.mapTool.setAction(self.dock.identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 

@@ -40,7 +40,8 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadContextSelected = pyqtSignal()
 
     siteChanged = pyqtSignal(str)
-    numberChanged = pyqtSignal(int)
+    contextNumberChanged = pyqtSignal(int)
+    baseNumberChanged = pyqtSignal(int)
     sourceChanged = pyqtSignal(str)
     sourceFileChanged = pyqtSignal(str)
     commentChanged = pyqtSignal(str)
@@ -68,7 +69,8 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_loadContextButton.clicked.connect(self.loadContextSelected)
 
         self.m_siteEdit.textChanged.connect(self.siteChanged)
-        self.m_numberSpin.valueChanged.connect(self.numberChanged)
+        self.m_contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
+        self.m_baseNumberSpin.valueChanged.connect(self.baseNumberChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
@@ -100,8 +102,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_schematicTool.clicked.connect(self.schematicSelected)
 
-        self.m_clearTool.setVisible(False)
-
         self.m_sectionPinTool.clicked.connect(self.sectionPinSelected)
         self.m_sectionLineTool.clicked.connect(self.sectionLineSelected)
         self.m_basePointTool.clicked.connect(self.basePointSelected)
@@ -119,8 +119,11 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setSite(self, name):
         self.m_siteEdit.setText(name)
 
-    def setNumber(self, number):
-        self.m_numberSpin.setValue(number)
+    def setContextNumber(self, context):
+        self.m_contextNumberSpin.setValue(context)
+
+    def setBaseNumber(self, number):
+        self.m_baseNumberSpin.setValue(number)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
@@ -135,10 +138,6 @@ class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_createdByEdit.setText(creator)
 
     # Drawing Tools
-
-    def clearCheckedToolButton(self):
-        # HACK Find a nice way to uncheck whatever button is currently checked
-        self.m_clearTool.setChecked(True)
 
     def extentSelected(self):
         self.selectedLineMode.emit('contexts', 'ext')

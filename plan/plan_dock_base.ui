@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>881</height>
+    <width>359</width>
+    <height>924</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,14 +20,17 @@
    <string>ArkPlan</string>
   </property>
   <widget class="QWidget" name="PlanDockContents">
-   <layout class="QGridLayout" name="gridLayout_4">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -40,51 +43,28 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>333</width>
-         <height>829</height>
+         <width>335</width>
+         <height>874</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="m_metadataGroup">
           <property name="title">
-           <string>Load Plans</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="m_loadRawButton">
-             <property name="text">
-              <string>Raw Plan</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="m_loadGeoButton">
-             <property name="text">
-              <string>Geo Plan</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QPushButton" name="m_loadContextButton">
-             <property name="text">
-              <string>Context</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="m_planGroup">
-          <property name="title">
-           <string>Attributes</string>
+           <string>Metadata</string>
           </property>
           <layout class="QFormLayout" name="formLayout">
            <property name="fieldGrowthPolicy">
             <enum>QFormLayout::ExpandingFieldsGrow</enum>
            </property>
-           <item row="1" column="0">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="m_siteEdit">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
             <widget class="QLabel" name="m_siteLabel">
              <property name="text">
               <string>Site Code:</string>
@@ -95,40 +75,13 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="m_siteEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="m_numberLabel">
-             <property name="text">
-              <string>Number:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_numberSpin</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="m_numberSpin">
-             <property name="toolTip">
-              <string>Context Number</string>
-             </property>
-             <property name="maximum">
-              <number>9999</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
             <widget class="QLineEdit" name="m_sourceEdit">
              <property name="toolTip">
               <string>Source</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="1" column="0">
             <widget class="QLabel" name="m_sourceLabel">
              <property name="text">
               <string>Source:</string>
@@ -138,14 +91,27 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="m_sourceFileEdit"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="m_sourceFileLabel">
+             <property name="text">
+              <string>Source File:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_sourceFileEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
             <widget class="QLineEdit" name="m_commentEdit">
              <property name="readOnly">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="m_commentLabel">
              <property name="text">
               <string>Comment:</string>
@@ -156,19 +122,6 @@
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="m_sourceFileLabel">
-             <property name="text">
-              <string>Source File:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_sourceFileEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="m_sourceFileEdit"/>
-           </item>
-           <item row="6" column="0">
             <widget class="QLabel" name="m_createdByLabel">
              <property name="text">
               <string>Created By:</string>
@@ -178,574 +131,582 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="4" column="1">
             <widget class="QLineEdit" name="m_createdByEdit"/>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="m_drawingToolsGroup">
+         <widget class="QGroupBox" name="m_contextDataGroup">
           <property name="title">
-           <string>Drawing Tools</string>
+           <string>Context Data</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="6" column="2">
-            <widget class="QToolButton" name="m_levelTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Level</string>
-             </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="2" column="0">
+            <widget class="QLabel" name="m_contextNumberLabel">
              <property name="text">
-              <string>lvl</string>
+              <string>Context:</string>
              </property>
-             <property name="checkable">
-              <bool>true</bool>
+             <property name="buddy">
+              <cstring>m_contextNumberSpin</cstring>
              </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="m_loadRawButton">
+             <property name="text">
+              <string>Raw Plan</string>
+             </property>
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QToolButton" name="m_extentTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Extent of context</string>
-             </property>
+            <widget class="QPushButton" name="m_loadContextButton">
              <property name="text">
-              <string>ext</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QToolButton" name="m_cbmTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>CBM</string>
-             </property>
-             <property name="text">
-              <string>cbm</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="4" column="3">
-            <widget class="QToolButton" name="m_brickTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Brick</string>
-             </property>
-             <property name="text">
-              <string>brk</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QToolButton" name="m_undercutTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Undercut</string>
-             </property>
-             <property name="text">
-              <string>unc</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QToolButton" name="m_uncertainEdgeTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Uncertain Edge</string>
-             </property>
-             <property name="text">
-              <string>ueg</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="7" column="3">
-            <widget class="QToolButton" name="m_sectionLineTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Level</string>
-             </property>
-             <property name="text">
-              <string>sln</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+              <string>Context</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
-            <widget class="QToolButton" name="m_limitOfExcavationTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="m_contextNumberSpin">
              <property name="toolTip">
-              <string>Limit of Excavation</string>
+              <string>Context Number</string>
              </property>
-             <property name="text">
-              <string>loe</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="2" column="5">
-            <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Vertical Break of Slope</string>
-             </property>
-             <property name="text">
-              <string>vbs</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="3" column="4">
-            <widget class="QToolButton" name="m_returnOfSlopeTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Return of Slope</string>
-             </property>
-             <property name="text">
-              <string>ros</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="4" column="5">
-            <widget class="QToolButton" name="m_mortarTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Mortar</string>
-             </property>
-             <property name="text">
-              <string>mtr</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QToolButton" name="m_hachureTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Hachure</string>
-             </property>
-             <property name="text">
-              <string>hch</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="6" column="3">
-            <widget class="QToolButton" name="m_schematicTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Schematic</string>
-             </property>
-             <property name="text">
-              <string>sch</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="2">
-            <widget class="QToolButton" name="m_charcoalTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Charcoal</string>
-             </property>
-             <property name="text">
-              <string>cha</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="2" column="4">
-            <widget class="QToolButton" name="m_breakOfSlopeTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Break of Slope</string>
-             </property>
-             <property name="text">
-              <string>bos</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="7" column="2">
-            <widget class="QToolButton" name="m_sectionPinTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Level</string>
-             </property>
-             <property name="text">
-              <string>sec</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+             <property name="maximum">
+              <number>9999</number>
              </property>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QToolButton" name="m_verticalEdgeTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Vertical Edge</string>
-             </property>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="m_loadGeoButton">
              <property name="text">
-              <string>veg</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="6" column="4">
-            <widget class="QToolButton" name="m_clearTool">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>clr</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="4">
-            <widget class="QToolButton" name="m_potTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Pot</string>
-             </property>
-             <property name="text">
-              <string>pot</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="3">
-            <widget class="QToolButton" name="m_stoneTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Stone</string>
-             </property>
-             <property name="text">
-              <string>sto</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="5">
-            <widget class="QToolButton" name="m_flintTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Flint</string>
-             </property>
-             <property name="text">
-              <string>fli</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="4" column="4">
-            <widget class="QToolButton" name="m_tileTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Tile</string>
-             </property>
-             <property name="text">
-              <string>til</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QToolButton" name="m_verticalTruncationTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Vertical Truncation</string>
-             </property>
-             <property name="text">
-              <string>vtr</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QToolButton" name="m_truncationTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Truncation</string>
-             </property>
-             <property name="text">
-              <string>trn</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">m_toolButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="7" column="4">
-            <widget class="QToolButton" name="m_basePointTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Level</string>
-             </property>
-             <property name="text">
-              <string>bpt</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+              <string>Geo Plan</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="5">
-            <widget class="QToolButton" name="m_baseLineTool">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
+           <item row="3" column="0" colspan="3">
+            <layout class="QGridLayout" name="m_contextToolsLayout">
+             <item row="0" column="0">
+              <widget class="QToolButton" name="m_extentTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Extent of context</string>
+               </property>
+               <property name="text">
+                <string>ext</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QToolButton" name="m_verticalEdgeTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Vertical Edge</string>
+               </property>
+               <property name="text">
+                <string>veg</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QToolButton" name="m_uncertainEdgeTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Uncertain Edge</string>
+               </property>
+               <property name="text">
+                <string>ueg</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QToolButton" name="m_limitOfExcavationTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Limit of Excavation</string>
+               </property>
+               <property name="text">
+                <string>loe</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QToolButton" name="m_truncationTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Truncation</string>
+               </property>
+               <property name="text">
+                <string>trn</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QToolButton" name="m_verticalTruncationTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Vertical Truncation</string>
+               </property>
+               <property name="text">
+                <string>vtr</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QToolButton" name="m_breakOfSlopeTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Break of Slope</string>
+               </property>
+               <property name="text">
+                <string>bos</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QToolButton" name="m_verticalBreakOfSlopeTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Vertical Break of Slope</string>
+               </property>
+               <property name="text">
+                <string>vbs</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QToolButton" name="m_hachureTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Hachure</string>
+               </property>
+               <property name="text">
+                <string>hch</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QToolButton" name="m_undercutTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Undercut</string>
+               </property>
+               <property name="text">
+                <string>unc</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QToolButton" name="m_returnOfSlopeTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Return of Slope</string>
+               </property>
+               <property name="text">
+                <string>ros</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QToolButton" name="m_cbmTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>CBM</string>
+               </property>
+               <property name="text">
+                <string>cbm</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QToolButton" name="m_brickTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Brick</string>
+               </property>
+               <property name="text">
+                <string>brk</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QToolButton" name="m_tileTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Tile</string>
+               </property>
+               <property name="text">
+                <string>til</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QToolButton" name="m_mortarTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Mortar</string>
+               </property>
+               <property name="text">
+                <string>mtr</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QToolButton" name="m_charcoalTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Charcoal</string>
+               </property>
+               <property name="text">
+                <string>cha</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QToolButton" name="m_stoneTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Stone</string>
+               </property>
+               <property name="text">
+                <string>sto</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="2">
+              <widget class="QToolButton" name="m_potTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Pot</string>
+               </property>
+               <property name="text">
+                <string>pot</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="3">
+              <widget class="QToolButton" name="m_flintTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Flint</string>
+               </property>
+               <property name="text">
+                <string>fli</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QToolButton" name="m_levelTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Level</string>
+               </property>
+               <property name="text">
+                <string>lvl</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QToolButton" name="m_schematicTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Schematic</string>
+               </property>
+               <property name="text">
+                <string>sch</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="m_baseDataGroup">
+          <property name="title">
+           <string>Base Data</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="m_baseNumberSpin">
              <property name="toolTip">
-              <string>Level</string>
+              <string>Context Number</string>
              </property>
-             <property name="text">
-              <string>bln</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+             <property name="maximum">
+              <number>9999</number>
              </property>
             </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="m_baseNumberLabel">
+             <property name="text">
+              <string>Number:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_contextNumberSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="3">
+            <layout class="QGridLayout" name="m_baseToolsGrid">
+             <item row="0" column="0">
+              <widget class="QToolButton" name="m_sectionPinTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Level</string>
+               </property>
+               <property name="text">
+                <string>sec</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">m_toolButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QToolButton" name="m_sectionLineTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Level</string>
+               </property>
+               <property name="text">
+                <string>sln</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">m_toolButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QToolButton" name="m_basePointTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Level</string>
+               </property>
+               <property name="text">
+                <string>bpt</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">m_toolButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QToolButton" name="m_baseLineTool">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Level</string>
+               </property>
+               <property name="text">
+                <string>bln</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">m_toolButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -935,6 +896,11 @@
          </spacer>
         </item>
        </layout>
+       <zorder>m_contextDataGroup</zorder>
+       <zorder>groupBox</zorder>
+       <zorder>m_metadataGroup</zorder>
+       <zorder>m_mergeButton</zorder>
+       <zorder>m_baseDataGroup</zorder>
       </widget>
      </widget>
     </item>
@@ -964,38 +930,6 @@
   <tabstop>m_loadRawButton</tabstop>
   <tabstop>m_loadGeoButton</tabstop>
   <tabstop>m_loadContextButton</tabstop>
-  <tabstop>m_siteEdit</tabstop>
-  <tabstop>m_numberSpin</tabstop>
-  <tabstop>m_sourceEdit</tabstop>
-  <tabstop>m_sourceFileEdit</tabstop>
-  <tabstop>m_commentEdit</tabstop>
-  <tabstop>m_createdByEdit</tabstop>
-  <tabstop>m_extentTool</tabstop>
-  <tabstop>m_verticalEdgeTool</tabstop>
-  <tabstop>m_uncertainEdgeTool</tabstop>
-  <tabstop>m_limitOfExcavationTool</tabstop>
-  <tabstop>m_truncationTool</tabstop>
-  <tabstop>m_verticalTruncationTool</tabstop>
-  <tabstop>m_breakOfSlopeTool</tabstop>
-  <tabstop>m_verticalBreakOfSlopeTool</tabstop>
-  <tabstop>m_hachureTool</tabstop>
-  <tabstop>m_undercutTool</tabstop>
-  <tabstop>m_returnOfSlopeTool</tabstop>
-  <tabstop>m_cbmTool</tabstop>
-  <tabstop>m_brickTool</tabstop>
-  <tabstop>m_tileTool</tabstop>
-  <tabstop>m_mortarTool</tabstop>
-  <tabstop>m_charcoalTool</tabstop>
-  <tabstop>m_stoneTool</tabstop>
-  <tabstop>m_potTool</tabstop>
-  <tabstop>m_flintTool</tabstop>
-  <tabstop>m_levelTool</tabstop>
-  <tabstop>m_schematicTool</tabstop>
-  <tabstop>m_clearTool</tabstop>
-  <tabstop>m_sectionPinTool</tabstop>
-  <tabstop>m_sectionLineTool</tabstop>
-  <tabstop>m_basePointTool</tabstop>
-  <tabstop>m_baseLineTool</tabstop>
   <tabstop>m_snapLinesBufferTool</tabstop>
   <tabstop>m_snapPolygonsBufferTool</tabstop>
   <tabstop>m_snapSchematicsBufferTool</tabstop>

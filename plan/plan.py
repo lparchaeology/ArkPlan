@@ -43,7 +43,8 @@ class Plan(QObject):
     initialised = False
     module = ''
     siteCode = ''
-    number = 0
+    contextNumber = 0
+    baseNumber = 0
     category = ''
     source = '0'
     sourceFile = ''
@@ -72,8 +73,10 @@ class Plan(QObject):
         self.dock.loadContextSelected.connect(self.loadContextPlans)
         self.dock.siteChanged.connect(self.setSite)
         self.dock.siteChanged.connect(self.updateDefaultAttributes)
-        self.dock.numberChanged.connect(self.setNumber)
-        self.dock.numberChanged.connect(self.updateDefaultAttributes)
+        self.dock.contextNumberChanged.connect(self.setContextNumber)
+        self.dock.contextNumberChanged.connect(self.updateDefaultAttributes)
+        self.dock.baseNumberChanged.connect(self.setBaseNumber)
+        self.dock.baseNumberChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceChanged.connect(self.setSource)
         self.dock.sourceChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
@@ -135,7 +138,7 @@ class Plan(QObject):
 
     def setMetadata(self, siteCode, type, number, file, easting, northing, suffix):
         self.dock.setSite(siteCode)
-        self.dock.setNumber(number)
+        self.dock.setContextNumber(number)
         self.dock.setSource(str(number))
         self.dock.setSourceFile(file)
 
@@ -171,8 +174,11 @@ class Plan(QObject):
     def setSite(self, siteCode):
         self.siteCode = siteCode
 
-    def setNumber(self, number):
-        self.number = number
+    def setContextNumber(self, context):
+        self.contextNumber = context
+
+    def setBaseNumber(self, number):
+        self.baseNumber = number
 
     def setSource(self, source):
         self.source = source
@@ -200,13 +206,13 @@ class Plan(QObject):
 
     def mergeBuffers(self):
         if self.project.contexts.okToMergeBuffers():
-            self.project.contexts.mergeBuffers('Merge context data ' + str(self.number))
+            self.project.contexts.mergeBuffers('Merge context data ' + str(self.contextNumber))
         if self.project.base.okToMergeBuffers():
-            self.project.base.mergeBuffers('Merge base data ' + str(self.number))
+            self.project.base.mergeBuffers('Merge base data ' + str(self.baseNumber))
 
     def clearBuffers(self):
-        self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.number))
-        self.project.base.clearBuffers('Clear base buffer data ' + str(self.number))
+        self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.contextNumber))
+        self.project.base.clearBuffers('Clear base buffer data ' + str(self.baseNumber))
 
     def enableLevelsMode(self, module, category):
         mapTool = ArkMapToolAddFeature(self.project.iface.mapCanvas(), self.project.iface, self.project.collection(module).pointsBuffer, ArkMapToolAddFeature.Point, self.tr('Add level'))
@@ -258,7 +264,6 @@ class Plan(QObject):
 
     def mapToolChanged(self, newMapTool):
         if (newMapTool != self.currentMapTool):
-            self.dock.clearCheckedToolButton()
             self.deleteMapTool()
 
     def deleteMapTool(self):
@@ -276,7 +281,14 @@ class Plan(QObject):
             defaults = {}
             defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
             if self.module == 'contexts':
-                defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.number
+                defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.contextNumber
+            elif self.module == 'base':
+                bid = ''
+                if (self.category == 'sec' or self.category == 'sln'):
+                    bid = 'S' + str(self.baseNumber)
+                elif (self.category == 'bpt' or self.category == 'bln'):
+                    bid = 'B' + str(self.baseNumber)
+                defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = bid
             defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
             defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
             defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self.category

@@ -22,9 +22,85 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QFile
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import QDialog, QComboBox, QDialogButtonBox
 
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
+
+# Layer Widgets
+
+class ArkLayerComboBox(QComboBox):
+
+    layerChanged = pyqtSignal()
+
+    _layerType = None
+    _geometryType = None
+    _iface = None
+
+    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
+        super(ArkLayerComboBox, self).__init__(parent)
+        self._iface = iface
+        self._layerType = layerType
+        self._geometryType = geometryType
+        self._loadLayers()
+
+    def _addLayer(self, layer):
+        self.addItem(layer.name(), layer.id())
+
+    def _loadLayers(self):
+        self.clear()
+        for layer in self._iface.legendInterface().layers():
+            if self._layerType is None and self._geometryType is None:
+                self._addLayer(layer)
+            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
+                self._addLayer(layer)
+            elif layer.type() == QgsMapLayer.VectorLayer:
+                if (self._geometryType == None or layer.geometryType() == self._geometryType):
+                    self._addLayer(layer)
+
+
+class ArkSelectLayerDialog(QDialog):
+
+    def __init__(self, iface, text='', label='', layerType=None, geometryType=None, parent=None):
+
+        self.setWindowTitle(self.tr("Select Layer"))
+
+        self._dialogLayout = QtGui.QVBoxLayout(self)
+
+        if text:
+            self._textLabel = QtGui.QLabel(self)
+            self._textLabel.setText(text)
+            self._dialogLayout.addWidget(self._textLabel)
+
+        if (label or not text):
+            self._comboLabel = QtGui.QLabel(self)
+            if label:
+                self._comboLabel.setText(label)
+            elif not text:
+                self._comboLabel.setText(self.tr('Layer:'))
+            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
+            self._comboLayout = QtGui.QHBoxLayout()
+            self._comboLayout.addWidget(self._comboLabel)
+            self._comboLayout.addWidget(self._comboBox)
+            self._dialogLayout.addLayout(self._comboLayout)
+        else:
+            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
+            self._dialogLayout.addWidget(self._comboBox)
+
+        self._buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)
+        self._buttonBox.accepted.connect(self.accept)
+        self._buttonBox.rejected.connect(self.reject)
+        self._comboLayout.addWidget(self._buttonBox)
+
+    def layer(self):
+        return QgsMapLayerRegistry.instance().mapLayer(self.layerId())
+
+    def layerName(self):
+        return self.layerComboBox.currentText()
+
+    def layerId(self):
+        return self.layerComboBox.itemData(self.layerComboBox.currentIndex())
+
 
 # Layer management utilities
 
@@ -104,4 +180,3 @@ def wkbToMemoryType(wkbType):
     elif (wkbType == QGis.WKBMultiPolygon25D):
         return 'multipolygon'
     return 'unknown'
-

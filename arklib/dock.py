@@ -27,16 +27,16 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QAction, QIcon
 
-class QgsDockWidget(QDockWidget):
+class ArkDockWidget(QDockWidget):
 
     toggled = pyqtSignal(bool)
 
-    _iface = None  # QgisInterface()
-    _menuAction = None  # QAction()
+    _iface = None  # QgisInterface
+    _menuAction = None  # QAction
     _dockLocation = None  # Qt::DockWidgetArea
 
     def __init__(self, iface, parent=None):
-        super(QgsDockWidget, self).__init__(parent)
+        super(ArkDockWidget, self).__init__(parent)
 
     def load(self, iface, location, menuAction):
         self._iface = iface

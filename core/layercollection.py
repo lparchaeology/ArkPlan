@@ -26,7 +26,7 @@ from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
 
-import utils
+from ..arklib import utils, layers, digitizing
 
 class LayerCollectionSettings:
 
@@ -110,13 +110,13 @@ class LayerCollection:
             self._iface.legendInterface().removeGroup(self._buffersGroupIndex)
 
     def _removeOldBuffers(self):
-        layerId = utils.getLayerId(self._settings.pointsLayerName + self._settings.bufferSuffix)
+        layerId = layers.getLayerId(self._settings.pointsLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
-        layerId = utils.getLayerId(self._settings.linesLayerName + self._settings.bufferSuffix)
+        layerId = layers.getLayerId(self._settings.linesLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
-        layerId = utils.getLayerId(self._settings.polygonsLayerName + self._settings.bufferSuffix)
+        layerId = layers.getLayerId(self._settings.polygonsLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
-        layerId = utils.getLayerId(self._settings.schemaLayerName + self._settings.bufferSuffix)
+        layerId = layers.getLayerId(self._settings.schemaLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
 
     def _groupIndexChanged(self, oldIndex, newIndex):
@@ -155,14 +155,6 @@ class LayerCollection:
                 self.schemaBuffer = None
                 self.schemaBufferId = ''
 
-    def _addLayerToLegend(self, layer, group):
-        if (layer is not None and layer.isValid()):
-            ret = QgsMapLayerRegistry.instance().addMapLayer(layer)
-            self._iface.legendInterface().moveLayer(layer, group)
-            self._iface.legendInterface().refreshLayerSymbology(layer)
-            return ret
-        return layer
-
     def _loadLayer(self, layerName, layerPath, layerProvider, stylePath, groupIndex):
         if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
             return None, ''
@@ -177,7 +169,7 @@ class LayerCollection:
             self._setDefaultSnapping(layer)
             if (stylePath is not None and stylePath != ''):
                 layer.loadNamedStyle(stylePath)
-            layer = self._addLayerToLegend(layer, groupIndex)
+            layer = layers.addLayerToLegend(self._iface, layer, groupIndex)
             if (layer is not None and layer.isValid()):
                 return layer, layer.id()
         return None, ''
@@ -185,7 +177,7 @@ class LayerCollection:
     # Load the collection layers if not already loaded
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
-            self._collectionGroupIndex = utils.getGroupIndex(self._iface, self._settings.collectionGroupName)
+            self._collectionGroupIndex = layers.groupNameIndex(self._iface, self._settings.collectionGroupName)
         self.schemaLayer, self.schemaLayerId = self._loadLayer(self._settings.schemaLayerName, self._settings.schemaLayerPath, self._settings.schemaLayerProvider, self._settings.schemaStylePath, self._collectionGroupIndex)
         self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsLayerProvider, self._settings.polygonsStylePath, self._collectionGroupIndex)
         self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesLayerProvider, self._settings.linesStylePath, self._collectionGroupIndex)
@@ -195,7 +187,8 @@ class LayerCollection:
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
-        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, utils.defaultSnappingMode(), utils.defaultSnappingUnit(), utils.defaultSnappingTolerance(), False)
+        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, digitizing.defaultSnappingMode(),
+                                                      digitizing.defaultSnappingUnit(), digitizing.defaultSnappingTolerance(), False)
 
     # Setup the in-memory buffer layers
     def createBuffers(self):
@@ -203,7 +196,7 @@ class LayerCollection:
         self._removeOldBuffers()
 
         if (self._buffersGroupIndex < 0):
-            self._buffersGroupIndex = utils.getGroupIndex(self._iface, self._settings.buffersGroupName)
+            self._buffersGroupIndex = layers.groupNameIndex(self._iface, self._settings.buffersGroupName)
 
         if (self.schemaBuffer is None or not self.schemaBuffer.isValid()):
             self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer, self._settings.schemaStylePath)
@@ -219,9 +212,9 @@ class LayerCollection:
 
     def _createBufferLayer(self, layer, stylePath):
         if (layer is not None and layer.isValid()):
-            buffer = utils.cloneAsMemoryLayer(layer, layer.name() + self._settings.bufferSuffix, stylePath)
+            buffer = layers.cloneAsMemoryLayer(layer, layer.name() + self._settings.bufferSuffix, stylePath)
             if (buffer is not None and buffer.isValid()):
-                buffer = self._addLayerToLegend(buffer, self._buffersGroupIndex)
+                buffer = layers.addLayerToLegend(self._iface, buffer, self._buffersGroupIndex)
                 buffer.startEditing()
                 return buffer, buffer.id()
         return None, ''

@@ -22,49 +22,21 @@
  ***************************************************************************/
 """
 
-import math
-
 from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
 from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
 
 from qgis.core import *
 from qgis.gui import QgsVertexMarker
 
-from ..core.utils import *
-from ..core.map_tools import ArkMapToolEmitPoint
+from ..arklib.maths import LinearTransformer
+from ..arklib import utils
+from ..arklib.map_tools import ArkMapToolEmitPoint
+
 from ..core.project import Project
 
 from update_layer_dialog import UpdateLayerDialog
 from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
-
-# Based on LinearTransformer code from VectorBender plugin
-# (C) 2014 by Olivier Dalang
-class LinearTransformer():
-
-    def __init__(self, a1, b1, a2, b2):
-        #scale
-        self.ds = math.sqrt((b2.x() - b1.x()) ** 2.0 + (b2.y() - b1.y()) ** 2.0) / math.sqrt((a2.x() - a1.x()) ** 2.0 + (a2.y() - a1.y()) ** 2.0)
-        #rotation
-        self.da =  math.atan2(b2.y() - b1.y(), b2.x() - b1.x()) - math.atan2(a2.y() - a1.y(), a2.x() - a1.x() )
-        #translation
-        self.dx1 = a1.x()
-        self.dy1 = a1.y()
-        self.dx2 = b1.x()
-        self.dy2 = b1.y()
-
-    def map(self, p):
-        #move to origin (translation part 1)
-        p = QgsPoint( p.x()-self.dx1, p.y()-self.dy1 )
-        #scale
-        p = QgsPoint( self.ds*p.x(), self.ds*p.y() )
-        #rotation
-        p = QgsPoint(math.cos(self.da) * p.x() - math.sin(self.da) * p.y(), math.sin(self.da) * p.x() + math.cos(self.da) * p.y())
-        #remove to right spot (translation part 2)
-        p = QgsPoint(p.x() + self.dx2, p.y() + self.dy2)
-
-        return p
-
 
 class GridModule(QObject):
 
@@ -224,7 +196,7 @@ class GridModule(QObject):
         attributes[layer.fieldNameIndex(self.project.fieldName('site'))] = self.project.siteCode()
         attributes[layer.fieldNameIndex(self.project.fieldName('category'))] = category
         attributes[layer.fieldNameIndex(self.project.fieldName('source'))] = 'ARK'
-        attributes[layer.fieldNameIndex(self.project.fieldName('created_on'))] = self.project.timestamp()
+        attributes[layer.fieldNameIndex(self.project.fieldName('created_on'))] = utils.timestamp()
         attributes[layer.fieldNameIndex(self.project.fieldName('created_by'))] = 'Grid Tool'
         return attributes
 

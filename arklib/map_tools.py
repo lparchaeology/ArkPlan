@@ -820,7 +820,7 @@ class ArkMapToolAddFeature(ArkMapToolCapture):
             return QInputDialog.getText(None, title, label, text=defaultValue)
 
     def _addFeatureAction(self, feature, attributes, layer, showModal=True):
-        action = QgsFeatureAction(self.tr('add feature'), feature, layer, -1, -1, self._iface, self)
+        action = ArkFeatureAction(self.tr('add feature'), feature, layer, -1, -1, self._iface, self)
         res = action.addFeature(attributes, showModal)
         if (showModal):
             action = None
@@ -908,7 +908,7 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
 
 
 # TODO Clean up this and fix dialog problems
-class QgsFeatureAction(QAction):
+class ArkFeatureAction(QAction):
 
     _layer = QgsVectorLayer()
     _feature = QgsFeature()
@@ -919,7 +919,7 @@ class QgsFeatureAction(QAction):
     _iface = None
 
     def __init__(self, name, feature, layer, action=-1, defaultAttr=-1, iface=None, parent=None):
-        super(QgsFeatureAction, self).__init__(name, parent)
+        super(ArkFeatureAction, self).__init__(name, parent)
         self._layer = layer
         self._feature = feature
         self._action = action
@@ -959,7 +959,7 @@ class QgsFeatureAction(QAction):
             i = 0
             for action in self._layer.actions():
                 if (action.runable()):
-                    a = QgsFeatureAction(action.name(), feature, self._layer, i, -1, self._iface, dialog)
+                    a = ArkFeatureAction(action.name(), feature, self._layer, i, -1, self._iface, dialog)
                     dialog.addAction(a)
                     a.triggered.connect(a.execute)
                     pb = dialog.findChild(action.name())

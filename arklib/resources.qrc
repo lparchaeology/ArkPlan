@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/plugins/Ark" >
+        <file>iconSnapVertex.png</file>
+    </qresource>
+    <qresource prefix="/plugins/Ark" >
+        <file>iconSnapSegment.png</file>
+    </qresource>
+    <qresource prefix="/plugins/Ark" >
+        <file>iconSnapVertexSegment.png</file>
+    </qresource>
+</RCC>

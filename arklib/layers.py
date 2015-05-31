@@ -22,68 +22,17 @@
  ***************************************************************************/
 """
 
-import os.path
+from PyQt4.QtCore import QFile
 
-from PyQt4.QtCore import QSettings, QFile
-from PyQt4.QtGui import QIcon, QAction
-
-from qgis.core import QGis, QgsProject, QgsSnapper, QgsMessageLog, QgsMapLayer, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
-from qgis.gui import QgsMessageBar
-
-# Message utilities
-
-def showMessage(iface, text, level=QgsMessageBar.INFO, duration=0):
-    iface.messageBar().pushMessage(text, level, duration)
-
-def showCriticalMessage(iface, text, duration=0):
-    iface.messageBar().pushMessage(text, QgsMessageBar.CRITICAL, duration)
-
-def showStatusMessage(iface, text):
-    iface.mainWindow().statusBar().showMessage(text)
-
-# Project setting utilities
-
-def defaultSnappingMode():
-    defaultSnappingModeString = QSettings().value('/qgis/digitizing/default_snap_mode', 'to vertex')
-    defaultSnappingMode = QgsSnapper.SnapToVertex
-    if (defaultSnappingModeString == "to vertex and segment" ):
-        return QgsSnapper.SnapToVertexAndSegment
-    elif (defaultSnappingModeString == 'to segment'):
-        return QgsSnapper.SnapToSegment
-    return QgsSnapper.SnapToVertex
-
-def defaultSnappingUnit():
-    unit = QSettings().value('/qgis/digitizing/default_snapping_tolerance_unit', 0, int)
-    # Huh???
-    if unit is None:
-        return 0
-    return unit
-
-def defaultSnappingTolerance():
-    tolerance = QSettings().value('/qgis/digitizing/default_snapping_tolerance', 10.0, float)
-    # Huh???
-    if tolerance is None:
-        return 10.0
-    return tolerance
+from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter
 
 # Layer management utilities
 
-def createShapefile(filePath, fields, wkbType, crs):
-    ok = False
-    if (filePath is None or filePath == '' or QFile.exists(filePath)):
-        return ok
-    layer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs, 'ESRI Shapefile')
-    if layer.hasError() == QgsVectorFileWriter.NoError:
-        ok = True
+def createShapefile(filePath, wkbType, crs, fields):
+    layer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
+    error = layer.hasError()
     del layer
-    return ok
-
-def cloneAsMemoryLayer(layer, name, styleURI=None):
-    if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
-        if not styleURI:
-            styleURI = layer.styleURI()
-        return createMemoryLayer(name, layer.wkbType(), layer.crs().authid(), layer.dataProvider().fields(), styleURI)
-    return None
+    return error
 
 def createMemoryLayer(name, wkbType, crsId, fields=None, styleURI=None):
     uri = wkbToMemoryType(wkbType) + "?crs=" + crsId + "&index=yes"
@@ -97,7 +46,14 @@ def createMemoryLayer(name, wkbType, crsId, fields=None, styleURI=None):
             mem.loadNamedStyle(styleURI)
     return mem
 
-def getGroupIndex(iface, groupName):
+def cloneAsMemoryLayer(layer, name, styleURI=None):
+    if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
+        if not styleURI:
+            styleURI = layer.styleURI()
+        return createMemoryLayer(name, layer.wkbType(), layer.crs().authid(), layer.dataProvider().fields(), styleURI)
+    return None
+
+def groupNameIndex(iface, groupName):
     groupIndex = -1
     i = 0
     for name in iface.legendInterface().groups():
@@ -113,6 +69,14 @@ def getLayerId(layerName):
     if (len(layerList) > 0):
         return layerList[0].id()
     return None
+
+def addLayerToLegend(iface, layer, group):
+    if (layer is not None and layer.isValid()):
+        ret = QgsMapLayerRegistry.instance().addMapLayer(layer)
+        iface.legendInterface().moveLayer(layer, group)
+        iface.legendInterface().refreshLayerSymbology(layer)
+        return ret
+    return layer
 
 def wkbToMemoryType(wkbType):
     if (wkbType == QGis.WKBPoint):

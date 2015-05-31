@@ -31,10 +31,45 @@ SnappingToolButton: A button to configure snapping options for a given layer.
 TopoEditToolButton: A button to configure topological editing for a project.
 """
 
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings
 from PyQt4.QtGui import QToolButton, QMenu, QIcon, QAction, QActionGroup, QWidgetAction, QDoubleSpinBox
 
 from qgis.core import QGis, QgsTolerance, QgsProject, QgsSnapper, QgsMapLayer
+
+import resources_rc
+
+# Project setting utilities
+
+def defaultSnappingMode():
+    defaultSnappingModeString = QSettings().value('/qgis/digitizing/default_snap_mode', 'to vertex')
+    defaultSnappingMode = QgsSnapper.SnapToVertex
+    if (defaultSnappingModeString == "to vertex and segment" ):
+        return QgsSnapper.SnapToVertexAndSegment
+    elif (defaultSnappingModeString == 'to segment'):
+        return QgsSnapper.SnapToSegment
+    return QgsSnapper.SnapToVertex
+
+def defaultSnappingUnit():
+    unit = QSettings().value('/qgis/digitizing/default_snapping_tolerance_unit', 0, int)
+    # Huh???
+    if unit is None:
+        return 0
+    return unit
+
+def defaultSnappingTolerance():
+    tolerance = QSettings().value('/qgis/digitizing/default_snapping_tolerance', 10.0, float)
+    # Huh???
+    if tolerance is None:
+        return 10.0
+    return tolerance
+
+def topologicalEditing():
+    return QgsProject.instance().readNumEntry('Digitizing', '/TopologicalEditing', 0)
+
+def intersectionLayers():
+    return QgsProject.instance().readListEntry('Digitizing', '/AvoidIntersectionsList')
+
+# Snapping Widgets
 
 class SnappingToolButton(QToolButton):
 
@@ -69,17 +104,17 @@ class SnappingToolButton(QToolButton):
         #Disable until we have a _layerId
         self.setEnabled(False)
 
-        self._vertexIcon = QIcon(':/plugins/Ark/core/iconSnapVertex.png')
+        self._vertexIcon = QIcon(':/plugins/Ark/iconSnapVertex.png')
         self._vertexAction = QAction(self._vertexIcon, 'Vertex', self)
         self._vertexAction.setStatusTip('Snap to vertex')
         self._vertexAction.setCheckable(True)
 
-        self._segmentIcon = QIcon(':/plugins/Ark/core/iconSnapSegment.png')
+        self._segmentIcon = QIcon(':/plugins/Ark/iconSnapSegment.png')
         self._segmentAction = QAction(self._segmentIcon, 'Segment', self)
         self._segmentAction.setStatusTip('Snap to segment')
         self._segmentAction.setCheckable(True)
 
-        self._vertexSegmentIcon = QIcon(':/plugins/Ark/core/iconSnapVertexSegment.png')
+        self._vertexSegmentIcon = QIcon(':/plugins/Ark/iconSnapVertexSegment.png')
         self._vertexSegmentAction = QAction(self._vertexSegmentIcon, 'Vertex and Segment', self)
         self._vertexSegmentAction.setStatusTip('Snap to vertex and segment')
         self._vertexSegmentAction.setCheckable(True)

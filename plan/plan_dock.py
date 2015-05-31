@@ -28,12 +28,12 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
 
-from ..core.dock import *
-from ..core.snap_widgets import *
+from ..arklib.dock import ArkDockWidget
+from ..arklib.digitizing import *
 
 import plan_dock_base
 
-class PlanDock(QgsDockWidget, plan_dock_base.Ui_PlanDockWidget):
+class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FilterDock</class>
- <widget class="QgsDockWidget" name="FilterDock">
+ <widget class="ArkDockWidget" name="FilterDock">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -273,9 +273,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QgsDockWidget</class>
+   <class>ArkDockWidget</class>
    <extends>QDockWidget</extends>
-   <header>..core.dock.h</header>
+   <header>..arklib.dock.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

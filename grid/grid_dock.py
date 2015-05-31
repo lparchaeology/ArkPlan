@@ -24,15 +24,16 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtGui import QIcon
 
-from qgis.core import *
+from qgis.core import QgsPoint
 
-from ..core.dock import *
+from ..arklib.dock import ArkDockWidget
 
 import grid_dock_base
 
 
-class GridDock(QgsDockWidget, grid_dock_base.Ui_GridDock):
+class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
 
     createGridSelected = pyqtSignal()
     identifyGridSelected = pyqtSignal(bool)

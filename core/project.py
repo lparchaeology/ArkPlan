@@ -29,6 +29,8 @@ from PyQt4.QtGui import  QIcon, QAction
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
 from qgis.gui import QgsMessageBar
 
+from ..arklib import layers
+
 from layercollection import *
 from settings_dialog import SettingsDialog
 
@@ -227,31 +229,24 @@ class Project(QObject):
         if (oldIndex == self.projectGroupIndex):
             self.projectGroupIndex = newIndex
 
-    def timestamp(self):
-        return QDateTime.currentDateTimeUtc().toString(Qt.ISODate)
-
     # Convenience logging functions
 
     def logMessage(self, text, level=QgsMessageLog.INFO):
         QgsMessageLog.logMessage(text, self.pluginName, level)
 
     def showCriticalMessage(self, text, duration=0):
-        self.iface.messageBar().pushMessage(text, QgsMessageBar.CRITICAL, duration)
+        utils.showCriticalMessage(self.iface, text, duration)
 
     def showMessage(self, text, level=QgsMessageBar.INFO, duration=0):
-        self.iface.messageBar().pushMessage(text, level, duration)
+        utils.showMessage(self.iface, text, duration)
 
     def showStatusMessage(self, text):
-        self.iface.mainWindow().statusBar().showMessage(text)
-
+        utils.showStatusMessage(self.iface, text)
 
     # Settings utilities
 
     def _setProjectEntry(self, key, value, default):
-        if (value == None or value == '' or value == default):
-            QgsProject.instance().removeEntry(self.pluginName, key)
-        else:
-            QgsProject.instance().writeEntry(self.pluginName, key, value)
+        utils.setEntry(self.pluginName, key, value, default)
 
     def _layerName(self, baseName):
         if (baseName and self.prependSiteCode() and self.siteCode()):
@@ -264,7 +259,7 @@ class Project(QObject):
         self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = utils.getGroupIndex(self.iface, self.planGroupName)
+            self.planGroupIndex = layers.groupNameIndex(self.iface, self.planGroupName)
         self.iface.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         self.iface.mapCanvas().setExtent(self.geoLayer.extent())
 
@@ -324,10 +319,10 @@ class Project(QObject):
         return LayerCollection(self.iface, lcs)
 
     def _createCollectionLayers(self, module, settings):
-        utils.createShapefile(settings.pointsLayerPath, self._layerFields(module, 'pointsFields'), QGis.WKBPoint, self.projectCrs())
-        utils.createShapefile(settings.linesLayerPath, self._layerFields(module, 'linesFields'), QGis.WKBLineString, self.projectCrs())
-        utils.createShapefile(settings.polygonsLayerPath, self._layerFields(module, 'polygonsFields'), QGis.WKBPolygon, self.projectCrs())
-        utils.createShapefile(settings.schemaLayerPath, self._layerFields(module, 'schemaFields'), QGis.WKBMultiPolygon, self.projectCrs())
+        layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+        layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+        layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+        layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)
@@ -534,34 +529,8 @@ class Project(QObject):
 
 
     def projectCrs(self):
-        if QGis.QGIS_VERSION_INT >= 20400:
-            return self.iface.mapCanvas().mapSettings().destinationCrs()
-        else:
-            return self.iface.mapCanvas().mapRenderer().destinationCrs()
+        return utils.projectCrs(self.iface)
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())
         return settingsDialog.exec_()
-
-    def defaultSnappingMode(self):
-        defaultSnappingModeString = QSettings().value('/qgis/digitizing/default_snap_mode', 'to vertex')
-        defaultSnappingMode = QgsSnapper.SnapToVertex
-        if (defaultSnappingModeString == "to vertex and segment" ):
-            return QgsSnapper.SnapToVertexAndSegment
-        elif (defaultSnappingModeString == 'to segment'):
-            return QgsSnapper.SnapToSegment
-        return QgsSnapper.SnapToVertex
-
-    def defaultSnappingUnit(self):
-        unit = QSettings().value('/qgis/digitizing/default_snapping_tolerance_unit', 0, int)
-        # Huh???
-        if unit is None:
-            return 0
-        return unit
-
-    def defaultSnappingTolerance(self):
-        tolerance = QSettings().value('/qgis/digitizing/default_snapping_tolerance', 10.0, float)
-        # Huh???
-        if tolerance is None:
-            return 0.0
-        return tolerance

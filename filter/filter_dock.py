@@ -25,11 +25,11 @@
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 
-from ..core.dock import *
+from ..arklib.dock import ArkDockWidget
 
 import filter_dock_base
 
-class FilterDock(QgsDockWidget, filter_dock_base.Ui_FilterDock):
+class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
     contextFilterChanged = pyqtSignal(str)
     subGroupFilterChanged = pyqtSignal(str)

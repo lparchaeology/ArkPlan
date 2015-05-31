@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plan/plan_dock_base.ui'
 #
-# Created: Fri May 29 12:11:11 2015
+# Created: Sun May 31 20:23:24 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -446,5 +446,5 @@ class Ui_PlanDockWidget(object):
         self.m_mergeButton.setToolTip(_translate("PlanDockWidget", "Move new context to main layers", None))
         self.m_mergeButton.setText(_translate("PlanDockWidget", "Merge", None))
 
-from ..core.dock import QgsDockWidget
-from ..core.snap_widgets import SnappingToolButton, TopoEditToolButton
+from ..arklib.digitizing import SnappingToolButton, TopoEditToolButton
+from ..arklib.dock import ArkDockWidget

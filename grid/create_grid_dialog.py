@@ -30,7 +30,7 @@ from PyQt4.QtGui import QDialog
 
 from qgis.core import QgsPoint
 
-from ..core.map_tools import ArkMapToolEmitPoint
+from ..arklib.map_tools import ArkMapToolEmitPoint
 
 from create_grid_dialog_base import *
 

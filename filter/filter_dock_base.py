@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'filter/filter_dock_base.ui'
 #
-# Created: Thu Apr 30 12:40:23 2015
+# Created: Wed May 27 18:12:15 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -174,4 +174,4 @@ class Ui_FilterDock(object):
         self.showPointsCheck.setToolTip(_translate("FilterDock", "Show existing levels", None))
         self.showPolygonsCheck.setToolTip(_translate("FilterDock", "Show existing polygons", None))
 
-from ..core.dock import QgsDockWidget
+from ..arklib.dock import ArkDockWidget

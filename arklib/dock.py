@@ -23,9 +23,8 @@
 
 import os
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QAction, QIcon
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import QDockWidget
 
 class ArkDockWidget(QDockWidget):
 
@@ -33,7 +32,7 @@ class ArkDockWidget(QDockWidget):
 
     _iface = None  # QgisInterface
     _menuAction = None  # QAction
-    _dockLocation = None  # Qt::DockWidgetArea
+    _dockLocation = None  # Qt.DockWidgetArea
 
     def __init__(self, iface, parent=None):
         super(ArkDockWidget, self).__init__(parent)

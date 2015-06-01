@@ -86,6 +86,12 @@ class Plan(QObject):
         self.dock.createdByChanged.connect(self.setCreatedBy)
         self.dock.createdByChanged.connect(self.updateDefaultAttributes)
 
+        self.addContextTool('ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addContextTool('hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.addContextTool('cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addLevelTool('lvl', self.tr('Level'), QIcon())
+        self.addSchemaTool('sch', self.tr('Schema'), QIcon())
+
         self.dock.selectedLevelsMode.connect(self.enableLevelsMode)
         self.dock.selectedLineMode.connect(self.enableLineMode)
         self.dock.selectedLineSegmentMode.connect(self.enableLineSegmentMode)
@@ -213,6 +219,42 @@ class Plan(QObject):
     def clearBuffers(self):
         self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.contextNumber))
         self.project.base.clearBuffers('Clear base buffer data ' + str(self.baseNumber))
+
+    # Drawing tools
+
+    def addContextTool(self, category, name, icon, featureType):
+        action = QAction(icon, category, self.dock)
+        action.setToolTip(name)
+        buffer = None
+        if (featureType == ArkMapToolAddFeature.Line or featureType == ArkMapToolAddFeature.Segment):
+            buffer = self.project.collection('contexts').linesBuffer
+        elif featureType == ArkMapToolAddFeature.Polygon:
+            buffer = self.project.collection('contexts').polygonsBuffer
+        else:
+            buffer = self.project.collection('contexts').pointsBuffer
+        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, name)
+        mapTool.setAction(action)
+        self.dock.addContextTool(action)
+        self.actions[category] = action
+        self.mapTools[category] = mapTool
+
+    def addLevelTool(self, category, name, icon):
+        action = QAction(icon, category, self.dock)
+        action.setToolTip(name)
+        mapTool = ArkMapToolAddFeature(self.project.iface, self.project.collection('contexts').pointsBuffer, ArkMapToolAddFeature.Point, name)
+        mapTool.setAction(action)
+        self.dock.addContextTool(action)
+        self.actions[category] = action
+        self.mapTools[category] = mapTool
+
+    def addSchemaTool(self, category, name, icon):
+        action = QAction(icon, category, self.dock)
+        action.setToolTip(name)
+        mapTool = ArkMapToolAddFeature(self.project.iface, self.project.collection('contexts').schemaBuffer, ArkMapToolAddFeature.Polygon, name)
+        mapTool.setAction(action)
+        self.dock.addContextTool(action)
+        self.actions[category] = action
+        self.mapTools[category] = mapTool
 
     def enableLevelsMode(self, module, category):
         mapTool = ArkMapToolAddFeature(self.project.iface, self.project.collection(module).pointsBuffer, ArkMapToolAddFeature.Point, self.tr('Add level'))

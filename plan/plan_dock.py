@@ -116,6 +116,11 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     # Plan Tools
 
+    def addContextTool(self, action):
+        toolButton = QToolButton(self)
+        toolButton.setDefaultAction(action)
+        self.m_contextToolsLayout.addWidget(toolButton)
+
     def setSite(self, name):
         self.m_siteEdit.setText(name)
 

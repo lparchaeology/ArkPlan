@@ -319,10 +319,14 @@ class Project(QObject):
         return LayerCollection(self.iface, lcs)
 
     def _createCollectionLayers(self, module, settings):
-        layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
-        layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
-        layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
-        layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
+        if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+        if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+        if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+        if (settings.schemaLayerPath and not QFile.exists(settings.schemaLayerPath)):
+            layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)

@@ -105,6 +105,7 @@ class ArkSelectLayerDialog(QDialog):
 # Layer management utilities
 
 def createShapefile(filePath, wkbType, crs, fields):
+    # WARNING This will overwrite existing files
     layer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
     error = layer.hasError()
     del layer

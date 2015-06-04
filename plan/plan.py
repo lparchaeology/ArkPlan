@@ -44,7 +44,7 @@ class Plan(QObject):
     module = ''
     siteCode = ''
     contextNumber = 0
-    baseNumber = 0
+    baseId = ''
     category = ''
     source = '0'
     sourceFile = ''
@@ -74,8 +74,8 @@ class Plan(QObject):
         self.dock.siteChanged.connect(self.updateDefaultAttributes)
         self.dock.contextNumberChanged.connect(self.setContextNumber)
         self.dock.contextNumberChanged.connect(self.updateDefaultAttributes)
-        self.dock.baseNumberChanged.connect(self.setBaseNumber)
-        self.dock.baseNumberChanged.connect(self.updateDefaultAttributes)
+        self.dock.baseIdChanged.connect(self.setBaseId)
+        self.dock.baseIdChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceChanged.connect(self.setSource)
         self.dock.sourceChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
@@ -201,8 +201,8 @@ class Plan(QObject):
     def setContextNumber(self, context):
         self.contextNumber = context
 
-    def setBaseNumber(self, number):
-        self.baseNumber = number
+    def setBaseId(self, baseId):
+        self.baseId = baseId
 
     def setSource(self, source):
         self.source = source
@@ -232,11 +232,11 @@ class Plan(QObject):
         if self.project.contexts.okToMergeBuffers():
             self.project.contexts.mergeBuffers('Merge context data ' + str(self.contextNumber))
         if self.project.base.okToMergeBuffers():
-            self.project.base.mergeBuffers('Merge base data ' + str(self.baseNumber))
+            self.project.base.mergeBuffers('Merge base data ' + str(self.baseId))
 
     def clearBuffers(self):
         self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.contextNumber))
-        self.project.base.clearBuffers('Clear base buffer data ' + str(self.baseNumber))
+        self.project.base.clearBuffers('Clear base buffer data ' + str(self.baseId))
 
     # Drawing tools
 
@@ -308,12 +308,7 @@ class Plan(QObject):
         if module == 'contexts':
             defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.contextNumber
         elif module == 'base':
-            bid = ''
-            if (self.category == 'sec' or self.category == 'sln'):
-                bid = 'S' + str(self.baseNumber)
-            elif (self.category == 'bpt' or self.category == 'bln'):
-                bid = 'B' + str(self.baseNumber)
-            defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = bid
+            defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = self.baseId
         defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = category

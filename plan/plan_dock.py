@@ -41,7 +41,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     siteChanged = pyqtSignal(str)
     contextNumberChanged = pyqtSignal(int)
-    baseNumberChanged = pyqtSignal(int)
+    baseIdChanged = pyqtSignal(str)
     sourceChanged = pyqtSignal(str)
     sourceFileChanged = pyqtSignal(str)
     commentChanged = pyqtSignal(str)
@@ -67,7 +67,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_siteEdit.textChanged.connect(self.siteChanged)
         self.m_contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
-        self.m_baseNumberSpin.valueChanged.connect(self.baseNumberChanged)
+        self.m_baseIdEdit.textChanged.connect(self.baseIdChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
@@ -84,8 +84,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setContextNumber(self, context):
         self.m_contextNumberSpin.setValue(context)
 
-    def setBaseNumber(self, number):
-        self.m_baseNumberSpin.setValue(number)
+    def setBaseId(self, baseId):
+        self.m_baseIdEdit.setValue(baseId)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)

@@ -47,18 +47,15 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     commentChanged = pyqtSignal(str)
     createdByChanged = pyqtSignal(str)
 
-    selectedLineMode = pyqtSignal(str, str)
-    selectedPolygonMode = pyqtSignal(str, str)
-    selectedLineSegmentMode = pyqtSignal(str, str)
-    selectedSchematicMode = pyqtSignal(str, str)
-    selectedLevelsMode = pyqtSignal(str, str)
-
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
-    linesSnappingToggled = pyqtSignal(bool)
-    polygonsSnappingToggled = pyqtSignal(bool)
-    schematicSnappingToggled = pyqtSignal(bool)
+    _cgColMax = 3
+    _cgCol = 0
+    _cgRow = 0
+    _bgColMax = 3
+    _bgCol = 0
+    _bgRow = 0
 
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(parent)
@@ -76,50 +73,10 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_commentEdit.textChanged.connect(self.commentChanged)
         self.m_createdByEdit.textChanged.connect(self.createdByChanged)
 
-        self.m_extentTool.clicked.connect(self.extentSelected)
-        self.m_breakOfSlopeTool.clicked.connect(self.breakOfSlopeSelected)
-        self.m_limitOfExcavationTool.clicked.connect(self.limitOfExcavationSelected)
-        self.m_truncationTool.clicked.connect(self.truncationSelected)
-        self.m_uncertainEdgeTool.clicked.connect(self.uncertainEdgeSelected)
-        self.m_verticalBreakOfSlopeTool.clicked.connect(self.verticalBreakOfSlopeSelected)
-        self.m_verticalEdgeTool.clicked.connect(self.verticalEdgeSelected)
-        self.m_verticalTruncationTool.clicked.connect(self.verticalTruncationSelected)
-
-        self.m_brickTool.clicked.connect(self.brickSelected)
-        self.m_cbmTool.clicked.connect(self.cbmSelected)
-        self.m_charcoalTool.clicked.connect(self.charcoalSelected)
-        self.m_flintTool.clicked.connect(self.flintSelected)
-        self.m_mortarTool.clicked.connect(self.mortarSelected)
-        self.m_potTool.clicked.connect(self.potSelected)
-        self.m_tileTool.clicked.connect(self.tileSelected)
-        self.m_stoneTool.clicked.connect(self.stoneSelected)
-
-        self.m_hachureTool.clicked.connect(self.hachureSelected)
-        self.m_undercutTool.clicked.connect(self.undercutSelected)
-        self.m_returnOfSlopeTool.clicked.connect(self.returnOfSlopeSelected)
-
-        self.m_levelTool.clicked.connect(self.levelsSelected)
-
-        self.m_schematicTool.clicked.connect(self.schematicSelected)
-
-        self.m_sectionPinTool.clicked.connect(self.sectionPinSelected)
-        self.m_sectionLineTool.clicked.connect(self.sectionLineSelected)
-        self.m_basePointTool.clicked.connect(self.basePointSelected)
-        self.m_baseLineTool.clicked.connect(self.baseLineSelected)
-
         self.m_clearButton.clicked.connect(self.clearSelected)
         self.m_mergeButton.clicked.connect(self.mergeSelected)
 
-        self.m_snapLinesLayerTool.snapSettingsChanged.connect(self.linesLayerSnapSettingsChanged)
-        self.m_snapPolygonsLayerTool.snapSettingsChanged.connect(self.polygonsLayerSnapSettingsChanged)
-        self.m_snapSchematicsLayerTool.snapSettingsChanged.connect(self.schematicLayerSnapSettingsChanged)
-
-    # Plan Tools
-
-    def addContextTool(self, action):
-        toolButton = QToolButton(self)
-        toolButton.setDefaultAction(action)
-        self.m_contextToolsLayout.addWidget(toolButton)
+    # Metadata Tools
 
     def setSite(self, name):
         self.m_siteEdit.setText(name)
@@ -144,80 +101,30 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     # Drawing Tools
 
-    def extentSelected(self):
-        self.selectedLineMode.emit('contexts', 'ext')
+    def addDrawingTool(self, module, action):
+        toolButton = QToolButton(self)
+        toolButton.setFixedWidth(40)
+        toolButton.setDefaultAction(action)
+        if module == 'contexts':
+            self.m_contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
+            if self._cgCol == self._cgColMax:
+                self.newDrawingToolRow(module)
+            else:
+                self._cgCol += 1
+        elif module == 'base':
+            self.m_baseToolsLayout.addWidget(toolButton, self._bgRow, self._bgCol, Qt.AlignCenter)
+            if self._bgCol == self._bgColMax:
+                self.newDrawingToolRow(module)
+            else:
+                self._bgCol += 1
 
-    def breakOfSlopeSelected(self):
-        self.selectedLineMode.emit('contexts', 'bos')
-
-    def limitOfExcavationSelected(self):
-        self.selectedLineMode.emit('contexts', 'loe')
-
-    def truncationSelected(self):
-        self.selectedLineMode.emit('contexts', 'trn')
-
-    def uncertainEdgeSelected(self):
-        self.selectedLineMode.emit('contexts', 'ueg')
-
-    def verticalBreakOfSlopeSelected(self):
-        self.selectedLineMode.emit('contexts', 'vbs')
-
-    def verticalEdgeSelected(self):
-        self.selectedLineMode.emit('contexts', 'veg')
-
-    def verticalTruncationSelected(self):
-        self.selectedLineMode.emit('contexts', 'vtr')
-
-    def brickSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'brk')
-
-    def cbmSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'cbm')
-
-    def charcoalSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'cha')
-
-    def flintSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'fli')
-
-    def mortarSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'mtr')
-
-    def potSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'pot')
-
-    def stoneSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'sto')
-
-    def tileSelected(self):
-        self.selectedPolygonMode.emit('contexts', 'til')
-
-    def hachureSelected(self):
-        self.selectedLineSegmentMode.emit('contexts', 'hch')
-
-    def undercutSelected(self):
-        self.selectedLineSegmentMode.emit('contexts', 'unc')
-
-    def returnOfSlopeSelected(self):
-        self.selectedLineSegmentMode.emit('contexts', 'ros')
-
-    def levelsSelected(self):
-        self.selectedLevelsMode.emit('contexts', 'lvl')
-
-    def schematicSelected(self):
-        self.selectedSchematicMode.emit('contexts', 'sch')
-
-    def sectionPinSelected(self):
-        self.selectedLevelsMode.emit('base', 'sec')
-
-    def sectionLineSelected(self):
-        self.selectedLineMode.emit('base', 'sln')
-
-    def basePointSelected(self):
-        self.selectedLevelsMode.emit('base', 'bpt')
-
-    def baseLineSelected(self):
-        self.selectedLineMode.emit('base', 'bln')
+    def newDrawingToolRow(self, module):
+        if module == 'contexts':
+            self._cgRow += 1
+            self._cgCol = 0
+        elif module == 'base':
+            self._bgRow += 1
+            self._bgCol = 0
 
     # Snapping Tools
 
@@ -238,12 +145,3 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def setSchematicsLayer(self, layer):
         self.m_snapSchematicsLayerTool.setLayer(layer)
-
-    def linesLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
-        self.linesSnappingToggled.emit(enabled)
-
-    def polygonsLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
-        self.polygonsSnappingToggled.emit(enabled)
-
-    def schematicLayerSnapSettingsChanged(self, layerId, enabled, snappingType, unitType, tolerance, avoidIntersections):
-        self.schematicSnappingToggled.emit(enabled)

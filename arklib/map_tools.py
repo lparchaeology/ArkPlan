@@ -126,6 +126,13 @@ class ArkMapToolInteractive(QgsMapTool):
             self._zoomRubberBand = None
         super(ArkMapToolInteractive, self).deactivate()
 
+    def setAction(self, action):
+        super(ArkMapToolInteractive, self).setAction(action)
+        self.action().triggered.connect(self._activate)
+
+    def _activate(self):
+        self.canvas().setMapTool(self)
+
     def panningEnabled(self):
         return self._panningEnabled
 
@@ -679,8 +686,11 @@ class ArkMapToolAddFeature(ArkMapToolCapture):
 
     def activate(self):
         super(ArkMapToolAddFeature, self).activate()
-        if (self._layer is not None and self._layer.geometryType() == QGis.NoGeometry):
-            self._addFeatureAction(QgsFeature(), False)
+        if self._layer is not None:
+            self.canvas().setCurrentLayer(self._layer)
+            self._iface.legendInterface().setCurrentLayer(self._layer)
+            if self._layer.geometryType() == QGis.NoGeometry:
+                self._addFeatureAction(QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
         super(ArkMapToolAddFeature, self).canvasReleaseEvent(e)

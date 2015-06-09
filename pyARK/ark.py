@@ -101,51 +101,51 @@ class Ark():
         pass
 
     def _viewTypeToToken(self, viewType):
-        if viewType == TableView:
+        if viewType == Ark.TableView:
             return 'table'
-        elif viewType == TextView:
+        elif viewType == Ark.TextView:
             return 'text'
-        elif viewType == ThumbView:
+        elif viewType == Ark.ThumbView:
             return 'thumb'
-        elif viewType == MapView:
+        elif viewType == Ark.MapView:
             return 'map'
-        elif viewType == ChatView:
+        elif viewType == Ark.ChatView:
             return 'chat'
         return 'table'
 
     def _dataClassToToken(self, dataClass):
-        if dataClass == ActionClass:
+        if dataClass == Ark.ActionClass:
             return 'action'
-        elif dataClass == AttributeClass:
+        elif dataClass == Ark.AttributeClass:
             return 'attribute'
-        elif dataClass == DateClass:
+        elif dataClass == Ark.DateClass:
             return 'date'
-        elif dataClass == SpanClass:
+        elif dataClass == Ark.SpanClass:
             return 'span'
-        elif dataClass == TextClass:
+        elif dataClass == Ark.TextClass:
             return 'txt'
-        elif dataClass == NumberClass:
+        elif dataClass == Ark.NumberClass:
             return 'number'
-        elif dataClass == FileClass:
+        elif dataClass == Ark.FileClass:
             return 'file'
         return 'all'
 
     def _tokenToDataClass(self, token):
         if token == 'action':
-            return ActionClass
+            return Ark.ActionClass
         elif token == 'attribute':
-            return AttributeClass
+            return Ark.AttributeClass
         elif token == 'date':
-            return DateClass
+            return Ark.DateClass
         elif token == 'span':
-            return SpanClass
+            return Ark.SpanClass
         elif token == 'txt':
-            return TextClass
+            return Ark.TextClass
         elif token == 'number':
-            return NumberClass
+            return Ark.NumberClass
         elif token == 'file':
-            return FileClass
-        return AllClasses
+            return Ark.FileClass
+        return Ark.AllClasses
 
     def _getJson(self, req, args):
         url = self._buildUrl(req, args)
@@ -193,7 +193,7 @@ class Ark():
         return ''
 
 
-class ArkContainer():
+class ArkContainer(object):
 
     _data = {}
 
@@ -212,8 +212,10 @@ class ArkObject(ArkContainer):
     def __init__(self, ark, data):
         super(ArkObject, self).__init__(data)
         self._ark = ark
-        for alias in self._data['aliases']:
-            self._aliases[alias['language']] = alias['alias']
+        #FIXME If no aliases get false instead of empty list!
+        if self._data['aliases']:
+            for alias in self._data['aliases']:
+                self._aliases[alias['language']] = alias['alias']
 
     def id(self):
         return self._data['id']
@@ -228,14 +230,15 @@ class ArkObject(ArkContainer):
 class ArkInstance(ArkContainer):
 
     _api = None  # Ark()
-    _fragments = {}  # Set of ArkFragment() instances
+    _fragmentTypes = {}  # Set of ArkFragmentType() instances
     _modules = {}  # Set of ArkModule() instances
 
     def __init__(self, url, handle=None, passwd=None):
         self._api = Ark(url, handle, passwd)
         if self._api:
-            super(ArkInstance, self).__init__(self._api.describeARK())
-            self._loadFragments()
+            data = self._api.describeARK()
+            super(ArkInstance, self).__init__(data)
+            self._loadFragmentTypes()
             self._loadModules()
 
     def name(self):
@@ -251,18 +254,18 @@ class ArkInstance(ArkContainer):
         #TODO Find out from ARK, or allow to be set?
         return u'en'
 
-    def fragments(self, dataClass=None):
+    def fragmentTypes(self, dataClass=None):
         if dataClass ==  None:
-            return self._fragments.values()
+            return self._fragmentTypes.values()
         ret = []
         token = self._api._dataClassToToken(dataClass)
-        for fragment in self._fragments.values():
+        for fragment in self._fragmentTypes.values():
             if fragment._data['dataclass'] == token:
                 ret.append(fragment)
         return ret
 
-    def fragment(self, dataClass, classType):
-        return self._fragments[self._api._dataClassToToken(dataClass), classType]
+    def fragmentType(self, dataClass, classType):
+        return self._fragmentTypes[self._api._dataClassToToken(dataClass), classType]
 
     def modules(self):
         return self._modules.values()
@@ -272,14 +275,14 @@ class ArkInstance(ArkContainer):
 
     def moduleForKey(self, key):
         for module in self._modules.values():
-            if module.key() == key:
+            if module.itemKey() == key:
                 return module
 
     def filters(self):
         return self._api.describeFilters()
 
-    def filterResults(self, id):
-        results = self._api.getFilter(None, None, id)
+    def filterResults(self, filterId):
+        results = self._api.getFilter(None, None, filterId)
         ret = []
         for result in results.values():
             ret.append(ArkResult(result))
@@ -298,11 +301,11 @@ class ArkInstance(ArkContainer):
     def searchView(self, text, viewType=None):
         return self._api.transcludeFilter('ftx', text, None, self._api._viewTypeToToken(viewType))
 
-    def _loadFragments(self):
+    def _loadFragmentTypes(self):
         if self._api:
             fragments = self._api.describeFrags()
             for fragment in fragments:
-                self._fragments[fragment['dataclass'], fragment['type']] = ArkFragment(self, fragment)
+                self._fragmentTypes[fragment['dataclass'], fragment['type']] = ArkFragmentType(self, fragment)
 
     def _loadModules(self):
         if self._api:
@@ -311,13 +314,14 @@ class ArkInstance(ArkContainer):
                 self._modules[module['name']] = ArkModule(self, module)
 
 
-class ArkResult():
+class ArkResult(ArkContainer):
 
     _snips = []
 
     def __init__(self, data):
         super(ArkResult, self).__init__(data)
         for snip in self._data['snippets']:
+            print snip
             self._snips.append(ArkSnippet(snip))
 
     def itemKey(self):
@@ -333,7 +337,7 @@ class ArkResult():
         return self._snips
 
 
-class ArkSnippet():
+class ArkSnippet(ArkContainer):
 
     def __init__(self, data):
         super(ArkSnippet, self).__init__(data)
@@ -348,10 +352,10 @@ class ArkSnippet():
         return self._data['snip']
 
 
-class ArkFragment(ArkObject):
+class ArkFragmentType(ArkObject):
 
     def __init__(self, ark, data):
-        super(ArkFragment, self).__init__(ark, data)
+        super(ArkFragmentType, self).__init__(ark, data)
 
     def dataClass(self):
         return self._ark._api._tokenToDataClass(self._data['dataclass'])
@@ -366,7 +370,7 @@ class ArkModule(ArkObject):
     _fieldAttr = []
 
     def __init__(self, ark, data):
-        super(ArkFragment, self).__init__(ark, data)
+        super(ArkModule, self).__init__(ark, data)
 
     def shortForm(self):
         return self._data['shortform']

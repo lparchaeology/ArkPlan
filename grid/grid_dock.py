@@ -38,6 +38,7 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
     createGridSelected = pyqtSignal()
     identifyGridSelected = pyqtSignal(bool)
     updateLayerSelected = pyqtSignal()
+    translateFeaturesSelected = pyqtSignal()
     panMapSelected = pyqtSignal()
     copyMapPointSelected = pyqtSignal()
     copyLocalPointSelected = pyqtSignal()
@@ -54,6 +55,7 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
         self.createGridAction.setIcon(QIcon(':/plugins/Ark/grid/get-hot-new-stuff.png'))
         self.identifyGridAction.setIcon(QIcon(':/plugins/Ark/grid/snap-orthogonal.png'))
         self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
+        self.translateFeaturesAction.setIcon(QIcon(':/images/themes/default/mActionMoveFeature.png'))
         self.panToAction.setIcon(QIcon(':/images/themes/default/mActionPanToSelected.svg'))
         self.copyMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
         self.copyLocalPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
@@ -68,6 +70,9 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
 
         self.updateLayerTool.setDefaultAction(self.updateLayerAction)
         self.updateLayerAction.triggered.connect(self.updateLayerSelected)
+
+        self.translateFeaturesTool.setDefaultAction(self.translateFeaturesAction)
+        self.translateFeaturesAction.triggered.connect(self.translateFeaturesSelected)
 
         self.panToTool.setDefaultAction(self.panToAction)
         self.panToAction.triggered.connect(self.panMapSelected)
@@ -107,6 +112,7 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
     def setReadOnly(self, status):
         self.identifyGridAction.setEnabled(not status)
         self.updateLayerAction.setEnabled(not status)
+        self.translateFeaturesAction.setEnabled(not status)
         self.panToAction.setEnabled(not status)
         self.copyMapPointAction.setEnabled(not status)
         self.pasteMapPointAction.setEnabled(not status)

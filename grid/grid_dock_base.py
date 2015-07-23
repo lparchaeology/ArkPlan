@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_dock_base.ui'
 #
-# Created: Sun May 31 14:01:49 2015
+# Created: Thu Jul 16 15:52:39 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -69,6 +69,12 @@ class Ui_GridDock(object):
         self.updateLayerTool.setIcon(icon5)
         self.updateLayerTool.setObjectName(_fromUtf8("updateLayerTool"))
         self.horizontalLayout.addWidget(self.updateLayerTool)
+        self.translateFeaturesTool = QtGui.QToolButton(self.GridDockContents)
+        icon6 = QtGui.QIcon()
+        icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkGrid/mActionMoveFeature.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.translateFeaturesTool.setIcon(icon6)
+        self.translateFeaturesTool.setObjectName(_fromUtf8("translateFeaturesTool"))
+        self.horizontalLayout.addWidget(self.translateFeaturesTool)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -107,13 +113,13 @@ class Ui_GridDock(object):
         self.localNorthingSpin.setObjectName(_fromUtf8("localNorthingSpin"))
         self.gridLayout.addWidget(self.localNorthingSpin, 1, 2, 1, 1)
         self.copyLocalPointTool = QtGui.QToolButton(self.GridDockContents)
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkGrid/mActionEditCopy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.copyLocalPointTool.setIcon(icon6)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkGrid/mActionEditCopy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.copyLocalPointTool.setIcon(icon7)
         self.copyLocalPointTool.setObjectName(_fromUtf8("copyLocalPointTool"))
         self.gridLayout.addWidget(self.copyLocalPointTool, 1, 3, 1, 1)
         self.copyMapPointTool = QtGui.QToolButton(self.GridDockContents)
-        self.copyMapPointTool.setIcon(icon6)
+        self.copyMapPointTool.setIcon(icon7)
         self.copyMapPointTool.setObjectName(_fromUtf8("copyMapPointTool"))
         self.gridLayout.addWidget(self.copyMapPointTool, 0, 3, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
@@ -131,13 +137,13 @@ class Ui_GridDock(object):
         self.updateLayerAction.setIcon(icon5)
         self.updateLayerAction.setObjectName(_fromUtf8("updateLayerAction"))
         self.copyMapPointAction = QtGui.QAction(GridDock)
-        self.copyMapPointAction.setIcon(icon6)
+        self.copyMapPointAction.setIcon(icon7)
         self.copyMapPointAction.setObjectName(_fromUtf8("copyMapPointAction"))
         self.pasteMapPointAction = QtGui.QAction(GridDock)
         self.pasteMapPointAction.setIcon(icon2)
         self.pasteMapPointAction.setObjectName(_fromUtf8("pasteMapPointAction"))
         self.copyLocalPointAction = QtGui.QAction(GridDock)
-        self.copyLocalPointAction.setIcon(icon6)
+        self.copyLocalPointAction.setIcon(icon7)
         self.copyLocalPointAction.setObjectName(_fromUtf8("copyLocalPointAction"))
         self.pasteLocalPointAction = QtGui.QAction(GridDock)
         self.pasteLocalPointAction.setIcon(icon2)
@@ -148,6 +154,9 @@ class Ui_GridDock(object):
         self.panToAction = QtGui.QAction(GridDock)
         self.panToAction.setIcon(icon4)
         self.panToAction.setObjectName(_fromUtf8("panToAction"))
+        self.translateFeaturesAction = QtGui.QAction(GridDock)
+        self.translateFeaturesAction.setIcon(icon6)
+        self.translateFeaturesAction.setObjectName(_fromUtf8("translateFeaturesAction"))
         self.mapLabel.setBuddy(self.mapEastingSpin)
         self.localLabel.setBuddy(self.localEastingSpin)
 
@@ -162,6 +171,7 @@ class Ui_GridDock(object):
         self.panToTool.setText(_translate("GridDock", "...", None))
         self.addMapPointTool.setText(_translate("GridDock", "...", None))
         self.updateLayerTool.setText(_translate("GridDock", "...", None))
+        self.translateFeaturesTool.setText(_translate("GridDock", "...", None))
         self.mapLabel.setText(_translate("GridDock", "Map:", None))
         self.localLabel.setText(_translate("GridDock", "Local:", None))
         self.copyLocalPointTool.setText(_translate("GridDock", "...", None))
@@ -184,6 +194,8 @@ class Ui_GridDock(object):
         self.addMapPointAction.setToolTip(_translate("GridDock", "Add point to current layer", None))
         self.panToAction.setText(_translate("GridDock", "Pan", None))
         self.panToAction.setToolTip(_translate("GridDock", "Pan to map point", None))
+        self.translateFeaturesAction.setText(_translate("GridDock", "Translate", None))
+        self.translateFeaturesAction.setToolTip(_translate("GridDock", "Translate features", None))
 
 from ..arklib.dock import ArkDockWidget
 import resources_rc

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/plugins/ArkGrid">
+    <file>mActionMoveFeature.png</file>
     <file>mActionPanToSelected.svg</file>
     <file>mActionCapturePoint.png</file>
     <file>mActionEditCopy.png</file>

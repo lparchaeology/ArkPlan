@@ -34,6 +34,7 @@ from ..arklib.map_tools import ArkMapToolEmitPoint
 
 from ..core.project import Project
 
+from translate_features_dialog import TranslateFeaturesDialog
 from update_layer_dialog import UpdateLayerDialog
 from create_grid_dialog import CreateGridDialog
 from grid_dock import GridDock
@@ -61,6 +62,7 @@ class GridModule(QObject):
         self.dock.createGridSelected.connect(self.showCreateGridDialog)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
+        self.dock.translateFeaturesSelected.connect(self.showTranslateFeaturesDialog)
         self.dock.panMapSelected.connect(self.panMapToPoint)
         self.dock.copyMapPointSelected.connect(self.copyMapPointToClipboard)
         self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
@@ -348,6 +350,33 @@ class GridModule(QObject):
                 layer.changeAttributeValue(feature.id(), map_x_idx, mapPoint.x())
                 layer.changeAttributeValue(feature.id(), map_y_idx, mapPoint.y())
             return layer.commitChanges()
+        return False
+
+    def showTranslateFeaturesDialog(self):
+        if not self.initialised:
+            self.initialise()
+        if self.initialised:
+            dialog = TranslateFeaturesDialog(self.project.iface)
+            if dialog.exec_():
+                self.translateFeatures(dialog.layer(), dialog.translateEast(), dialog.translateNorth(), dialog.allFeatures())
+
+    def translateFeatures(self, layer, xInterval, yInterval, allFeatures):
+        localOriginPoint = QgsPoint(0, 0)
+        localTranslatedPoint = QgsPoint(xInterval, yInterval)
+        mapOriginPoint = self.localTransformer.map(localOriginPoint)
+        mapTranslatedPoint = self.localTransformer.map(localTranslatedPoint)
+        dx = mapTranslatedPoint.x() - mapOriginPoint.x()
+        dy = mapTranslatedPoint.y() - mapOriginPoint.y()
+        if layer.startEditing():
+            featureIds = None
+            if allFeatures:
+                featureIds = layer.allFeatureIds()
+            else:
+                featureIds = layer.selectedFeaturesIds()
+            for featureId in featureIds:
+                layer.translateFeature(featureId, dx, dy)
+            if layer.commitChanges():
+                return self.updateLayerCoordinates(layer, False, False)
         return False
 
     def panMapToPoint(self):

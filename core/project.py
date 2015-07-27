@@ -57,11 +57,13 @@ class Project(QObject):
 
     geoLayer = None  #QgsRasterLayer()
     contexts = None  # LayerCollection()
+    features = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
     fieldDefaults = {
         'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
+        'class'     : QgsField('class',      QVariant.String, '',  10, 0, 'Class'),
         'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
         'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
@@ -92,6 +94,19 @@ class Project(QObject):
             'linesFields'      : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'schemaFields'     : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+        },
+        'features' : {
+            'path'             : '',
+            'pathSuffix'       : 'vectors/features',
+            'layersGroupName'  : 'Feature Data',
+            'buffersGroupName' : 'Edit Data',
+            'bufferSuffix'     : '_mem',
+            'pointsBaseName'   : 'features_pt',
+            'linesBaseName'    : 'features_pl',
+            'polygonsBaseName' : 'features_pg',
+            'pointsFields'     : ['site', 'class', 'id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
         },
         'grid' : {
             'path'             : '',
@@ -163,6 +178,8 @@ class Project(QObject):
     def unload(self):
         if self.contexts is not None:
             self.contexts.unload()
+        if self.features is not None:
+            self.features.unload()
         if self.grid is not None:
             self.grid.unload()
         if self.base is not None:
@@ -177,7 +194,7 @@ class Project(QObject):
         # TODO more validation, check if files exist, etc
         if (self.showSettingsDialog() and self.siteCode() and self.projectDir().mkpath('.') and self.siteCode() and
             self.planDir().mkpath('.') and self.planDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
-            self.moduleDir('grid').mkpath('.') and self.moduleDir('contexts').mkpath('.') and self.moduleDir('base').mkpath('.')):
+            self.moduleDir('grid').mkpath('.') and self.moduleDir('contexts').mkpath('.') and self.moduleDir('features').mkpath('.') and self.moduleDir('base').mkpath('.')):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -201,11 +218,13 @@ class Project(QObject):
             self._createCollectionLayers('grid', self.grid._settings)
             self.contexts = self._createCollection('contexts')
             self._createCollectionLayers('contexts', self.contexts._settings)
+            self.features = self._createCollection('features')
+            self._createCollectionLayers('features', self.features._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.contexts.initialise() and self.base.initialise()):
+            if (self.grid.initialise() and self.contexts.initialise() and self.features.initialise() and self.base.initialise()):
                 self._initialised = True
         return self._initialised
 
@@ -487,6 +506,8 @@ class Project(QObject):
     def collection(self, module):
         if module == 'contexts':
             return self.contexts
+        if module == 'features':
+            return self.features
         elif module == 'grid':
             return self.grid
         elif module == 'base':

@@ -367,6 +367,118 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="featuresTab">
+      <attribute name="title">
+       <string>Features</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="featuresPointsNameEdit"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="featuresLinesNameEdit"/>
+       </item>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="featuresFolderLayout">
+         <item>
+          <widget class="QLineEdit" name="featuresFolderEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="featuresFolderButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="1">
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>68</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="featuresGroupNameLabel">
+         <property name="text">
+          <string>Group Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridGroupNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="featuresFolderLabel">
+         <property name="text">
+          <string>Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridFolderEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="featuresLinesNameLabel">
+         <property name="text">
+          <string>Lines Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridLinesNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="featuresPointNameLabel">
+         <property name="text">
+          <string>Points Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridPointsNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="featuresGroupNameEdit"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="featuresPolygonsNameEdit"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="featuresPolygonsNameLabel">
+         <property name="text">
+          <string>Polygons Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridPolygonsNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="featuresBufferGroupNameEdit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="featuresBufferGroupNameLabel">
+         <property name="text">
+          <string>Buffer Group Name:</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="contextsTab">
       <attribute name="title">
        <string>Contexts</string>
@@ -649,7 +761,6 @@
   <tabstop>planFolderButton</tabstop>
   <tabstop>separatePlansCheck</tabstop>
   <tabstop>planTransparencySpin</tabstop>
-  <tabstop>tabWidget</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

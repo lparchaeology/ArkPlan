@@ -67,6 +67,15 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.basePointsNameEdit.setText(project.pointsBaseName('base'))
         self.baseLinesNameEdit.setText(project.linesBaseName('base'))
 
+        # Features tab settings
+        self.featuresFolderEdit.setText(project.modulePath('features'))
+        self.featuresFolderButton.clicked.connect(self._selectFeaturesFolder)
+        self.featuresGroupNameEdit.setText(project.layersGroupName('features'))
+        self.featuresBufferGroupNameEdit.setText(project.buffersGroupName('features'))
+        self.featuresPointsNameEdit.setText(project.pointsBaseName('features'))
+        self.featuresLinesNameEdit.setText(project.linesBaseName('features'))
+        self.featuresPolygonsNameEdit.setText(project.polygonsBaseName('features'))
+
         # Context tab settings
         self.contextsFolderEdit.setText(project.modulePath('contexts'))
         self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
@@ -104,6 +113,14 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLayersGroupName('base', self.baseGroupNameEdit.text())
         self._project.setPointsBaseName('base', self.basePointsNameEdit.text())
         self._project.setLinesBaseName('base', self.baseLinesNameEdit.text())
+
+        # Features tab settings
+        self._project.setModulePath('features', self.featuresFolderEdit.text())
+        self._project.setLayersGroupName('features', self.featuresGroupNameEdit.text())
+        self._project.setBuffersGroupName('features', self.featuresBufferGroupNameEdit.text())
+        self._project.setPointsBaseName('features', self.featuresPointsNameEdit.text())
+        self._project.setLinesBaseName('features', self.featuresLinesNameEdit.text())
+        self._project.setPolygonsBaseName('features', self.featuresPolygonsNameEdit.text())
 
         # Contexts tab settings
         self._project.setModulePath('contexts', self.contextsFolderEdit.text())
@@ -146,6 +163,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Style Folder'), self.styleFolderEdit.text()))
         if folderName:
             self.styleFolderEdit.setText(folderName)
+
+    def _selectFeaturesFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Features Folder'), self.featuresFolderEdit.text()))
+        if folderName:
+            self.featuresFolderEdit.setText(folderName)
 
     def _selectContextsFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Contexts Folder'), self.contextsFolderEdit.text()))

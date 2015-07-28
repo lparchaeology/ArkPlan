@@ -90,10 +90,10 @@ class Project(QObject):
             'linesBaseName'    : 'context_pl',
             'polygonsBaseName' : 'context_pg',
             'schemaBaseName'   : 'context_mpg',
-            'pointsFields'     : ['site', 'context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'schemaFields'     : ['site', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+            'pointsFields'     : ['site', 'class', 'context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'schemaFields'     : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
         },
         'features' : {
             'path'             : '',
@@ -135,8 +135,8 @@ class Project(QObject):
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : '',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'id', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'id', 'category', 'source', 'file', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : [],
             'schemaFields'     : []
         },

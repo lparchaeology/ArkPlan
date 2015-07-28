@@ -104,9 +104,11 @@ class Project(QObject):
             'pointsBaseName'   : 'features_pt',
             'linesBaseName'    : 'features_pl',
             'polygonsBaseName' : 'features_pg',
+            'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'class', 'id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'schemaFields'     : []
         },
         'grid' : {
             'path'             : '',

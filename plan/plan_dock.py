@@ -41,6 +41,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     siteChanged = pyqtSignal(str)
     contextNumberChanged = pyqtSignal(int)
+    featureIdChanged = pyqtSignal(str)
     baseIdChanged = pyqtSignal(str)
     sourceChanged = pyqtSignal(str)
     sourceFileChanged = pyqtSignal(str)
@@ -53,6 +54,9 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     _cgColMax = 3
     _cgCol = 0
     _cgRow = 0
+    _fgColMax = 3
+    _fgCol = 0
+    _fgRow = 0
     _bgColMax = 3
     _bgCol = 0
     _bgRow = 0
@@ -67,6 +71,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_siteEdit.textChanged.connect(self.siteChanged)
         self.m_contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
+        self.m_featureIdEdit.textChanged.connect(self.featureIdChanged)
         self.m_baseIdEdit.textChanged.connect(self.baseIdChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
@@ -111,6 +116,12 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
                 self.newDrawingToolRow(module)
             else:
                 self._cgCol += 1
+        elif module == 'features':
+            self.m_featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
+            if self._fgCol == self._fgColMax:
+                self.newDrawingToolRow(module)
+            else:
+                self._fgCol += 1
         elif module == 'base':
             self.m_baseToolsLayout.addWidget(toolButton, self._bgRow, self._bgCol, Qt.AlignCenter)
             if self._bgCol == self._bgColMax:
@@ -122,6 +133,9 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         if module == 'contexts':
             self._cgRow += 1
             self._cgCol = 0
+        elif module == 'features':
+            self._fgRow += 1
+            self._fgCol = 0
         elif module == 'base':
             self._bgRow += 1
             self._bgCol = 0

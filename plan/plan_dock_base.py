@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'plan/plan_dock_base.ui'
 #
-# Created: Thu Jun  4 15:52:21 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +25,7 @@ except AttributeError:
 class Ui_PlanDockWidget(object):
     def setupUi(self, PlanDockWidget):
         PlanDockWidget.setObjectName(_fromUtf8("PlanDockWidget"))
-        PlanDockWidget.resize(358, 691)
+        PlanDockWidget.resize(357, 769)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -47,7 +46,7 @@ class Ui_PlanDockWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 334, 641))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 333, 719))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -113,6 +112,20 @@ class Ui_PlanDockWidget(object):
         self.m_contextNumberSpin.setObjectName(_fromUtf8("m_contextNumberSpin"))
         self.gridLayout_2.addWidget(self.m_contextNumberSpin, 2, 1, 1, 1)
         self.verticalLayout.addWidget(self.m_contextDataGroup)
+        self.m_featureDataGroup = QtGui.QGroupBox(self.scrollAreaWidgetContents)
+        self.m_featureDataGroup.setObjectName(_fromUtf8("m_featureDataGroup"))
+        self.gridLayout_6 = QtGui.QGridLayout(self.m_featureDataGroup)
+        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
+        self.m_featureIdEdit = QtGui.QLineEdit(self.m_featureDataGroup)
+        self.m_featureIdEdit.setObjectName(_fromUtf8("m_featureIdEdit"))
+        self.gridLayout_6.addWidget(self.m_featureIdEdit, 3, 1, 1, 1)
+        self.m_featureToolsLayout = QtGui.QGridLayout()
+        self.m_featureToolsLayout.setObjectName(_fromUtf8("m_featureToolsLayout"))
+        self.gridLayout_6.addLayout(self.m_featureToolsLayout, 4, 0, 1, 2)
+        self.m_featureIdLabel = QtGui.QLabel(self.m_featureDataGroup)
+        self.m_featureIdLabel.setObjectName(_fromUtf8("m_featureIdLabel"))
+        self.gridLayout_6.addWidget(self.m_featureIdLabel, 3, 0, 1, 1)
+        self.verticalLayout.addWidget(self.m_featureDataGroup)
         self.m_baseDataGroup = QtGui.QGroupBox(self.scrollAreaWidgetContents)
         self.m_baseDataGroup.setObjectName(_fromUtf8("m_baseDataGroup"))
         self.gridLayout_5 = QtGui.QGridLayout(self.m_baseDataGroup)
@@ -201,6 +214,11 @@ class Ui_PlanDockWidget(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         spacerItem = QtGui.QSpacerItem(17, 1, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
+        self.m_contextDataGroup.raise_()
+        self.groupBox.raise_()
+        self.m_metadataGroup.raise_()
+        self.m_baseDataGroup.raise_()
+        self.m_featureDataGroup.raise_()
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_2.addWidget(self.scrollArea)
         PlanDockWidget.setWidget(self.PlanDockContents)
@@ -210,6 +228,7 @@ class Ui_PlanDockWidget(object):
         self.m_commentLabel.setBuddy(self.m_commentEdit)
         self.m_createdByLabel.setBuddy(self.m_createdByEdit)
         self.m_contextNumberLabel.setBuddy(self.m_contextNumberSpin)
+        self.m_featureIdLabel.setBuddy(self.m_contextNumberSpin)
         self.m_baseIdLabel.setBuddy(self.m_contextNumberSpin)
 
         self.retranslateUi(PlanDockWidget)
@@ -242,6 +261,8 @@ class Ui_PlanDockWidget(object):
         self.m_loadContextButton.setText(_translate("PlanDockWidget", "Context", None))
         self.m_loadGeoButton.setText(_translate("PlanDockWidget", "Geo Plan", None))
         self.m_contextNumberSpin.setToolTip(_translate("PlanDockWidget", "Context Number", None))
+        self.m_featureDataGroup.setTitle(_translate("PlanDockWidget", "Feature Data", None))
+        self.m_featureIdLabel.setText(_translate("PlanDockWidget", "ID:", None))
         self.m_baseDataGroup.setTitle(_translate("PlanDockWidget", "Base Data", None))
         self.m_baseIdLabel.setText(_translate("PlanDockWidget", "ID:", None))
         self.groupBox.setTitle(_translate("PlanDockWidget", "Editing:", None))

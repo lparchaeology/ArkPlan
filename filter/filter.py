@@ -109,7 +109,7 @@ class Filter(QObject):
     def applyContextFilter(self, contextRange):
         del self.contextList[:]
         self.contextList = self._rangeToList(contextRange)
-        self.project.contexts.applyFieldFilterRange(self.project.fieldName('context'), contextRange)
+        self.project.contexts.applyFieldFilterRange(self.project.fieldName('id'), contextRange)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
@@ -118,7 +118,7 @@ class Filter(QObject):
         sublist = self._rangeToList(subRange)
         for sub in subList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.project.contexts.applyFieldFilterList(self.project.fieldName('context'), self.contextList)
+        self.project.contexts.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
@@ -127,7 +127,7 @@ class Filter(QObject):
         groupList = self._rangeToList(groupRange)
         for group in groupList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.project.contexts.applyFieldFilterList(self.project.fieldName('context'), self.contextList)
+        self.project.contexts.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
         self.dock.displayFilter(self.project.contexts.filter)
 
 
@@ -168,7 +168,7 @@ class Filter(QObject):
 
 
     def showIdentifyDialog(self, feature):
-        context = feature.attribute(self.project.fieldName('context'))
+        context = feature.attribute(self.project.fieldName('id'))
         self.showDataDialogList([context])
 
 

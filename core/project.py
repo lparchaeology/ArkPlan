@@ -61,11 +61,11 @@ class Project(QObject):
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
+    # Field deafults to use if *not* using ARK DB, so as not to confuse normal users
     fieldDefaults = {
         'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
         'class'     : QgsField('class',      QVariant.String, '',  10, 0, 'Class'),
         'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
-        'context'   : QgsField('context',    QVariant.Int,    '',   5, 0, 'Context'),
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
         'source'    : QgsField('source',     QVariant.String, '',  10, 0, 'Source'),
@@ -79,6 +79,24 @@ class Project(QObject):
         'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')
     }
 
+    # Field defaults to use if using ARK DB, matches field names in ARK
+    arkFieldDefaults = {
+        'site'      : QgsField('ste_cd',     QVariant.String, '',  10, 0, 'Site Code'),
+        'class'     : QgsField('module',     QVariant.String, '',  10, 0, 'ARK Module'),
+        'id'        : QgsField('item_no',    QVariant.String, '',  10, 0, 'ARK Item Number'),
+        'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
+        'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
+        'source'    : QgsField('source',     QVariant.String, '',  10, 0, 'Source'),
+        'file'      : QgsField('file',       QVariant.String, '',  50, 0, 'File'),
+        'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
+        'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
+        'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
+        'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
+        'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
+        'created_on': QgsField('cre_on',     QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
+        'created_by': QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By')
+    }
+
     moduleDefaults = {
         'contexts' : {
             'path'             : '',
@@ -90,10 +108,10 @@ class Project(QObject):
             'linesBaseName'    : 'context_pl',
             'polygonsBaseName' : 'context_pg',
             'schemaBaseName'   : 'context_mpg',
-            'pointsFields'     : ['site', 'class', 'context', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'schemaFields'     : ['site', 'class', 'context', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
+            'pointsFields'     : ['site', 'class', 'id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'schemaFields'     : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
         },
         'features' : {
             'path'             : '',
@@ -353,19 +371,30 @@ class Project(QObject):
         fieldKeys = self._moduleDefault(module, fieldsKey)
         fields = QgsFields()
         for fieldKey in fieldKeys:
-            field = self.fieldDefaults[fieldKey]
-            fields.append(field)
+            fields.append(self.field(fieldKey))
         return fields
 
     # Field settings
 
     def field(self, fieldKey):
-        return self.fieldDefaults[fieldKey]
+        if self.useArkDB():
+            return self.arkFieldDefaults[fieldKey]
+        else:
+            return self.fieldDefaults[fieldKey]
 
     def fieldName(self, fieldKey):
-        return self.fieldDefaults[fieldKey].name()
+        if self.useArkDB():
+            return self.arkFieldDefaults[fieldKey].name()
+        else:
+            return self.fieldDefaults[fieldKey].name()
 
     # Project settings
+
+    def useArkDB(self):
+        return QgsProject.instance().readEntry(self.pluginName, 'useArkDB', False)[0]
+
+    def setUseArkDB(self, useArkDB):
+        QgsProject.instance().writeEntry(self.pluginName, 'useArkDB', useArkDB)
 
     def projectDir(self):
         return QDir(self.projectPath())

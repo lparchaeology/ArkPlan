@@ -325,12 +325,14 @@ class Plan(QObject):
         defaults = {}
         defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
         defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = data['class']
+        id = ''
         if data['module'] == 'contexts':
-            defaults[layer.fieldNameIndex(self.project.fieldName('context'))] = self.contextNumber
+            id = self.contextNumber
         elif data['module'] == 'features':
-            defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = self.featureId
+            id = self.featureId
         elif data['module'] == 'base':
-            defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = self.baseId
+            id = self.baseId
+        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
         defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']

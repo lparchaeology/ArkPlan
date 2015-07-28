@@ -48,7 +48,7 @@ class Plan(QObject):
     featureId = ''
     baseId = ''
     category = ''
-    source = '0'
+    source = ''
     sourceFile = ''
     comment = ''
     createdBy = ''

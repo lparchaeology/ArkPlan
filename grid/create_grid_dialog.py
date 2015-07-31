@@ -39,20 +39,21 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     PointOnXAxis = 0
     PointOnYAxis = 1
 
-    _project = None # PluginSettings()
+    _iface = None # QgisInterface()
     _mapTool = None # ArkMapToolEmitPoint
 
-    def __init__(self, project, parent=None):
+    def __init__(self, iface, siteCode, parent=None):
         super(CreateGridDialog, self).__init__(parent)
-        self._project = project
+        self._iface = iface
 
         self.setupUi(self)
+        self.siteCodeEdit.setText(siteCode)
         self.mapOriginFromMapButton.clicked.connect(self.getOriginFromMap)
         self.mapAxisFromMapButton.clicked.connect(self.getAxisFromMap)
         self.createGridButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)
 
-        self._mapTool = ArkMapToolEmitPoint(self._project.iface.mapCanvas())
+        self._mapTool = ArkMapToolEmitPoint(self._iface.mapCanvas())
         self._mapTool.setSnappingEnabled(True)
         self._mapTool.canvasClicked.connect(self.pointSelected)
         self._mapTool.deactivated.connect(self.cancelGetPoint)
@@ -81,6 +82,12 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     def localNorthingInterval(self):
         return self.localNorthingIntervalSpin.value()
 
+    def siteCode(self):
+        return self.siteCodeEdit.text()
+
+    def gridName(self):
+        return self.gridNameEdit.text()
+
     def getOriginFromMap(self):
         self.getPoint = 'origin'
         self.getPointFromMap()
@@ -90,7 +97,7 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         self.getPointFromMap()
 
     def getPointFromMap(self):
-        self._project.iface.mapCanvas().setMapTool(self._mapTool)
+        self._iface.mapCanvas().setMapTool(self._mapTool)
         self._showMainWindow()
 
     def cancelGetPoint(self):
@@ -104,7 +111,7 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
             elif self.getPoint == 'axis':
                 self.mapAxisEastingSpin.setValue(point.x())
                 self.mapAxisNorthingSpin.setValue(point.y())
-        self._project.iface.mapCanvas().unsetMapTool(self._mapTool)
+        self._iface.mapCanvas().unsetMapTool(self._mapTool)
         self._showDialog()
 
     def _showMainWindow(self):

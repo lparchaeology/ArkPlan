@@ -127,13 +127,14 @@ class GridModule(QObject):
     def showCreateGridDialog(self):
         self.initialise()
         if self.createDialog is None:
-            self.createDialog = CreateGridDialog(self.project, self.project.iface.mainWindow())
+            self.createDialog = CreateGridDialog(self.project.iface, self.project.siteCode(), self.project.iface.mainWindow())
             self.createDialog.accepted.connect(self.createGridDialogAccepted)
         self.createDialog.show()
         self.createDialog._showDialog()
 
     def createGridDialogAccepted(self):
-        if self.createGrid(self.createDialog.mapOriginPoint(), self.createDialog.mapAxisPoint(),
+        if self.createGrid(self.createDialog.siteCode(), self.createDialog.gridName(),
+                           self.createDialog.mapOriginPoint(), self.createDialog.mapAxisPoint(),
                            self.createDialog.mapAxisPointType(),
                            self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
                            self.createDialog.localEastingInterval(), self.createDialog.localEastingInterval()):
@@ -141,7 +142,7 @@ class GridModule(QObject):
             self.dock.setReadOnly(False)
             self.project.showMessage('Grid successfully created')
 
-    def createGrid(self, mapOrigin, mapAxis, mapAxisType, localOrigin, localTerminus, xInterval, yInterval):
+    def createGrid(self, siteCode, gridName, mapOrigin, mapAxis, mapAxisType, localOrigin, localTerminus, xInterval, yInterval):
         axisGeometry = QgsGeometry.fromPolyline([mapOrigin, mapAxis])
         mapAxisPoint = None
         localAxisPoint = None
@@ -170,7 +171,7 @@ class GridModule(QObject):
         self._addGridPointsToLayer(points, localTransformer,
                                    localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                    localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                   self._attributes(points, 'gpt'), local_x, local_y, map_x, map_y)
+                                   self._attributes(points, siteCode, gridName), local_x, local_y, map_x, map_y)
 
         if self.project.linesLayerName('grid'):
             lines = self.project.grid.linesLayer
@@ -180,7 +181,7 @@ class GridModule(QObject):
                 self._addGridLinesToLayer(lines, localTransformer,
                                           localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                           localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                          self._attributes(lines, 'gln'), local_x, local_y, map_x, map_y)
+                                          self._attributes(lines, siteCode, gridName), local_x, local_y, map_x, map_y)
 
         if self.project.polygonsLayerName('grid'):
             polygons = self.project.grid.polygonsLayer
@@ -190,13 +191,13 @@ class GridModule(QObject):
                 self._addGridPolygonsToLayer(polygons, localTransformer,
                                              localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
                                              localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
-                                             self._attributes(polygons, 'gpg'), local_x, local_y, map_x, map_y)
+                                             self._attributes(polygons, siteCode, gridName), local_x, local_y, map_x, map_y)
         return True
 
-    def _attributes(self, layer, category):
+    def _attributes(self, layer, site, name):
         attributes = {}
-        attributes[layer.fieldNameIndex(self.project.fieldName('site'))] = self.project.siteCode()
-        attributes[layer.fieldNameIndex(self.project.fieldName('category'))] = category
+        attributes[layer.fieldNameIndex(self.project.fieldName('site'))] = site
+        attributes[layer.fieldNameIndex(self.project.fieldName('name'))] = name
         attributes[layer.fieldNameIndex(self.project.fieldName('source'))] = 'ARK'
         attributes[layer.fieldNameIndex(self.project.fieldName('created_on'))] = utils.timestamp()
         attributes[layer.fieldNameIndex(self.project.fieldName('created_by'))] = 'Grid Tool'

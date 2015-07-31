@@ -69,6 +69,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.baseGroupNameEdit.setText(project.layersGroupName('base'))
         self.basePointsNameEdit.setText(project.pointsBaseName('base'))
         self.baseLinesNameEdit.setText(project.linesBaseName('base'))
+        self.baseLinesNameEdit.setText(project.polygonsBaseName('base'))
 
         # Features tab settings
         self.featuresFolderEdit.setText(project.modulePath('features'))
@@ -117,6 +118,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLayersGroupName('base', self.baseGroupNameEdit.text())
         self._project.setPointsBaseName('base', self.basePointsNameEdit.text())
         self._project.setLinesBaseName('base', self.baseLinesNameEdit.text())
+        self._project.setLinesBaseName('base', self.featuresPolygonsNameEdit.text())
 
         # Features tab settings
         self._project.setModulePath('features', self.featuresFolderEdit.text())

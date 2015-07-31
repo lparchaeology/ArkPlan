@@ -157,7 +157,7 @@ class Project(QObject):
             'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : [],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'plan' : {

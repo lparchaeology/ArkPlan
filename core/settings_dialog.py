@@ -51,6 +51,9 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
             self.styleFolderButton.setEnabled(True)
         self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
+        self.useArkCheck.setChecked(project.useArkDB())
+        if project.isConfigured():
+            self.useArkCheck.setEnabled(False)
 
         # Grid tab settings
         self.gridFolderEdit.setText(project.modulePath('grid'))
@@ -100,6 +103,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
         self._project.setUseCustomStyles(self.styleFolderEdit.text() != '')
         self._project.setStylePath(self.styleFolderEdit.text())
+        self._project.setUseArkDB(self.useArkCheck.isChecked())
 
         # Grid tab settings
         self._project.setModulePath('grid', self.gridFolderEdit.text())

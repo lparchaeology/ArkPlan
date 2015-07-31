@@ -24,6 +24,26 @@
        <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QLabel" name="multiSiteLabel">
+         <property name="text">
+          <string>Multi-site Project</string>
+         </property>
+         <property name="buddy">
+          <cstring>multiSiteCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QCheckBox" name="prependSiteCodeCheck">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="projectFolderLabel">
          <property name="text">
@@ -34,32 +54,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QLineEdit" name="siteCodeEdit"/>
-       </item>
-       <item row="6" column="2">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLabel" name="customStylesLabel">
-         <property name="text">
-          <string>Custom Styles Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>styleFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="siteCodeLabel">
          <property name="text">
@@ -67,26 +61,6 @@
          </property>
          <property name="buddy">
           <cstring>siteCodeEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="defaultStylesLabel">
-         <property name="text">
-          <string>Use Default Styles:</string>
-         </property>
-         <property name="buddy">
-          <cstring>defaultStylesCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="prependSiteCodeLabel">
-         <property name="text">
-          <string>Prepend site code:</string>
-         </property>
-         <property name="buddy">
-          <cstring>prependSiteCodeCheck</cstring>
          </property>
         </widget>
        </item>
@@ -127,13 +101,49 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="2">
-        <widget class="QCheckBox" name="prependSiteCodeCheck">
-         <property name="text">
-          <string/>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="siteCodeEdit"/>
+       </item>
+       <item row="7" column="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="checked">
-          <bool>true</bool>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="customStylesLabel">
+         <property name="text">
+          <string>Custom Styles Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>styleFolderEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="defaultStylesLabel">
+         <property name="text">
+          <string>Use Default Styles:</string>
+         </property>
+         <property name="buddy">
+          <cstring>defaultStylesCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="prependSiteCodeLabel">
+         <property name="text">
+          <string>Prepend site code:</string>
+         </property>
+         <property name="buddy">
+          <cstring>prependSiteCodeCheck</cstring>
          </property>
         </widget>
        </item>
@@ -164,13 +174,20 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="multiSiteLabel">
+       <item row="6" column="0">
+        <widget class="QLabel" name="useArkLabel">
          <property name="text">
-          <string>Multi-site Project</string>
+          <string>Use ARK DB mode:</string>
          </property>
          <property name="buddy">
-          <cstring>multiSiteCheck</cstring>
+          <cstring>useArkCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QCheckBox" name="useArkCheck">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>

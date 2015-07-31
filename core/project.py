@@ -65,7 +65,8 @@ class Project(QObject):
     fieldDefaults = {
         'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
         'class'     : QgsField('class',      QVariant.String, '',  10, 0, 'Class'),
-        'id'        : QgsField('id',         QVariant.String, '',  10, 0, 'ID'),
+        'id'        : QgsField('id',         QVariant.Int,    '',   5, 0, 'ID'),
+        'name'      : QgsField('name',       QVariant.String, '',  10, 0, 'Name'),
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
         'source'    : QgsField('source',     QVariant.String, '',  10, 0, 'Source'),
@@ -83,7 +84,8 @@ class Project(QObject):
     arkFieldDefaults = {
         'site'      : QgsField('ste_cd',     QVariant.String, '',  10, 0, 'Site Code'),
         'class'     : QgsField('module',     QVariant.String, '',  10, 0, 'ARK Module'),
-        'id'        : QgsField('item_no',    QVariant.String, '',  10, 0, 'ARK Item Number'),
+        'id'        : QgsField('item_no',    QVariant.Int,    '',   5, 0, 'ARK Item Number'),
+        'name'      : QgsField('name',       QVariant.String, '',  10, 0, 'Name'),
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
         'source'    : QgsField('source',     QVariant.String, '',  10, 0, 'Source'),
@@ -153,8 +155,8 @@ class Project(QObject):
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : '',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'class', 'id', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : [],
             'schemaFields'     : []
         },
@@ -391,7 +393,7 @@ class Project(QObject):
     # Project settings
 
     def useArkDB(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'useArkDB', False)[0]
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'useArkDB', False)[0]
 
     def setUseArkDB(self, useArkDB):
         QgsProject.instance().writeEntry(self.pluginName, 'useArkDB', useArkDB)

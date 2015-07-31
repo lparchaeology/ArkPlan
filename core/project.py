@@ -125,9 +125,9 @@ class Project(QObject):
             'linesBaseName'    : 'feature_pl',
             'polygonsBaseName' : 'feature_pg',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'class', 'id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'grid' : {
@@ -140,9 +140,9 @@ class Project(QObject):
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'base' : {
@@ -155,9 +155,9 @@ class Project(QObject):
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : '',
             'schemaBaseName'   : '',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'local_x', 'local_y', 'map_x', 'map_y', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'schemaFields'     : []
         },
         'plan' : {

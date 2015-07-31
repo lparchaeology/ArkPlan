@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>357</width>
-    <height>769</height>
+    <height>722</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>333</width>
-         <height>719</height>
+         <height>672</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -191,56 +191,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="m_featureDataGroup">
-          <property name="title">
-           <string>Feature Data</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="m_featureIdEdit"/>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <layout class="QGridLayout" name="m_featureToolsLayout"/>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="m_featureIdLabel">
-             <property name="text">
-              <string>ID:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_contextNumberSpin</cstring>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="m_baseDataGroup">
-          <property name="title">
-           <string>Base Data</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="m_baseIdEdit"/>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <layout class="QGridLayout" name="m_baseToolsLayout"/>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="m_baseIdLabel">
-             <property name="text">
-              <string>ID:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_contextNumberSpin</cstring>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
            <string>Editing:</string>
@@ -313,12 +263,18 @@
                <property name="text">
                 <string>Snap Layers:</string>
                </property>
+               <property name="buddy">
+                <cstring>m_snapLinesLayerTool</cstring>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label">
                <property name="text">
                 <string>Snap Buffers:</string>
+               </property>
+               <property name="buddy">
+                <cstring>m_snapLinesBufferTool</cstring>
                </property>
               </widget>
              </item>
@@ -370,6 +326,9 @@
                <property name="text">
                 <string>Topological editing:</string>
                </property>
+               <property name="buddy">
+                <cstring>m_topologicalTool</cstring>
+               </property>
               </widget>
              </item>
              <item>
@@ -383,6 +342,44 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="m_featureDataGroup">
+          <property name="title">
+           <string>Feature Data</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="m_featureNameEdit"/>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <layout class="QGridLayout" name="m_featureToolsLayout"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="m_featureNameLabel">
+             <property name="text">
+              <string>Name:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_featureNameEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="m_featureIdLabel">
+             <property name="text">
+              <string>ID:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_featureIdSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="m_featureIdSpin"/>
            </item>
           </layout>
          </widget>
@@ -428,7 +425,6 @@
        <zorder>m_contextDataGroup</zorder>
        <zorder>groupBox</zorder>
        <zorder>m_metadataGroup</zorder>
-       <zorder>m_baseDataGroup</zorder>
        <zorder>m_featureDataGroup</zorder>
       </widget>
      </widget>
@@ -456,9 +452,15 @@
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
+  <tabstop>m_siteEdit</tabstop>
+  <tabstop>m_sourceEdit</tabstop>
+  <tabstop>m_sourceFileEdit</tabstop>
+  <tabstop>m_commentEdit</tabstop>
+  <tabstop>m_createdByEdit</tabstop>
   <tabstop>m_loadRawButton</tabstop>
   <tabstop>m_loadGeoButton</tabstop>
   <tabstop>m_loadContextButton</tabstop>
+  <tabstop>m_contextNumberSpin</tabstop>
   <tabstop>m_snapLinesBufferTool</tabstop>
   <tabstop>m_snapPolygonsBufferTool</tabstop>
   <tabstop>m_snapSchematicsBufferTool</tabstop>
@@ -466,6 +468,8 @@
   <tabstop>m_snapPolygonsLayerTool</tabstop>
   <tabstop>m_snapSchematicsLayerTool</tabstop>
   <tabstop>m_topologicalTool</tabstop>
+  <tabstop>m_featureIdSpin</tabstop>
+  <tabstop>m_featureNameEdit</tabstop>
   <tabstop>m_clearButton</tabstop>
   <tabstop>m_mergeButton</tabstop>
  </tabstops>

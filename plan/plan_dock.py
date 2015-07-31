@@ -41,8 +41,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     siteChanged = pyqtSignal(str)
     contextNumberChanged = pyqtSignal(int)
-    featureIdChanged = pyqtSignal(str)
-    baseIdChanged = pyqtSignal(str)
+    featureIdChanged = pyqtSignal(int)
+    featureNameChanged = pyqtSignal(str)
     sourceChanged = pyqtSignal(str)
     sourceFileChanged = pyqtSignal(str)
     commentChanged = pyqtSignal(str)
@@ -57,9 +57,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     _fgColMax = 3
     _fgCol = 0
     _fgRow = 0
-    _bgColMax = 3
-    _bgCol = 0
-    _bgRow = 0
 
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(parent)
@@ -71,8 +68,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.m_siteEdit.textChanged.connect(self.siteChanged)
         self.m_contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
-        self.m_featureIdEdit.textChanged.connect(self.featureIdChanged)
-        self.m_baseIdEdit.textChanged.connect(self.baseIdChanged)
+        self.m_featureIdSpin.valueChanged.connect(self.featureIdChanged)
+        self.m_featureNameEdit.textChanged.connect(self.featureNameChanged)
         self.m_sourceEdit.textChanged.connect(self.sourceChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
@@ -89,8 +86,11 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setContextNumber(self, context):
         self.m_contextNumberSpin.setValue(context)
 
-    def setBaseId(self, baseId):
-        self.m_baseIdEdit.setValue(baseId)
+    def setFeatureId(self, featureId):
+        self.m_featureIdSpin.setValue(featureId)
+
+    def setFeatureName(self, name):
+        self.m_featureNameEdit.setText(name)
 
     def setSource(self, source):
         self.m_sourceEdit.setText(source)
@@ -122,12 +122,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
                 self.newDrawingToolRow(module)
             else:
                 self._fgCol += 1
-        elif module == 'base':
-            self.m_baseToolsLayout.addWidget(toolButton, self._bgRow, self._bgCol, Qt.AlignCenter)
-            if self._bgCol == self._bgColMax:
-                self.newDrawingToolRow(module)
-            else:
-                self._bgCol += 1
 
     def newDrawingToolRow(self, module):
         if module == 'contexts':
@@ -136,9 +130,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         elif module == 'features':
             self._fgRow += 1
             self._fgCol = 0
-        elif module == 'base':
-            self._bgRow += 1
-            self._bgCol = 0
 
     # Snapping Tools
 

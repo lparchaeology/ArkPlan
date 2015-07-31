@@ -41,17 +41,16 @@ class Plan(QObject):
 
     # Internal variables
     initialised = False
-    module = ''
-    siteCode = ''
-    classCode = ''
-    contextNumber = 0
-    featureId = ''
-    baseId = ''
+    module = None
+    siteCode = None
+    classCode = None
+    featureId = None
+    featureName = None
     category = ''
-    source = ''
-    sourceFile = ''
-    comment = ''
-    createdBy = ''
+    source = None
+    sourceFile = None
+    comment = None
+    createdBy = None
 
     actions = {}
     mapTools = {}
@@ -78,8 +77,8 @@ class Plan(QObject):
         self.dock.contextNumberChanged.connect(self.updateDefaultAttributes)
         self.dock.featureIdChanged.connect(self.setFeatureId)
         self.dock.featureIdChanged.connect(self.updateDefaultAttributes)
-        self.dock.baseIdChanged.connect(self.setBaseId)
-        self.dock.baseIdChanged.connect(self.updateDefaultAttributes)
+        self.dock.featureNameChanged.connect(self.setFeatureName)
+        self.dock.featureNameChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceChanged.connect(self.setSource)
         self.dock.sourceChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
@@ -140,20 +139,16 @@ class Plan(QObject):
         self.addLevelTool('contexts', 'cxt', 'lvl', self.tr('Level'), QIcon())
         self.addSchemaTool('contexts', 'cxt', 'sch', self.tr('Schema'), QIcon())
 
+        self.addDrawingTool('features', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
+        self.addDrawingTool('features', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('features', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
         self.addDrawingTool('features', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
-
-        self.addDrawingTool('base', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('base', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('base', '', 'bpt', self.tr('Base Point'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('base', '', 'bln', self.tr('Base Line'), QIcon(), ArkMapToolAddFeature.Line)
 
         self.initialised = True
 
     def initialiseBuffers(self):
         self.project.contexts.createBuffers()
         self.project.features.createBuffers()
-        self.project.base.createBuffers()
         self.dock.setSchematicsBuffer(self.project.contexts.schemaBuffer)
         self.dock.setPolygonsBuffer(self.project.contexts.polygonsBuffer)
         self.dock.setLinesBuffer(self.project.contexts.linesBuffer)
@@ -204,28 +199,52 @@ class Plan(QObject):
             self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):
-        self.siteCode = siteCode
+        if siteCode is None or siteCode.strip() == '':
+            self.siteCode = None
+        else:
+            self.siteCode = siteCode
 
     def setContextNumber(self, context):
-        self.contextNumber = context
+        if context is None or context <= 0:
+            self.contextNumber = None
+        else:
+            self.contextNumber = context
 
     def setFeatureId(self, featureId):
-        self.featureId = featureId
+        if featureId is None or featureId <= 0:
+            self.featureId = None
+        else:
+            self.featureId = featureId
 
-    def setBaseId(self, baseId):
-        self.baseId = baseId
+    def setFeatureName(self, featureName):
+        if featureName is None or featureName.strip() == '':
+            self.featureName = None
+        else:
+            self.featureName = featureName
 
     def setSource(self, source):
-        self.source = source
+        if source is None or source.strip() == '':
+            self.source = None
+        else:
+            self.source = source
 
     def setSourceFile(self, sourceFile):
-        self.sourceFile = sourceFile
+        if sourceFile is None or sourceFile.strip() == '':
+            self.sourceFile = None
+        else:
+            self.sourceFile = sourceFile
 
     def setComment(self, comment):
-        self.comment = comment
+        if comment is None or comment.strip() == '':
+            self.comment = None
+        else:
+            self.comment = comment
 
     def setCreatedBy(self, creator):
-        self.createdBy = creator
+        if creator is None or creator.strip() == '':
+            self.createdBy = None
+        else:
+            self.createdBy = creator
 
     # Georeference Tools
 
@@ -244,13 +263,10 @@ class Plan(QObject):
             self.project.contexts.mergeBuffers('Merge context data ' + str(self.contextNumber))
         if self.project.features.okToMergeBuffers():
             self.project.features.mergeBuffers('Merge feature data ' + str(self.featureId))
-        if self.project.base.okToMergeBuffers():
-            self.project.base.mergeBuffers('Merge base data ' + str(self.baseId))
 
     def clearBuffers(self):
         self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.contextNumber))
         self.project.features.clearBuffers('Clear features buffer data ' + str(self.featureId))
-        self.project.base.clearBuffers('Clear base buffer data ' + str(self.baseId))
 
     # Drawing tools
 
@@ -330,9 +346,8 @@ class Plan(QObject):
             id = self.contextNumber
         elif data['module'] == 'features':
             id = self.featureId
-        elif data['module'] == 'base':
-            id = self.baseId
         defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
+        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName
         defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']

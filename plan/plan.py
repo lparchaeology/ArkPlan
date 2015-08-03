@@ -44,6 +44,7 @@ class Plan(QObject):
     module = None
     siteCode = None
     classCode = None
+    contextNumber = None
     featureId = None
     featureName = None
     category = ''

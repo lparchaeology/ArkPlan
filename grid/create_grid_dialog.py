@@ -36,8 +36,9 @@ from create_grid_dialog_base import *
 
 class CreateGridDialog(QDialog, Ui_CreateGridDialog):
 
-    PointOnXAxis = 0
-    PointOnYAxis = 1
+    TwoKnownPoints = 0
+    PointOnXAxis = 1
+    PointOnYAxis = 2
 
     _iface = None # QgisInterface()
     _mapTool = None # ArkMapToolEmitPoint
@@ -48,8 +49,9 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
 
         self.setupUi(self)
         self.siteCodeEdit.setText(siteCode)
-        self.mapOriginFromMapButton.clicked.connect(self.getOriginFromMap)
-        self.mapAxisFromMapButton.clicked.connect(self.getAxisFromMap)
+        self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
+        self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)
+        self.methodCombo.currentIndexChanged.connect(self.setMethodType)
         self.createGridButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)
 
@@ -58,17 +60,44 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         self._mapTool.canvasClicked.connect(self.pointSelected)
         self._mapTool.deactivated.connect(self.cancelGetPoint)
 
-    def mapOriginPoint(self):
-        return QgsPoint(self.mapOriginEastingSpin.value(), self.mapOriginNorthingSpin.value())
+    def mapPoint1(self):
+        return QgsPoint(self.mapPoint1EastingSpin.value(), self.mapPoint1NorthingSpin.value())
 
-    def mapAxisPoint(self):
-        return QgsPoint(self.mapAxisEastingSpin.value(), self.mapAxisNorthingSpin.value())
+    def mapPoint2(self):
+        return QgsPoint(self.mapPoint2EastingSpin.value(), self.mapPoint2NorthingSpin.value())
 
-    def mapAxisPointType(self):
-        if self.mapOnAxisYButton.isChecked():
-            return CreateGridDialog.PointOnYAxis
+    def localPoint1(self):
+        if self.methodType() == CreateGridDialog.TwoKnownPoints:
+            return QgsPoint(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
+        return QgsPoint()
+
+    def localPoint2(self):
+        if self.methodType() == CreateGridDialog.TwoKnownPoints:
+            return QgsPoint(self.localPoint2EastingSpin.value(), self.localPoint2NorthingSpin.value())
+        return QgsPoint()
+
+    def methodType(self):
+        return self.methodCombo.currentIndex()
+
+    def setMethodType(self, method):
+        if method == CreateGridDialog.TwoKnownPoints:
+            self.mapPoint1Label.setText('Map Point 1')
+            self.localPoint1Label.setEnabled(True)
+            self.localPoint1EastingSpin.setEnabled(True)
+            self.localPoint1NorthingSpin.setEnabled(True)
+            self.mapPoint2Label.setText('Map Point 2')
+            self.localPoint2Label.setEnabled(True)
+            self.localPoint2EastingSpin.setEnabled(True)
+            self.localPoint2NorthingSpin.setEnabled(True)
         else:
-            return CreateGridDialog.PointOnXAxis
+            self.mapPoint1Label.setText('Map Origin Point')
+            self.localPoint1Label.setEnabled(False)
+            self.localPoint1EastingSpin.setEnabled(False)
+            self.localPoint1NorthingSpin.setEnabled(False)
+            self.mapPoint2Label.setText('Map Axis Point')
+            self.localPoint2Label.setEnabled(False)
+            self.localPoint2EastingSpin.setEnabled(False)
+            self.localPoint2NorthingSpin.setEnabled(False)
 
     def localOriginPoint(self):
         return QPoint(self.localOriginEastingSpin.value(), self.localOriginNorthingSpin.value())
@@ -88,11 +117,11 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     def gridName(self):
         return self.gridNameEdit.text()
 
-    def getOriginFromMap(self):
+    def getPoint1FromMap(self):
         self.getPoint = 'origin'
         self.getPointFromMap()
 
-    def getAxisFromMap(self):
+    def getPoint2FromMap(self):
         self.getPoint = 'axis'
         self.getPointFromMap()
 
@@ -106,11 +135,11 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     def pointSelected(self, point, button):
         if (button == Qt.LeftButton):
             if self.getPoint == 'origin':
-                self.mapOriginEastingSpin.setValue(point.x())
-                self.mapOriginNorthingSpin.setValue(point.y())
+                self.mapPoint1EastingSpin.setValue(point.x())
+                self.mapPoint1NorthingSpin.setValue(point.y())
             elif self.getPoint == 'axis':
-                self.mapAxisEastingSpin.setValue(point.x())
-                self.mapAxisNorthingSpin.setValue(point.y())
+                self.mapPoint2EastingSpin.setValue(point.x())
+                self.mapPoint2NorthingSpin.setValue(point.y())
         self._iface.mapCanvas().unsetMapTool(self._mapTool)
         self._showDialog()
 

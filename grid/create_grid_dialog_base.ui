@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>497</width>
-    <height>410</height>
+    <width>438</width>
+    <height>473</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,14 +19,24 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="5" column="2">
+     <item row="10" column="2">
       <widget class="QLabel" name="localNorthingLabel">
        <property name="text">
         <string>Local Northing</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="8" column="0">
+      <widget class="QLabel" name="localPoint2Label">
+       <property name="text">
+        <string>Local Point 2:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localPoint2EastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
       <widget class="QSpinBox" name="localEastingIntervalSpin">
        <property name="suffix">
         <string> m</string>
@@ -42,24 +52,20 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="mapNorthingLabel">
-       <property name="text">
-        <string>Map Northing</string>
-       </property>
-      </widget>
+     <item row="0" column="1" colspan="3">
+      <widget class="QLineEdit" name="siteCodeEdit"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="mapOriginLabel">
+     <item row="5" column="0">
+      <widget class="QLabel" name="mapPoint1Label">
        <property name="text">
-        <string>Origin Coordinates:</string>
+        <string>Map Point 1:</string>
        </property>
        <property name="buddy">
-        <cstring>mapOriginEastingSpin</cstring>
+        <cstring>mapPoint1EastingSpin</cstring>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="localTerminusLabel">
        <property name="text">
         <string>Local Terminus:</string>
@@ -69,7 +75,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="12" column="1">
       <widget class="QSpinBox" name="localTerminusEastingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -82,7 +88,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="2">
+     <item row="13" column="2">
       <widget class="QSpinBox" name="localNorthingIntervalSpin">
        <property name="suffix">
         <string> m</string>
@@ -98,7 +104,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="localIntervalLabel">
        <property name="text">
         <string>Grid Interval:</string>
@@ -108,41 +114,31 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="mapOnAxisLabel">
-       <property name="text">
-        <string>On Axis:</string>
-       </property>
-       <property name="buddy">
-        <cstring>mapOnAxisXButton</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
+     <item row="10" column="1">
       <widget class="QLabel" name="localEastingLabel">
        <property name="text">
         <string>Local Easting</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QPushButton" name="mapOriginFromMapButton">
+     <item row="5" column="3">
+      <widget class="QPushButton" name="mapPoint1FromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="mapAxisLabel">
+     <item row="7" column="0">
+      <widget class="QLabel" name="mapPoint2Label">
        <property name="text">
-        <string>Axis Coordinates:</string>
+        <string>Map Point 2:</string>
        </property>
        <property name="buddy">
-        <cstring>mapAxisEastingSpin</cstring>
+        <cstring>mapPoint2EastingSpin</cstring>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="11" column="1">
       <widget class="QSpinBox" name="localOriginEastingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -155,7 +151,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="localOriginLabel">
        <property name="text">
         <string>Local Origin:</string>
@@ -165,7 +161,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="2">
+     <item row="11" column="2">
       <widget class="QSpinBox" name="localOriginNorthingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -178,83 +174,22 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="3">
-      <widget class="QPushButton" name="mapAxisFromMapButton">
+     <item row="7" column="3">
+      <widget class="QPushButton" name="mapPoint2FromMapButton">
        <property name="text">
         <string>From Map</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QRadioButton" name="mapOnAxisYButton">
-       <property name="text">
-        <string>Y</string>
-       </property>
-      </widget>
-     </item>
      <item row="9" column="0">
-      <widget class="QLabel" name="siteCodeLabel">
-       <property name="text">
-        <string>Site Code:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="mapOnAxisXButton">
-       <property name="text">
-        <string>X</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="mapEastingLabel">
-       <property name="text">
-        <string>Map Easting</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="spacerLabel">
+      <widget class="QLabel" name="spacerLabel2">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="mapAxisEastingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QDoubleSpinBox" name="mapAxisNorthingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="mapOriginNorthingSpin">
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="mapOriginEastingSpin">
+     <item row="7" column="1">
+      <widget class="QDoubleSpinBox" name="mapPoint2EastingSpin">
        <property name="decimals">
         <number>3</number>
        </property>
@@ -264,6 +199,36 @@
       </widget>
      </item>
      <item row="7" column="2">
+      <widget class="QDoubleSpinBox" name="mapPoint2NorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QDoubleSpinBox" name="mapPoint1NorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QDoubleSpinBox" name="mapPoint1EastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="2">
       <widget class="QSpinBox" name="localTerminusNorthingSpin">
        <property name="maximum">
         <number>9999</number>
@@ -276,18 +241,128 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1" colspan="3">
-      <widget class="QLineEdit" name="siteCodeEdit"/>
+     <item row="2" column="0">
+      <widget class="QLabel" name="methodLabel">
+       <property name="text">
+        <string>Method:</string>
+       </property>
+       <property name="buddy">
+        <cstring>methodCombo</cstring>
+       </property>
+      </widget>
      </item>
-     <item row="10" column="0">
+     <item row="2" column="1" colspan="3">
+      <widget class="QComboBox" name="methodCombo">
+       <item>
+        <property name="text">
+         <string>Create from two known points</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Create from X axis baseline</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Create from Y axis baseline</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QDoubleSpinBox" name="localPoint1NorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLabel" name="mapNorthingLabel">
+       <property name="text">
+        <string>Northing</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QDoubleSpinBox" name="localPoint2NorthingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="localPoint1EastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QDoubleSpinBox" name="localPoint2EastingSpin">
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QLabel" name="gridNameLabel">
        <property name="text">
         <string>Grid Name:</string>
        </property>
+       <property name="buddy">
+        <cstring>gridNameEdit</cstring>
+       </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="siteCodeLabel">
+       <property name="text">
+        <string>Site Code:</string>
+       </property>
+       <property name="buddy">
+        <cstring>siteCodeEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="mapEastingLabel">
+       <property name="text">
+        <string>Easting</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="localPoint1Label">
+       <property name="text">
+        <string>Local Point 1:</string>
+       </property>
+       <property name="buddy">
+        <cstring>localPoint1EastingSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="3">
       <widget class="QLineEdit" name="gridNameEdit"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="spacerLabel1">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -328,14 +403,19 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>mapOriginEastingSpin</tabstop>
-  <tabstop>mapOriginNorthingSpin</tabstop>
-  <tabstop>mapOriginFromMapButton</tabstop>
-  <tabstop>mapOnAxisXButton</tabstop>
-  <tabstop>mapOnAxisYButton</tabstop>
-  <tabstop>mapAxisEastingSpin</tabstop>
-  <tabstop>mapAxisNorthingSpin</tabstop>
-  <tabstop>mapAxisFromMapButton</tabstop>
+  <tabstop>siteCodeEdit</tabstop>
+  <tabstop>gridNameEdit</tabstop>
+  <tabstop>methodCombo</tabstop>
+  <tabstop>mapPoint1EastingSpin</tabstop>
+  <tabstop>mapPoint1NorthingSpin</tabstop>
+  <tabstop>mapPoint1FromMapButton</tabstop>
+  <tabstop>localPoint1EastingSpin</tabstop>
+  <tabstop>localPoint1NorthingSpin</tabstop>
+  <tabstop>mapPoint2EastingSpin</tabstop>
+  <tabstop>mapPoint2NorthingSpin</tabstop>
+  <tabstop>mapPoint2FromMapButton</tabstop>
+  <tabstop>localPoint2EastingSpin</tabstop>
+  <tabstop>localPoint2NorthingSpin</tabstop>
   <tabstop>localOriginEastingSpin</tabstop>
   <tabstop>localOriginNorthingSpin</tabstop>
   <tabstop>localTerminusEastingSpin</tabstop>

@@ -133,32 +133,38 @@ class GridModule(QObject):
         self.createDialog._showDialog()
 
     def createGridDialogAccepted(self):
+        mp1 = self.createDialog.mapPoint1()
+        lp1 = self.createDialog.localPoint1()
+        mp2 = self.createDialog.mapPoint2()
+        lp2 = self.createDialog.localPoint2()
+        xInterval = self.createDialog.localEastingInterval()
+        yInterval = self.createDialog.localNorthingInterval()
+        if self.createDialog.methodType() != CreateGridDialog.TwoKnownPoints:
+            axisGeometry = QgsGeometry.fromPolyline([mp1, mp2])
+            mapAxisPoint = None
+            localAxisPoint = None
+            if self.createDialog.methodType() == CreateGridDialog.PointOnYAxis:
+                if axisGeometry.length() < yInterval:
+                    self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                    return False
+                mp2 = axisGeometry.interpolate(yInterval).asPoint()
+                lp2 = QgsPoint(lp1.x(), lp1.y() + yInterval)
+            else:
+                if axisGeometry.length() < xInterval:
+                    self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                    return False
+                mp2 = axisGeometry.interpolate(xInterval).asPoint()
+                lp2 = QgsPoint(lp1.x() + xInterval, lp1.y())
         if self.createGrid(self.createDialog.siteCode(), self.createDialog.gridName(),
-                           self.createDialog.mapOriginPoint(), self.createDialog.mapAxisPoint(),
-                           self.createDialog.mapAxisPointType(),
+                           mp1, lp1, mp2, lp2,
                            self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
-                           self.createDialog.localEastingInterval(), self.createDialog.localEastingInterval()):
+                           xInterval, yInterval):
             self.project.iface.mapCanvas().refresh()
             self.dock.setReadOnly(False)
             self.project.showMessage('Grid successfully created')
 
-    def createGrid(self, siteCode, gridName, mapOrigin, mapAxis, mapAxisType, localOrigin, localTerminus, xInterval, yInterval):
-        axisGeometry = QgsGeometry.fromPolyline([mapOrigin, mapAxis])
-        mapAxisPoint = None
-        localAxisPoint = None
-        if mapAxisType == CreateGridDialog.PointOnYAxis:
-            if axisGeometry.length() < yInterval:
-                self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
-                return False
-            mapAxisPoint = axisGeometry.interpolate(yInterval).asPoint()
-            localAxisPoint = QgsPoint(localOrigin.x(), localOrigin.y() + yInterval)
-        else:
-            if axisGeometry.length() < xInterval:
-                self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
-                return False
-            mapAxisPoint = axisGeometry.interpolate(xInterval).asPoint()
-            localAxisPoint = QgsPoint(localOrigin.x() + xInterval, localOrigin.y())
-        localTransformer = LinearTransformer(localOrigin, mapOrigin, localAxisPoint, mapAxisPoint)
+    def createGrid(self, siteCode, gridName, mapPoint1, localPoint1, mapPoint2, localPoint2, localOrigin, localTerminus, xInterval, yInterval):
+        localTransformer = LinearTransformer(localPoint1, mapPoint1, localPoint2, mapPoint2)
         local_x = self.project.fieldName('local_x')
         local_y = self.project.fieldName('local_y')
         map_x = self.project.fieldName('map_x')

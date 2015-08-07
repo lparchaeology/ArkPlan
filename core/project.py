@@ -153,7 +153,7 @@ class Project(QObject):
             'bufferSuffix'     : '_mem',
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
-            'polygonsBaseName' : '',
+            'polygonsBaseName' : 'base_pg',
             'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],

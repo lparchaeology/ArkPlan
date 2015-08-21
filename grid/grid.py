@@ -36,7 +36,7 @@ from ..core.project import Project
 
 from translate_features_dialog import TranslateFeaturesDialog
 from update_layer_dialog import UpdateLayerDialog
-from create_grid_dialog import CreateGridDialog
+from grid_wizard import GridWizard
 from grid_dock import GridDock
 
 class GridModule(QObject):
@@ -46,7 +46,7 @@ class GridModule(QObject):
     # Internal variables
     mapTool = None  #ArkMapToolEmitPoint()
     initialised = False
-    createDialog = None  # QDialog
+    gridWizard = None  # QWizard
 
     def __init__(self, project):
         super(GridModule, self).__init__()
@@ -59,7 +59,7 @@ class GridModule(QObject):
         self.dock = GridDock()
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Local Grid'), ':/plugins/Ark/grid/view-grid.png', True))
         self.dock.toggled.connect(self.run)
-        self.dock.createGridSelected.connect(self.showCreateGridDialog)
+        self.dock.createGridSelected.connect(self.showGridWizard)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
         self.dock.translateFeaturesSelected.connect(self.showTranslateFeaturesDialog)
@@ -124,26 +124,28 @@ class GridModule(QObject):
 
     # Grid methods
 
-    def showCreateGridDialog(self):
+    def showGridWizard(self):
         self.initialise()
-        if self.createDialog is None:
-            self.createDialog = CreateGridDialog(self.project.iface, self.project.siteCode(), self.project.iface.mainWindow())
-            self.createDialog.accepted.connect(self.createGridDialogAccepted)
-        self.createDialog.show()
-        self.createDialog._showDialog()
+        if self.gridWizard is None:
+            self.gridWizard = GridWizard(self.project.iface, self.project.siteCode(), self.project.iface.mainWindow())
+            self.gridWizard.accepted.connect(self.createGridDialogAccepted)
+        else:
+            self.gridWizard.restart()
+        self.gridWizard.show()
+        self.gridWizard._showDialog()
 
     def createGridDialogAccepted(self):
-        mp1 = self.createDialog.mapPoint1()
-        lp1 = self.createDialog.localPoint1()
-        mp2 = self.createDialog.mapPoint2()
-        lp2 = self.createDialog.localPoint2()
-        xInterval = self.createDialog.localEastingInterval()
-        yInterval = self.createDialog.localNorthingInterval()
-        if self.createDialog.methodType() != CreateGridDialog.TwoKnownPoints:
+        mp1 = self.gridWizard.mapPoint1()
+        lp1 = self.gridWizard.localPoint1()
+        mp2 = self.gridWizard.mapPoint2()
+        lp2 = self.gridWizard.localPoint2()
+        xInterval = self.gridWizard.localEastingInterval()
+        yInterval = self.gridWizard.localNorthingInterval()
+        if self.gridWizard.methodType() != GridWizard.TwoKnownPoints:
             axisGeometry = QgsGeometry.fromPolyline([mp1, mp2])
             mapAxisPoint = None
             localAxisPoint = None
-            if self.createDialog.methodType() == CreateGridDialog.PointOnYAxis:
+            if self.gridWizard.methodType() == GridWizard.PointOnYAxis:
                 if axisGeometry.length() < yInterval:
                     self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
                     return False
@@ -155,9 +157,9 @@ class GridModule(QObject):
                     return False
                 mp2 = axisGeometry.interpolate(xInterval).asPoint()
                 lp2 = QgsPoint(lp1.x() + xInterval, lp1.y())
-        if self.createGrid(self.createDialog.siteCode(), self.createDialog.gridName(),
+        if self.createGrid(self.gridWizard.siteCode(), self.gridWizard.gridName(),
                            mp1, lp1, mp2, lp2,
-                           self.createDialog.localOriginPoint(), self.createDialog.localTerminusPoint(),
+                           self.gridWizard.localOriginPoint(), self.gridWizard.localTerminusPoint(),
                            xInterval, yInterval):
             self.project.iface.mapCanvas().refresh()
             self.dock.setReadOnly(False)
@@ -210,6 +212,7 @@ class GridModule(QObject):
         return attributes
 
     def _setAttributes(self, feature, attributes):
+        self.project.logMessage(str(attributes))
         for key in attributes.keys():
             feature.setAttribute(key, attributes[key])
 

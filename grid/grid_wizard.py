@@ -26,15 +26,15 @@ import os.path
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QPoint
-from PyQt4.QtGui import QDialog
+from PyQt4.QtGui import QWizard
 
 from qgis.core import QgsPoint
 
 from ..arklib.map_tools import ArkMapToolEmitPoint
 
-from create_grid_dialog_base import *
+from grid_wizard_base import *
 
-class CreateGridDialog(QDialog, Ui_CreateGridDialog):
+class GridWizard(QWizard, Ui_GridWizard):
 
     TwoKnownPoints = 0
     PointOnXAxis = 1
@@ -44,7 +44,7 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
     _mapTool = None # ArkMapToolEmitPoint
 
     def __init__(self, iface, siteCode, parent=None):
-        super(CreateGridDialog, self).__init__(parent)
+        super(GridWizard, self).__init__(parent)
         self._iface = iface
 
         self.setupUi(self)
@@ -52,8 +52,6 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)
         self.methodCombo.currentIndexChanged.connect(self.setMethodType)
-        self.createGridButton.clicked.connect(self.accept)
-        self.cancelButton.clicked.connect(self.reject)
 
         self._mapTool = ArkMapToolEmitPoint(self._iface.mapCanvas())
         self._mapTool.setSnappingEnabled(True)
@@ -67,12 +65,12 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         return QgsPoint(self.mapPoint2EastingSpin.value(), self.mapPoint2NorthingSpin.value())
 
     def localPoint1(self):
-        if self.methodType() == CreateGridDialog.TwoKnownPoints:
+        if self.methodType() == GridWizard.TwoKnownPoints:
             return QgsPoint(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
         return QgsPoint()
 
     def localPoint2(self):
-        if self.methodType() == CreateGridDialog.TwoKnownPoints:
+        if self.methodType() == GridWizard.TwoKnownPoints:
             return QgsPoint(self.localPoint2EastingSpin.value(), self.localPoint2NorthingSpin.value())
         return QgsPoint()
 
@@ -80,7 +78,7 @@ class CreateGridDialog(QDialog, Ui_CreateGridDialog):
         return self.methodCombo.currentIndex()
 
     def setMethodType(self, method):
-        if method == CreateGridDialog.TwoKnownPoints:
+        if method == GridWizard.TwoKnownPoints:
             self.mapPoint1Label.setText('Map Point 1')
             self.localPoint1Label.setEnabled(True)
             self.localPoint1EastingSpin.setEnabled(True)

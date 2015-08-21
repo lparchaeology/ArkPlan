@@ -29,9 +29,9 @@ from PyQt4.QtGui import  QIcon, QAction
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
 from qgis.gui import QgsMessageBar
 
-from ..arklib import layers
+from ..arklib import utils, layers, layercollection
+from ..arklib.layercollection import *
 
-from layercollection import *
 from settings_dialog import SettingsDialog
 
 

@@ -21,6 +21,10 @@
  ***************************************************************************/
 """
 
+"""
+A QDockWidget for use in a QGIS Plugin
+"""
+
 import os
 
 from PyQt4.QtCore import pyqtSignal

@@ -26,7 +26,7 @@ from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
 
-from ..arklib import utils, layers, digitizing
+import utils, layers, digitizing
 
 class LayerCollectionSettings:
 

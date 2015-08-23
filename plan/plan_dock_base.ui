@@ -198,10 +198,46 @@
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="3">
-              <widget class="QLabel" name="label_13">
+             <item row="1" column="2">
+              <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
                <property name="text">
-                <string>Schms</string>
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Polys</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Snap Layers:</string>
+               </property>
+               <property name="buddy">
+                <cstring>m_snapLinesLayerTool</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::MenuButtonPopup</enum>
                </property>
               </widget>
              </item>
@@ -238,36 +274,6 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="2">
-              <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>Polys</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Snap Layers:</string>
-               </property>
-               <property name="buddy">
-                <cstring>m_snapLinesLayerTool</cstring>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label">
                <property name="text">
@@ -275,45 +281,6 @@
                </property>
                <property name="buddy">
                 <cstring>m_snapLinesBufferTool</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="SnappingToolButton" name="m_snapSchematicsLayerTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="SnappingToolButton" name="m_snapSchematicsBufferTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
                </property>
               </widget>
              </item>
@@ -463,10 +430,8 @@
   <tabstop>m_contextNumberSpin</tabstop>
   <tabstop>m_snapLinesBufferTool</tabstop>
   <tabstop>m_snapPolygonsBufferTool</tabstop>
-  <tabstop>m_snapSchematicsBufferTool</tabstop>
   <tabstop>m_snapLinesLayerTool</tabstop>
   <tabstop>m_snapPolygonsLayerTool</tabstop>
-  <tabstop>m_snapSchematicsLayerTool</tabstop>
   <tabstop>m_topologicalTool</tabstop>
   <tabstop>m_featureIdSpin</tabstop>
   <tabstop>m_featureNameEdit</tabstop>

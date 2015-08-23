@@ -48,11 +48,6 @@ class LayerCollectionSettings:
     polygonsLayerPath = ''
     polygonsStylePath = ''
 
-    schemaLayerProvider = ''
-    schemaLayerName = ''
-    schemaLayerPath = ''
-    schemaStylePath = ''
-
 
 class LayerCollection:
 
@@ -62,8 +57,6 @@ class LayerCollection:
     linesLayerId = ''
     polygonsLayer = None
     polygonsLayerId = ''
-    schemaLayer = None
-    schemaLayerId = ''
 
     pointsBuffer = None
     pointsBufferId = ''
@@ -71,8 +64,6 @@ class LayerCollection:
     linesBufferId = ''
     polygonsBuffer = None
     polygonsBufferId = ''
-    schemaBuffer = None
-    schemaBufferId = ''
 
     # Internal variables
 
@@ -104,8 +95,6 @@ class LayerCollection:
             QgsMapLayerRegistry.instance().removeMapLayer(self.linesBuffer.id())
         if self.polygonsBuffer is not None:
             QgsMapLayerRegistry.instance().removeMapLayer(self.polygonsBuffer.id())
-        if self.schemaBuffer is not None:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.schemaBuffer.id())
         if self._buffersGroupIndex >= 0:
             self._iface.legendInterface().removeGroup(self._buffersGroupIndex)
 
@@ -115,8 +104,6 @@ class LayerCollection:
         layerId = layers.getLayerId(self._settings.linesLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
         layerId = layers.getLayerId(self._settings.polygonsLayerName + self._settings.bufferSuffix)
-        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
-        layerId = layers.getLayerId(self._settings.schemaLayerName + self._settings.bufferSuffix)
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
 
     def _groupIndexChanged(self, oldIndex, newIndex):
@@ -139,9 +126,6 @@ class LayerCollection:
             elif layerId == self.polygonsLayerId:
                 self.polygonsLayer = None
                 self.polygonsLayerId = ''
-            elif layerId == self.schemaLayerId:
-                self.schemaLayer = None
-                self.schemaLayerId = ''
             elif layerId == self.pointsBufferId:
                 self.pointsBuffer = None
                 self.pointsBufferId = ''
@@ -151,9 +135,6 @@ class LayerCollection:
             elif layerId == self.polygonsBufferId:
                 self.polygonsBuffer = None
                 self.polygonsBufferId = ''
-            elif layerId == self.schemaBufferId:
-                self.schemaBuffer = None
-                self.schemaBufferId = ''
 
     def _loadLayer(self, layerName, layerPath, layerProvider, stylePath, groupIndex):
         if (layerName is None or layerName == '' or layerPath is None or layerPath == ''):
@@ -178,7 +159,6 @@ class LayerCollection:
     def loadCollection(self):
         if (self._collectionGroupIndex < 0):
             self._collectionGroupIndex = layers.groupNameIndex(self._iface, self._settings.collectionGroupName)
-        self.schemaLayer, self.schemaLayerId = self._loadLayer(self._settings.schemaLayerName, self._settings.schemaLayerPath, self._settings.schemaLayerProvider, self._settings.schemaStylePath, self._collectionGroupIndex)
         self.polygonsLayer, self.polygonsLayerId = self._loadLayer(self._settings.polygonsLayerName, self._settings.polygonsLayerPath, self._settings.polygonsLayerProvider, self._settings.polygonsStylePath, self._collectionGroupIndex)
         self.linesLayer, self.linesLayerId = self._loadLayer(self._settings.linesLayerName, self._settings.linesLayerPath, self._settings.linesLayerProvider, self._settings.linesStylePath, self._collectionGroupIndex)
         self.pointsLayer, self.pointsLayerId = self._loadLayer(self._settings.pointsLayerName, self._settings.pointsLayerPath, self._settings.pointsLayerProvider, self._settings.pointsStylePath, self._collectionGroupIndex)
@@ -197,9 +177,6 @@ class LayerCollection:
 
         if (self._buffersGroupIndex < 0):
             self._buffersGroupIndex = layers.groupNameIndex(self._iface, self._settings.buffersGroupName)
-
-        if (self.schemaBuffer is None or not self.schemaBuffer.isValid()):
-            self.schemaBuffer, self.schemaBufferId = self._createBufferLayer(self.schemaLayer, self._settings.schemaStylePath)
 
         if (self.polygonsBuffer is None or not self.polygonsBuffer.isValid()):
             self.polygonsBuffer, self.polygonsBufferId = self._createBufferLayer(self.polygonsLayer, self._settings.polygonsStylePath)
@@ -225,8 +202,7 @@ class LayerCollection:
     def isCollectionEditable(self):
         return ((self.pointsLayer is None or self._isLayerEditable(self.pointsLayer)) and
                 (self.linesLayer is None or self._isLayerEditable(self.linesLayer)) and
-                (self.polygonsLayer is None or self._isLayerEditable(self.polygonsLayer)) and
-                (self.schemaLayer is None or self._isLayerEditable(self.schemaLayer)))
+                (self.polygonsLayer is None or self._isLayerEditable(self.polygonsLayer)))
 
     def _isLayerEditable(self, layer):
         if (layer is None or not layer.isValid()):
@@ -301,14 +277,11 @@ class LayerCollection:
             self._clearBuffer('lines', self.linesBuffer, undoMessage)
         if self._copyBuffer('polygons', self.polygonsBuffer, self.polygonsLayer, undoMessage):
             self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        if self._copyBuffer('schema', self.schemaBuffer, self.schemaLayer, undoMessage):
-            self._clearBuffer('schema', self.schemaBuffer, undoMessage)
 
     def clearBuffers(self, undoMessage):
         self._clearBuffer('levels', self.pointsBuffer, undoMessage)
         self._clearBuffer('lines', self.linesBuffer, undoMessage)
         self._clearBuffer('polygons', self.polygonsBuffer, undoMessage)
-        self._clearBuffer('schema', self.schemaBuffer, undoMessage)
 
 
     def showPoints(self, status):
@@ -319,9 +292,6 @@ class LayerCollection:
 
     def showPolygons(self, status):
         self._iface.legendInterface().setLayerVisible(self.polygonsLayer, status)
-
-    def showSchema(self, status):
-        self._iface.legendInterface().setLayerVisible(self.schemaLayer, status)
 
 
     def applyFieldFilterRange(self, field, valueRange):
@@ -357,7 +327,6 @@ class LayerCollection:
         self._applyLayerFilter(self.pointsLayer, self.filter)
         self._applyLayerFilter(self.linesLayer, self.filter)
         self._applyLayerFilter(self.polygonsLayer, self.filter)
-        self._applyLayerFilter(self.schemaLayer, self.filter)
 
 
     def _applyLayerFilter(self, layer, filter):
@@ -396,11 +365,9 @@ class LayerCollection:
         extent = self._extendExtent(extent, self.pointsLayer)
         extent = self._extendExtent(extent, self.linesLayer)
         extent = self._extendExtent(extent, self.polygonsLayer)
-        extent = self._extendExtent(extent, self.schemaLayer)
         extent = self._extendExtent(extent, self.pointsBuffer)
         extent = self._extendExtent(extent, self.linesBuffer)
         extent = self._extendExtent(extent, self.polygonsBuffer)
-        extent = self._extendExtent(extent, self.schemaBuffer)
         return extent
 
 

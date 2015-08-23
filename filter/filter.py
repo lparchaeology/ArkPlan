@@ -99,7 +99,6 @@ class Filter(QObject):
         self.dock.showPointsChanged.connect(self.project.features.showPoints)
         self.dock.showLinesChanged.connect(self.project.features.showLines)
         self.dock.showPolygonsChanged.connect(self.project.features.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.project.features.showSchema)
 
         self.initialised = True
 

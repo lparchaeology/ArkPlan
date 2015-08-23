@@ -44,7 +44,6 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     showPointsChanged = pyqtSignal(int)
     showLinesChanged = pyqtSignal(int)
     showPolygonsChanged = pyqtSignal(int)
-    showSchematicsChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(FilterDock, self).__init__(parent)
@@ -74,7 +73,6 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.showPointsCheck.stateChanged.connect(self.showPointsChanged)
         self.showLinesCheck.stateChanged.connect(self.showLinesChanged)
         self.showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
-        self.showSchematicsCheck.stateChanged.connect(self.showSchematicsChanged)
 
         self.enableGroupFilters(False)
 

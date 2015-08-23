@@ -106,24 +106,30 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     # Drawing Tools
 
-    def addDrawingTool(self, class, action):
+    def addDrawingTool(self, classCode, action):
         toolButton = QToolButton(self)
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
-        if class == 'cxt':
+        if classCode == 'cxt':
             self.m_contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
             if self._cgCol == self._cgColMax:
-                self._cgRow += 1
-                self._cgCol = 0
+                self.newDrawingToolRow(classCode)
             else:
                 self._cgCol += 1
         else:
             self.m_featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
             if self._fgCol == self._fgColMax:
-                self._fgRow += 1
-                self._fgCol = 0
+                self.newDrawingToolRow(classCode)
             else:
                 self._fgCol += 1
+
+    def newDrawingToolRow(self, classCode):
+        if classCode == 'cxt':
+            self._cgRow += 1
+            self._cgCol = 0
+        else:
+            self._fgRow += 1
+            self._fgCol = 0
 
     # Snapping Tools
 
@@ -133,14 +139,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setPolygonsBuffer(self, layer):
         self.m_snapPolygonsBufferTool.setLayer(layer)
 
-    def setSchematicsBuffer(self, layer):
-        self.m_snapSchematicsBufferTool.setLayer(layer)
-
     def setLinesLayer(self, layer):
         self.m_snapLinesLayerTool.setLayer(layer)
 
     def setPolygonsLayer(self, layer):
         self.m_snapPolygonsLayerTool.setLayer(layer)
-
-    def setSchematicsLayer(self, layer):
-        self.m_snapSchematicsLayerTool.setLayer(layer)

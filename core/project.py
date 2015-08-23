@@ -108,11 +108,9 @@ class Project(QObject):
             'pointsBaseName'   : 'feature_pt',
             'linesBaseName'    : 'feature_pl',
             'polygonsBaseName' : 'feature_pg',
-            'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'schemaFields'     : []
         },
         'grid' : {
             'path'             : '',
@@ -123,11 +121,9 @@ class Project(QObject):
             'pointsBaseName'   : 'grid_pt',
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
-            'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'source', 'created_on', 'created_by'],
-            'schemaFields'     : []
         },
         'base' : {
             'path'             : '',
@@ -138,11 +134,9 @@ class Project(QObject):
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : 'base_pg',
-            'schemaBaseName'   : '',
             'pointsFields'     : ['site', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'schemaFields'     : []
         },
         'plan' : {
             'path'             : '',
@@ -331,12 +325,6 @@ class Project(QObject):
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
             lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
-        layerName = self.schemaLayerName(module)
-        if layerName:
-            lcs.schemaLayerProvider = 'ogr'
-            lcs.schemaLayerName = layerName
-            lcs.schemaLayerPath = self._shapeFile(self.modulePath(module), layerName)
-            lcs.schemaStylePath = self._styleFile(self.modulePath(module), layerName, self.schemaBaseName(module), self.schemaBaseNameDefault(module))
         return LayerCollection(self.iface, lcs)
 
     def _createCollectionLayers(self, module, settings):
@@ -346,8 +334,6 @@ class Project(QObject):
             layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
             layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
-        if (settings.schemaLayerPath and not QFile.exists(settings.schemaLayerPath)):
-            layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
 
     def _createCollectionMultiLayers(self, module, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
@@ -356,8 +342,6 @@ class Project(QObject):
             layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
             layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
-        if (settings.schemaLayerPath and not QFile.exists(settings.schemaLayerPath)):
-            layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)
@@ -513,18 +497,6 @@ class Project(QObject):
 
     def polygonsLayerName(self, module):
         return self._layerName(self.polygonsBaseName(module))
-
-    def schemaBaseNameDefault(self, module):
-        return self._moduleDefault(module, 'schemaBaseName')
-
-    def schemaBaseName(self, module):
-        return self._moduleEntry(module, 'schemaBaseName')
-
-    def setSchemaBaseName(self, module, schemaBaseName):
-        self._setModuleEntry(module, 'schemaBaseName', schemaBaseName)
-
-    def schemaLayerName(self, module):
-        return self._layerName(self.schemaBaseName(module))
 
     def collection(self, module):
         if module == 'features':

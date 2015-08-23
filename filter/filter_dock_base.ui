@@ -163,10 +163,37 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="4" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="showSchematicsLabel">
+      <item row="0" column="1" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showPointsLabel">
         <property name="text">
-         <string>Schms</string>
+         <string>Points</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showPolygonsLabel">
+        <property name="text">
+         <string>Polys</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="showLinesLabel">
+        <property name="text">
+         <string>Lines</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3" alignment="Qt::AlignHCenter">
+       <widget class="QCheckBox" name="showPolygonsCheck">
+        <property name="toolTip">
+         <string>Show existing polygons</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -183,33 +210,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="showPointsLabel">
-        <property name="text">
-         <string>Points</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4" alignment="Qt::AlignHCenter">
-       <widget class="QCheckBox" name="showSchematicsCheck">
-        <property name="toolTip">
-         <string>Show existing schematics</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="showPolygonsLabel">
-        <property name="text">
-         <string>Polys</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="showLabel">
         <property name="text">
@@ -217,30 +217,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="showLinesLabel">
-        <property name="text">
-         <string>Lines</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1" alignment="Qt::AlignHCenter">
        <widget class="QCheckBox" name="showPointsCheck">
         <property name="toolTip">
          <string>Show existing levels</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3" alignment="Qt::AlignHCenter">
-       <widget class="QCheckBox" name="showPolygonsCheck">
-        <property name="toolTip">
-         <string>Show existing polygons</string>
         </property>
         <property name="text">
          <string/>

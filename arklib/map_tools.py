@@ -751,7 +751,7 @@ class ArkMapToolAddFeature(ArkMapToolCapture):
         if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
             geometry = QgsGeometry.fromPoint(layerPoints[0])
         elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
-            geometry = QgsGeometry.fromMultiPoint(QgsMultiPoint(layerPoints[0]))
+            geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
         elif (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):
             geometry = QgsGeometry.fromPolyline(layerPoints)
         elif (layerWKBType == QGis.WKBMultiLineString or layerWKBType == QGis.WKBMultiLineString25D):

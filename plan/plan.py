@@ -149,10 +149,8 @@ class Plan(QObject):
 
     def initialiseBuffers(self):
         self.project.features.createBuffers()
-        self.dock.setSchematicsBuffer(self.project.features.schemaBuffer)
         self.dock.setPolygonsBuffer(self.project.features.polygonsBuffer)
         self.dock.setLinesBuffer(self.project.features.linesBuffer)
-        self.dock.setSchematicsLayer(self.project.features.schemaLayer)
         self.dock.setPolygonsLayer(self.project.features.polygonsLayer)
         self.dock.setLinesLayer(self.project.features.linesLayer)
 
@@ -314,7 +312,7 @@ class Plan(QObject):
 
     def addSchemaTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = self._newMapTool(name, ArkMapToolAddFeature.Polygon, self.project.collection(module).schemaBuffer, action)
+        mapTool = self._newMapTool(name, ArkMapToolAddFeature.Polygon, self.project.collection(module).polygonsBuffer, action)
         self._addMapTool(classCode, category, mapTool, action)
 
     def addSectionTool(self, module, classCode, category, name, icon):

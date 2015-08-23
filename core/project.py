@@ -239,9 +239,9 @@ class Project(QObject):
             self.grid = self._createCollection('grid')
             self._createCollectionLayers('grid', self.grid._settings)
             self.contexts = self._createCollection('contexts')
-            self._createCollectionLayers('contexts', self.contexts._settings)
+            self._createCollectionMultiLayers('contexts', self.contexts._settings)
             self.features = self._createCollection('features')
-            self._createCollectionLayers('features', self.features._settings)
+            self._createCollectionMultiLayers('features', self.features._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
@@ -366,6 +366,16 @@ class Project(QObject):
             layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
             layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+        if (settings.schemaLayerPath and not QFile.exists(settings.schemaLayerPath)):
+            layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
+
+    def _createCollectionMultiLayers(self, module, settings):
+        if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+        if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+        if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
         if (settings.schemaLayerPath and not QFile.exists(settings.schemaLayerPath)):
             layers.createShapefile(settings.schemaLayerPath,   QGis.WKBMultiPolygon, self.projectCrs(), self._layerFields(module, 'schemaFields'))
 

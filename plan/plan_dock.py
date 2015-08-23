@@ -106,30 +106,24 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     # Drawing Tools
 
-    def addDrawingTool(self, module, action):
+    def addDrawingTool(self, class, action):
         toolButton = QToolButton(self)
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
-        if module == 'contexts':
+        if class == 'cxt':
             self.m_contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
             if self._cgCol == self._cgColMax:
-                self.newDrawingToolRow(module)
+                self._cgRow += 1
+                self._cgCol = 0
             else:
                 self._cgCol += 1
-        elif module == 'features':
+        else:
             self.m_featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
             if self._fgCol == self._fgColMax:
-                self.newDrawingToolRow(module)
+                self._fgRow += 1
+                self._fgCol = 0
             else:
                 self._fgCol += 1
-
-    def newDrawingToolRow(self, module):
-        if module == 'contexts':
-            self._cgRow += 1
-            self._cgCol = 0
-        elif module == 'features':
-            self._fgRow += 1
-            self._fgCol = 0
 
     # Snapping Tools
 

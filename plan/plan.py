@@ -117,28 +117,28 @@ class Plan(QObject):
         self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
 
-        self.addDrawingTool('contexts', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'ueg', self.tr('Uncertain Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'loe', self.tr('Limit of Excavation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'trn', self.tr('Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.dock.newDrawingToolRow('contexts')
-        self.addDrawingTool('contexts', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('contexts', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('contexts', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('contexts', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.dock.newDrawingToolRow('contexts')
-        self.addDrawingTool('contexts', 'cxt', 'cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'brk', self.tr('Brick'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'til', self.tr('Tile'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'pot', self.tr('Pot'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('contexts', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.dock.newDrawingToolRow('contexts')
-        self.addLevelTool('contexts', 'cxt', 'lvl', self.tr('Level'), QIcon())
-        self.addSchemaTool('contexts', 'cxt', 'sch', self.tr('Schema'), QIcon())
+        self.addDrawingTool('features', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'ueg', self.tr('Uncertain Edge'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'loe', self.tr('Limit of Excavation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'trn', self.tr('Truncation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.dock.newDrawingToolRow('features')
+        self.addDrawingTool('features', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('features', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.addDrawingTool('features', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.addDrawingTool('features', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.dock.newDrawingToolRow('features')
+        self.addDrawingTool('features', 'cxt', 'cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'brk', self.tr('Brick'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'til', self.tr('Tile'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'pot', self.tr('Pot'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('features', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.dock.newDrawingToolRow('features')
+        self.addLevelTool('features', 'cxt', 'lvl', self.tr('Level'), QIcon())
+        self.addSchemaTool('features', 'cxt', 'sch', self.tr('Schema'), QIcon())
 
         self.addDrawingTool('features', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
         self.addDrawingTool('features', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
@@ -148,14 +148,13 @@ class Plan(QObject):
         self.initialised = True
 
     def initialiseBuffers(self):
-        self.project.contexts.createBuffers()
         self.project.features.createBuffers()
-        self.dock.setSchematicsBuffer(self.project.contexts.schemaBuffer)
-        self.dock.setPolygonsBuffer(self.project.contexts.polygonsBuffer)
-        self.dock.setLinesBuffer(self.project.contexts.linesBuffer)
-        self.dock.setSchematicsLayer(self.project.contexts.schemaLayer)
-        self.dock.setPolygonsLayer(self.project.contexts.polygonsLayer)
-        self.dock.setLinesLayer(self.project.contexts.linesLayer)
+        self.dock.setSchematicsBuffer(self.project.features.schemaBuffer)
+        self.dock.setPolygonsBuffer(self.project.features.polygonsBuffer)
+        self.dock.setLinesBuffer(self.project.features.linesBuffer)
+        self.dock.setSchematicsLayer(self.project.features.schemaLayer)
+        self.dock.setPolygonsLayer(self.project.features.polygonsLayer)
+        self.dock.setLinesLayer(self.project.features.linesLayer)
 
     def loadProject(self):
         if not self.initialised:
@@ -260,14 +259,11 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        if self.project.contexts.okToMergeBuffers():
-            self.project.contexts.mergeBuffers('Merge context data ' + str(self.contextNumber))
         if self.project.features.okToMergeBuffers():
-            self.project.features.mergeBuffers('Merge feature data ' + str(self.featureId))
+            self.project.features.mergeBuffers('Merge feature data')
 
     def clearBuffers(self):
-        self.project.contexts.clearBuffers('Clear contexts buffer data ' + str(self.contextNumber))
-        self.project.features.clearBuffers('Clear features buffer data ' + str(self.featureId))
+        self.project.features.clearBuffers('Clear features buffer data')
 
     # Drawing tools
 
@@ -293,8 +289,8 @@ class Plan(QObject):
         mapTool.activated.connect(self.updateDefaultAttributes)
         return mapTool
 
-    def _addMapTool(self, module, category, mapTool, action):
-        self.dock.addDrawingTool(module, action)
+    def _addMapTool(self, classCode, category, mapTool, action):
+        self.dock.addDrawingTool(classCode, action)
         self.actions[category] = action
         self.mapTools[category] = mapTool
 
@@ -308,25 +304,25 @@ class Plan(QObject):
         else:
             layer = self.project.collection(module).pointsBuffer
         mapTool = self._newMapTool(name, featureType, layer, action)
-        self._addMapTool(module, category, mapTool, action)
+        self._addMapTool(classCode, category, mapTool, action)
 
     def addLevelTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
         mapTool = self._newMapTool(name, ArkMapToolAddFeature.Point, self.project.collection(module).pointsBuffer, action)
         mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -1000, 1000, 2)
-        self._addMapTool(module, category, mapTool, action)
+        self._addMapTool(classCode, category, mapTool, action)
 
     def addSchemaTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
         mapTool = self._newMapTool(name, ArkMapToolAddFeature.Polygon, self.project.collection(module).schemaBuffer, action)
-        self._addMapTool(module, category, mapTool, action)
+        self._addMapTool(classCode, category, mapTool, action)
 
     def addSectionTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
         mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
-        self._addMapTool(module, category, mapTool, action)
+        self._addMapTool(classCode, category, mapTool, action)
 
     def updateDefaultAttributes(self):
         for mapTool in self.mapTools.values():
@@ -343,9 +339,9 @@ class Plan(QObject):
         defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
         defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = data['class']
         id = ''
-        if data['module'] == 'contexts':
+        if data['class'] == 'cxt':
             id = self.contextNumber
-        elif data['module'] == 'features':
+        else:
             id = self.featureId
         defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
         defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName

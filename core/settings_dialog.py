@@ -80,16 +80,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.featuresLinesNameEdit.setText(project.linesBaseName('features'))
         self.featuresPolygonsNameEdit.setText(project.polygonsBaseName('features'))
 
-        # Context tab settings
-        self.contextsFolderEdit.setText(project.modulePath('contexts'))
-        self.contextsFolderButton.clicked.connect(self._selectContextsFolder)
-        self.contextsGroupNameEdit.setText(project.layersGroupName('contexts'))
-        self.contextsBufferGroupNameEdit.setText(project.buffersGroupName('contexts'))
-        self.contextsPointsNameEdit.setText(project.pointsBaseName('contexts'))
-        self.contextsLinesNameEdit.setText(project.linesBaseName('contexts'))
-        self.contextsPolygonsNameEdit.setText(project.polygonsBaseName('contexts'))
-        self.contextsSchemaNameEdit.setText(project.schemaBaseName('contexts'))
-
         # Plan tab settings
         self.planFolderEdit.setText(project.planPath())
         self.planFolderButton.clicked.connect(self._selectPlanFolder)
@@ -128,15 +118,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLinesBaseName('features', self.featuresLinesNameEdit.text())
         self._project.setPolygonsBaseName('features', self.featuresPolygonsNameEdit.text())
 
-        # Contexts tab settings
-        self._project.setModulePath('contexts', self.contextsFolderEdit.text())
-        self._project.setLayersGroupName('contexts', self.contextsGroupNameEdit.text())
-        self._project.setBuffersGroupName('contexts', self.contextsBufferGroupNameEdit.text())
-        self._project.setPointsBaseName('contexts', self.contextsPointsNameEdit.text())
-        self._project.setLinesBaseName('contexts', self.contextsLinesNameEdit.text())
-        self._project.setPolygonsBaseName('contexts', self.contextsPolygonsNameEdit.text())
-        self._project.setSchemaBaseName('contexts', self.contextsSchemaNameEdit.text())
-
         # Plan tab settings
         self._project.setPlanPath(self.planFolderEdit.text())
         self._project.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
@@ -174,11 +155,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Features Folder'), self.featuresFolderEdit.text()))
         if folderName:
             self.featuresFolderEdit.setText(folderName)
-
-    def _selectContextsFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Contexts Folder'), self.contextsFolderEdit.text()))
-        if folderName:
-            self.contextsFolderEdit.setText(folderName)
 
     def _selectPlanFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))

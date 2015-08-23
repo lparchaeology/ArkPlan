@@ -96,10 +96,10 @@ class Filter(QObject):
         self.project.initialise()
         if (not self.project.isInitialised()):
             return
-        self.dock.showPointsChanged.connect(self.project.contexts.showPoints)
-        self.dock.showLinesChanged.connect(self.project.contexts.showLines)
-        self.dock.showPolygonsChanged.connect(self.project.contexts.showPolygons)
-        self.dock.showSchematicsChanged.connect(self.project.contexts.showSchema)
+        self.dock.showPointsChanged.connect(self.project.features.showPoints)
+        self.dock.showLinesChanged.connect(self.project.features.showLines)
+        self.dock.showPolygonsChanged.connect(self.project.features.showPolygons)
+        self.dock.showSchematicsChanged.connect(self.project.features.showSchema)
 
         self.initialised = True
 
@@ -109,8 +109,8 @@ class Filter(QObject):
     def applyContextFilter(self, contextRange):
         del self.contextList[:]
         self.contextList = self._rangeToList(contextRange)
-        self.project.contexts.applyFieldFilterRange(self.project.fieldName('id'), contextRange)
-        self.dock.displayFilter(self.project.contexts.filter)
+        self.project.features.applyFieldFilterRange(self.project.fieldName('id'), contextRange)
+        self.dock.displayFilter(self.project.features.filter)
 
 
     def applySubGroupFilter(self, subRange):
@@ -118,8 +118,8 @@ class Filter(QObject):
         sublist = self._rangeToList(subRange)
         for sub in subList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.project.contexts.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
-        self.dock.displayFilter(self.project.contexts.filter)
+        self.project.features.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
+        self.dock.displayFilter(self.project.features.filter)
 
 
     def applyGroupFilter(self, groupRange):
@@ -127,8 +127,8 @@ class Filter(QObject):
         groupList = self._rangeToList(groupRange)
         for group in groupList:
             self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.project.contexts.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
-        self.dock.displayFilter(self.project.contexts.filter)
+        self.project.features.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
+        self.dock.displayFilter(self.project.features.filter)
 
 
     def clearFilter(self):
@@ -137,13 +137,13 @@ class Filter(QObject):
 
 
     def applyFilter(self, filter):
-        self.project.contexts.applyFilter(filter)
-        self.dock.displayFilter(self.project.contexts.filter)
+        self.project.features.applyFilter(filter)
+        self.dock.displayFilter(self.project.features.filter)
 
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.project.contexts.linesLayer)
-        dialog.setExpressionText(self.project.contexts.filter)
+        dialog = QgsExpressionBuilderDialog(self.project.features.linesLayer)
+        dialog.setExpressionText(self.project.features.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
@@ -155,7 +155,7 @@ class Filter(QObject):
 
 
     def zoomFilter(self):
-        self.project.contexts.zoomToExtent()
+        self.project.features.zoomToExtent()
 
 
     def triggerIdentifyAction(self, checked):

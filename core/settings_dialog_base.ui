@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>526</width>
-    <height>351</height>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="projectTab">
       <attribute name="title">
@@ -506,134 +506,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="contextsTab">
-      <attribute name="title">
-       <string>Contexts</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="1">
-        <layout class="QHBoxLayout" name="contextsFolderLayout">
-         <item>
-          <widget class="QLineEdit" name="contextsFolderEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="contextsFolderButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="contextsFolderLabel">
-         <property name="text">
-          <string>Contexts Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="contextsSchemaNameLabel">
-         <property name="text">
-          <string>Schema Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsSchemaNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="contextsPointsNameEdit"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="contextsGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="contextsGroupNameEdit"/>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLineEdit" name="contextsPolygonsNameEdit"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="contextsLinesNameLabel">
-         <property name="text">
-          <string>Lines Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsLinesNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QLineEdit" name="contextsSchemaNameEdit"/>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="contextsLinesNameEdit"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="contextsPointNameLabel">
-         <property name="text">
-          <string>Points Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsPointsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="contextsPolygonsNameLabel">
-         <property name="text">
-          <string>Polygons Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsPolygonsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1">
-        <spacer name="contextsTabSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="contextsBufferGroupNameEdit"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="contextsBufferGroupNameLabel">
-         <property name="text">
-          <string>Buffer Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextsBufferGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="plansTab">
       <attribute name="title">
        <string>Plans</string>
@@ -776,14 +648,6 @@
   <tabstop>gridPointsNameEdit</tabstop>
   <tabstop>gridLinesNameEdit</tabstop>
   <tabstop>gridPolygonsNameEdit</tabstop>
-  <tabstop>contextsFolderEdit</tabstop>
-  <tabstop>contextsFolderButton</tabstop>
-  <tabstop>contextsGroupNameEdit</tabstop>
-  <tabstop>contextsBufferGroupNameEdit</tabstop>
-  <tabstop>contextsPointsNameEdit</tabstop>
-  <tabstop>contextsLinesNameEdit</tabstop>
-  <tabstop>contextsPolygonsNameEdit</tabstop>
-  <tabstop>contextsSchemaNameEdit</tabstop>
   <tabstop>planFolderEdit</tabstop>
   <tabstop>planFolderButton</tabstop>
   <tabstop>separatePlansCheck</tabstop>

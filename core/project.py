@@ -56,7 +56,6 @@ class Project(QObject):
     planGroupIndex = -1
 
     geoLayer = None  #QgsRasterLayer()
-    contexts = None  # LayerCollection()
     features = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
@@ -100,21 +99,6 @@ class Project(QObject):
     }
 
     moduleDefaults = {
-        'contexts' : {
-            'path'             : '',
-            'pathSuffix'       : 'vectors/contexts',
-            'layersGroupName'  : 'Context Data',
-            'buffersGroupName' : 'Edit Data',
-            'bufferSuffix'     : '_mem',
-            'pointsBaseName'   : 'context_pt',
-            'linesBaseName'    : 'context_pl',
-            'polygonsBaseName' : 'context_pg',
-            'schemaBaseName'   : 'context_mpg',
-            'pointsFields'     : ['site', 'class', 'id', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
-            'schemaFields'     : ['site', 'class', 'id', 'category', 'source', 'file', 'comment', 'created_on', 'created_by']
-        },
         'features' : {
             'path'             : '',
             'pathSuffix'       : 'vectors/features',
@@ -198,8 +182,6 @@ class Project(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        if self.contexts is not None:
-            self.contexts.unload()
         if self.features is not None:
             self.features.unload()
         if self.grid is not None:
@@ -216,7 +198,7 @@ class Project(QObject):
         # TODO more validation, check if files exist, etc
         if (self.showSettingsDialog() and self.siteCode() and self.projectDir().mkpath('.') and self.siteCode() and
             self.planDir().mkpath('.') and self.planDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
-            self.moduleDir('grid').mkpath('.') and self.moduleDir('contexts').mkpath('.') and self.moduleDir('features').mkpath('.') and self.moduleDir('base').mkpath('.')):
+            self.moduleDir('grid').mkpath('.') and self.moduleDir('features').mkpath('.') and self.moduleDir('base').mkpath('.')):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -238,15 +220,13 @@ class Project(QObject):
         if self.isConfigured():
             self.grid = self._createCollection('grid')
             self._createCollectionLayers('grid', self.grid._settings)
-            self.contexts = self._createCollection('contexts')
-            self._createCollectionMultiLayers('contexts', self.contexts._settings)
             self.features = self._createCollection('features')
             self._createCollectionMultiLayers('features', self.features._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.contexts.initialise() and self.features.initialise() and self.base.initialise()):
+            if (self.grid.initialise() and self.features.initialise() and self.base.initialise()):
                 self._initialised = True
         return self._initialised
 
@@ -547,8 +527,6 @@ class Project(QObject):
         return self._layerName(self.schemaBaseName(module))
 
     def collection(self, module):
-        if module == 'contexts':
-            return self.contexts
         if module == 'features':
             return self.features
         elif module == 'grid':

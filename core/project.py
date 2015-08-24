@@ -40,15 +40,8 @@ class Project(QObject):
     # Signal when the project changes so modules can reload
     projectChanged = pyqtSignal()
 
-    iface = None # QgsInteface()
     project = None # QgsProject()
-    pluginName = 'Ark'
-    pluginPath = ''
-    pluginIconPath = ':/plugins/Ark/icon.png'
-
-    menuName = ''
-    toolbar = None  # QToolBar()
-    projectAction = None  # QAction()
+    plugin = None # Plugin()
 
     projectGroupName = 'Ark'
     projectGroupIndex = -1
@@ -148,25 +141,16 @@ class Project(QObject):
     # Private settings
     _initialised = False
 
-    def __init__(self, iface, pluginPath):
+    def __init__(self, plugin):
         super(Project, self).__init__()
-        self.iface = iface
-
-        self.pluginName = self.tr(u'Ark')
-        self.pluginPath = pluginPath
-
-        # Declare instance attributes
-        self.menuName = self.tr(u'&Ark')
-        self.toolbar = self.iface.addToolBar(self.pluginName)
-        self.toolbar.setObjectName(self.pluginName)
+        self.plugin = plugin
 
         # If the legend indexes change make sure we stay updated
-        self.iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+        self.plugin.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
     # Load the module when plugin is loaded
     def load(self):
-        self.projectAction = self.createMenuAction(self.tr(u'Ark Settings'), self.pluginIconPath, False)
-        self.projectAction.triggered.connect(self.triggerSettingsDialog)
+        self.plugin.addAction(self.plugin.pluginIconPath, self.tr(u'Ark Settings'), self.triggerSettingsDialog)
 
     def triggerSettingsDialog(self):
         if self.isConfigured():
@@ -182,8 +166,6 @@ class Project(QObject):
             self.grid.unload()
         if self.base is not None:
             self.base.unload()
-        self.iface.removePluginMenu(self.menuName, self.projectAction)
-        self.iface.removeToolBarIcon(self.projectAction)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
@@ -199,10 +181,10 @@ class Project(QObject):
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
 
     def isConfigured(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'configured', False)[0]
+        return self.plugin.readBoolEntry('configured', False)
 
     def _setIsConfigured(self, configured):
-        QgsProject.instance().writeEntry(self.pluginName, 'configured', configured)
+        self.plugin.writeEntry('configured', configured)
         if not configured:
             self._initialised = False
 
@@ -218,8 +200,8 @@ class Project(QObject):
             self._createCollectionMultiLayers('plan', self.plan._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
-            self.iface.projectRead.connect(self.projectLoad)
-            self.iface.newProjectCreated.connect(self.projectLoad)
+            self.plugin.iface.projectRead.connect(self.projectLoad)
+            self.plugin.iface.newProjectCreated.connect(self.projectLoad)
             if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()):
                 self._initialised = True
         return self._initialised
@@ -230,38 +212,9 @@ class Project(QObject):
     def projectLoad(self):
         self.projectChanged.emit()
 
-    def createMenuAction(self, actionText, iconPath, checkable, tip='', whatsThis=''):
-        icon = QIcon(iconPath)
-        action = QAction(icon, actionText, self.iface.mainWindow())
-        action.setCheckable(checkable)
-        action.setStatusTip(tip)
-        action.setWhatsThis(whatsThis)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(self.menuName, action)
-        return action
-
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.projectGroupIndex):
             self.projectGroupIndex = newIndex
-
-    # Convenience logging functions
-
-    def logMessage(self, text, level=QgsMessageLog.INFO):
-        QgsMessageLog.logMessage(text, self.pluginName, level)
-
-    def showCriticalMessage(self, text, duration=0):
-        utils.showCriticalMessage(self.iface, text, duration)
-
-    def showMessage(self, text, level=QgsMessageBar.INFO, duration=0):
-        utils.showMessage(self.iface, text, duration)
-
-    def showStatusMessage(self, text):
-        utils.showStatusMessage(self.iface, text)
-
-    # Settings utilities
-
-    def _setProjectEntry(self, key, value, default):
-        utils.setEntry(self.pluginName, key, value, default)
 
     def _layerName(self, baseName):
         if (baseName and self.prependSiteCode() and self.siteCode()):
@@ -274,9 +227,9 @@ class Project(QObject):
         self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.groupNameIndex(self.iface, self.planGroupName)
-        self.iface.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
-        self.iface.mapCanvas().setExtent(self.geoLayer.extent())
+            self.planGroupIndex = layers.groupNameIndex(self.plugin.iface, self.planGroupName)
+        self.plugin.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
+        self.plugin.mapCanvas().setExtent(self.geoLayer.extent())
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
@@ -325,23 +278,23 @@ class Project(QObject):
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
             lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
-        return LayerCollection(self.iface, lcs)
+        return LayerCollection(self.plugin.iface, lcs)
 
     def _createCollectionLayers(self, module, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.plugin.projectCrs(), self._layerFields(module, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.plugin.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.plugin.projectCrs(), self._layerFields(module, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, module, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.plugin.projectCrs(), self._layerFields(module, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.plugin.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.plugin.projectCrs(), self._layerFields(module, 'polygonsFields'))
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)
@@ -367,55 +320,55 @@ class Project(QObject):
     # Project settings
 
     def useArkDB(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'useArkDB', False)[0]
+        return self.plugin.readBoolEntry('useArkDB', False)
 
     def setUseArkDB(self, useArkDB):
-        QgsProject.instance().writeEntry(self.pluginName, 'useArkDB', useArkDB)
+        self.plugin.writeEntry('useArkDB', useArkDB)
 
     def projectDir(self):
         return QDir(self.projectPath())
 
     def projectPath(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'projectPath', '')[0]
+        return self.plugin.readEntry('projectPath', '')
 
     def setProjectPath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'projectPath', absolutePath)
+        self.plugin.writeEntry('projectPath', absolutePath)
 
     def multiSiteProject(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'multiSiteProject', False)[0]
+        return self.plugin.readBoolEntry('multiSiteProject', False)
 
     def setMultiSiteProject(self, multiSite):
-        QgsProject.instance().writeEntry(self.pluginName, 'multiSiteProject', multiSite)
+        self.plugin.writeEntry('multiSiteProject', multiSite)
 
     def siteCode(self):
-        return QgsProject.instance().readEntry(self.pluginName, 'siteCode', '')[0]
+        return self.plugin.readEntry('siteCode', '')
 
     def setSiteCode(self, siteCode):
-        QgsProject.instance().writeEntry(self.pluginName, 'siteCode', siteCode)
+        self.plugin.writeEntry('siteCode', siteCode)
 
     def prependSiteCode(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'prependSiteCode', True)[0]
+        return self.plugin.readBoolEntry('prependSiteCode', True)
 
     def setPrependSiteCode(self, prepend):
-        QgsProject.instance().writeEntry(self.pluginName, 'prependSiteCode', prepend)
+        self.plugin.writeEntry('prependSiteCode', prepend)
 
     def useCustomStyles(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'useCustomStyles', False)[0]
+        return self.plugin.readBoolEntry('useCustomStyles', False)
 
     def setUseCustomStyles(self, useCustomStyles):
-        QgsProject.instance().writeEntry(self.pluginName, 'useCustomStyles', useCustomStyles)
+        self.plugin.writeEntry('useCustomStyles', useCustomStyles)
 
     def styleDir(self):
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path =  QgsProject.instance().readEntry(self.pluginName, 'stylePath', '')[0]
+        path =  self.plugin.readEntry('stylePath', '')
         if (not path):
-            return self.pluginPath + '/styles'
+            return self.plugin.pluginPath + '/styles'
         return path
 
     def setStylePath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'stylePath', absolutePath)
+        self.plugin.writeEntry('stylePath', absolutePath)
 
 
     # Module settings
@@ -424,10 +377,10 @@ class Project(QObject):
         return self.moduleDefaults[module][key]
 
     def _moduleEntry(self, module, key):
-        return QgsProject.instance().readEntry(self.pluginName, module + '/' + key, self._moduleDefault(module, key))[0]
+        return self.plugin.readEntry(module + '/' + key, self._moduleDefault(module, key))
 
     def _setModuleEntry(self, module, key, value):
-        self._setProjectEntry(module + '/' + key, value, self._moduleDefault(module, key))
+        self.plugin.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
 
     def moduleDir(self, module):
         return QDir(self.modulePath(module))
@@ -531,24 +484,20 @@ class Project(QObject):
         return self.modulePath('planRaster')
 
     def setPlanRasterPath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'planRasterPath', absolutePath)
+        self.plugin.writeEntry('planRasterPath', absolutePath)
 
     def separateProcessedPlanFolder(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'separateProcessedPlanFolder', True)[0]
+        return self.plugin.readBoolEntry('separateProcessedPlanFolder', True)
 
     def setSeparateProcessedPlanFolder(self, separatePlans):
-        QgsProject.instance().writeEntry(self.pluginName, 'separateProcessedPlanFolder', separatePlans)
+        self.plugin.writeEntry('separateProcessedPlanFolder', separatePlans)
 
     def planTransparency(self):
-        return QgsProject.instance().readNumEntry(self.pluginName, 'planTransparency', 50)[0]
+        return self.plugin.readNumEntry('planTransparency', 50)
 
     def setPlanTransparency(self, transparency):
-        QgsProject.instance().writeEntry(self.pluginName, 'planTransparency', transparency)
-
-
-    def projectCrs(self):
-        return utils.projectCrs(self.iface)
+        self.plugin.writeEntry('planTransparency', transparency)
 
     def showSettingsDialog(self):
-        settingsDialog = SettingsDialog(self, self.iface.mainWindow())
+        settingsDialog = SettingsDialog(self, self.plugin.iface.mainWindow())
         return settingsDialog.exec_()

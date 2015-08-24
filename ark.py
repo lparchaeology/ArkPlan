@@ -25,13 +25,15 @@ import os.path
 
 import resources_rc
 
+from .arklib.plugin import Plugin
+
 from .core.project import Project
 
 from .grid.grid import GridModule
 from .plan.plan import Plan
 from .filter.filter import Filter
 
-class Ark:
+class ArkPlan(Plugin):
     """QGIS Plugin Implementation."""
 
     # Common plugin objects
@@ -43,13 +45,19 @@ class Ark:
     filterModule = None  # Filter()
 
     def __init__(self, iface):
-        self.project = Project(iface, os.path.dirname(__file__))
+        super(ArkPlan, self).__init__(iface, u'ArkPlan', ':/plugins/ArkPlan/icon.png',
+                                       os.path.dirname(__file__), Plugin.PluginsMenu)
+        # Set display / menu name now we have tr() set up
+        self.setDisplayName(self.tr(u'&ArkPlan'))
+
+        self.project = Project(self)
         self.gridModule = GridModule(self.project)
         self.planModule = Plan(self.project)
         self.filterModule = Filter(self.project)
 
     # Load the plugin
     def initGui(self):
+        super(ArkPlan, self).unload()
         self.project.load()
         self.gridModule.load()
         self.planModule.load()
@@ -65,3 +73,5 @@ class Ark:
 
         # Removes the plugin menu item and icon from QGIS GUI.
         self.project.unload()
+
+        super(ArkPlan, self).unload()

@@ -52,8 +52,8 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
         self.setupUi(self)
 
         #FIXME Hack around resource file issue, clean-up when separate plugin
-        self.createGridAction.setIcon(QIcon(':/plugins/Ark/grid/get-hot-new-stuff.png'))
-        self.identifyGridAction.setIcon(QIcon(':/plugins/Ark/grid/snap-orthogonal.png'))
+        self.createGridAction.setIcon(QIcon(':/plugins/ArkGrid/get-hot-new-stuff.png'))
+        self.identifyGridAction.setIcon(QIcon(':/plugins/ArkGrid/snap-orthogonal.png'))
         self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
         self.translateFeaturesAction.setIcon(QIcon(':/images/themes/default/mActionMoveFeature.png'))
         self.panToAction.setIcon(QIcon(':/images/themes/default/mActionPanToSelected.svg'))

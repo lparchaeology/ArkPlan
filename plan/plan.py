@@ -66,7 +66,8 @@ class Plan(QObject):
     # Load the module when plugin is loaded
     def load(self):
         self.dock = PlanDock()
-        self.dock.load(self.project.iface, Qt.RightDockWidgetArea, self.project.createMenuAction(self.tr(u'Draw Archaeological Plans'), ':/plugins/Ark/plan/draw-freehand.png', True))
+        action = self.project.plugin.addAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        self.dock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self.loadRawPlan)
@@ -247,7 +248,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.project.planDir(), self.project.separatePlanFolders(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
+        georefDialog = GeorefDialog(rawFile, self.project.planRasterDir(), self.project.separateProcessedPlanFolder(), self.project.plugin.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
@@ -278,7 +279,7 @@ class Plan(QObject):
         return action
 
     def _newMapTool(self, name, featureType, buffer, action):
-        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, name)
+        mapTool = ArkMapToolAddFeature(self.project.plugin.iface, buffer, featureType, name)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
@@ -317,7 +318,7 @@ class Plan(QObject):
 
     def addSectionTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
+        mapTool = ArkMapToolAddBaseline(self.project.plugin.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self._addMapTool(classCode, category, mapTool, action)

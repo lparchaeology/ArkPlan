@@ -50,7 +50,7 @@ class Plugin(QObject):
     actions = []
     toolbar = None  # QToolBar()
 
-    def __init__(self, iface, pluginName, pluginPath, iconPath, menuType):
+    def __init__(self, iface, pluginName, pluginIconPath, pluginPath, menuType):
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -64,8 +64,8 @@ class Plugin(QObject):
         :param pluginPath: The plugin directory.
         :type pluginPath: str
 
-        :param iconPath: Plugin icon path, either file or resource.
-        :type iconPath: str
+        :param pluginIconPath: Plugin icon path, either file or resource.
+        :type pluginIconPath: str
 
         :param menuType: The menu type to add the plugin to.
         :type menuType: int
@@ -73,12 +73,12 @@ class Plugin(QObject):
         self.iface = iface
         self.pluginName = pluginName
         self.pluginPath = pluginPath
-        self.iconPath = iconPath
+        self.pluginIconPath = pluginIconPath
         self.menuType = menuType
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(self.pluginDir, 'i18n', 'ArkGrid_{}.qm'.format(locale))
+        locale_path = os.path.join(self.pluginPath, 'i18n', 'ArkGrid_{}.qm'.format(locale))
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -121,7 +121,7 @@ class Plugin(QObject):
         addToToolbar=True,
         tip=None,
         whatsThis=None,
-        parent=self.iface.mainWindow()):
+        parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param iconPath: Path to the icon for this action. Can be a resource
@@ -166,6 +166,8 @@ class Plugin(QObject):
         """
 
         icon = QIcon(iconPath)
+        if parent is None:
+            parent = self.iface.mainWindow()
         action = QAction(icon, text, parent)
         if callback is not None:
             action.triggered.connect(callback)
@@ -179,6 +181,9 @@ class Plugin(QObject):
             action.setWhatsThis(whatsThis)
 
         if addToToolbar:
+            if self.toolbar is None:
+                self.toolbar = self.iface.addToolBar(self.pluginName)
+                self.toolbar.setObjectName(self.pluginName)
             self.toolbar.addAction(action)
 
         if addToMenu:
@@ -257,9 +262,9 @@ class Plugin(QObject):
 
     def projectCrs(self):
         if QGis.QGIS_VERSION_INT >= 20400:
-            return iface.mapCanvas().mapSettings().destinationCrs()
+            return self.iface.mapCanvas().mapSettings().destinationCrs()
         else:
-            return iface.mapCanvas().mapRenderer().destinationCrs()
+            return self.iface.mapCanvas().mapRenderer().destinationCrs()
 
     # Settings utilities
 
@@ -276,19 +281,43 @@ class Plugin(QObject):
         QgsProject.instance().writeEntry(self.pluginName, key, value)
 
     def readEntry(self, key, default=''):
-        QgsProject.instance().readEntry(self.pluginName, key, default)
+        ret = QgsProject.instance().readEntry(self.pluginName, key, default)
+        if ret is None or not ret[1]:
+            return default
+        else:
+            return ret[0]
 
     def readNumEntry(self, key, default=0):
-        QgsProject.instance().readNumEntry(self.pluginName, key, default)
+        ret = QgsProject.instance().readNumEntry(self.pluginName, key, default)
+        if ret is None or not ret[1]:
+            return default
+        else:
+            return ret[0]
 
     def readDoubleEntry(self, key, default=0.0):
-        QgsProject.instance().readDoubleEntry(self.pluginName, key, default)
+        ret = QgsProject.instance().readDoubleEntry(self.pluginName, key, default)
+        if ret is None or not ret[1]:
+            return default
+        else:
+            return ret[0]
 
     def readBoolEntry(self, key, default=False):
-        QgsProject.instance().readBoolEntry(self.pluginName, key, default)
+        ret = QgsProject.instance().readBoolEntry(self.pluginName, key, default)
+        if ret is None or not ret[1]:
+            return default
+        else:
+            return ret[0]
 
     def readListEntry(self, key, default=[]):
         QgsProject.instance().readListEntry(self.pluginName, key, default)
+
+    # QgsInterface utilities
+
+    def mapCanvas(self):
+        return self.iface.mapCanvas()
+
+    def legendInterface(self):
+        return self.iface.legendInterface()
 
 # Template implementation classes, copy one of these into your main plugin file
 
@@ -306,7 +335,7 @@ class MyPlugin(Plugin):
         super(MyPlugin, self).initGui()
 
         # Connect a simple button and menu item to your main action
-        self.addAction(self.iconPath, self.displayName, self.run)
+        self.addAction(self.pluginIconPath, self.displayName, self.run)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -349,7 +378,3 @@ class MyDockPlugin(Plugin):
         # If the dock has been enabled, do something if needed
         if checked:
             pass
-
-    # Unload the module when plugin is unloaded
-    def unload(self):
-

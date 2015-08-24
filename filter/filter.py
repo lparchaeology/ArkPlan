@@ -58,11 +58,12 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.project.createMenuAction(self.tr(u'Identify contexts'), ':/plugins/Ark/filter/edit-node.png', True)
+        self.identifyAction = self.project.plugin.addAction(':/plugins/ArkPlan/filter/edit-node.png', self.tr(u'Identify contexts'), checkable=True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
-        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, self.project.createMenuAction(self.tr(u'Filter contexts'), ':/plugins/Ark/filter/view-filter.png', True))
+        action = self.project.plugin.addAction(':/plugins/ArkPlan/filter/view-filter.png', self.tr(u'Filter contexts'), checkable=True)
+        self.dock.load(self.project.plugin.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
         self.dock.contextFilterChanged.connect(self.applyContextFilter)
@@ -74,7 +75,7 @@ class Filter(QObject):
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
 
-        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.iface.mapCanvas())
+        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.plugin.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
@@ -161,9 +162,9 @@ class Filter(QObject):
         if checked:
             #if not self.dataLoaded:
                 #self.data.loadData()
-            self.project.iface.mapCanvas().setMapTool(self.identifyMapTool)
+            self.project.plugin.mapCanvas().setMapTool(self.identifyMapTool)
         else:
-            self.project.iface.mapCanvas().unsetMapTool(self.identifyMapTool)
+            self.project.plugin.mapCanvas().unsetMapTool(self.identifyMapTool)
 
 
     def showIdentifyDialog(self, feature):
@@ -181,7 +182,7 @@ class Filter(QObject):
         for context in contextList:
             subList.append(self.data.subGroupForContext(context))
             groupList.append(self.data.groupForContext(context))
-        dataDialog = DataDialog(self.project.iface.mainWindow())
+        dataDialog = DataDialog(self.project.plugin.iface.mainWindow())
         dataDialog.contextTableView.setModel(self.data._contextProxyModel)
         self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(contextList))
         dataDialog.contextTableView.resizeColumnsToContents()

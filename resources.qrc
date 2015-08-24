@@ -1,23 +1,20 @@
 <RCC>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>icon.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>filter/edit-node.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>filter/view-filter.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark" >
-        <file>grid/get-hot-new-stuff.png</file>
-    </qresource>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>grid/snap-orthogonal.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>grid/view-grid.png</file>
     </qresource>
-    <qresource prefix="/plugins/Ark" >
+    <qresource prefix="/plugins/ArkPlan" >
         <file>plan/draw-freehand.png</file>
     </qresource>
 </RCC>

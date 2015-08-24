@@ -21,13 +21,16 @@
 
 import os.path
 
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtCore import Qt, QObject, QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+
+from qgis.core import QGis, QgsProject, QgsMessageLog
+from qgis.gui import QgsMessageBar
 
 # Initialize Qt resources from file resources.py
 import resources_rc
 
-class Plugin:
+class Plugin(QObject):
     """QGIS Plugin Base Class."""
 
     # MenuType enum
@@ -38,16 +41,16 @@ class Plugin:
     WebMenu = 4
 
     # Public variables
-    iface = None
+    iface = None  # QgsInteface()
     pluginName = ''
+    pluginPath = ''
+    pluginIconPath = ''
     displayName = ''
-    menuType = 0
-    pluginDir = ''
-    iconPath = ''
-    toolbar = None
+    menuType = 0  # MenuType
     actions = []
+    toolbar = None  # QToolBar()
 
-    def __init__(self, iface, pluginName, pluginDir, iconPath, menuType):
+    def __init__(self, iface, pluginName, pluginPath, iconPath, menuType):
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -58,8 +61,8 @@ class Plugin:
         :param pluginName: Untranslated name of the plugin.
         :type pluginName: str
 
-        :param pluginDir: The plugin directory.
-        :type pluginDir: str
+        :param pluginPath: The plugin directory.
+        :type pluginPath: str
 
         :param iconPath: Plugin icon path, either file or resource.
         :type iconPath: str
@@ -67,10 +70,9 @@ class Plugin:
         :param menuType: The menu type to add the plugin to.
         :type menuType: int
         """
-
         self.iface = iface
         self.pluginName = pluginName
-        self.pluginDir = pluginDir
+        self.pluginPath = pluginPath
         self.iconPath = iconPath
         self.menuType = menuType
 
@@ -87,7 +89,7 @@ class Plugin:
         self.toolbar.setObjectName(self.pluginName)
 
     def setDisplayName(self, name):
-        """Set the translated display to be used in the menu
+        """Set the translated display to be used in the menu and elsewhere
         :param name: Translated plugin name.
         :type name: str, QString
         """
@@ -110,20 +112,21 @@ class Plugin:
 
     def addAction(
         self,
-        icon_path,
+        iconPath,
         text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+        callback=None,
+        enabled=True,
+        checkable=False,
+        addToMenu=True,
+        addToToolbar=True,
+        tip=None,
+        whatsThis=None,
+        parent=self.iface.mainWindow()):
         """Add a toolbar icon to the toolbar.
 
-        :param icon_path: Path to the icon for this action. Can be a resource
+        :param iconPath: Path to the icon for this action. Can be a resource
             path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-        :type icon_path: str
+        :type iconPath: str
 
         :param text: Text that should be shown in menu items for this action.
         :type text: str
@@ -131,26 +134,30 @@ class Plugin:
         :param callback: Function to be called when the action is triggered.
         :type callback: function
 
-        :param enabled_flag: A flag indicating if the action should be enabled
+        :param enabled: A flag indicating if the action should be enabled
             by default. Defaults to True.
-        :type enabled_flag: bool
+        :type enabled: bool
 
-        :param add_to_menu: Flag indicating whether the action should also
+        :param checkable: A flag indicating if the action should be checkable
+            by default. Defaults to False.
+        :type chenckable: bool
+
+        :param addToMenu: Flag indicating whether the action should also
             be added to the menu. Defaults to True.
-        :type add_to_menu: bool
+        :type addToMenu: bool
 
-        :param add_to_toolbar: Flag indicating whether the action should also
+        :param addToToolbar: Flag indicating whether the action should also
             be added to the toolbar. Defaults to True.
-        :type add_to_toolbar: bool
+        :type addToToolbar: bool
 
-        :param status_tip: Optional text to show in a popup when mouse pointer
+        :param tip: Optional text to show in a popup when mouse pointer
             hovers over the action.
-        :type status_tip: str
+        :type tip: str
 
         :param parent: Parent widget for the new action. Defaults None.
         :type parent: QWidget
 
-        :param whats_this: Optional text to show in the status bar when the
+        :param whatsThis: Optional text to show in the status bar when the
             mouse pointer hovers over the action.
 
         :returns: The action that was created. Note that the action is also
@@ -158,34 +165,35 @@ class Plugin:
         :rtype: QAction
         """
 
-        icon = QIcon(icon_path)
+        icon = QIcon(iconPath)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
-        action.setEnabled(enabled_flag)
+        if callback is not None:
+            action.triggered.connect(callback)
+        action.setEnabled(enabled)
+        action.setCheckable(checkable)
 
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
+        if tip is not None:
+            action.setStatusTip(tip)
 
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
+        if whatsThis is not None:
+            action.setWhatsThis(whatsThis)
 
-        if add_to_toolbar:
+        if addToToolbar:
             self.toolbar.addAction(action)
 
-        if add_to_menu:
-            if self.menuType == ArkPlugin.PluginsMenu:
-                self.iface.addPluginToMenu(self.menu, action)
-            elif self.menuType == ArkPlugin.DatabaseMenu:
-                self.iface.addPluginToDatabaseMenu(self.menu, action)
-            elif self.menuType == ArkPlugin.RasterMenu:
-                self.iface.addPluginToRasterMenu(self.menu, action)
-            elif self.menuType == ArkPlugin.VectorMenu:
-                self.iface.addPluginToVectorMenu(self.menu, action)
-            elif self.menuType == ArkPlugin.WebMenu:
-                self.iface.addPluginToWebMenu(self.menu, action)
+        if addToMenu:
+            if self.menuType == Plugin.PluginsMenu:
+                self.iface.addPluginToMenu(self.displayName, action)
+            elif self.menuType == Plugin.DatabaseMenu:
+                self.iface.addPluginToDatabaseMenu(self.displayName, action)
+            elif self.menuType == Plugin.RasterMenu:
+                self.iface.addPluginToRasterMenu(self.displayName, action)
+            elif self.menuType == Plugin.VectorMenu:
+                self.iface.addPluginToVectorMenu(self.displayName, action)
+            elif self.menuType == Plugin.WebMenu:
+                self.iface.addPluginToWebMenu(self.displayName, action)
 
         self.actions.append(action)
-
         return action
 
     def initGui(self):
@@ -197,7 +205,16 @@ class Plugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         # Reimplement and call in inplementation
         for action in self.actions:
-            self.iface.removePluginVectorMenu(self.displayName, action)
+            if self.menuType == Plugin.PluginsMenu:
+                self.iface.removePluginMenu(self.displayName, action)
+            elif self.menuType == Plugin.DatabaseMenu:
+                self.iface.removePluginDatabaseMenu(self.displayName, action)
+            elif self.menuType == Plugin.RasterMenu:
+                self.iface.removePluginRasterMenu(self.displayName, action)
+            elif self.menuType == Plugin.VectorMenu:
+                self.iface.removePluginVectorMenu(self.displayName, action)
+            elif self.menuType == Plugin.WebMenu:
+                self.iface.removePluginWebMenu(self.displayName, action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
@@ -207,8 +224,73 @@ class Plugin:
         # Reimplement in inplementation
         pass
 
+    # Convenience logging functions
 
-# Template class, copy this into your main plugin file
+    def logCriticalMessage(self, text):
+        self.logMessage(text, QgsMessageLog.CRITICAL)
+
+    def logWarningMessage(self, text):
+        self.logMessage(text, QgsMessageLog.WARNING)
+
+    def logInfoMessage(self, text):
+        self.logMessage(text, QgsMessageLog.INFO)
+
+    def logMessage(self, text, level=QgsMessageLog.INFO):
+        QgsMessageLog.logMessage(text, self.pluginName, level)
+
+    def showCriticalMessage(self, text, duration=0):
+        self.showMessage(text, QgsMessageBar.CRITICAL, duration)
+
+    def showWarningMessage(self, text, duration=0):
+        self.showMessage(text, QgsMessageBar.WARNING, duration)
+
+    def showInfoMessage(self, text, duration=0):
+        self.showMessage(text, QgsMessageBar.INFO, duration)
+
+    def showMessage(self, text, level=QgsMessageBar.INFO, duration=0):
+        self.iface.messageBar().pushMessage(text, level, duration)
+
+    def showStatusMessage(self, text):
+        utils.showStatusMessage(self.iface, text)
+
+    # Project utilities
+
+    def projectCrs(self):
+        if QGis.QGIS_VERSION_INT >= 20400:
+            return iface.mapCanvas().mapSettings().destinationCrs()
+        else:
+            return iface.mapCanvas().mapRenderer().destinationCrs()
+
+    # Settings utilities
+
+    def setEntry(self, key, value, default=None):
+        if (value == None or value == '' or value == default):
+            self.removeEntry(key)
+        else:
+            self.writeEntry(key, value)
+
+    def removeEntry(self, key):
+        QgsProject.instance().removeEntry(self.pluginName, key)
+
+    def writeEntry(self, key, value):
+        QgsProject.instance().writeEntry(self.pluginName, key, value)
+
+    def readEntry(self, key, default=''):
+        QgsProject.instance().readEntry(self.pluginName, key, default)
+
+    def readNumEntry(self, key, default=0):
+        QgsProject.instance().readNumEntry(self.pluginName, key, default)
+
+    def readDoubleEntry(self, key, default=0.0):
+        QgsProject.instance().readDoubleEntry(self.pluginName, key, default)
+
+    def readBoolEntry(self, key, default=False):
+        QgsProject.instance().readBoolEntry(self.pluginName, key, default)
+
+    def readListEntry(self, key, default=[]):
+        QgsProject.instance().readListEntry(self.pluginName, key, default)
+
+# Template implementation classes, copy one of these into your main plugin file
 
 class MyPlugin(Plugin):
     """QGIS Plugin Implementation."""
@@ -222,15 +304,52 @@ class MyPlugin(Plugin):
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         super(MyPlugin, self).initGui()
-        self.addAction(self.iconPath, self.displayName, self.run, parent=self.iface.mainWindow())
-        # Add other interface menu entries here
+
+        # Connect a simple button and menu item to your main action
+        self.addAction(self.iconPath, self.displayName, self.run)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         # Destroy/disable any plugin objects here
-        super(MyPlugin, self).initGui()
+        super(MyPlugin, self).unload()
 
     def run(self):
         """Run method that performs all the real work"""
         # Create and show the dialog or dock for the plugin, then process the result
         pass
+
+
+class MyDockPlugin(Plugin):
+    """QGIS Plugin Implementation."""
+
+    def __init__(self, iface):
+        super(MyPlugin, self).__init__(iface, u'MyDockPlugin', ':/plugins/MyPlugin/icon.png',
+                                       os.path.dirname(__file__), Plugin.PluginsMenu)
+        # Set display / menu name now we have tr() set up
+        self.setDisplayName(self.tr(u'&MyPlugin'))
+
+    def initGui(self):
+        """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        super(MyPlugin, self).initGui()
+
+        self.dock = MyDock()  # Your dock implementation derived from ArkDockWidget
+        dockAction = self.addAction(self.tr(u'Dock Name'), ':/plugins/MyPlugin/icon.png', True)
+        self.dock.load(self.iface, Qt.LeftDockWidgetArea, dockAction)
+        self.dock.toggled.connect(self.run)
+        self.dock.someSignal.connect(self.someMethod)
+
+    def unload(self):
+        """Removes the plugin menu item and icon from QGIS GUI."""
+        # Destroy/disable any plugin objects here
+        self.dock.unload()
+        super(MyPlugin, self).unload()
+
+    def run(self, checked):
+        """Run method that performs all the real work"""
+        # If the dock has been enabled, do something if needed
+        if checked:
+            pass
+
+    # Unload the module when plugin is unloaded
+    def unload(self):
+

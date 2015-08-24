@@ -71,19 +71,17 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.baseLinesNameEdit.setText(project.linesBaseName('base'))
         self.basePolygonsNameEdit.setText(project.polygonsBaseName('base'))
 
-        # Features tab settings
-        self.featuresFolderEdit.setText(project.modulePath('features'))
-        self.featuresFolderButton.clicked.connect(self._selectFeaturesFolder)
-        self.featuresGroupNameEdit.setText(project.layersGroupName('features'))
-        self.featuresBufferGroupNameEdit.setText(project.buffersGroupName('features'))
-        self.featuresPointsNameEdit.setText(project.pointsBaseName('features'))
-        self.featuresLinesNameEdit.setText(project.linesBaseName('features'))
-        self.featuresPolygonsNameEdit.setText(project.polygonsBaseName('features'))
-
         # Plan tab settings
-        self.planFolderEdit.setText(project.planPath())
-        self.planFolderButton.clicked.connect(self._selectPlanFolder)
-        self.separatePlansCheck.setChecked(project.separatePlanFolders())
+        self.planVectorFolderEdit.setText(project.modulePath('plan'))
+        self.planVectorFolderButton.clicked.connect(self._selectPlanFolder)
+        self.planGroupNameEdit.setText(project.layersGroupName('plan'))
+        self.planBufferGroupNameEdit.setText(project.buffersGroupName('plan'))
+        self.planPointsNameEdit.setText(project.pointsBaseName('plan'))
+        self.planLinesNameEdit.setText(project.linesBaseName('plan'))
+        self.planPolygonsNameEdit.setText(project.polygonsBaseName('plan'))
+        self.planRasterFolderEdit.setText(project.planRasterPath())
+        self.planRasterFolderButton.clicked.connect(self._selectPlanRasterFolder)
+        self.separateGeorefFolderCheck.setChecked(project.separateProcessedPlanFolder())
         self.planTransparencySpin.setValue(project.planTransparency())
 
     def accept(self):
@@ -110,17 +108,15 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLinesBaseName('base', self.baseLinesNameEdit.text())
         self._project.setPolygonsBaseName('base', self.basePolygonsNameEdit.text())
 
-        # Features tab settings
-        self._project.setModulePath('features', self.featuresFolderEdit.text())
-        self._project.setLayersGroupName('features', self.featuresGroupNameEdit.text())
-        self._project.setBuffersGroupName('features', self.featuresBufferGroupNameEdit.text())
-        self._project.setPointsBaseName('features', self.featuresPointsNameEdit.text())
-        self._project.setLinesBaseName('features', self.featuresLinesNameEdit.text())
-        self._project.setPolygonsBaseName('features', self.featuresPolygonsNameEdit.text())
-
         # Plan tab settings
-        self._project.setPlanPath(self.planFolderEdit.text())
-        self._project.setSeparatePlanFolders(self.separatePlansCheck.isChecked())
+        self._project.setModulePath('plan', self.planVectorFolderEdit.text())
+        self._project.setLayersGroupName('plan', self.planGroupNameEdit.text())
+        self._project.setBuffersGroupName('plan', self.planBufferGroupNameEdit.text())
+        self._project.setPointsBaseName('plan', self.planPointsNameEdit.text())
+        self._project.setLinesBaseName('plan', self.planLinesNameEdit.text())
+        self._project.setPolygonsBaseName('plan', self.planPolygonsNameEdit.text())
+        self._project.setPlanRasterPath(self.planRasterFolderEdit.text())
+        self._project.setSeparateProcessedPlanFolder(self.separateGeorefFolderCheck.isChecked())
         self._project.setPlanTransparency(self.planTransparencySpin.value())
 
         return super(SettingsDialog, self).accept()
@@ -151,13 +147,13 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         if folderName:
             self.styleFolderEdit.setText(folderName)
 
-    def _selectFeaturesFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Features Folder'), self.featuresFolderEdit.text()))
-        if folderName:
-            self.featuresFolderEdit.setText(folderName)
-
     def _selectPlanFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Folder'), self.planFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Data Folder'), self.planVectorFolderEdit.text()))
         if folderName:
-            self.planFolderEdit.setText(folderName)
+            self.planVectorFolderEdit.setText(folderName)
+
+    def _selectPlanRasterFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Image Folder'), self.planRasterFolderEdit.text()))
+        if folderName:
+            self.planRasterFolderEdit.setText(folderName)
 

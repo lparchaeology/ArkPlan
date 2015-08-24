@@ -56,7 +56,7 @@ class Project(QObject):
     planGroupIndex = -1
 
     geoLayer = None  #QgsRasterLayer()
-    features = None  # LayerCollection()
+    plan = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
@@ -99,15 +99,15 @@ class Project(QObject):
     }
 
     moduleDefaults = {
-        'features' : {
+        'plan' : {
             'path'             : '',
-            'pathSuffix'       : 'vectors/features',
-            'layersGroupName'  : 'Feature Data',
+            'pathSuffix'       : 'vectors/plan',
+            'layersGroupName'  : 'Plan Data',
             'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
-            'pointsBaseName'   : 'feature_pt',
-            'linesBaseName'    : 'feature_pl',
-            'polygonsBaseName' : 'feature_pg',
+            'pointsBaseName'   : 'plan_pt',
+            'linesBaseName'    : 'plan_pl',
+            'polygonsBaseName' : 'plan_pg',
             'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
@@ -138,7 +138,7 @@ class Project(QObject):
             'linesFields'      : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'name', 'category', 'source', 'file', 'comment', 'created_on', 'created_by'],
         },
-        'plan' : {
+        'planRaster' : {
             'path'             : '',
             'pathSuffix'       : 'plans',
             'layersGroupName'  : 'Context Plans'
@@ -176,8 +176,8 @@ class Project(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
-        if self.features is not None:
-            self.features.unload()
+        if self.plan is not None:
+            self.plan.unload()
         if self.grid is not None:
             self.grid.unload()
         if self.base is not None:
@@ -191,8 +191,8 @@ class Project(QObject):
             return
         # TODO more validation, check if files exist, etc
         if (self.showSettingsDialog() and self.siteCode() and self.projectDir().mkpath('.') and self.siteCode() and
-            self.planDir().mkpath('.') and self.planDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
-            self.moduleDir('grid').mkpath('.') and self.moduleDir('features').mkpath('.') and self.moduleDir('base').mkpath('.')):
+            self.planRasterDir().mkpath('.') and self.planRasterDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
+            self.moduleDir('grid').mkpath('.') and self.moduleDir('plan').mkpath('.') and self.moduleDir('base').mkpath('.')):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -214,13 +214,13 @@ class Project(QObject):
         if self.isConfigured():
             self.grid = self._createCollection('grid')
             self._createCollectionLayers('grid', self.grid._settings)
-            self.features = self._createCollection('features')
-            self._createCollectionMultiLayers('features', self.features._settings)
+            self.plan = self._createCollection('plan')
+            self._createCollectionMultiLayers('plan', self.plan._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.features.initialise() and self.base.initialise()):
+            if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()):
                 self._initialised = True
         return self._initialised
 
@@ -499,17 +499,17 @@ class Project(QObject):
         return self._layerName(self.polygonsBaseName(module))
 
     def collection(self, module):
-        if module == 'features':
-            return self.features
+        if module == 'plan':
+            return self.plan
         elif module == 'grid':
             return self.grid
         elif module == 'base':
             return self.base
 
-    # Plan settings
+    # Plan Raster settings
 
-    def planDir(self):
-        return QDir(self.planPath())
+    def planRasterDir(self):
+        return QDir(self.planRasterPath())
 
     def rawPlanDir(self):
         return QDir(self.rawPlanPath())
@@ -518,26 +518,26 @@ class Project(QObject):
         return QDir(self.processedPlanPath())
 
     def rawPlanPath(self):
-        if self.separatePlanFolders():
-            return QDir(self.planPath() + '/raw').absolutePath()
-        return self.planPath()
+        if self.separateProcessedPlanFolder():
+            return QDir(self.planRasterPath() + '/raw').absolutePath()
+        return self.planRasterPath()
 
     def processedPlanPath(self):
-        if self.separatePlanFolders():
-            return QDir(self.planPath() + '/processed').absolutePath()
-        return self.planPath()
+        if self.separateProcessedPlanFolder():
+            return QDir(self.planRasterPath() + '/processed').absolutePath()
+        return self.planRasterPath()
 
-    def planPath(self):
-        return self.modulePath('plan')
+    def planRasterPath(self):
+        return self.modulePath('planRaster')
 
-    def setPlanPath(self, absolutePath):
-        QgsProject.instance().writeEntry(self.pluginName, 'planPath', absolutePath)
+    def setPlanRasterPath(self, absolutePath):
+        QgsProject.instance().writeEntry(self.pluginName, 'planRasterPath', absolutePath)
 
-    def separatePlanFolders(self):
-        return QgsProject.instance().readBoolEntry(self.pluginName, 'separatePlanFolders', True)[0]
+    def separateProcessedPlanFolder(self):
+        return QgsProject.instance().readBoolEntry(self.pluginName, 'separateProcessedPlanFolder', True)[0]
 
-    def setSeparatePlanFolders(self, separatePlans):
-        QgsProject.instance().writeEntry(self.pluginName, 'separatePlanFolders', separatePlans)
+    def setSeparateProcessedPlanFolder(self, separatePlans):
+        QgsProject.instance().writeEntry(self.pluginName, 'separateProcessedPlanFolder', separatePlans)
 
     def planTransparency(self):
         return QgsProject.instance().readNumEntry(self.pluginName, 'planTransparency', 50)[0]

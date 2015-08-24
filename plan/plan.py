@@ -117,42 +117,42 @@ class Plan(QObject):
         self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
 
-        self.addDrawingTool('features', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'ueg', self.tr('Uncertain Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'loe', self.tr('Limit of Excavation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'trn', self.tr('Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.dock.newDrawingToolRow('features')
-        self.addDrawingTool('features', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('features', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('features', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.dock.newDrawingToolRow('features')
-        self.addDrawingTool('features', 'cxt', 'cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'brk', self.tr('Brick'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'til', self.tr('Tile'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'pot', self.tr('Pot'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('features', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.dock.newDrawingToolRow('features')
-        self.addLevelTool('features', 'cxt', 'lvl', self.tr('Level'), QIcon())
-        self.addSchemaTool('features', 'cxt', 'sch', self.tr('Schema'), QIcon())
+        self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'ueg', self.tr('Uncertain Edge'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'loe', self.tr('Limit of Excavation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'trn', self.tr('Truncation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
+        self.dock.newDrawingToolRow('plan')
+        self.addDrawingTool('plan', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.addDrawingTool('plan', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.addDrawingTool('plan', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)
+        self.dock.newDrawingToolRow('plan')
+        self.addDrawingTool('plan', 'cxt', 'cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'brk', self.tr('Brick'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'til', self.tr('Tile'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'pot', self.tr('Pot'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.dock.newDrawingToolRow('plan')
+        self.addLevelTool('plan', 'cxt', 'lvl', self.tr('Level'), QIcon())
+        self.addSchemaTool('plan', 'cxt', 'sch', self.tr('Schema'), QIcon())
 
-        self.addDrawingTool('features', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('features', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('features', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('features', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
+        self.addDrawingTool('plan', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
+        self.addDrawingTool('plan', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
+        self.addDrawingTool('plan', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
 
         self.initialised = True
 
     def initialiseBuffers(self):
-        self.project.features.createBuffers()
-        self.dock.setPolygonsBuffer(self.project.features.polygonsBuffer)
-        self.dock.setLinesBuffer(self.project.features.linesBuffer)
-        self.dock.setPolygonsLayer(self.project.features.polygonsLayer)
-        self.dock.setLinesLayer(self.project.features.linesLayer)
+        self.project.plan.createBuffers()
+        self.dock.setPolygonsBuffer(self.project.plan.polygonsBuffer)
+        self.dock.setLinesBuffer(self.project.plan.linesBuffer)
+        self.dock.setPolygonsLayer(self.project.plan.polygonsLayer)
+        self.dock.setLinesLayer(self.project.plan.linesLayer)
 
     def loadProject(self):
         if not self.initialised:
@@ -257,11 +257,11 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        if self.project.features.okToMergeBuffers():
-            self.project.features.mergeBuffers('Merge feature data')
+        if self.project.plan.okToMergeBuffers():
+            self.project.plan.mergeBuffers('Merge plan data')
 
     def clearBuffers(self):
-        self.project.features.clearBuffers('Clear features buffer data')
+        self.project.plan.clearBuffers('Clear plan buffer data')
 
     # Drawing tools
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>324</height>
+    <width>536</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="projectTab">
       <attribute name="title">
@@ -221,7 +221,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="gridFolderLabel">
          <property name="text">
-          <string>Folder:</string>
+          <string>Data Folder:</string>
          </property>
          <property name="buddy">
           <cstring>gridFolderEdit</cstring>
@@ -306,7 +306,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="baseFolderLabel">
          <property name="text">
-          <string>Folder:</string>
+          <string>Data Folder:</string>
          </property>
          <property name="buddy">
           <cstring>gridFolderEdit</cstring>
@@ -394,38 +394,12 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="featuresTab">
+     <widget class="QWidget" name="planTab">
       <attribute name="title">
-       <string>Features</string>
+       <string>Plan</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="featuresPointsNameEdit"/>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="featuresLinesNameEdit"/>
-       </item>
-       <item row="0" column="1">
-        <layout class="QHBoxLayout" name="featuresFolderLayout">
-         <item>
-          <widget class="QLineEdit" name="featuresFolderEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="featuresFolderButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="8" column="1">
+       <item row="15" column="1">
         <spacer name="verticalSpacer_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -438,38 +412,11 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="featuresGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="featuresFolderLabel">
-         <property name="text">
-          <string>Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="featuresLinesNameLabel">
-         <property name="text">
-          <string>Lines Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridLinesNameEdit</cstring>
-         </property>
-        </widget>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="planLinesNameEdit"/>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="featuresPointNameLabel">
+        <widget class="QLabel" name="planPointNameLabel">
          <property name="text">
           <string>Points Base Name:</string>
          </property>
@@ -478,59 +425,44 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="featuresGroupNameEdit"/>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="featuresPolygonsNameEdit"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="featuresPolygonsNameLabel">
+       <item row="9" column="0">
+        <widget class="QLabel" name="planTransparencyLabel">
          <property name="text">
-          <string>Polygons Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPolygonsNameEdit</cstring>
+          <string>Image tranparency:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="featuresBufferGroupNameEdit"/>
+       <item row="0" column="0">
+        <widget class="QLabel" name="planVectorFolderLabel">
+         <property name="text">
+          <string>Data Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridFolderEdit</cstring>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="featuresBufferGroupNameLabel">
+        <widget class="QLabel" name="planBufferGroupNameLabel">
          <property name="text">
           <string>Buffer Group Name:</string>
          </property>
         </widget>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="plansTab">
-      <attribute name="title">
-       <string>Plans</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="separatePlansCheck">
-         <property name="toolTip">
-          <string>Select if the raw and processed plans should be stored in separate folders.</string>
-         </property>
+       <item row="7" column="0">
+        <widget class="QLabel" name="planRasterFolderLabel">
          <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Image Folder:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="7" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="planFolderEdit"/>
+          <widget class="QLineEdit" name="planRasterFolderEdit"/>
          </item>
          <item>
-          <widget class="QPushButton" name="planFolderButton">
+          <widget class="QPushButton" name="planRasterFolderButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -544,27 +476,69 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="planTransparencyLabel">
+       <item row="6" column="0">
+        <widget class="QLabel" name="planPolygonsNameLabel">
          <property name="text">
-          <string>Plan tranparency:</string>
+          <string>Polygons Base Name:</string>
          </property>
          <property name="buddy">
-          <cstring>planTransparencySpin</cstring>
+          <cstring>gridPolygonsNameEdit</cstring>
          </property>
         </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="planPointsNameEdit"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="planBufferGroupNameEdit"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="planPolygonsNameEdit"/>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="planLinesNameLabel">
+         <property name="text">
+          <string>Lines Base Name:</string>
+         </property>
+         <property name="buddy">
+          <cstring>gridLinesNameEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="planGroupNameEdit"/>
+       </item>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="planVectorFolderLayout">
+         <item>
+          <widget class="QLineEdit" name="planVectorFolderEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="planVectorFolderButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="separatePlansLabel">
+        <widget class="QLabel" name="planGroupNameLabel">
          <property name="text">
-          <string>Separate plan folders:</string>
+          <string>Group Name:</string>
          </property>
          <property name="buddy">
-          <cstring>separatePlansCheck</cstring>
+          <cstring>gridGroupNameEdit</cstring>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="9" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QSpinBox" name="planTransparencySpin">
@@ -594,28 +568,28 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="planFolderLabel">
+       <item row="8" column="0">
+        <widget class="QLabel" name="separateGeorefFolderLabel">
          <property name="text">
-          <string>Plan Folder:</string>
+          <string>Separate georef folder:</string>
          </property>
          <property name="buddy">
-          <cstring>planFolderEdit</cstring>
+          <cstring>separateGeorefFolderCheck</cstring>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="separateGeorefFolderCheck">
+         <property name="toolTip">
+          <string>Select if the raw and processed plans should be stored in separate folders.</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
+         <property name="text">
+          <string/>
          </property>
-        </spacer>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -648,10 +622,6 @@
   <tabstop>gridPointsNameEdit</tabstop>
   <tabstop>gridLinesNameEdit</tabstop>
   <tabstop>gridPolygonsNameEdit</tabstop>
-  <tabstop>planFolderEdit</tabstop>
-  <tabstop>planFolderButton</tabstop>
-  <tabstop>separatePlansCheck</tabstop>
-  <tabstop>planTransparencySpin</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>306</width>
-    <height>344</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,47 +16,80 @@
   <widget class="QWidget" name="FilterDockContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="1">
-       <widget class="QPushButton" name="zoomButton">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QToolButton" name="zoomFilterTool">
         <property name="text">
          <string>Zoom</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/ArkFilter/mActionZoomToSelected.svg</normaloff>:/ArkFilter/mActionZoomToSelected.svg</iconset>
+        </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="buildFilterButton">
+      <item>
+       <widget class="QToolButton" name="buildFilterTool">
         <property name="text">
          <string>Build</string>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="clearFilterButton">
-        <property name="text">
-         <string>Clear</string>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/ArkFilter/mIconExpressionEditorOpen.svg</normaloff>:/ArkFilter/mIconExpressionEditorOpen.svg</iconset>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="loadDataButton">
+      <item>
+       <widget class="QToolButton" name="clearFilterTool">
+        <property name="text">
+         <string>Clear</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/ArkFilter/delete.svg</normaloff>:/ArkFilter/delete.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="loadDataTool">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
          <string>Load</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/ArkFilter/mIconDbSchema.png</normaloff>:/ArkFilter/mIconDbSchema.png</iconset>
+        </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="showDataButton">
+      <item>
+       <widget class="QToolButton" name="showDataTool">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
          <string>Show</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/ArkFilter/mActionOpenTable.png</normaloff>:/ArkFilter/mActionOpenTable.png</iconset>
+        </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>
@@ -64,6 +97,9 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">
        <widget class="QLabel" name="subGroupFilterLabel">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Sub-Groups:</string>
         </property>
@@ -74,6 +110,9 @@
       </item>
       <item row="2" column="1">
        <widget class="QComboBox" name="groupFilterCombo">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -87,6 +126,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QPushButton" name="groupFilterButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Apply</string>
         </property>
@@ -107,6 +149,9 @@
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="groupFilterLabel">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Groups:</string>
         </property>
@@ -117,6 +162,9 @@
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="subGroupFilterCombo">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -140,6 +188,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="subGroupFilterButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Apply</string>
         </property>
@@ -249,7 +300,53 @@
    <zorder>verticalSpacer</zorder>
    <zorder></zorder>
    <zorder>filterEdit</zorder>
+   <zorder>horizontalSpacer</zorder>
   </widget>
+  <action name="zoomFilterAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/ArkFilter/mActionZoomToSelected.svg</normaloff>:/ArkFilter/mActionZoomToSelected.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom To Selection</string>
+   </property>
+  </action>
+  <action name="buildFilterAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/ArkFilter/mIconExpressionEditorOpen.svg</normaloff>:/ArkFilter/mIconExpressionEditorOpen.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Build Filter</string>
+   </property>
+  </action>
+  <action name="clearFilterAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/ArkFilter/delete.svg</normaloff>:/ArkFilter/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Clear Filter</string>
+   </property>
+  </action>
+  <action name="loadDataAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/ArkFilter/mIconDbSchema.png</normaloff>:/ArkFilter/mIconDbSchema.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Data</string>
+   </property>
+  </action>
+  <action name="showDataAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/ArkFilter/mActionOpenTable.png</normaloff>:/ArkFilter/mActionOpenTable.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Data</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -259,6 +356,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

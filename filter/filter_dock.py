@@ -37,7 +37,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
     buildFilterSelected = pyqtSignal()
     clearFilterSelected = pyqtSignal()
-    zoomSelected = pyqtSignal()
+    zoomFilterSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
     showDataSelected = pyqtSignal()
 
@@ -54,21 +54,40 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.contextFilterLineEdit.returnPressed.connect(self._contextFilterSelected)
         self.contextFilterButton.clicked.connect(self._contextFilterSelected)
 
+        self.subGroupFilterLabel.setHidden(True)
         self.subGroupFilterCombo.activated.connect(self._subGroupFilterSelected)
+        self.subGroupFilterCombo.setHidden(True)
         self.subGroupFilterLineEdit = self.subGroupFilterCombo.lineEdit()
         self.subGroupFilterLineEdit.returnPressed.connect(self._subGroupFilterSelected)
+        self.subGroupFilterLineEdit.setHidden(True)
         self.subGroupFilterButton.clicked.connect(self._subGroupFilterSelected)
+        self.subGroupFilterButton.setHidden(True)
 
+        self.groupFilterLabel.setHidden(True)
         self.groupFilterCombo.activated.connect(self._groupFilterSelected)
+        self.groupFilterCombo.setHidden(True)
         self.groupFilterLineEdit = self.groupFilterCombo.lineEdit()
         self.groupFilterLineEdit.returnPressed.connect(self._groupFilterSelected)
+        self.groupFilterLineEdit.setHidden(True)
         self.groupFilterButton.clicked.connect(self._groupFilterSelected)
+        self.groupFilterButton.setHidden(True)
 
-        self.buildFilterButton.clicked.connect(self.buildFilterSelected)
-        self.clearFilterButton.clicked.connect(self._clearFilterClicked)
-        self.loadDataButton.clicked.connect(self.loadDataSelected)
-        self.showDataButton.clicked.connect(self.showDataSelected)
-        self.zoomButton.clicked.connect(self.zoomSelected)
+        self.zoomFilterAction.triggered.connect(self.zoomFilterSelected)
+        self.zoomFilterTool.setDefaultAction(self.zoomFilterAction)
+
+        self.buildFilterAction.triggered.connect(self.buildFilterSelected)
+        self.buildFilterTool.setDefaultAction(self.buildFilterAction)
+
+        self.clearFilterAction.triggered.connect(self._clearFilterClicked)
+        self.clearFilterTool.setDefaultAction(self.clearFilterAction)
+
+        self.loadDataAction.triggered.connect(self.loadDataSelected)
+        self.loadDataTool.setDefaultAction(self.loadDataAction)
+        self.loadDataTool.setHidden(True)
+
+        self.showDataAction.triggered.connect(self.showDataSelected)
+        self.showDataTool.setDefaultAction(self.showDataAction)
+        self.showDataTool.setHidden(True)
 
         self.showPointsCheck.stateChanged.connect(self.showPointsChanged)
         self.showLinesCheck.stateChanged.connect(self.showLinesChanged)

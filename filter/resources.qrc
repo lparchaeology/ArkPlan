@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="ArkFilter">
+    <file>mActionOpenTable.png</file>
+    <file>delete.svg</file>
+    <file>mActionZoomToSelected.svg</file>
+    <file>mIconDbSchema.png</file>
+    <file>mIconExpressionEditorOpen.svg</file>
+  </qresource>
+</RCC>

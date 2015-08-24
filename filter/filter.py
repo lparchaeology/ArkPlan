@@ -72,7 +72,7 @@ class Filter(QObject):
         self.dock.clearFilterSelected.connect(self.clearFilter)
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
-        self.dock.zoomSelected.connect(self.zoomFilter)
+        self.dock.zoomFilterSelected.connect(self.zoomFilter)
 
         self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.iface.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)

@@ -69,6 +69,7 @@ class GridModule(QObject):
         self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
         self.dock.pasteMapPointSelected.connect(self.pasteMapPointFromClipboard)
         self.dock.addMapPointSelected.connect(self.addMapPointToLayer)
+        self.dock.gridSelectionChanged.connect(self.changeGrid)
         self.dock.convertMapSelected.connect(self.convertMapPoint)
         self.dock.convertLocalSelected.connect(self.convertLocalPoint)
         self.dock.setReadOnly(True)
@@ -98,15 +99,9 @@ class GridModule(QObject):
         if self.project.grid.pointsLayer is None:
             return
 
-        features = []
-        for feature in self.project.grid.pointsLayer.getFeatures():
-            features.append(feature)
-        if len(features) < 2:
+        self.loadGridNames()
+        if not self.initialiseGrid(self.dock.siteCode(), self.dock.gridName()):
             return
-        map1, local1 = self.transformPoints(features[0])
-        map2, local2 = self.transformPoints(features[1])
-        self.mapTransformer = LinearTransformer(map1, local1, map2, local2)
-        self.localTransformer = LinearTransformer(local1, map1, local2, map2)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.plugin.mapCanvas())
         self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
@@ -115,6 +110,33 @@ class GridModule(QObject):
 
         self.dock.setReadOnly(False)
         self.initialised = True
+
+    def loadGridNames(self):
+        names = set()
+        for feature in self.project.grid.pointsLayer.getFeatures():
+            name = (feature.attribute(self.project.fieldName('site')),
+                    feature.attribute(self.project.fieldName('name')))
+            names.add(name)
+        self.dock.setGridNames(list(names))
+
+    def initialiseGrid(self, siteCode, gridName):
+        features = []
+        for feature in self.project.grid.pointsLayer.getFeatures():
+            if (feature.attribute(self.project.fieldName('site')) == siteCode
+                and feature.attribute(self.project.fieldName('name')) == gridName):
+                features.append(feature)
+        if len(features) < 2:
+            return False
+        map1, local1 = self.transformPoints(features[0])
+        map2, local2 = self.transformPoints(features[1])
+        self.mapTransformer = LinearTransformer(map1, local1, map2, local2)
+        self.localTransformer = LinearTransformer(local1, map1, local2, map2)
+        return True
+
+    def changeGrid(self, siteCode, gridName):
+        self.initialiseGrid(siteCode, gridName)
+        self.dock.setMapPoint(QgsPoint(0, 0))
+        self.dock.setLocalPoint(QgsPoint(0, 0))
 
     def transformPoints(self, feature):
         mapPoint = feature.geometry().asPoint()
@@ -163,8 +185,9 @@ class GridModule(QObject):
                            self.gridWizard.localOriginPoint(), self.gridWizard.localTerminusPoint(),
                            xInterval, yInterval):
             self.project.plugin.mapCanvas().refresh()
+            self.loadGridNames()
             self.dock.setReadOnly(False)
-            self.project.plugin.showMessage('Grid successfully created')
+            self.project.plugin.showInfoMessage('Grid successfully created', 10)
 
     def createGrid(self, siteCode, gridName, mapPoint1, localPoint1, mapPoint2, localPoint2, localOrigin, localTerminus, xInterval, yInterval):
         localTransformer = LinearTransformer(localPoint1, mapPoint1, localPoint2, mapPoint2)
@@ -295,7 +318,7 @@ class GridModule(QObject):
             if status:
                 self.project.plugin.mapCanvas().setMapTool(self.mapTool)
             else:
-                self.project.plugin.iface.plugin.mapCanvas().unsetMapTool(self.mapTool)
+                self.project.plugin.iface.mapCanvas().unsetMapTool(self.mapTool)
         elif status:
             self.dock.identifyGridAction.setChecked(False)
 
@@ -404,7 +427,6 @@ class GridModule(QObject):
     def pasteMapPointFromClipboard(self):
         #TODO Use QgsClipboard when it becomes public
         text = QApplication.clipboard().text().strip().upper()
-        self.project.plugin.logMessage('Clipboard = ' + text)
         idx = text.find('POINT(')
         if idx >= 0:
             idx_l = idx + 5

@@ -403,12 +403,12 @@
   <customwidget>
    <class>SnappingToolButton</class>
    <extends>QToolButton</extends>
-   <header>..arklib.digitizing.h</header>
+   <header>..arklib.snapping.h</header>
   </customwidget>
   <customwidget>
    <class>TopoEditToolButton</class>
    <extends>QToolButton</extends>
-   <header>..arklib.digitizing.h</header>
+   <header>..arklib.snapping.h</header>
   </customwidget>
   <customwidget>
    <class>ArkDockWidget</class>

@@ -29,7 +29,7 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
 
 from ..arklib.dock import ArkDockWidget
-from ..arklib.digitizing import *
+from ..arklib.snapping import *
 
 import plan_dock_base
 

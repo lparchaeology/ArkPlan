@@ -22,11 +22,10 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QVariant, QDir
-from PyQt4.QtGui import QMessageBox
 
 from qgis.core import *
 
-import utils, layers, digitizing
+import utils, layers, snapping
 
 class LayerCollectionSettings:
 
@@ -167,8 +166,8 @@ class LayerCollection:
 
     def _setDefaultSnapping(self, layer):
         # TODO Check if layer id already in settings, only set defaults if it isn't
-        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, digitizing.defaultSnappingMode(),
-                                                      digitizing.defaultSnappingUnit(), digitizing.defaultSnappingTolerance(), False)
+        QgsProject.instance().setSnapSettingsForLayer(layer.id(), True, snapping.defaultSnappingMode(),
+                                                      snapping.defaultSnappingUnit(), snapping.defaultSnappingTolerance(), False)
 
     # Setup the in-memory buffer layers
     def createBuffers(self):

@@ -35,6 +35,7 @@ from ..core.data_model import *
 
 from data_dialog import DataDialog
 from filter_dock import FilterDock
+from filter_widget import FilterWidget, FilterType
 
 class Filter(QObject):
 
@@ -45,6 +46,7 @@ class Filter(QObject):
     initialised = False
     dataLoaded = False
     contextList = []
+    _useGroups = False
 
     identifyMapTool = None  # ArkMapToolIndentifyFeatures()
 
@@ -66,10 +68,9 @@ class Filter(QObject):
         self.dock.load(self.project.plugin.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
-        self.dock.contextFilterChanged.connect(self.applyContextFilter)
-        self.dock.subGroupFilterChanged.connect(self.applySubGroupFilter)
-        self.dock.groupFilterChanged.connect(self.applyGroupFilter)
+        self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
+        self.dock.buildSelectionSelected.connect(self.buildSelection)
         self.dock.clearFilterSelected.connect(self.clearFilter)
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
@@ -97,14 +98,60 @@ class Filter(QObject):
         self.project.initialise()
         if (not self.project.isInitialised()):
             return
-        self.dock.showPointsChanged.connect(self.project.plan.showPoints)
-        self.dock.showLinesChanged.connect(self.project.plan.showLines)
-        self.dock.showPolygonsChanged.connect(self.project.plan.showPolygons)
+
+        self.dock.setSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
+        codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
+        if 'cxt' in codeList and self._useGroups:
+            codeList.append('sub')
+            codeList.append('grp')
+        codes = {}
+        for code in codeList:
+            codes[code] = code
+        self.dock.setClassCodes(codes)
 
         self.initialised = True
 
 
     # Filter methods
+
+    def applyFilters(self):
+        excludeString = ''
+        firstInclude = True
+        includeString = ''
+        firstExclude = True
+        selectString = ''
+        firstSelect = True
+        activeFilters = self.dock.activeFilters()
+        for index in activeFilters:
+            if activeFilters[index] is not None:
+                filter = activeFilters[index]
+                clause = self._rangeToClause(self.dock.siteCode(), filter.classCode(), filter.filterRange())
+                if filter.filterType() == FilterType.HighlightFilter:
+                    if firstSelect:
+                        firstSelect = False
+                    else:
+                        selectString += ' or '
+                    selectString += clause
+                elif filter.filterType() == FilterType.ExcludeFilter:
+                    if firstExclude:
+                        firstExclude = False
+                    else:
+                        excludeString += ' or '
+                    excludeString += clause
+                else:
+                    if firstInclude:
+                        firstInclude = False
+                    else:
+                        includeString += ' or '
+                    includeString += clause
+        if includeString and excludeString:
+            self.applyFilter('(' + includeString + ') and NOT (' + excludeString + ')')
+        elif excludeString:
+            self.applyFilter('NOT (' + excludeString + ')')
+        else:
+            self.applyFilter(includeString)
+        self.applySelection(selectString)
+
 
     def applyContextFilter(self, contextRange):
         del self.contextList[:]
@@ -134,11 +181,15 @@ class Filter(QObject):
     def clearFilter(self):
         del self.contextList[:]
         self.applyFilter('')
+        self.applySelection('')
 
 
-    def applyFilter(self, filter):
-        self.project.plan.applyFilter(filter)
-        self.dock.displayFilter(self.project.plan.filter)
+    def applyFilter(self, expression):
+        self.project.plan.applyFilter(expression)
+
+
+    def applySelection(self, expression):
+        self.project.plan.applySelection(expression)
 
 
     def buildFilter(self):
@@ -146,6 +197,13 @@ class Filter(QObject):
         dialog.setExpressionText(self.project.plan.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
+
+
+    def buildSelection(self):
+        dialog = QgsExpressionBuilderDialog(self.project.plan.linesLayer)
+        dialog.setExpressionText(self.project.plan.selection)
+        if (dialog.exec_()):
+            self.applySelection(dialog.expressionText())
 
 
     def loadData(self):
@@ -215,3 +273,27 @@ class Filter(QObject):
             for element in lst[1:]:
                 exp = exp + '|' + str(element)
         return QRegExp('\\b(' + exp + ')\\b')
+
+
+    def _rangeToClause(self, siteCode, filterClass, filterRange):
+        clause = '("' + self.project.fieldName('site') + '" = \'' + siteCode + '\''
+        clause = clause + ' and "' + self.project.fieldName('class') + '" = \'' + filterClass + '\''
+        subs = filterRange.split()
+        if len(subs) == 0:
+            clause += ')'
+            return clause
+        clause += ' and ('
+        first = True
+        for sub in subs:
+            if first:
+                first = False
+            else:
+                clause = clause + ' or '
+            field = self.project.fieldName('id')
+            if sub.find('-') >= 0:
+                vals = sub.split('-')
+                clause = clause + ' ("' + field + '" >= ' + vals[0] + ' and "' + field + '" <= ' + vals[1] + ')'
+            else:
+                clause = clause + '"' + field + '" = ' + sub
+        clause += '))'
+        return clause

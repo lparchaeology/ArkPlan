@@ -1,8 +1,13 @@
 <RCC>
-  <qresource prefix="ArkFilter">
+  <qresource prefix="/plugins/ArkPlan">
+    <file>mIconExpressionSelect.svg</file>
+    <file>list-add.png</file>
+    <file>mIconSelected.svg</file>
+    <file>list-remove.png</file>
     <file>mActionOpenTable.png</file>
-    <file>delete.svg</file>
     <file>mActionZoomToSelected.svg</file>
+    <file>mActionAdd.svg</file>
+    <file>mActionRemove.svg</file>
     <file>mIconDbSchema.png</file>
     <file>mIconExpressionEditorOpen.svg</file>
   </qresource>

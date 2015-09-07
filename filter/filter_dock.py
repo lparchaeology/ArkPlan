@@ -23,60 +23,43 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import Qt, pyqtSignal, QSize
+from PyQt4.QtGui import QListWidgetItem, QLabel
 
 from ..libarkqgis.dock import ArkDockWidget
 
 import filter_dock_base
+from filter_widget import FilterWidget
 
 class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
-    contextFilterChanged = pyqtSignal(str)
-    subGroupFilterChanged = pyqtSignal(str)
-    groupFilterChanged = pyqtSignal(str)
+    filterChanged = pyqtSignal()
 
     buildFilterSelected = pyqtSignal()
+    buildSelectionSelected = pyqtSignal()
     clearFilterSelected = pyqtSignal()
     zoomFilterSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
     showDataSelected = pyqtSignal()
 
-    showPointsChanged = pyqtSignal(int)
-    showLinesChanged = pyqtSignal(int)
-    showPolygonsChanged = pyqtSignal(int)
+    newFilterWidget = None  # FilterWidget()
+    _filterIndex = 0
+    _filters = {}
+    _items = {}
+    _classCodes = {}
 
     def __init__(self, parent=None):
         super(FilterDock, self).__init__(parent)
         self.setupUi(self)
-
-        self.contextFilterCombo.activated.connect(self._contextFilterSelected)
-        self.contextFilterLineEdit = self.contextFilterCombo.lineEdit()
-        self.contextFilterLineEdit.returnPressed.connect(self._contextFilterSelected)
-        self.contextFilterButton.clicked.connect(self._contextFilterSelected)
-
-        self.subGroupFilterLabel.setHidden(True)
-        self.subGroupFilterCombo.activated.connect(self._subGroupFilterSelected)
-        self.subGroupFilterCombo.setHidden(True)
-        self.subGroupFilterLineEdit = self.subGroupFilterCombo.lineEdit()
-        self.subGroupFilterLineEdit.returnPressed.connect(self._subGroupFilterSelected)
-        self.subGroupFilterLineEdit.setHidden(True)
-        self.subGroupFilterButton.clicked.connect(self._subGroupFilterSelected)
-        self.subGroupFilterButton.setHidden(True)
-
-        self.groupFilterLabel.setHidden(True)
-        self.groupFilterCombo.activated.connect(self._groupFilterSelected)
-        self.groupFilterCombo.setHidden(True)
-        self.groupFilterLineEdit = self.groupFilterCombo.lineEdit()
-        self.groupFilterLineEdit.returnPressed.connect(self._groupFilterSelected)
-        self.groupFilterLineEdit.setHidden(True)
-        self.groupFilterButton.clicked.connect(self._groupFilterSelected)
-        self.groupFilterButton.setHidden(True)
 
         self.zoomFilterAction.triggered.connect(self.zoomFilterSelected)
         self.zoomFilterTool.setDefaultAction(self.zoomFilterAction)
 
         self.buildFilterAction.triggered.connect(self.buildFilterSelected)
         self.buildFilterTool.setDefaultAction(self.buildFilterAction)
+
+        self.buildSelectionAction.triggered.connect(self.buildSelectionSelected)
+        self.buildSelectionTool.setDefaultAction(self.buildSelectionAction)
 
         self.clearFilterAction.triggered.connect(self._clearFilterClicked)
         self.clearFilterTool.setDefaultAction(self.clearFilterAction)
@@ -89,46 +72,53 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.showDataTool.setDefaultAction(self.showDataAction)
         self.showDataTool.setHidden(True)
 
-        self.showPointsCheck.stateChanged.connect(self.showPointsChanged)
-        self.showLinesCheck.stateChanged.connect(self.showLinesChanged)
-        self.showPolygonsCheck.stateChanged.connect(self.showPolygonsChanged)
+        self._createNewFilterWidget()
 
-        self.enableGroupFilters(False)
+    def _addFilter(self):
+        self.newFilterWidget.filterAdded.disconnect(self._addFilter)
+        self.newFilterWidget.setIndex(self._filterIndex)
+        self._filters[self._filterIndex] = self.newFilterWidget
+        self.newFilterWidget.filterRemoved.connect(self._removeFilter)
+        self.newFilterWidget.filterChanged.connect(self.filterChanged)
+        newItem = QListWidgetItem()
+        newItem.setData(Qt.UserRole, self._filterIndex)
+        newItem.setSizeHint(self.newFilterWidget.minimumSizeHint())
+        self.filterListWidget.addItem(newItem);
+        self.filterListWidget.setItemWidget(newItem, self.newFilterWidget)
+        self._items[self._filterIndex] = newItem
+        self._filterIndex += 1
+        self._createNewFilterWidget()
+        self.filterChanged.emit()
 
-    def _contextFilterSelected(self):
-        self.subGroupFilterLineEdit.clear()
-        self.groupFilterLineEdit.clear()
-        contextRange = self._normaliseRange(self.contextFilterCombo.currentText())
-        self.contextFilterChanged.emit(contextRange)
+    def _removeFilter(self, index):
+        if index is None or index < 0 or self._filters[index] == None:
+            return
+        self.filterListWidget.takeItem(self.filterListWidget.row(self._items[index]))
+        self._filters[index] = None
+        self._items[index] = None
+        self.filterChanged.emit()
 
-    def _subGroupFilterSelected(self):
-        self.contextFilterLineEdit.clear()
-        self.groupFilterLineEdit.clear()
-        subRange = self._normaliseRange(self.subGroupFilterCombo.currentText())
-        self.subGroupFilterChanged.emit(subRange)
-
-    def _groupFilterSelected(self):
-        self.contextFilterLineEdit.clear()
-        self.subGroupFilterLineEdit.clear()
-        groupRange = self._normaliseRange(self.groupFilterCombo.currentText())
-        self.groupFilterChanged.emit(groupRange)
+    def _createNewFilterWidget(self):
+        self.newFilterWidget = FilterWidget(self)
+        self.newFilterWidget.setClassCodes(self._classCodes)
+        self.newFilterWidget.filterAdded.connect(self._addFilter)
+        self.newFilterFrame.layout().addWidget(self.newFilterWidget)
 
     def _clearFilterClicked(self):
-        self.contextFilterLineEdit.clear()
-        self.subGroupFilterLineEdit.clear()
-        self.groupFilterLineEdit.clear()
+        for index in self._filters.keys():
+            self._removeFilter(index)
         self.clearFilterSelected.emit()
 
-    def enableGroupFilters(self, status):
-        self.subGroupFilterCombo.setEnabled(status)
-        self.subGroupFilterButton.setEnabled(status)
-        self.groupFilterCombo.setEnabled(status)
-        self.groupFilterButton.setEnabled(status)
+    def setSiteCodes(self, siteCodes):
+        for site in siteCodes:
+            self.siteCodeCombo.addItem(site)
 
-    def displayFilter(self, filter):
-        self.filterEdit.setText(filter)
+    def siteCode(self):
+        return self.siteCodeCombo.currentText()
 
-    def _normaliseRange(self, text):
-        filter = text.replace(' - ', '-')
-        filter = filter.replace(',', ' ')
-        return filter
+    def setClassCodes(self, classCodes):
+        self._classCodes = classCodes
+        self.newFilterWidget.setClassCodes(classCodes)
+
+    def activeFilters(self):
+        return self._filters

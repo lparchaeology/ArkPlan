@@ -10,18 +10,18 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="12"
-   height="12"
+   width="24"
+   height="24"
    id="svg5692"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="delete.svg"
-   inkscape:export-filename="/mnt/home1/robert/svn/graphics/trunk/toolbar-icons/24x24/select-remove.png"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="mIconSelectAdd.svg"
+   inkscape:export-filename="/mnt/home1/robert/svn/graphics/trunk/toolbar-icons/24x24/expression-select.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
    style="display:inline">
   <title
-     id="title2967">select remove</title>
+     id="title2967">select add</title>
   <defs
      id="defs5694">
     <inkscape:path-effect
@@ -808,13 +808,6 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2958"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -823,27 +816,26 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="49.497474"
-     inkscape:cx="7.089491"
-     inkscape:cy="4.8194732"
+     inkscape:zoom="29.833333"
+     inkscape:cx="12.067039"
+     inkscape:cy="12"
      inkscape:current-layer="layer4"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
      borderlayer="false"
-     inkscape:window-width="1590"
-     inkscape:window-height="1010"
-     inkscape:window-x="1970"
-     inkscape:window-y="41"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
+     inkscape:window-x="0"
+     inkscape:window-y="867"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-bbox="true"
      inkscape:snap-object-midpoints="true"
      inkscape:snap-nodes="true"
      inkscape:snap-to-guides="false"
-     inkscape:snap-global="true"
-     inkscape:snap-grids="true">
+     inkscape:snap-global="true">
     <inkscape:grid
        type="xygrid"
        id="grid5700"
@@ -851,11 +843,11 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       dotted="false"
+       dotted="true"
        originx="2.5px"
        originy="2.5px"
-       spacingx="0.5px"
-       spacingy="0.5px" />
+       spacingx="1px"
+       spacingy="1px" />
   </sodipodi:namedview>
   <metadata
      id="metadata5697">
@@ -865,7 +857,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>select remove</dc:title>
+        <dc:title>select add</dc:title>
         <dc:date>2013-01-30</dc:date>
         <dc:creator>
           <cc:Agent>
@@ -879,7 +871,7 @@
         </dc:rights>
         <dc:subject>
           <rdf:Bag>
-            <rdf:li>select remove</rdf:li>
+            <rdf:li>select add</rdf:li>
           </rdf:Bag>
         </dc:subject>
         <dc:coverage>GIS icons 0.2</dc:coverage>
@@ -909,29 +901,15 @@
      id="layer4"
      inkscape:label="1"
      style="display:inline"
-     transform="translate(0,-20)">
+     transform="translate(0,-8)">
     <rect
-       rx="1.0727056"
-       style="fill:#f05050;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       id="rect2758"
-       width="11.799762"
-       height="11.799762"
-       x="0.10011911"
-       y="20.100119"
-       inkscape:export-xdpi="120"
-       inkscape:export-ydpi="120"
-       ry="1.0727056" />
-    <path
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc"
-       id="path4073-8"
-       d="m 9.5,22.5 -7,7"
-       style="fill:#fcffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    <path
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc"
-       id="path4073-8-3"
-       d="m 9.5,29.5 -7,-7"
-       style="fill:#fcffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;fill:#fce94f;stroke:#c4a000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 2;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2902"
+       width="12"
+       height="12"
+       x="4.5"
+       y="12.5"
+       rx="0.85714281"
+       ry="0.85714281" />
   </g>
 </svg>

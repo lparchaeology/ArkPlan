@@ -217,5 +217,5 @@ class Ui_GridDock(object):
         self.translateFeaturesAction.setText(_translate("GridDock", "Translate", None))
         self.translateFeaturesAction.setToolTip(_translate("GridDock", "Translate features", None))
 
-from ..arklib.dock import ArkDockWidget
+from ..libarkqgis.dock import ArkDockWidget
 import resources_rc

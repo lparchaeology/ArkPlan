@@ -30,7 +30,7 @@ from PyQt4.QtGui import QWizard
 
 from qgis.core import QgsPoint
 
-from ..arklib.map_tools import ArkMapToolEmitPoint
+from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 
 from grid_wizard_base import *
 

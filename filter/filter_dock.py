@@ -25,7 +25,7 @@
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 
-from ..arklib.dock import ArkDockWidget
+from ..libarkqgis.dock import ArkDockWidget
 
 import filter_dock_base
 

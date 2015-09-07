@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
-from ..arklib.map_tools import ArkMapToolIndentifyFeatures
+from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 
 from ..core.project import Project
 from ..core.data_model import *

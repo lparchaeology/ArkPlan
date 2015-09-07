@@ -28,9 +28,9 @@ from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsVertexMarker
 
-from ..arklib.maths import LinearTransformer
-from ..arklib import utils
-from ..arklib.map_tools import ArkMapToolEmitPoint
+from ..libarkqgis.maths import LinearTransformer
+from ..libarkqgis import utils
+from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 
 from ..core.project import Project
 

@@ -28,8 +28,8 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
 
-from ..arklib.dock import ArkDockWidget
-from ..arklib.snapping import *
+from ..libarkqgis.dock import ArkDockWidget
+from ..libarkqgis.snapping import *
 
 import plan_dock_base
 

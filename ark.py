@@ -25,7 +25,7 @@ import os.path
 
 import resources_rc
 
-from .arklib.plugin import Plugin
+from .libarkqgis.plugin import Plugin
 
 from .core.project import Project
 

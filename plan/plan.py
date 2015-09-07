@@ -26,7 +26,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
 from qgis.core import *
 
-from ..arklib.map_tools import *
+from ..libarkqgis.map_tools import *
 
 from ..core.project import Project
 from ..georef.georef_dialog import GeorefDialog

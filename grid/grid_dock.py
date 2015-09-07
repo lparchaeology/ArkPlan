@@ -28,7 +28,7 @@ from PyQt4.QtGui import QIcon
 
 from qgis.core import QgsPoint
 
-from ..arklib.dock import ArkDockWidget
+from ..libarkqgis.dock import ArkDockWidget
 
 import grid_dock_base
 

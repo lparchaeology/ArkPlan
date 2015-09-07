@@ -352,7 +352,7 @@
   <customwidget>
    <class>ArkDockWidget</class>
    <extends>QDockWidget</extends>
-   <header>..arklib.dock.h</header>
+   <header>..libarkqgis.dock.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

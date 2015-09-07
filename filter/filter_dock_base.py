@@ -207,5 +207,5 @@ class Ui_FilterDock(object):
         self.loadDataAction.setText(_translate("FilterDock", "Load Data", None))
         self.showDataAction.setText(_translate("FilterDock", "Show Data", None))
 
-from ..arklib.dock import ArkDockWidget
+from ..libarkqgis.dock import ArkDockWidget
 import resources_rc

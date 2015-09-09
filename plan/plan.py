@@ -48,7 +48,8 @@ class Plan(QObject):
     featureId = None
     featureName = None
     category = ''
-    source = None
+    sourceCode = None
+    sourceId = None
     sourceFile = None
     comment = None
     createdBy = None
@@ -81,8 +82,10 @@ class Plan(QObject):
         self.dock.featureIdChanged.connect(self.updateDefaultAttributes)
         self.dock.featureNameChanged.connect(self.setFeatureName)
         self.dock.featureNameChanged.connect(self.updateDefaultAttributes)
-        self.dock.sourceChanged.connect(self.setSource)
-        self.dock.sourceChanged.connect(self.updateDefaultAttributes)
+        self.dock.sourceCodeChanged.connect(self.setSourceCode)
+        self.dock.sourceCodeChanged.connect(self.updateDefaultAttributes)
+        self.dock.sourceIdChanged.connect(self.setSourceId)
+        self.dock.sourceIdChanged.connect(self.updateDefaultAttributes)
         self.dock.sourceFileChanged.connect(self.setSourceFile)
         self.dock.sourceFileChanged.connect(self.updateDefaultAttributes)
         self.dock.commentChanged.connect(self.setComment)
@@ -117,6 +120,12 @@ class Plan(QObject):
 
         self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
+
+        self.dock.addSourceCode('Plan', 'pln')
+        self.dock.addSourceCode('Cloned', 'cln')
+        self.dock.addSourceCode('Modified', 'mod')
+        self.dock.addSourceCode('Inferred', 'inf')
+        self.dock.addSourceCode('Survey', 'svy')
 
         self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
@@ -165,7 +174,8 @@ class Plan(QObject):
     def setMetadata(self, siteCode, type, number, file, easting, northing, suffix):
         self.dock.setSite(siteCode)
         self.dock.setContextNumber(number)
-        self.dock.setSource(str(number))
+        self.dock.setSourceCode('pln')
+        self.dock.setSourceId(number)
         self.dock.setSourceFile(file)
 
     def loadRawPlan(self):
@@ -180,7 +190,7 @@ class Plan(QObject):
         if fileName:
             geoFile = QFileInfo(fileName)
             md = planMetadata(geoFile.completeBaseName())
-            self.setMetadata(md[0], md[1], md[2], geoFile.completeBaseName(), md[3], md[4], md[5])
+            self.setMetadata(md[0], md[1], md[2], geoFile.fileName(), md[3], md[4], md[5])
             self.project.loadGeoLayer(geoFile)
 
     def loadContextPlans(self):
@@ -194,7 +204,7 @@ class Plan(QObject):
         plans = planDir.entryInfoList()
         for plan in plans:
             md = planMetadata(plan.completeBaseName())
-            self.setMetadata(md[0], md[1], md[2], plan.completeBaseName(), md[3], md[4], md[5])
+            self.setMetadata(md[0], md[1], md[2], plan.fileName(), md[3], md[4], md[5])
             self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):
@@ -221,11 +231,17 @@ class Plan(QObject):
         else:
             self.featureName = featureName
 
-    def setSource(self, source):
-        if source is None or source.strip() == '':
-            self.source = None
+    def setSourceCode(self, sourceCode):
+        if sourceCode is None or sourceCode.strip() == '':
+            self.sourceCode = None
         else:
-            self.source = source
+            self.sourceCode = sourceCode
+
+    def setSourceId(self, sourceId):
+        if sourceId is None or sourceId <= 0:
+            self.sourceId = None
+        else:
+            self.sourceId = sourceId
 
     def setSourceFile(self, sourceFile):
         if sourceFile is None or sourceFile.strip() == '':
@@ -252,7 +268,7 @@ class Plan(QObject):
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
-            self.setMetadata(md[0], md[1], md[2], geoFile.completeBaseName(), md[3], md[4], md[5])
+            self.setMetadata(md[0], md[1], md[2], geoFile.fileName(), md[3], md[4], md[5])
             self.project.loadGeoLayer(geoFile)
 
     # Layer Methods
@@ -344,7 +360,8 @@ class Plan(QObject):
             id = self.featureId
         defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
         defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName
-        defaults[layer.fieldNameIndex(self.project.fieldName('source'))] = self.source
+        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self.sourceCode
+        defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self.sourceId
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']
         defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment

@@ -230,7 +230,6 @@ class GridModule(QObject):
         attributes = {}
         attributes[layer.fieldNameIndex(self.project.fieldName('site'))] = site
         attributes[layer.fieldNameIndex(self.project.fieldName('name'))] = name
-        attributes[layer.fieldNameIndex(self.project.fieldName('source'))] = 'ARK'
         attributes[layer.fieldNameIndex(self.project.fieldName('created_on'))] = utils.timestamp()
         attributes[layer.fieldNameIndex(self.project.fieldName('created_by'))] = 'Grid Tool'
         return attributes

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>357</width>
-    <height>722</height>
+    <height>765</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>333</width>
-         <height>672</height>
+         <height>715</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -53,17 +53,7 @@
           <property name="title">
            <string>Metadata</string>
           </property>
-          <layout class="QFormLayout" name="formLayout">
-           <property name="fieldGrowthPolicy">
-            <enum>QFormLayout::ExpandingFieldsGrow</enum>
-           </property>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="m_siteEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
+          <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
             <widget class="QLabel" name="m_siteLabel">
              <property name="text">
@@ -74,27 +64,41 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="m_sourceEdit">
-             <property name="toolTip">
-              <string>Source</string>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="m_siteEdit">
+             <property name="readOnly">
+              <bool>false</bool>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="m_sourceLabel">
+            <widget class="QLabel" name="m_sourceCodeLabel">
              <property name="text">
               <string>Source:</string>
              </property>
-             <property name="buddy">
-              <cstring>m_sourceEdit</cstring>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="m_sourceCodeCombo"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="m_sourceIdLabel">
+             <property name="text">
+              <string>Source ID:</string>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="m_sourceFileEdit"/>
+            <widget class="QSpinBox" name="m_sourceIdSpin">
+             <property name="toolTip">
+              <string>Source ID</string>
+             </property>
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="m_sourceFileLabel">
              <property name="text">
               <string>Source File:</string>
@@ -105,13 +109,9 @@
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QLineEdit" name="m_commentEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
+            <widget class="QLineEdit" name="m_sourceFileEdit"/>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="m_commentLabel">
              <property name="text">
               <string>Comment:</string>
@@ -121,7 +121,14 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="m_commentEdit">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
             <widget class="QLabel" name="m_createdByLabel">
              <property name="text">
               <string>Created By:</string>
@@ -131,7 +138,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QLineEdit" name="m_createdByEdit"/>
            </item>
           </layout>
@@ -420,7 +427,6 @@
  <tabstops>
   <tabstop>scrollArea</tabstop>
   <tabstop>m_siteEdit</tabstop>
-  <tabstop>m_sourceEdit</tabstop>
   <tabstop>m_sourceFileEdit</tabstop>
   <tabstop>m_commentEdit</tabstop>
   <tabstop>m_createdByEdit</tabstop>

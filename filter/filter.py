@@ -30,8 +30,8 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 
-from ..core.project import Project
-from ..core.data_model import *
+from ..project import Project
+from ..data_model import *
 
 from data_dialog import DataDialog
 from filter_dock import FilterDock

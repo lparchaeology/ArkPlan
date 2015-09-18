@@ -26,7 +26,7 @@ import csv
 from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QDir
 from PyQt4.QtGui import QSortFilterProxyModel
 
-from ..core.project import Project
+from project import Project
 
 class TableModel(QAbstractTableModel):
 

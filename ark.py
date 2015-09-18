@@ -27,7 +27,7 @@ import resources_rc
 
 from .libarkqgis.plugin import Plugin
 
-from .core.project import Project
+from project import Project
 
 from .grid.grid import GridModule
 from .plan.plan import Plan

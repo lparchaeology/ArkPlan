@@ -28,7 +28,7 @@ from qgis.core import *
 
 from ..libarkqgis.map_tools import *
 
-from ..core.project import Project
+from ..project import Project
 from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock

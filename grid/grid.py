@@ -32,7 +32,7 @@ from ..libarkqgis.maths import LinearTransformer
 from ..libarkqgis import utils
 from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 
-from ..core.project import Project
+from ..project import Project
 
 from translate_features_dialog import TranslateFeaturesDialog
 from update_layer_dialog import UpdateLayerDialog

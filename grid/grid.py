@@ -57,7 +57,7 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def load(self):
         self.dock = GridDock()
-        action = self.project.plugin.addAction(':/plugins/ArkPlan/grid/view-grid.png', self.tr(u'Local Grid'), checkable=True)
+        action = self.project.addAction(':/plugins/ArkPlan/grid/view-grid.png', self.tr(u'Local Grid'), checkable=True)
         self.dock.load(self.project.plugin.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
         self.dock.createGridSelected.connect(self.showGridWizard)

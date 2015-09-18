@@ -67,7 +67,7 @@ class Plan(QObject):
     # Load the module when plugin is loaded
     def load(self):
         self.dock = PlanDock()
-        action = self.project.plugin.addAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        action = self.project.addAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
         self.dock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 

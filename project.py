@@ -24,14 +24,15 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget
 
-from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields
+from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
 
 from libarkqgis import utils, layers, layercollection
 from libarkqgis.layercollection import *
 
+from project_dock import ProjectDock
 from settings_dialog import SettingsDialog
 
 
@@ -100,6 +101,9 @@ class Project(QObject):
             'layersGroupName'  : 'Plan Data',
             'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
+            'pointsLabel'      : 'Plan Points',
+            'linesLabel'       : 'Plan Lines',
+            'polygonsLabel'    : 'Plan Polygons',
             'pointsBaseName'   : 'plan_pt',
             'linesBaseName'    : 'plan_pl',
             'polygonsBaseName' : 'plan_pg',
@@ -113,6 +117,9 @@ class Project(QObject):
             'layersGroupName'  : 'Grid',
             'buffersGroupName' : '',
             'bufferSuffix'     : '',
+            'pointsLabel'      : 'Grid Points',
+            'linesLabel'       : 'Grid Lines',
+            'polygonsLabel'    : 'Grid Polygons',
             'pointsBaseName'   : 'grid_pt',
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
@@ -126,6 +133,9 @@ class Project(QObject):
             'layersGroupName'  : 'Base Data',
             'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
+            'pointsLabel'      : 'Base Points',
+            'linesLabel'       : 'Base Lines',
+            'polygonsLabel'    : 'Base Polygons',
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : 'base_pg',
@@ -152,7 +162,13 @@ class Project(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.plugin.addAction(self.plugin.pluginIconPath, self.tr(u'Ark Settings'), self.triggerSettingsDialog)
+        self._showLayersDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
+        self._showBrowserDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
+        self.dock = ProjectDock()
+        action = self.plugin.addAction(self.plugin.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
+        self.addAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self.triggerSettingsDialog)
+        self.dock.load(self.plugin.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.toggled.connect(self.run)
 
     def triggerSettingsDialog(self):
         if self.isConfigured():
@@ -168,6 +184,16 @@ class Project(QObject):
             self.grid.unload()
         if self.base is not None:
             self.base.unload()
+        self.dock.unload()
+
+    def run(self, checked):
+        if checked:
+            self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
+            self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
+            self.initialise()
+        else:
+            self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
+            self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
@@ -196,6 +222,18 @@ class Project(QObject):
             return True
         self.configure()
         if self.isConfigured():
+            self.projectGroupIndex = layers.createLayerGroup(self.plugin.iface, self.projectGroupName)
+            #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(self.projectGroupName), self);
+            self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, False)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeRename, False)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
+            self.projectLayerModel.setAutoCollapseLegendNodes(-1)
+            self.dock.projectLayerView.setModel(self.projectLayerModel)
             self.grid = self._createCollection('grid')
             self._createCollectionLayers('grid', self.grid._settings)
             self.plan = self._createCollection('plan')
@@ -229,7 +267,7 @@ class Project(QObject):
         self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.groupNameIndex(self.plugin.iface, self.planGroupName)
+            self.planGroupIndex = layers.createLayerGroup(self.plugin.iface, self.planGroupName, self.projectGroupName)
         self.plugin.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         self.plugin.mapCanvas().setExtent(self.geoLayer.extent())
 
@@ -260,23 +298,27 @@ class Project(QObject):
         path = self.modulePath(module)
         lcs = LayerCollectionSettings()
         lcs.collectionGroupName = self.layersGroupName(module)
+        lcs.parentGroupName = self.projectGroupName
         lcs.buffersGroupName = self.buffersGroupName(module)
         lcs.bufferSuffix = self._moduleDefault(module, 'bufferSuffix')
         layerName = self.pointsLayerName(module)
         if layerName:
             lcs.pointsLayerProvider = 'ogr'
+            lcs.pointsLayerLabel = self._moduleDefault(module, 'pointsLabel')
             lcs.pointsLayerName = layerName
             lcs.pointsLayerPath = self._shapeFile(path, layerName)
             lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(module), self.pointsBaseNameDefault(module))
         layerName = self.linesLayerName(module)
         if layerName:
             lcs.linesLayerProvider = 'ogr'
+            lcs.linesLayerLabel = self._moduleDefault(module, 'linesLabel')
             lcs.linesLayerName = layerName
             lcs.linesLayerPath = self._shapeFile(path, layerName)
             lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(module), self.linesBaseNameDefault(module))
         layerName = self.polygonsLayerName(module)
         if layerName:
             lcs.polygonsLayerProvider = 'ogr'
+            lcs.poolygonsLayerLabel = self._moduleDefault(module, 'polygonsLabel')
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
             lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
@@ -304,6 +346,22 @@ class Project(QObject):
         for fieldKey in fieldKeys:
             fields.append(self.field(fieldKey))
         return fields
+
+    def addAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
+        icon = QIcon(iconPath)
+        parent = self.dock
+        action = QAction(icon, text, parent)
+        if callback is not None:
+            action.triggered.connect(callback)
+        action.setEnabled(enabled)
+        action.setCheckable(checkable)
+        if tip is not None:
+            action.setStatusTip(tip)
+        if whatsThis is not None:
+            action.setWhatsThis(whatsThis)
+        self.dock.addAction(action)
+        #self.actions.append(action)
+        return action
 
     # Field settings
 

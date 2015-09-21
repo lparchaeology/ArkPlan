@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/grid_wizard_base.ui'
 #
-# Created: Fri Aug 21 14:00:26 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -90,6 +89,7 @@ class Ui_GridWizard(object):
         self.gridLayout_4.addWidget(self.mapEastingLabel, 3, 1, 1, 1)
         self.localPoint1EastingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.localPoint1EastingSpin.setDecimals(3)
+        self.localPoint1EastingSpin.setMinimum(-999999.999)
         self.localPoint1EastingSpin.setMaximum(999999.999)
         self.localPoint1EastingSpin.setObjectName(_fromUtf8("localPoint1EastingSpin"))
         self.gridLayout_4.addWidget(self.localPoint1EastingSpin, 5, 1, 1, 1)
@@ -104,6 +104,7 @@ class Ui_GridWizard(object):
         self.gridLayout_4.addWidget(self.mapPoint2Label, 6, 0, 1, 1)
         self.localPoint2NorthingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.localPoint2NorthingSpin.setDecimals(3)
+        self.localPoint2NorthingSpin.setMinimum(-999999.999)
         self.localPoint2NorthingSpin.setMaximum(999999.999)
         self.localPoint2NorthingSpin.setObjectName(_fromUtf8("localPoint2NorthingSpin"))
         self.gridLayout_4.addWidget(self.localPoint2NorthingSpin, 7, 2, 1, 1)
@@ -112,6 +113,7 @@ class Ui_GridWizard(object):
         self.gridLayout_4.addWidget(self.mapNorthingLabel, 3, 2, 1, 1)
         self.localPoint2EastingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.localPoint2EastingSpin.setDecimals(3)
+        self.localPoint2EastingSpin.setMinimum(-999999.999)
         self.localPoint2EastingSpin.setMaximum(999999.999)
         self.localPoint2EastingSpin.setObjectName(_fromUtf8("localPoint2EastingSpin"))
         self.gridLayout_4.addWidget(self.localPoint2EastingSpin, 7, 1, 1, 1)
@@ -120,11 +122,13 @@ class Ui_GridWizard(object):
         self.gridLayout_4.addWidget(self.localPoint2Label, 7, 0, 1, 1)
         self.mapPoint1EastingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.mapPoint1EastingSpin.setDecimals(3)
+        self.mapPoint1EastingSpin.setMinimum(-999999.999)
         self.mapPoint1EastingSpin.setMaximum(999999.999)
         self.mapPoint1EastingSpin.setObjectName(_fromUtf8("mapPoint1EastingSpin"))
         self.gridLayout_4.addWidget(self.mapPoint1EastingSpin, 4, 1, 1, 1)
         self.mapPoint1NorthingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.mapPoint1NorthingSpin.setDecimals(3)
+        self.mapPoint1NorthingSpin.setMinimum(-999999.999)
         self.mapPoint1NorthingSpin.setMaximum(999999.999)
         self.mapPoint1NorthingSpin.setObjectName(_fromUtf8("mapPoint1NorthingSpin"))
         self.gridLayout_4.addWidget(self.mapPoint1NorthingSpin, 4, 2, 1, 1)
@@ -136,16 +140,19 @@ class Ui_GridWizard(object):
         self.gridLayout_4.addWidget(self.mapPoint2FromMapButton, 6, 3, 1, 1)
         self.mapPoint2EastingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.mapPoint2EastingSpin.setDecimals(3)
+        self.mapPoint2EastingSpin.setMinimum(-999999.999)
         self.mapPoint2EastingSpin.setMaximum(999999.999)
         self.mapPoint2EastingSpin.setObjectName(_fromUtf8("mapPoint2EastingSpin"))
         self.gridLayout_4.addWidget(self.mapPoint2EastingSpin, 6, 1, 1, 1)
         self.mapPoint2NorthingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.mapPoint2NorthingSpin.setDecimals(3)
+        self.mapPoint2NorthingSpin.setMinimum(-999999.999)
         self.mapPoint2NorthingSpin.setMaximum(999999.999)
         self.mapPoint2NorthingSpin.setObjectName(_fromUtf8("mapPoint2NorthingSpin"))
         self.gridLayout_4.addWidget(self.mapPoint2NorthingSpin, 6, 2, 1, 1)
         self.localPoint1NorthingSpin = QtGui.QDoubleSpinBox(self.mapPage)
         self.localPoint1NorthingSpin.setDecimals(3)
+        self.localPoint1NorthingSpin.setMinimum(-999999.999)
         self.localPoint1NorthingSpin.setMaximum(999999.999)
         self.localPoint1NorthingSpin.setObjectName(_fromUtf8("localPoint1NorthingSpin"))
         self.gridLayout_4.addWidget(self.localPoint1NorthingSpin, 5, 2, 1, 1)

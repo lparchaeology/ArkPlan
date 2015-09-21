@@ -153,6 +153,9 @@
       <property name="decimals">
        <number>3</number>
       </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
+      </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
       </property>
@@ -193,6 +196,9 @@
       <property name="decimals">
        <number>3</number>
       </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
+      </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
       </property>
@@ -209,6 +215,9 @@
      <widget class="QDoubleSpinBox" name="localPoint2EastingSpin">
       <property name="decimals">
        <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
       </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
@@ -230,6 +239,9 @@
       <property name="decimals">
        <number>3</number>
       </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
+      </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
       </property>
@@ -239,6 +251,9 @@
      <widget class="QDoubleSpinBox" name="mapPoint1NorthingSpin">
       <property name="decimals">
        <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
       </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
@@ -264,6 +279,9 @@
       <property name="decimals">
        <number>3</number>
       </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
+      </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
       </property>
@@ -274,6 +292,9 @@
       <property name="decimals">
        <number>3</number>
       </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
+      </property>
       <property name="maximum">
        <double>999999.998999999952503</double>
       </property>
@@ -283,6 +304,9 @@
      <widget class="QDoubleSpinBox" name="localPoint1NorthingSpin">
       <property name="decimals">
        <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-999999.998999999952503</double>
       </property>
       <property name="maximum">
        <double>999999.998999999952503</double>

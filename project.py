@@ -188,12 +188,17 @@ class Project(QObject):
 
     def run(self, checked):
         if checked:
+            self._showLayersDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
+            self._showBrowserDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
             self.initialise()
         else:
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
+            self.plugin.planModule.dock.menuAction().setChecked(False)
+            self.plugin.gridModule.dock.menuAction().setChecked(False)
+            self.plugin.filterModule.dock.menuAction().setChecked(False)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):

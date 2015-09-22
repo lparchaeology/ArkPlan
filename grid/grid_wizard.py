@@ -43,12 +43,17 @@ class GridWizard(QWizard, Ui_GridWizard):
     _iface = None # QgisInterface()
     _mapTool = None # ArkMapToolEmitPoint
 
-    def __init__(self, iface, siteCode, parent=None):
+    def __init__(self, iface, project, parent=None):
         super(GridWizard, self).__init__(parent)
         self._iface = iface
 
         self.setupUi(self)
-        self.siteCodeEdit.setText(siteCode)
+        self.gridFolderEdit.setText(project.modulePath('grid'))
+        self.gridGroupNameEdit.setText(project.layersGroupName('grid'))
+        self.gridPointsNameEdit.setText(project.pointsBaseName('grid'))
+        self.gridLinesNameEdit.setText(project.linesBaseName('grid'))
+        self.gridPolygonsNameEdit.setText(project.polygonsBaseName('grid'))
+        self.siteCodeEdit.setText(project.siteCode())
         self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)
         self.methodCombo.currentIndexChanged.connect(self.setMethodType)

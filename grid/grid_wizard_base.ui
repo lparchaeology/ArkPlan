@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>629</width>
-    <height>380</height>
+    <width>633</width>
+    <height>408</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,42 @@
     <string>Grid Wizard</string>
    </property>
    <property name="subTitle">
-    <string>This wizard will walk you through the steps required to create a new local grid</string>
+    <string>This wizard will walk you through the steps required to create a new local grid.</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2"/>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0">
+     <widget class="QLabel" name="siteCodeLabel">
+      <property name="text">
+       <string>Site Code:</string>
+      </property>
+      <property name="buddy">
+       <cstring>siteCodeEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="gridNameEdit"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="siteCodeEdit"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="gridNameLabel">
+      <property name="text">
+       <string>Grid Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="welcomePageLabel">
+      <property name="text">
+       <string>
+You must enter the Site Code and a unique Grid Name:
+</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QWizardPage" name="filesPage">
    <property name="enabled">
@@ -30,13 +63,13 @@
     <string>Choose Files</string>
    </property>
    <property name="subTitle">
-    <string>Please select the grid files to use. If you select a folder and files that already exist the new grid will be added to these files. Otherwise the grid files will be created in the selcted folder and the new grid added to the new files. If you leave the Lines or Polygons field empty that file will not be ceated.</string>
+    <string>Please select the grid files to use. These may be preset for you.</string>
    </property>
    <attribute name="pageId">
     <string notr="true">filesPage</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QLabel" name="gridFolderLabel">
       <property name="text">
        <string>Folder:</string>
@@ -46,7 +79,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <layout class="QHBoxLayout" name="gridFolderLayout">
       <item>
        <widget class="QLineEdit" name="gridFolderEdit"/>
@@ -66,7 +99,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="gridGroupNameLabel">
       <property name="text">
        <string>Group Name:</string>
@@ -76,10 +109,10 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="gridGroupNameEdit"/>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="gridPointNameLabel">
       <property name="text">
        <string>Points File Name:</string>
@@ -89,10 +122,10 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QLineEdit" name="gridPointsNameEdit"/>
     </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="gridLinesNameLabel">
       <property name="text">
        <string>Lines File Name:</string>
@@ -102,10 +135,10 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="4" column="1">
      <widget class="QLineEdit" name="gridLinesNameEdit"/>
     </item>
-    <item row="4" column="0">
+    <item row="5" column="0">
      <widget class="QLabel" name="gridPolygonsNameLabel">
       <property name="text">
        <string>Polygons File Name:</string>
@@ -115,10 +148,10 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="5" column="1">
      <widget class="QLineEdit" name="gridPolygonsNameEdit"/>
     </item>
-    <item row="5" column="1">
+    <item row="6" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -130,6 +163,18 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="filesPageLabel">
+      <property name="text">
+       <string>
+If you select a folder and files that already exist the new grid will be added to these files. Otherwise the grid files will be created in the selcted folder and the new grid added to the new files. If you leave the Lines or Polygons field empty that file will not be created.
+</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -359,20 +404,7 @@
     <string>Enter the origin, extent, and interval of the local coordinates.</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_5">
-    <item row="0" column="0">
-     <widget class="QLabel" name="siteCodeLabel">
-      <property name="text">
-       <string>Site Code:</string>
-      </property>
-      <property name="buddy">
-       <cstring>siteCodeEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QLineEdit" name="gridNameEdit"/>
-    </item>
-    <item row="6" column="2">
+    <item row="4" column="2">
      <widget class="QSpinBox" name="localNorthingIntervalSpin">
       <property name="suffix">
        <string> m</string>
@@ -388,7 +420,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="3" column="1">
      <widget class="QSpinBox" name="localTerminusEastingSpin">
       <property name="maximum">
        <number>9999</number>
@@ -401,10 +433,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QLineEdit" name="siteCodeEdit"/>
-    </item>
-    <item row="6" column="1">
+    <item row="4" column="1">
      <widget class="QSpinBox" name="localEastingIntervalSpin">
       <property name="suffix">
        <string> m</string>
@@ -420,7 +449,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="localOriginLabel">
       <property name="text">
        <string>Local Origin:</string>
@@ -430,7 +459,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="2" column="1">
      <widget class="QSpinBox" name="localOriginEastingSpin">
       <property name="maximum">
        <number>9999</number>
@@ -443,14 +472,14 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="1" column="1">
      <widget class="QLabel" name="localEastingLabel">
       <property name="text">
        <string>Local Easting</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
+    <item row="3" column="2">
      <widget class="QSpinBox" name="localTerminusNorthingSpin">
       <property name="maximum">
        <number>9999</number>
@@ -463,7 +492,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="localTerminusLabel">
       <property name="text">
        <string>Local Terminus:</string>
@@ -473,14 +502,14 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="1" column="2">
      <widget class="QLabel" name="localNorthingLabel">
       <property name="text">
        <string>Local Northing</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
+    <item row="2" column="2">
      <widget class="QSpinBox" name="localOriginNorthingSpin">
       <property name="maximum">
        <number>9999</number>
@@ -493,14 +522,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="gridNameLabel">
-      <property name="text">
-       <string>Grid Name:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="localIntervalLabel">
       <property name="text">
        <string>Grid Interval:</string>
@@ -510,7 +532,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="0" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string/>
@@ -538,8 +560,6 @@
   <tabstop>mapPoint2FromMapButton</tabstop>
   <tabstop>localPoint2EastingSpin</tabstop>
   <tabstop>localPoint2NorthingSpin</tabstop>
-  <tabstop>siteCodeEdit</tabstop>
-  <tabstop>gridNameEdit</tabstop>
   <tabstop>localOriginEastingSpin</tabstop>
   <tabstop>localOriginNorthingSpin</tabstop>
   <tabstop>localTerminusEastingSpin</tabstop>

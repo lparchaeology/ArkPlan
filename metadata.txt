@@ -7,10 +7,10 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Ark
-qgisMinimumVersion=2.0
+name=ArkPlan
+qgisMinimumVersion=2.4
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.1.7
+version=0.2.0
 author=John Layt / L - P: Heritage LLP
 email=john@layt.net
 
@@ -19,10 +19,10 @@ email=john@layt.net
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=Changed shapefile and attribute table config so bump the version number as no longer compatible.
 
 # Tags are comma separated with spaces allowed
-tags=
+tags=vector
 
 homepage=https://github.com/jlayt/ArkPlan
 tracker=https://github.com/jlayt/ArkPlan

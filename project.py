@@ -385,7 +385,7 @@ class Project(QObject):
     # Project settings
 
     def useArkDB(self):
-        return self.plugin.readBoolEntry('useArkDB', False)
+        return self.plugin.readBoolEntry('useArkDB', True)
 
     def setUseArkDB(self, useArkDB):
         self.plugin.writeEntry('useArkDB', useArkDB)

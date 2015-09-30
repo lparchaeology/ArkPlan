@@ -150,6 +150,15 @@ class Project(QObject):
         }
     }
 
+    planSourceCodes = [
+        ['Checked Plan', 'pln'],
+        ['Unchecked Plan', 'unc'],
+        ['Survey Data', 'svy'],
+        ['Cloned from Source', 'cln'],
+        ['Modified from Source', 'mod'],
+        ['Inferred from Source', 'inf']
+    ]
+
     # Private settings
     _initialised = False
 

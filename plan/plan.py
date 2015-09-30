@@ -121,11 +121,8 @@ class Plan(QObject):
         self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
 
-        self.dock.addSourceCode('Plan', 'pln')
-        self.dock.addSourceCode('Cloned', 'cln')
-        self.dock.addSourceCode('Modified', 'mod')
-        self.dock.addSourceCode('Inferred', 'inf')
-        self.dock.addSourceCode('Survey', 'svy')
+        for source in self.project.planSourceCodes:
+            self.dock.addSourceCode(source[0], source[1])
 
         self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)

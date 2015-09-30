@@ -27,7 +27,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 from qgis.core import *
 
 from ..libarkqgis.map_tools import *
-from ..libarkqgis.utils import *
+from ..libarkqgis import utils
 
 from ..project import Project
 from ..georef.georef_dialog import GeorefDialog
@@ -304,6 +304,7 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
+        self.project.plan.updateBufferAttribute(self.project.fieldName('created_by'), utils.timestamp())
         if self.project.plan.okToMergeBuffers():
             self.project.plan.mergeBuffers('Merge plan data')
 

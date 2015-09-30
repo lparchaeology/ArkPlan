@@ -50,6 +50,7 @@ class Plan(QObject):
     featureName = None
     category = ''
     sourceCode = None
+    sourceClass = None
     sourceId = None
     sourceFile = None
     comment = None
@@ -80,6 +81,7 @@ class Plan(QObject):
         self.dock.featureIdChanged.connect(self._setFeatureId)
         self.dock.featureNameChanged.connect(self._setFeatureName)
         self.dock.sourceCodeChanged.connect(self._setSourceCode)
+        self.dock.sourceClassChanged.connect(self._setSourceClass)
         self.dock.sourceIdChanged.connect(self._setSourceId)
         self.dock.sourceFileChanged.connect(self._setSourceFile)
         self.dock.commentChanged.connect(self._setComment)
@@ -113,8 +115,11 @@ class Plan(QObject):
         self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
 
-        for source in self.project.planSourceCodes:
-            self.dock.addSourceCode(source[0], source[1])
+        for sourceCode in self.project.planSourceCodes:
+            self.dock.addSourceCode(sourceCode[0], sourceCode[1])
+
+        for sourceClass in self.project.planSourceClasses:
+            self.dock.addSourceClass(sourceClass[0], sourceClass[1])
 
         self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
@@ -164,6 +169,7 @@ class Plan(QObject):
         self.setSite(siteCode)
         self.setContextNumber(number)
         self.setSourceCode('pln')
+        self.setSourceClass('cxt')
         self.setSourceId(number)
         self.setSourceFile(filename)
 
@@ -251,6 +257,16 @@ class Plan(QObject):
             self.sourceCode = sourceCode
         self.updateDefaultAttributes()
 
+    def setSourceClass(self, sourceClass):
+        self.dock.setSourceClass(sourceClass)
+
+    def _setSourceClass(self, sourceClass):
+        if sourceClass is None or sourceClass.strip() == '':
+            self.sourceClass = None
+        else:
+            self.sourceClass = sourceClass
+        self.updateDefaultAttributes()
+
     def setSourceId(self, sourceId):
         self.dock.setSourceId(sourceId)
 
@@ -304,7 +320,7 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        self.project.plan.updateBufferAttribute(self.project.fieldName('created_by'), utils.timestamp())
+        self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
         if self.project.plan.okToMergeBuffers():
             self.project.plan.mergeBuffers('Merge plan data')
 
@@ -392,6 +408,7 @@ class Plan(QObject):
         defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
         defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName
         defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self.sourceCode
+        defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self.sourceClass
         defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self.sourceId
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']

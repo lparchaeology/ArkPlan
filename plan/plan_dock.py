@@ -44,6 +44,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     featureIdChanged = pyqtSignal(int)
     featureNameChanged = pyqtSignal(str)
     sourceCodeChanged = pyqtSignal(str)
+    sourceClassChanged = pyqtSignal(str)
     sourceIdChanged = pyqtSignal(int)
     sourceFileChanged = pyqtSignal(str)
     commentChanged = pyqtSignal(str)
@@ -72,6 +73,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.m_featureIdSpin.valueChanged.connect(self.featureIdChanged)
         self.m_featureNameEdit.textChanged.connect(self.featureNameChanged)
         self.m_sourceCodeCombo.currentIndexChanged.connect(self.sourceCodeIndexChanged)
+        self.m_sourceClassCombo.currentIndexChanged.connect(self.sourceClassIndexChanged)
         self.m_sourceIdSpin.valueChanged.connect(self.sourceIdChanged)
         self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
         self.m_commentEdit.textChanged.connect(self.commentChanged)
@@ -100,8 +102,17 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setSourceCode(self, sourceCode):
         self.m_sourceCodeCombo.setCurrentIndex(self.m_sourceCodeCombo.findData(sourceCode))
 
+    def addSourceClass(self, name, code):
+        self.m_sourceClassCombo.addItem(name, code)
+
+    def setSourceClass(self, sourceClass):
+        self.m_sourceClassCombo.setCurrentIndex(self.m_sourceClassCombo.findData(sourceClass))
+
     def sourceCodeIndexChanged(self, index):
         self.sourceCodeChanged.emit(self.m_sourceCodeCombo.itemData(index))
+
+    def sourceClassIndexChanged(self, index):
+        self.sourceClassChanged.emit(self.m_sourceClassCombo.itemData(index))
 
     def setSourceId(self, sourceId):
         self.m_sourceIdSpin.setValue(sourceId)

@@ -63,6 +63,7 @@ class Project(QObject):
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
         'source_cd' : QgsField('source_cd',  QVariant.String, '',  10, 0, 'Source Code'),
+        'source_cl' : QgsField('source_cl',  QVariant.String, '',  10, 0, 'Source Class'),
         'source_id' : QgsField('source_id',  QVariant.Int,    '',   5, 0, 'Source ID'),
         'file'      : QgsField('file',       QVariant.String, '', 100, 0, 'Source File'),
         'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
@@ -83,6 +84,7 @@ class Project(QObject):
         'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
         'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
         'source_cd' : QgsField('source_cd',  QVariant.String, '',  10, 0, 'Source Code'),
+        'source_cl' : QgsField('source_mod', QVariant.String, '',  10, 0, 'Source Module'),
         'source_id' : QgsField('source_no',  QVariant.Int,    '',   5, 0, 'Source Item Number'),
         'file'      : QgsField('file',       QVariant.String, '', 100, 0, 'File'),
         'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
@@ -107,9 +109,9 @@ class Project(QObject):
             'pointsBaseName'   : 'plan_pt',
             'linesBaseName'    : 'plan_pl',
             'polygonsBaseName' : 'plan_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
         },
         'grid' : {
             'path'             : '',
@@ -139,9 +141,9 @@ class Project(QObject):
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : 'base_pg',
-            'pointsFields'     : ['site', 'name', 'category', 'elevation', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'name', 'category', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'name', 'category', 'source_cd', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'name', 'category', 'elevation', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
+            'linesFields'      : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
+            'polygonsFields'   : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
         },
         'planRaster' : {
             'path'             : '',
@@ -157,6 +159,13 @@ class Project(QObject):
         ['Cloned from Source', 'cln'],
         ['Modified from Source', 'mod'],
         ['Inferred from Source', 'inf']
+    ]
+
+    planSourceClasses = [
+        ['Context', 'cxt'],
+        ['Plan', 'pln'],
+        ['Section', 'sec'],
+        ['Find', 'rgf']
     ]
 
     # Private settings

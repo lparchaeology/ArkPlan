@@ -27,6 +27,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 from qgis.core import *
 
 from ..libarkqgis.map_tools import *
+from ..libarkqgis.utils import *
 
 from ..project import Project
 from ..georef.georef_dialog import GeorefDialog
@@ -71,27 +72,18 @@ class Plan(QObject):
         self.dock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
-        self.dock.loadRawFileSelected.connect(self.loadRawPlan)
-        self.dock.loadGeoFileSelected.connect(self.loadGeoPlan)
-        self.dock.loadContextSelected.connect(self.loadContextPlans)
-        self.dock.siteChanged.connect(self.setSite)
-        self.dock.siteChanged.connect(self.updateDefaultAttributes)
-        self.dock.contextNumberChanged.connect(self.setContextNumber)
-        self.dock.contextNumberChanged.connect(self.updateDefaultAttributes)
-        self.dock.featureIdChanged.connect(self.setFeatureId)
-        self.dock.featureIdChanged.connect(self.updateDefaultAttributes)
-        self.dock.featureNameChanged.connect(self.setFeatureName)
-        self.dock.featureNameChanged.connect(self.updateDefaultAttributes)
-        self.dock.sourceCodeChanged.connect(self.setSourceCode)
-        self.dock.sourceCodeChanged.connect(self.updateDefaultAttributes)
-        self.dock.sourceIdChanged.connect(self.setSourceId)
-        self.dock.sourceIdChanged.connect(self.updateDefaultAttributes)
-        self.dock.sourceFileChanged.connect(self.setSourceFile)
-        self.dock.sourceFileChanged.connect(self.updateDefaultAttributes)
-        self.dock.commentChanged.connect(self.setComment)
-        self.dock.commentChanged.connect(self.updateDefaultAttributes)
-        self.dock.createdByChanged.connect(self.setCreatedBy)
-        self.dock.createdByChanged.connect(self.updateDefaultAttributes)
+        self.dock.loadRawFileSelected.connect(self._loadRawPlan)
+        self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
+        self.dock.loadContextSelected.connect(self._loadContextPlans)
+        self.dock.siteChanged.connect(self._setSite)
+        self.dock.contextNumberChanged.connect(self._setContextNumber)
+        self.dock.featureIdChanged.connect(self._setFeatureId)
+        self.dock.featureNameChanged.connect(self._setFeatureName)
+        self.dock.sourceCodeChanged.connect(self._setSourceCode)
+        self.dock.sourceIdChanged.connect(self._setSourceId)
+        self.dock.sourceFileChanged.connect(self._setSourceFile)
+        self.dock.commentChanged.connect(self._setComment)
+        self.dock.createdByChanged.connect(self._setCreatedBy)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -168,32 +160,37 @@ class Plan(QObject):
 
     # Plan Tools
 
-    def setMetadata(self, siteCode, type, number, file, easting, northing, suffix):
-        self.dock.setSite(siteCode)
-        self.dock.setContextNumber(number)
-        self.dock.setSourceCode('pln')
-        self.dock.setSourceId(number)
-        self.dock.setSourceFile(file)
+    def _setContextMetadata(self, siteCode, number, filename):
+        self.setSite(siteCode)
+        self.setContextNumber(number)
+        self.setSourceCode('pln')
+        self.setSourceId(number)
+        self.setSourceFile(filename)
 
-    def loadRawPlan(self):
+    def _loadRawPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.project.rawPlanPath(),
                                                        self.tr('Image Files (*.png *.tif *.tiff)')))
         if fileName:
             self.georeferencePlan(QFileInfo(fileName))
 
-    def loadGeoPlan(self):
+    def _loadGeoPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.project.processedPlanPath(),
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
             md = planMetadata(geoFile.completeBaseName())
-            self.setMetadata(md[0], md[1], md[2], geoFile.fileName(), md[3], md[4], md[5])
+            self._setContextMetadata(md[0], md[2], geoFile.fileName())
             self.project.loadGeoLayer(geoFile)
+        self._setSourceCode('pln')
+        self._setSourceId(self.contextNumber)
 
-    def loadContextPlans(self):
+    def _loadContextPlans(self):
         context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all plans for:', 0, 0, 99999)
         if (not ok or context == 0):
             return
+        self.loadContextPlans(context)
+
+    def loadContextPlans(self, context):
         planDir = self.project.processedPlanDir()
         planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         geoName = self.project.siteCode() + '*' + str(context) + '*_r.tif'
@@ -201,62 +198,98 @@ class Plan(QObject):
         plans = planDir.entryInfoList()
         for plan in plans:
             md = planMetadata(plan.completeBaseName())
-            self.setMetadata(md[0], md[1], md[2], plan.fileName(), md[3], md[4], md[5])
+            self._setContextMetadata(md[0], md[2], plan.fileName())
             self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):
+        self.dock.setSite(siteCode)
+
+    def _setSite(self, siteCode):
         if siteCode is None or siteCode.strip() == '':
             self.siteCode = None
         else:
             self.siteCode = siteCode
+        self.updateDefaultAttributes()
 
     def setContextNumber(self, context):
+        self.dock.setContextNumber(context)
+
+    def _setContextNumber(self, context):
         if context is None or context <= 0:
             self.contextNumber = None
         else:
             self.contextNumber = context
+        self.updateDefaultAttributes()
 
     def setFeatureId(self, featureId):
+        self.dock.setFeatureId(featureId)
+
+    def _setFeatureId(self, featureId):
         if featureId is None or featureId <= 0:
             self.featureId = None
         else:
             self.featureId = featureId
+        self.updateDefaultAttributes()
 
     def setFeatureName(self, featureName):
+        self.dock.setFeatureName(featureName)
+
+    def _setFeatureName(self, featureName):
         if featureName is None or featureName.strip() == '':
             self.featureName = None
         else:
             self.featureName = featureName
+        self.updateDefaultAttributes()
 
     def setSourceCode(self, sourceCode):
+        self.dock.setSourceCode(sourceCode)
+
+    def _setSourceCode(self, sourceCode):
         if sourceCode is None or sourceCode.strip() == '':
             self.sourceCode = None
         else:
             self.sourceCode = sourceCode
+        self.updateDefaultAttributes()
 
     def setSourceId(self, sourceId):
+        self.dock.setSourceId(sourceId)
+
+    def _setSourceId(self, sourceId):
         if sourceId is None or sourceId <= 0:
             self.sourceId = None
         else:
             self.sourceId = sourceId
+        self.updateDefaultAttributes()
 
     def setSourceFile(self, sourceFile):
+        self.dock.setSourceFile(sourceFile)
+
+    def _setSourceFile(self, sourceFile):
         if sourceFile is None or sourceFile.strip() == '':
             self.sourceFile = None
         else:
             self.sourceFile = sourceFile
+        self.updateDefaultAttributes()
 
     def setComment(self, comment):
+        self.dock.setComment(comment)
+
+    def _setComment(self, comment):
         if comment is None or comment.strip() == '':
             self.comment = None
         else:
             self.comment = comment
+        self.updateDefaultAttributes()
 
     def setCreatedBy(self, creator):
+        self.dock.setCreatedBy(creator)
+
+    def _setCreatedBy(self, creator):
         if creator is None or creator.strip() == '':
             self.createdBy = None
         else:
             self.createdBy = creator
+        self.updateDefaultAttributes()
 
     # Georeference Tools
 
@@ -265,7 +298,7 @@ class Plan(QObject):
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
-            self.setMetadata(md[0], md[1], md[2], geoFile.fileName(), md[3], md[4], md[5])
+            self._setContextMetadata(md[0], md[2], geoFile.fileName())
             self.project.loadGeoLayer(geoFile)
 
     # Layer Methods

@@ -38,6 +38,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
     loadContextSelected = pyqtSignal()
+    loadPlanSelected = pyqtSignal()
 
     siteChanged = pyqtSignal(str)
     contextNumberChanged = pyqtSignal(int)
@@ -67,6 +68,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.loadRawButton.clicked.connect(self.loadRawFileSelected)
         self.loadGeoButton.clicked.connect(self.loadGeoFileSelected)
         self.loadContextButton.clicked.connect(self.loadContextSelected)
+        self.loadPlanButton.clicked.connect(self.loadPlanSelected)
 
         self.siteEdit.textChanged.connect(self.siteChanged)
         self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)

@@ -76,6 +76,7 @@ class Plan(QObject):
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
+        self.dock.loadPlanSelected.connect(self._loadPlans)
         self.dock.siteChanged.connect(self._setSite)
         self.dock.contextNumberChanged.connect(self._setContextNumber)
         self.dock.featureIdChanged.connect(self._setFeatureId)
@@ -174,13 +175,13 @@ class Plan(QObject):
         self.setSourceFile(filename)
 
     def _loadRawPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Plan'), self.project.rawPlanPath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Drawing'), self.project.rawPlanPath(),
                                                        self.tr('Image Files (*.png *.tif *.tiff)')))
         if fileName:
             self.georeferencePlan(QFileInfo(fileName))
 
     def _loadGeoPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Plan'), self.project.processedPlanPath(),
+        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Drawing'), self.project.processedPlanPath(),
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
@@ -191,8 +192,8 @@ class Plan(QObject):
         self._setSourceId(self.contextNumber)
 
     def _loadContextPlans(self):
-        context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all plans for:', 0, 0, 99999)
-        if (not ok or context == 0):
+        context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)
+        if (not ok or context <= 0):
             return
         self.loadContextPlans(context)
 
@@ -205,6 +206,28 @@ class Plan(QObject):
         for plan in plans:
             md = planMetadata(plan.completeBaseName())
             self._setContextMetadata(md[0], md[2], plan.fileName())
+            self.project.loadGeoLayer(plan)
+
+    def _loadPlans(self):
+        plan, ok = QInputDialog.getInt(None, 'Load Plans', 'Please enter the Plan number to load all drawings for:', 1, 1, 99999)
+        if (not ok or plan <= 0):
+            return
+        self.loadPlans(plan)
+
+    def loadPlans(self, plan):
+        planDir = self.project.processedPlanDir()
+        planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
+        geoName = self.project.siteCode() + '_P' + str(plan) + '*_r.tif'
+        planDir.setNameFilters([geoName])
+        plans = planDir.entryInfoList()
+        for plan in plans:
+            md = planMetadata(plan.completeBaseName())
+            self.setSite(md[0])
+            self.setSourceCode('drw')
+            self.setSourceClass('pln')
+            self.setSourceId(md[2])
+            self.setSourceFile(plan.fileName())
+            self.setContextNumber(0)
             self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):

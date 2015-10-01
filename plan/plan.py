@@ -352,6 +352,10 @@ class Plan(QObject):
         return mapTool
 
     def _addMapTool(self, classCode, category, mapTool, action):
+        if classCode == 'cxt':
+            action.triggered.connect(self.validateContext)
+        else:
+            action.triggered.connect(self.validateFeature)
         self.dock.addDrawingTool(classCode, action)
         self.actions[category] = action
         self.mapTools[category] = mapTool
@@ -408,10 +412,34 @@ class Plan(QObject):
         defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
         defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName
         defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self.sourceCode
-        defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self.sourceClass
-        defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self.sourceId
+        if self.sourceCode != 'svy':
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self.sourceClass
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self.sourceId
         defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']
         defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
         defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self.createdBy
         mapTool.setDefaultAttributes(defaults)
+
+    def validateStandard(self):
+        if self.siteCode is None or self.siteCode == '':
+            self.setSite(QInputDialog.getText(None, 'Site Code', 'Please enter a valid Site Code', text=self.project.siteCode())[0])
+        if self.createdBy is None or self.createdBy == '':
+            self.setCreatedBy(QInputDialog.getText(None, 'Created By', "Please enter your full name (e.g. 'Mortimer Wheeler')")[0])
+        if (self.sourceCode == 'pln' or self.sourceCode == 'unc' or self.sourceCode == 'svy') and (self.sourceFile is None or self.sourceFile == ''):
+            self.setSourceFile(QInputDialog.getText(None, 'Source File', "Please enter the source file name")[0])
+        if (self.sourceCode != 'svy') and (self.sourceId is None or self.sourceId <= 0):
+            self.setSourceId(QInputDialog.getInt(None, 'Source ID', 'Please enter a valid Source ID Number', 1, 1, 99999)[0])
+
+    def validateContext(self):
+        if self.contextNumber <= 0:
+            num = QInputDialog.getInt(None, 'Context Number', 'Please enter a valid Context Number', 1, 1, 99999)[0]
+            self.setContextNumber(num)
+            if self.sourceClass == 'cxt' and self.sourceId <= 0:
+                self.setSourceId(num)
+        self.validateStandard()
+
+    def validateFeature(self):
+        if self.featureId <= 0:
+            self.setFeatureId(QInputDialog.getInt(None, 'Feature ID', 'Please enter a valid Feature ID', 1, 1, 99999)[0])
+        self.validateStandard()

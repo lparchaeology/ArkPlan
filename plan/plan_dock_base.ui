@@ -54,10 +54,10 @@
            <string>Metadata</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="1">
+           <item row="3" column="1">
             <widget class="QComboBox" name="m_sourceCodeCombo"/>
            </item>
-           <item row="2" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="m_sourceIdLabel">
              <property name="text">
               <string>Source ID:</string>
@@ -84,7 +84,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="m_sourceCodeLabel">
              <property name="text">
               <string>Source:</string>
@@ -94,7 +94,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="m_sourceFileLabel">
              <property name="text">
               <string>Source File:</string>
@@ -104,40 +104,10 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="5" column="1">
             <widget class="QLineEdit" name="m_sourceFileEdit"/>
            </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="m_commentLabel">
-             <property name="text">
-              <string>Comment:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_commentEdit</cstring>
-             </property>
-            </widget>
-           </item>
            <item row="4" column="1">
-            <widget class="QLineEdit" name="m_commentEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="m_createdByLabel">
-             <property name="text">
-              <string>Created By:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_createdByEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="m_createdByEdit"/>
-           </item>
-           <item row="2" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
               <widget class="QComboBox" name="m_sourceClassCombo"/>
@@ -153,6 +123,36 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="m_commentLabel">
+             <property name="text">
+              <string>Comment:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_commentEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="m_commentEdit">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="m_createdByLabel">
+             <property name="text">
+              <string>Created By:</string>
+             </property>
+             <property name="buddy">
+              <cstring>m_createdByEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="m_createdByEdit"/>
            </item>
           </layout>
          </widget>
@@ -243,7 +243,11 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSpinBox" name="m_featureIdSpin"/>
+            <widget class="QSpinBox" name="m_featureIdSpin">
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -417,8 +421,6 @@
      </layout>
     </item>
    </layout>
-   <zorder></zorder>
-   <zorder>scrollArea</zorder>
   </widget>
  </widget>
  <customwidgets>
@@ -442,12 +444,12 @@
  <tabstops>
   <tabstop>scrollArea</tabstop>
   <tabstop>m_siteEdit</tabstop>
+  <tabstop>m_commentEdit</tabstop>
+  <tabstop>m_createdByEdit</tabstop>
   <tabstop>m_sourceCodeCombo</tabstop>
   <tabstop>m_sourceClassCombo</tabstop>
   <tabstop>m_sourceIdSpin</tabstop>
   <tabstop>m_sourceFileEdit</tabstop>
-  <tabstop>m_commentEdit</tabstop>
-  <tabstop>m_createdByEdit</tabstop>
   <tabstop>m_loadRawButton</tabstop>
   <tabstop>m_loadGeoButton</tabstop>
   <tabstop>m_loadContextButton</tabstop>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>352</width>
-    <height>743</height>
+    <height>725</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,76 +44,106 @@
          <x>0</x>
          <y>0</y>
          <width>328</width>
-         <height>651</height>
+         <height>633</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QGroupBox" name="m_metadataGroup">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Load Drawings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="loadRawButton">
+             <property name="text">
+              <string>Raw Plan</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="loadGeoButton">
+             <property name="text">
+              <string>Geo Plan</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="loadContextButton">
+             <property name="text">
+              <string>Context</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="metadataGroup">
           <property name="title">
            <string>Metadata</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="3" column="1">
-            <widget class="QComboBox" name="m_sourceCodeCombo"/>
+            <widget class="QComboBox" name="sourceCodeCombo"/>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="m_sourceIdLabel">
+            <widget class="QLabel" name="sourceIdLabel">
              <property name="text">
               <string>Source ID:</string>
              </property>
              <property name="buddy">
-              <cstring>m_sourceClassCombo</cstring>
+              <cstring>sourceClassCombo</cstring>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="m_siteLabel">
+            <widget class="QLabel" name="siteLabel">
              <property name="text">
               <string>Site Code:</string>
              </property>
              <property name="buddy">
-              <cstring>m_siteEdit</cstring>
+              <cstring>siteEdit</cstring>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="m_siteEdit">
+            <widget class="QLineEdit" name="siteEdit">
              <property name="readOnly">
               <bool>false</bool>
              </property>
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="m_sourceCodeLabel">
+            <widget class="QLabel" name="sourceCodeLabel">
              <property name="text">
               <string>Source:</string>
              </property>
              <property name="buddy">
-              <cstring>m_sourceCodeCombo</cstring>
+              <cstring>sourceCodeCombo</cstring>
              </property>
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="m_sourceFileLabel">
+            <widget class="QLabel" name="sourceFileLabel">
              <property name="text">
               <string>Source File:</string>
              </property>
              <property name="buddy">
-              <cstring>m_sourceFileEdit</cstring>
+              <cstring>sourceFileEdit</cstring>
              </property>
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QLineEdit" name="m_sourceFileEdit"/>
+            <widget class="QLineEdit" name="sourceFileEdit"/>
            </item>
            <item row="4" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QComboBox" name="m_sourceClassCombo"/>
+              <widget class="QComboBox" name="sourceClassCombo"/>
              </item>
              <item>
-              <widget class="QSpinBox" name="m_sourceIdSpin">
+              <widget class="QSpinBox" name="sourceIdSpin">
                <property name="toolTip">
                 <string>Source ID</string>
                </property>
@@ -125,143 +155,154 @@
             </layout>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="m_commentLabel">
+            <widget class="QLabel" name="commentLabel">
              <property name="text">
               <string>Comment:</string>
              </property>
              <property name="buddy">
-              <cstring>m_commentEdit</cstring>
+              <cstring>commentEdit</cstring>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="m_commentEdit">
+            <widget class="QLineEdit" name="commentEdit">
              <property name="readOnly">
               <bool>false</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="m_createdByLabel">
+            <widget class="QLabel" name="createdByLabel">
              <property name="text">
               <string>Created By:</string>
              </property>
              <property name="buddy">
-              <cstring>m_createdByEdit</cstring>
+              <cstring>createdByEdit</cstring>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="m_createdByEdit"/>
+            <widget class="QLineEdit" name="createdByEdit"/>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="m_contextDataGroup">
-          <property name="title">
-           <string>Context Data</string>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
           </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="2">
-            <widget class="QPushButton" name="m_loadContextButton">
-             <property name="text">
-              <string>Context</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="m_loadRawButton">
-             <property name="text">
-              <string>Raw Plan</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="m_contextNumberSpin">
-             <property name="toolTip">
-              <string>Context Number</string>
-             </property>
-             <property name="maximum">
-              <number>9999</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="m_loadGeoButton">
-             <property name="text">
-              <string>Geo Plan</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="m_contextNumberLabel">
-             <property name="text">
-              <string>Context:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_contextNumberSpin</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="3">
-            <layout class="QGridLayout" name="m_contextToolsLayout"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="m_featureDataGroup">
-          <property name="title">
-           <string>Feature Data</string>
+          <property name="documentMode">
+           <bool>false</bool>
           </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="m_featureNameEdit"/>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <layout class="QGridLayout" name="m_featureToolsLayout"/>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="m_featureNameLabel">
-             <property name="text">
-              <string>Name:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_featureNameEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="m_featureIdLabel">
-             <property name="text">
-              <string>ID:</string>
-             </property>
-             <property name="buddy">
-              <cstring>m_featureIdSpin</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="m_featureIdSpin">
-             <property name="maximum">
-              <number>99999</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QWidget" name="contextsTab">
+           <attribute name="title">
+            <string>Contexts</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="1" column="0" colspan="3">
+             <layout class="QGridLayout" name="contextToolsLayout"/>
+            </item>
+            <item row="2" column="1">
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="contextNumberLabel">
+              <property name="text">
+               <string>Context:</string>
+              </property>
+              <property name="buddy">
+               <cstring>contextNumberSpin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QSpinBox" name="contextNumberSpin">
+              <property name="toolTip">
+               <string>Context Number</string>
+              </property>
+              <property name="maximum">
+               <number>9999</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="featuresTab">
+           <attribute name="title">
+            <string>Features</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="featureNameEdit"/>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <layout class="QGridLayout" name="featureToolsLayout"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="featureIdLabel">
+              <property name="text">
+               <string>ID:</string>
+              </property>
+              <property name="buddy">
+               <cstring>featureIdSpin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="featureNameLabel">
+              <property name="text">
+               <string>Name:</string>
+              </property>
+              <property name="buddy">
+               <cstring>featureNameEdit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="featureIdSpin">
+              <property name="maximum">
+               <number>99999</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Editing:</string>
+           <string>Editing</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="1" column="2">
-              <widget class="SnappingToolButton" name="m_snapPolygonsBufferTool">
+              <widget class="SnappingToolButton" name="snapPolygonsBufferTool">
                <property name="text">
                 <string>...</string>
                </property>
@@ -274,24 +315,24 @@
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="QLabel" name="label_12">
+              <widget class="QLabel" name="snapPolygonsLabel">
                <property name="text">
                 <string>Polys</string>
                </property>
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="snapLayerLabel">
                <property name="text">
                 <string>Snap Layers:</string>
                </property>
                <property name="buddy">
-                <cstring>m_snapLinesLayerTool</cstring>
+                <cstring>snapLinesLayerTool</cstring>
                </property>
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="SnappingToolButton" name="m_snapPolygonsLayerTool">
+              <widget class="SnappingToolButton" name="snapPolygonsLayerTool">
                <property name="text">
                 <string>...</string>
                </property>
@@ -304,7 +345,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="SnappingToolButton" name="m_snapLinesLayerTool">
+              <widget class="SnappingToolButton" name="snapLinesLayerTool">
                <property name="text">
                 <string>...</string>
                </property>
@@ -317,14 +358,14 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="label_11">
+              <widget class="QLabel" name="snapLinesLabel">
                <property name="text">
                 <string>Lines</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="SnappingToolButton" name="m_snapLinesBufferTool">
+              <widget class="SnappingToolButton" name="snapLinesBufferTool">
                <property name="text">
                 <string>...</string>
                </property>
@@ -337,12 +378,12 @@
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="snapBuffersLabel">
                <property name="text">
                 <string>Snap Buffers:</string>
                </property>
                <property name="buddy">
-                <cstring>m_snapLinesBufferTool</cstring>
+                <cstring>snapLinesBufferTool</cstring>
                </property>
               </widget>
              </item>
@@ -351,17 +392,17 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QLabel" name="m_topologicalLabel">
+              <widget class="QLabel" name="topologicalLabel">
                <property name="text">
                 <string>Topological editing:</string>
                </property>
                <property name="buddy">
-                <cstring>m_topologicalTool</cstring>
+                <cstring>topologicalTool</cstring>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="TopoEditToolButton" name="m_topologicalTool">
+              <widget class="TopoEditToolButton" name="topologicalTool">
                <property name="text">
                 <string>topo</string>
                </property>
@@ -389,17 +430,13 @@
          </spacer>
         </item>
        </layout>
-       <zorder>m_contextDataGroup</zorder>
-       <zorder>groupBox</zorder>
-       <zorder>m_metadataGroup</zorder>
-       <zorder>m_featureDataGroup</zorder>
       </widget>
      </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="m_clearButton">
+       <widget class="QPushButton" name="clearButton">
         <property name="toolTip">
          <string>Clear unsaved changes from work layers</string>
         </property>
@@ -409,7 +446,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_mergeButton">
+       <widget class="QPushButton" name="mergeButton">
         <property name="toolTip">
          <string>Move new context to main layers</string>
         </property>
@@ -443,26 +480,27 @@
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
-  <tabstop>m_siteEdit</tabstop>
-  <tabstop>m_commentEdit</tabstop>
-  <tabstop>m_createdByEdit</tabstop>
-  <tabstop>m_sourceCodeCombo</tabstop>
-  <tabstop>m_sourceClassCombo</tabstop>
-  <tabstop>m_sourceIdSpin</tabstop>
-  <tabstop>m_sourceFileEdit</tabstop>
-  <tabstop>m_loadRawButton</tabstop>
-  <tabstop>m_loadGeoButton</tabstop>
-  <tabstop>m_loadContextButton</tabstop>
-  <tabstop>m_contextNumberSpin</tabstop>
-  <tabstop>m_featureIdSpin</tabstop>
-  <tabstop>m_featureNameEdit</tabstop>
-  <tabstop>m_snapLinesBufferTool</tabstop>
-  <tabstop>m_snapPolygonsBufferTool</tabstop>
-  <tabstop>m_snapLinesLayerTool</tabstop>
-  <tabstop>m_snapPolygonsLayerTool</tabstop>
-  <tabstop>m_topologicalTool</tabstop>
-  <tabstop>m_clearButton</tabstop>
-  <tabstop>m_mergeButton</tabstop>
+  <tabstop>loadRawButton</tabstop>
+  <tabstop>loadGeoButton</tabstop>
+  <tabstop>loadContextButton</tabstop>
+  <tabstop>siteEdit</tabstop>
+  <tabstop>commentEdit</tabstop>
+  <tabstop>createdByEdit</tabstop>
+  <tabstop>sourceCodeCombo</tabstop>
+  <tabstop>sourceClassCombo</tabstop>
+  <tabstop>sourceIdSpin</tabstop>
+  <tabstop>sourceFileEdit</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>contextNumberSpin</tabstop>
+  <tabstop>snapLinesBufferTool</tabstop>
+  <tabstop>snapPolygonsBufferTool</tabstop>
+  <tabstop>snapLinesLayerTool</tabstop>
+  <tabstop>snapPolygonsLayerTool</tabstop>
+  <tabstop>topologicalTool</tabstop>
+  <tabstop>clearButton</tabstop>
+  <tabstop>mergeButton</tabstop>
+  <tabstop>featureIdSpin</tabstop>
+  <tabstop>featureNameEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -64,67 +64,67 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         super(PlanDock, self).__init__(parent)
         self.setupUi(self)
 
-        self.m_loadRawButton.clicked.connect(self.loadRawFileSelected)
-        self.m_loadGeoButton.clicked.connect(self.loadGeoFileSelected)
-        self.m_loadContextButton.clicked.connect(self.loadContextSelected)
+        self.loadRawButton.clicked.connect(self.loadRawFileSelected)
+        self.loadGeoButton.clicked.connect(self.loadGeoFileSelected)
+        self.loadContextButton.clicked.connect(self.loadContextSelected)
 
-        self.m_siteEdit.textChanged.connect(self.siteChanged)
-        self.m_contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
-        self.m_featureIdSpin.valueChanged.connect(self.featureIdChanged)
-        self.m_featureNameEdit.textChanged.connect(self.featureNameChanged)
-        self.m_sourceCodeCombo.currentIndexChanged.connect(self.sourceCodeIndexChanged)
-        self.m_sourceClassCombo.currentIndexChanged.connect(self.sourceClassIndexChanged)
-        self.m_sourceIdSpin.valueChanged.connect(self.sourceIdChanged)
-        self.m_sourceFileEdit.textChanged.connect(self.sourceFileChanged)
-        self.m_commentEdit.textChanged.connect(self.commentChanged)
-        self.m_createdByEdit.textChanged.connect(self.createdByChanged)
+        self.siteEdit.textChanged.connect(self.siteChanged)
+        self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
+        self.featureIdSpin.valueChanged.connect(self.featureIdChanged)
+        self.featureNameEdit.textChanged.connect(self.featureNameChanged)
+        self.sourceCodeCombo.currentIndexChanged.connect(self.sourceCodeIndexChanged)
+        self.sourceClassCombo.currentIndexChanged.connect(self.sourceClassIndexChanged)
+        self.sourceIdSpin.valueChanged.connect(self.sourceIdChanged)
+        self.sourceFileEdit.textChanged.connect(self.sourceFileChanged)
+        self.commentEdit.textChanged.connect(self.commentChanged)
+        self.createdByEdit.textChanged.connect(self.createdByChanged)
 
-        self.m_clearButton.clicked.connect(self.clearSelected)
-        self.m_mergeButton.clicked.connect(self.mergeSelected)
+        self.clearButton.clicked.connect(self.clearSelected)
+        self.mergeButton.clicked.connect(self.mergeSelected)
 
     # Metadata Tools
 
     def setSite(self, name):
-        self.m_siteEdit.setText(name)
+        self.siteEdit.setText(name)
 
     def setContextNumber(self, context):
-        self.m_contextNumberSpin.setValue(context)
+        self.contextNumberSpin.setValue(context)
 
     def setFeatureId(self, featureId):
-        self.m_featureIdSpin.setValue(featureId)
+        self.featureIdSpin.setValue(featureId)
 
     def setFeatureName(self, name):
-        self.m_featureNameEdit.setText(name)
+        self.featureNameEdit.setText(name)
 
     def addSourceCode(self, name, code):
-        self.m_sourceCodeCombo.addItem(name, code)
+        self.sourceCodeCombo.addItem(name, code)
 
     def setSourceCode(self, sourceCode):
-        self.m_sourceCodeCombo.setCurrentIndex(self.m_sourceCodeCombo.findData(sourceCode))
+        self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(sourceCode))
 
     def addSourceClass(self, name, code):
-        self.m_sourceClassCombo.addItem(name, code)
+        self.sourceClassCombo.addItem(name, code)
 
     def setSourceClass(self, sourceClass):
-        self.m_sourceClassCombo.setCurrentIndex(self.m_sourceClassCombo.findData(sourceClass))
+        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(sourceClass))
 
     def sourceCodeIndexChanged(self, index):
-        self.sourceCodeChanged.emit(self.m_sourceCodeCombo.itemData(index))
+        self.sourceCodeChanged.emit(self.sourceCodeCombo.itemData(index))
 
     def sourceClassIndexChanged(self, index):
-        self.sourceClassChanged.emit(self.m_sourceClassCombo.itemData(index))
+        self.sourceClassChanged.emit(self.sourceClassCombo.itemData(index))
 
     def setSourceId(self, sourceId):
-        self.m_sourceIdSpin.setValue(sourceId)
+        self.sourceIdSpin.setValue(sourceId)
 
     def setSourceFile(self, sourceFile):
-        self.m_sourceFileEdit.setText(sourceFile)
+        self.sourceFileEdit.setText(sourceFile)
 
     def setComment(self, comment):
-        self.m_commentEdit.setText(comment)
+        self.commentEdit.setText(comment)
 
     def setCreatedBy(self, creator):
-        self.m_createdByEdit.setText(creator)
+        self.createdByEdit.setText(creator)
 
     # Drawing Tools
 
@@ -133,13 +133,13 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
         if classCode == 'cxt':
-            self.m_contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
+            self.contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
             if self._cgCol == self._cgColMax:
                 self.newDrawingToolRow(classCode)
             else:
                 self._cgCol += 1
         else:
-            self.m_featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
+            self.featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
             if self._fgCol == self._fgColMax:
                 self.newDrawingToolRow(classCode)
             else:
@@ -156,13 +156,13 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     # Snapping Tools
 
     def setLinesBuffer(self, layer):
-        self.m_snapLinesBufferTool.setLayer(layer)
+        self.snapLinesBufferTool.setLayer(layer)
 
     def setPolygonsBuffer(self, layer):
-        self.m_snapPolygonsBufferTool.setLayer(layer)
+        self.snapPolygonsBufferTool.setLayer(layer)
 
     def setLinesLayer(self, layer):
-        self.m_snapLinesLayerTool.setLayer(layer)
+        self.snapLinesLayerTool.setLayer(layer)
 
     def setPolygonsLayer(self, layer):
-        self.m_snapPolygonsLayerTool.setLayer(layer)
+        self.snapPolygonsLayerTool.setLayer(layer)

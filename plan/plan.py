@@ -168,7 +168,7 @@ class Plan(QObject):
     def _setContextMetadata(self, siteCode, number, filename):
         self.setSite(siteCode)
         self.setContextNumber(number)
-        self.setSourceCode('pln')
+        self.setSourceCode('drw')
         self.setSourceClass('cxt')
         self.setSourceId(number)
         self.setSourceFile(filename)
@@ -187,7 +187,7 @@ class Plan(QObject):
             md = planMetadata(geoFile.completeBaseName())
             self._setContextMetadata(md[0], md[2], geoFile.fileName())
             self.project.loadGeoLayer(geoFile)
-        self._setSourceCode('pln')
+        self._setSourceCode('drw')
         self._setSourceId(self.contextNumber)
 
     def _loadContextPlans(self):
@@ -426,7 +426,7 @@ class Plan(QObject):
             self.setSite(QInputDialog.getText(None, 'Site Code', 'Please enter a valid Site Code', text=self.project.siteCode())[0])
         if self.createdBy is None or self.createdBy == '':
             self.setCreatedBy(QInputDialog.getText(None, 'Created By', "Please enter your full name (e.g. 'Mortimer Wheeler')")[0])
-        if (self.sourceCode == 'pln' or self.sourceCode == 'unc' or self.sourceCode == 'svy') and (self.sourceFile is None or self.sourceFile == ''):
+        if (self.sourceCode == 'drw' or self.sourceCode == 'unc' or self.sourceCode == 'svy') and (self.sourceFile is None or self.sourceFile == ''):
             self.setSourceFile(QInputDialog.getText(None, 'Source File', "Please enter the source file name")[0])
         if (self.sourceCode != 'svy') and (self.sourceId is None or self.sourceId <= 0):
             self.setSourceId(QInputDialog.getInt(None, 'Source ID', 'Please enter a valid Source ID Number', 1, 1, 99999)[0])

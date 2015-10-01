@@ -153,8 +153,8 @@ class Project(QObject):
     }
 
     planSourceCodes = [
-        ['Checked Plan', 'pln'],
-        ['Unchecked Plan', 'unc'],
+        ['Checked Drawing', 'drw'],
+        ['Unchecked Drawing', 'unc'],
         ['Survey Data', 'svy'],
         ['Cloned from Source', 'cln'],
         ['Modified from Source', 'mod'],

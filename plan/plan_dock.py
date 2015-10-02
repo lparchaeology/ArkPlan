@@ -26,10 +26,9 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon
+from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon, QToolButton
 
 from ..libarkqgis.dock import ArkDockWidget
-from ..libarkqgis.snapping import *
 
 import plan_dock_base
 
@@ -154,17 +153,3 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         else:
             self._fgRow += 1
             self._fgCol = 0
-
-    # Snapping Tools
-
-    def setLinesBuffer(self, layer):
-        self.snapLinesBufferTool.setLayer(layer)
-
-    def setPolygonsBuffer(self, layer):
-        self.snapPolygonsBufferTool.setLayer(layer)
-
-    def setLinesLayer(self, layer):
-        self.snapLinesLayerTool.setLayer(layer)
-
-    def setPolygonsLayer(self, layer):
-        self.snapPolygonsLayerTool.setLayer(layer)

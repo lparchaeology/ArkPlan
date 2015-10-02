@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>352</width>
-    <height>794</height>
+    <height>623</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>328</width>
-         <height>702</height>
+         <height>531</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -288,129 +288,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Editing</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="1" column="2">
-              <widget class="SnappingToolButton" name="snapPolygonsBufferTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="snapPolygonsLabel">
-               <property name="text">
-                <string>Polys</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="snapLayerLabel">
-               <property name="text">
-                <string>Snap Layers:</string>
-               </property>
-               <property name="buddy">
-                <cstring>snapLinesLayerTool</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="SnappingToolButton" name="snapPolygonsLayerTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="SnappingToolButton" name="snapLinesLayerTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="snapLinesLabel">
-               <property name="text">
-                <string>Lines</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="SnappingToolButton" name="snapLinesBufferTool">
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="snapBuffersLabel">
-               <property name="text">
-                <string>Snap Buffers:</string>
-               </property>
-               <property name="buddy">
-                <cstring>snapLinesBufferTool</cstring>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="topologicalLabel">
-               <property name="text">
-                <string>Topological editing:</string>
-               </property>
-               <property name="buddy">
-                <cstring>topologicalTool</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="TopoEditToolButton" name="topologicalTool">
-               <property name="text">
-                <string>topo</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -461,16 +338,6 @@
    <header>..libarkqgis.dock.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>SnappingToolButton</class>
-   <extends>QToolButton</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TopoEditToolButton</class>
-   <extends>QToolButton</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
@@ -486,11 +353,6 @@
   <tabstop>sourceFileEdit</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>contextNumberSpin</tabstop>
-  <tabstop>snapLinesBufferTool</tabstop>
-  <tabstop>snapPolygonsBufferTool</tabstop>
-  <tabstop>snapLinesLayerTool</tabstop>
-  <tabstop>snapPolygonsLayerTool</tabstop>
-  <tabstop>topologicalTool</tabstop>
   <tabstop>clearButton</tabstop>
   <tabstop>mergeButton</tabstop>
   <tabstop>featureIdSpin</tabstop>

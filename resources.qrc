@@ -18,4 +18,7 @@
   <qresource prefix="/plugins/ArkPlan">
     <file>plan/draw-freehand.png</file>
   </qresource>
+  <qresource prefix="/plugins/ArkPlan">
+    <file>plan/document-edit.png</file>
+  </qresource>
 </RCC>

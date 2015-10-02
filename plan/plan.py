@@ -33,6 +33,7 @@ from ..project import Project
 from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
+from edit_dock import EditDock
 from plan_util import *
 
 class Plan(QObject):
@@ -42,6 +43,7 @@ class Plan(QObject):
 
     # Internal variables
     initialised = False
+    _buffersInitialised = False
     module = None
     siteCode = None
     classCode = None
@@ -91,6 +93,11 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
+        self.editDock = EditDock(self.project.plugin.iface)
+        action = self.project.addAction(':/plugins/ArkPlan/plan/document-edit.png', self.tr(u'Editing Tools'), checkable=True)
+        self.editDock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
+        self.editDock.toggled.connect(self.runEdit)
+
     # Unload the module when plugin is unloaded
     def unload(self):
 
@@ -104,6 +111,13 @@ class Plan(QObject):
     def run(self, checked):
         if checked:
             self.initialise()
+
+    def runEdit(self, checked):
+        if checked:
+            self.project.initialise()
+            if (not self.project.isInitialised()):
+                return
+            self.initialiseBuffers()
 
     def initialise(self):
         if self.initialised:
@@ -153,11 +167,19 @@ class Plan(QObject):
         self.initialised = True
 
     def initialiseBuffers(self):
+        if self._buffersInitialised:
+            return
         self.project.plan.createBuffers()
-        self.dock.setPolygonsBuffer(self.project.plan.polygonsBuffer)
-        self.dock.setLinesBuffer(self.project.plan.linesBuffer)
-        self.dock.setPolygonsLayer(self.project.plan.polygonsLayer)
-        self.dock.setLinesLayer(self.project.plan.linesLayer)
+        self._buffersInitialised = True
+        self.editDock.setBufferPoints(self.project.plan.pointsBuffer)
+        self.editDock.setBufferLines(self.project.plan.linesBuffer)
+        self.editDock.setBufferPolygons(self.project.plan.polygonsBuffer)
+        self.editDock.setPlanPoints(self.project.plan.pointsLayer)
+        self.editDock.setPlanLines(self.project.plan.linesLayer)
+        self.editDock.setPlanPolygons(self.project.plan.polygonsLayer)
+        self.editDock.setBasePoints(self.project.base.pointsLayer)
+        self.editDock.setBaseLines(self.project.base.linesLayer)
+        self.editDock.setBasePolygons(self.project.base.polygonsLayer)
 
     def loadProject(self):
         if not self.initialised:

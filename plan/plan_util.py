@@ -24,66 +24,85 @@
 
 import string
 
-def planMetadata(name):
-    site = ''
-    type = ''
-    number = 0
-    easting = 0
-    northing = 0
+from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir
+
+class PlanMetadata
+    siteCode = ''
+    sourceClass = ''
+    name = ''
+    sourceId = None
+    easting = None
+    northing = None
     suffix  = ''
-    elements = string.split(name, '_')
-    if (name and len(elements) >= 2):
-        site = elements[0]
-        type = elements[1][0]
-        if (type.lower() == 'p'):
-            type = 'Plan'
-            number = int(elements[1][1:])
-        elif (type.lower() == 's'):
-            type = 'Section'
-            number = int(elements[1][1:])
-        elif (type.lower() == 't'):
-            type = 'Top Plan'
-            number = 0
-        elif (type.lower() == 'm'):
-            type = 'Matrix'
-            number = 0
-        else:
-            type = 'Context'
-            number = int(elements[1])
-        suffixPos = 3
-        if (len(elements) >= 4):
-            if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
-                easting = int(elements[2][1:])
-                northing = int(elements[3][1:])
-                suffixPos = 4
-        if (len(elements) > suffixPos):
-            suffix = elements[suffixPos]
-            if (suffix.lower() == 'r'):
-                suffix = ''
+    filename = ''
 
-    return site, type, number, easting, northing, suffix
+    def setMetadata(self, siteCode, sourceClass, sourceId=None, easting=None, northing=None, suffix=''):
+        self.siteCode = siteCode
+        self.sourceClass = sourceClass
+        self.sourceId = sourceId
+        self.easting = easting
+        self.northing = northing
+        self.suffix = suffix
+        self.filename = ''
 
-def planName(site, type, number, easting, northing, suffix):
-    name = site + '_'
-    pad = 0
-    if (type.lower() == 'context' or type.lower() == 'c'):
-        pad = 4
-    elif (type.lower() == 'plan' or type.lower() == 'p'):
-        name += 'P'
-    elif (type.lower() == 'top plan' or type.lower() == 'tp'):
-        name += 'TP'
-    elif (type.lower() == 'section' or type.lower() == 's'):
-        name += 'S'
-    elif (type.lower() == 'matrix' or type.lower() == 'm'):
-        name += 'M'
-    if (number > 0):
-        name += str(number).zfill(pad)
-    if (easting > 0 and northing > 0):
-        name += '_E'
-        name += str(easting).zfill(3)
-        name += '_N'
-        name += str(northing).zfill(3)
-    if suffix:
-        name += '_'
-        name += suffix
-    return name
+    def setFile(self, fileInfo):
+        self.filename = fileInfo.fileName()
+        elements = string.split(fileInfo.completeBaseName(), '_')
+        if (name and len(elements) >= 2):
+            siteCode = elements[0]
+            type = elements[1][0]
+            if (type.lower() == 'p'):
+                name = 'Plan'
+                sourceClass = 'pln'
+                id = int(elements[1][1:])
+            elif (type.lower() == 's'):
+                name = 'Section'
+                sourceClass = 'sec'
+                id = int(elements[1][1:])
+            elif (type.lower() == 't'):
+                name = 'Top Plan'
+                sourceClass = 'top'
+                id = 0
+            elif (type.lower() == 'm'):
+                name = 'Matrix'
+                sourceClass = 'mtx'
+                id = 0
+            else:
+                name = 'Context'
+                sourceClass = 'cxt'
+                id = int(elements[1])
+            suffixPos = 3
+            if (len(elements) >= 4):
+                if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
+                    easting = int(elements[2][1:])
+                    northing = int(elements[3][1:])
+                    suffixPos = 4
+            if (len(elements) > suffixPos):
+                suffix = elements[suffixPos]
+                if (suffix.lower() == 'r'):
+                    suffix = ''
+
+    def baseName(self):
+        name = siteCode + '_'
+        pad = 0
+        if (self.sourceClass.lower() == 'cxt'):
+            pad = 4
+        elif (self.sourceClass.lower() == 'pln'):
+            name += 'P'
+        elif (self.sourceClass.lower() == 'top'):
+            name += 'TP'
+        elif (self.sourceClass.lower() == 'sec'):
+            name += 'S'
+        elif (self.sourceClass.lower() == 'mtx'):
+            name += 'M'
+        if (self.sourceId > 0):
+            name += str(self.sourceId).zfill(pad)
+        if (self.easting > 0 and self.northing > 0):
+            name += '_E'
+            name += str(self.easting).zfill(3)
+            name += '_N'
+            name += str(self.northing).zfill(3)
+        if suffix:
+            name += '_'
+            name += self.suffix
+        return name

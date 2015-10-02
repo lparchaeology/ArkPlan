@@ -143,8 +143,9 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         #TODO Make clicks set focus of other views
 
         self.m_fileEdit.setText(self.rawFile.baseName())
-        md = planMetadata(self.rawFile.baseName())
-        self.setMetadata(md[0], md[1], md[2], md[3], md[4], md[5])
+        md = PlanMetadata()
+        md.setFile(self.rawFile)
+        self.setMetadata(md)
         self.updateGridPoints()
         self.updateGeoPoints()
         if (self.pointFile.exists()):
@@ -170,9 +171,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
                    self.gcpWidget3.setMapPoint(feature.geometry().asPoint())
 
     def updateGeoFile(self):
-        md = self.metadata()
-        name = planName(md[0], md[1], md[2], md[3], md[4], md[5])
-        self.geoFile = QFileInfo(self.geoFile.absoluteDir(), name + self.geoSuffix + '.tif')
+        self.geoFile = QFileInfo(self.geoFile.absoluteDir(), self.metadata().baseName() + self.geoSuffix + '.tif')
 
     def enableUi(self, status):
         self.m_runButton.setEnabled(status)
@@ -193,23 +192,25 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         else:
             self.m_progressBar.setRange(0, 0)
 
-    def setMetadata(self, siteCode, type, number, easting, northing, suffix):
-        self.m_siteEdit.setText(siteCode)
-        if (type == 'Context'):
+    def setMetadata(self, md):
+        self.m_siteEdit.setText(md.siteCode)
+        if (md.sourceClass == 'cxt'):
             self.m_typeCombo.setCurrentIndex(0)
-        elif (type == 'Plan'):
+        elif (md.sourceClass == 'pln'):
             self.m_typeCombo.setCurrentIndex(1)
-        elif (type == 'Section'):
+        elif (md.sourceClass == 'sec'):
             self.m_typeCombo.setCurrentIndex(2)
-        elif (type == 'Matrix'):
+        elif (md.sourceClass == 'mtx'):
             self.m_typeCombo.setCurrentIndex(3)
-        self.m_numberSpin.setValue(number)
-        self.m_eastSpin.setValue(easting)
-        self.m_northSpin.setValue(northing)
-        self.m_suffixEdit.setText(suffix)
+        self.m_numberSpin.setValue(md.sourceId)
+        self.m_eastSpin.setValue(md.easting)
+        self.m_northSpin.setValue(md.northing)
+        self.m_suffixEdit.setText(md.suffix)
 
     def metadata(self):
-        return self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text()
+        md = PlanMetadata()
+        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text()
+        return md
 
     def geoRefFile(self):
         return self.geoFile

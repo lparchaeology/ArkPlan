@@ -251,8 +251,14 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalCommand = ''
         cropped = self.rawPixmap.copy(0, 0, self.rawPixmap.width(), int(self.rawPixmap.height() * 0.84))
         image = cropped.toImage()
-        image.save(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png', 'PNG', 100)
-        self.runTranslateStep()
+        if image.isNull():
+            self.showText('ERROR: Crop file is null!')
+        res = image.save(self.projectPlanFolder.absolutePath() + '/arkplan_crop.png', 'PNG', 100)
+        if res:
+            self.runTranslateStep()
+        else:
+            self.showText('ERROR: Saving Crop file ' + self.projectPlanFolder.absolutePath() + '/arkplan_crop.png failed!')
+            self.enableUi(True)
 
     def runTranslateStep(self):
         self.gdalStep = 'translate'

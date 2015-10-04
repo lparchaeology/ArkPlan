@@ -142,7 +142,6 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.planView.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
         #TODO Make clicks set focus of other views
 
-        self.m_fileEdit.setText(self.rawFile.baseName())
         md = PlanMetadata()
         md.setFile(self.rawFile)
         self.setMetadata(md)
@@ -193,6 +192,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.m_progressBar.setRange(0, 0)
 
     def setMetadata(self, md):
+        self.m_fileEdit.setText(self.rawFile.baseName())
         self.m_siteEdit.setText(md.siteCode)
         if (md.sourceClass == 'cxt'):
             self.m_typeCombo.setCurrentIndex(0)
@@ -209,7 +209,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def metadata(self):
         md = PlanMetadata()
-        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text()
+        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text())
         return md
 
     def geoRefFile(self):

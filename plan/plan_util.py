@@ -26,7 +26,7 @@ import string
 
 from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir
 
-class PlanMetadata
+class PlanMetadata:
     siteCode = ''
     sourceClass = ''
     name = ''
@@ -35,6 +35,10 @@ class PlanMetadata
     northing = None
     suffix  = ''
     filename = ''
+
+    def __init__(self, fileInfo=None):
+        if fileInfo is not None:
+            self.setFile(fileInfo)
 
     def setMetadata(self, siteCode, sourceClass, sourceId=None, easting=None, northing=None, suffix=''):
         self.siteCode = siteCode
@@ -48,42 +52,42 @@ class PlanMetadata
     def setFile(self, fileInfo):
         self.filename = fileInfo.fileName()
         elements = string.split(fileInfo.completeBaseName(), '_')
-        if (name and len(elements) >= 2):
-            siteCode = elements[0]
+        if (self.filename and len(elements) >= 2):
+            self.siteCode = elements[0]
             type = elements[1][0]
             if (type.lower() == 'p'):
-                name = 'Plan'
-                sourceClass = 'pln'
-                id = int(elements[1][1:])
+                self.name = 'Plan'
+                self.sourceClass = 'pln'
+                self.sourceId = int(elements[1][1:])
             elif (type.lower() == 's'):
-                name = 'Section'
-                sourceClass = 'sec'
-                id = int(elements[1][1:])
+                self.name = 'Section'
+                self.sourceClass = 'sec'
+                self.sourceId = int(elements[1][1:])
             elif (type.lower() == 't'):
-                name = 'Top Plan'
-                sourceClass = 'top'
-                id = 0
+                self.name = 'Top Plan'
+                self.sourceClass = 'top'
+                self.sourceId = 0
             elif (type.lower() == 'm'):
-                name = 'Matrix'
-                sourceClass = 'mtx'
-                id = 0
+                self.name = 'Matrix'
+                self.sourceClass = 'mtx'
+                self.sourceId = 0
             else:
-                name = 'Context'
-                sourceClass = 'cxt'
-                id = int(elements[1])
+                self.name = 'Context'
+                self.sourceClass = 'cxt'
+                self.sourceId = int(elements[1])
             suffixPos = 3
             if (len(elements) >= 4):
                 if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
-                    easting = int(elements[2][1:])
-                    northing = int(elements[3][1:])
+                    self.easting = int(elements[2][1:])
+                    self.northing = int(elements[3][1:])
                     suffixPos = 4
             if (len(elements) > suffixPos):
-                suffix = elements[suffixPos]
-                if (suffix.lower() == 'r'):
-                    suffix = ''
+                self.suffix = elements[suffixPos]
+                if (self.suffix.lower() == 'r'):
+                    self.suffix = ''
 
     def baseName(self):
-        name = siteCode + '_'
+        name = self.siteCode + '_'
         pad = 0
         if (self.sourceClass.lower() == 'cxt'):
             pad = 4
@@ -102,7 +106,7 @@ class PlanMetadata
             name += str(self.easting).zfill(3)
             name += '_N'
             name += str(self.northing).zfill(3)
-        if suffix:
+        if self.suffix:
             name += '_'
             name += self.suffix
         return name

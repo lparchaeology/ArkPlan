@@ -188,13 +188,18 @@ class Plan(QObject):
 
     # Plan Tools
 
-    def _setContextMetadata(self, siteCode, number, filename):
-        self.setSite(siteCode)
-        self.setContextNumber(number)
+    def _setMetadata(self, md):
+        self.setSite(md.siteCode)
         self.setSourceCode('drw')
-        self.setSourceClass('cxt')
-        self.setSourceId(number)
-        self.setSourceFile(filename)
+        self.setSourceClass(md.sourceClass)
+        self.setSourceId(md.sourceId)
+        self.setSourceFile(md.filename)
+        if md.sourceClass == 'cxt':
+            self.setContextNumber(md.sourceId)
+            self.setFeatureId(0)
+        else:
+            self.setContextNumber(0)
+            self.setFeatureId(md.sourceId)
 
     def _loadRawPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Drawing'), self.project.rawPlanPath(),
@@ -207,8 +212,7 @@ class Plan(QObject):
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
-            md = planMetadata(geoFile.completeBaseName())
-            self._setContextMetadata(md[0], md[2], geoFile.fileName())
+            self._setMetadata(Metadata(geoFile))
             self.project.loadGeoLayer(geoFile)
         self._setSourceCode('drw')
         self._setSourceId(self.contextNumber)
@@ -226,8 +230,7 @@ class Plan(QObject):
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:
-            md = planMetadata(plan.completeBaseName())
-            self._setContextMetadata(md[0], md[2], plan.fileName())
+            self._setMetadata(PlanMetadata(plan))
             self.project.loadGeoLayer(plan)
 
     def _loadPlans(self):
@@ -243,13 +246,7 @@ class Plan(QObject):
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:
-            md = planMetadata(plan.completeBaseName())
-            self.setSite(md[0])
-            self.setSourceCode('drw')
-            self.setSourceClass('pln')
-            self.setSourceId(md[2])
-            self.setSourceFile(plan.fileName())
-            self.setContextNumber(0)
+            self._setMetadata(PlanMetadata(plan))
             self.project.loadGeoLayer(plan)
 
     def setSite(self, siteCode):
@@ -359,7 +356,8 @@ class Plan(QObject):
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
-            self._setContextMetadata(md[0], md[2], geoFile.fileName())
+            md.filename = geoFile.fileName()
+            self._setMetadata(md)
             self.project.loadGeoLayer(geoFile)
 
     # Layer Methods

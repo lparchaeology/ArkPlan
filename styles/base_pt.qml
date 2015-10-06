@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.8.2-Wien" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.8.3-Wien" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="ste_cd">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
@@ -13,7 +13,7 @@
     <edittype widgetv2type="TextEdit" name="elevation">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="source">
+    <edittype widgetv2type="TextEdit" name="source_cd">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="file">
@@ -31,8 +31,8 @@
   </edittypes>
   <renderer-v2 attr="category" symbollevels="0" type="categorizedSymbol">
     <categories>
-      <category render="true" symbol="0" value="bpt" label="Basepoint"/>
-      <category render="true" symbol="1" value="stn" label="Station"/>
+      <category render="true" symbol="0" value="bpt" label="Base Point"/>
+      <category render="true" symbol="1" value="stn" label="Base Station"/>
       <category render="true" symbol="2" value="tbm" label="TBM"/>
       <category render="true" symbol="3" value="tgt" label="Target"/>
       <category render="true" symbol="4" value="" label="UNKNOWN"/>
@@ -52,7 +52,7 @@
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
+          <prop k="scale_method" v="diameter"/>
           <prop k="size" v="2.4"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
@@ -73,8 +73,8 @@
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
-          <prop k="size" v="4.2"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="3.4"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
           <prop k="vertical_anchor_point" v="1"/>
@@ -92,7 +92,7 @@
           <prop k="outline_width" v="0.4"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
+          <prop k="scale_method" v="diameter"/>
           <prop k="size" v="2"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
@@ -101,12 +101,40 @@
       </symbol>
       <symbol alpha="1" type="marker" name="2">
         <layer pass="0" class="FontMarker" locked="0">
-          <prop k="angle" v="90"/>
-          <prop k="chr" v="&lt;"/>
+          <prop k="angle" v="0"/>
+          <prop k="chr" v="|"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="font" v="Dingbats"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="offset" v="1,-0.5"/>
+          <prop k="offset" v="0.1,1.6"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="size" v="4"/>
+          <prop k="size_map_unit_scale" v="0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+        <layer pass="0" class="FontMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="chr" v="/"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="font" v="Dingbats"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="offset" v="-0.8,1.4"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="size" v="4"/>
+          <prop k="size_map_unit_scale" v="0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+        <layer pass="0" class="FontMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="chr" v="\"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="font" v="Dingbats"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="offset" v="0.8,1.4"/>
           <prop k="offset_map_unit_scale" v="0,0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="size" v="4"/>
@@ -127,8 +155,8 @@
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
-          <prop k="size" v="3.2"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="4.4"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
           <prop k="vertical_anchor_point" v="1"/>
@@ -148,8 +176,8 @@
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
-          <prop k="size" v="4.2"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="3.4"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
           <prop k="vertical_anchor_point" v="1"/>
@@ -158,7 +186,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="cross2"/>
+          <prop k="name" v="cross"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -167,7 +195,7 @@
           <prop k="outline_width" v="0.4"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
+          <prop k="scale_method" v="diameter"/>
           <prop k="size" v="2"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
@@ -188,7 +216,7 @@
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="area"/>
+          <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="0,0"/>
           <prop k="size_unit" v="MM"/>
@@ -220,7 +248,7 @@
       </symbol>
     </source-symbol>
     <rotation/>
-    <sizescale scalemethod="area"/>
+    <sizescale scalemethod="diameter"/>
   </renderer-v2>
   <customproperties>
     <property key="labeling" value="pal"/>
@@ -242,14 +270,14 @@
     <property key="labeling/bufferTransp" value="0"/>
     <property key="labeling/centroidInside" value="false"/>
     <property key="labeling/centroidWhole" value="false"/>
-    <property key="labeling/decimals" value="2"/>
+    <property key="labeling/decimals" value="0"/>
     <property key="labeling/displayAll" value="false"/>
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/distMapUnitMaxScale" value="0"/>
     <property key="labeling/distMapUnitMinScale" value="0"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="  CASE WHEN category='tbm' THEN id || '\n'||elevation||'m' ELSE id END"/>
+    <property key="labeling/fieldName" value="CASE&#xa; WHEN category = 'tbm' THEN name || '\n' ||  format_number( elevation, 2) || 'm OD'&#xa; ELSE name&#xa;END"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="Gill Sans"/>
@@ -258,7 +286,7 @@
     <property key="labeling/fontLimitPixelSize" value="false"/>
     <property key="labeling/fontMaxPixelSize" value="10000"/>
     <property key="labeling/fontMinPixelSize" value="3"/>
-    <property key="labeling/fontSize" value="14"/>
+    <property key="labeling/fontSize" value="10"/>
     <property key="labeling/fontSizeInMapUnits" value="false"/>
     <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
     <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
@@ -266,7 +294,7 @@
     <property key="labeling/fontUnderline" value="false"/>
     <property key="labeling/fontWeight" value="50"/>
     <property key="labeling/fontWordSpacing" value="0"/>
-    <property key="labeling/formatNumbers" value="true"/>
+    <property key="labeling/formatNumbers" value="false"/>
     <property key="labeling/isExpression" value="true"/>
     <property key="labeling/labelOffsetInMapUnits" value="false"/>
     <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>

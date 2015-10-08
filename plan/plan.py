@@ -155,6 +155,8 @@ class Plan(QObject):
         self.addDrawingTool('plan', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
         self.addDrawingTool('plan', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
         self.addDrawingTool('plan', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'tim', self.tr('Timber'), QIcon(), ArkMapToolAddFeature.Polygon)
+        self.addDrawingTool('plan', 'cxt', 'clk', self.tr('Chalk'), QIcon(), ArkMapToolAddFeature.Polygon)
         self.dock.newDrawingToolRow('plan')
         self.addLevelTool('plan', 'cxt', 'lvl', self.tr('Level'), QIcon())
         self.addSchemaTool('plan', 'cxt', 'sch', self.tr('Schema'), QIcon())

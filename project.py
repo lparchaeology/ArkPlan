@@ -215,6 +215,7 @@ class Project(QObject):
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
             self.plugin.planModule.dock.menuAction().setChecked(False)
+            self.plugin.planModule.editDock.menuAction().setChecked(False)
             self.plugin.gridModule.dock.menuAction().setChecked(False)
             self.plugin.filterModule.dock.menuAction().setChecked(False)
 

@@ -106,6 +106,7 @@ class Plan(QObject):
                 action.setChecked(False)
 
         # Unload the dock
+        self.editDock.unload()
         self.dock.unload()
 
     def run(self, checked):

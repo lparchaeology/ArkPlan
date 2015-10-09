@@ -6,14 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
-    <height>161</height>
+    <width>278</width>
+    <height>227</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="snapModeLabel">
+       <property name="text">
+        <string>Snap Mode:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="SnappingModeCombo" name="snapModeCombo"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="snapTypeLabel">
+       <property name="text">
+        <string>Snap Type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="SnappingTypeCombo" name="snapTypeCombo"/>
+     </item>
+    </layout>
+   </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="2" column="1">
@@ -221,6 +245,16 @@
   <customwidget>
    <class>TopoEditToolButton</class>
    <extends>QToolButton</extends>
+   <header>..libarkqgis.snapping.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SnappingModeCombo</class>
+   <extends>QComboBox</extends>
+   <header>..libarkqgis.snapping.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SnappingTypeCombo</class>
+   <extends>QComboBox</extends>
    <header>..libarkqgis.snapping.h</header>
   </customwidget>
  </customwidgets>

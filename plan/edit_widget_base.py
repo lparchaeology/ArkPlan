@@ -25,9 +25,24 @@ except AttributeError:
 class Ui_EditWidget(object):
     def setupUi(self, EditWidget):
         EditWidget.setObjectName(_fromUtf8("EditWidget"))
-        EditWidget.resize(290, 161)
+        EditWidget.resize(278, 227)
         self.verticalLayout = QtGui.QVBoxLayout(EditWidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.snapModeLabel = QtGui.QLabel(EditWidget)
+        self.snapModeLabel.setObjectName(_fromUtf8("snapModeLabel"))
+        self.gridLayout_2.addWidget(self.snapModeLabel, 0, 0, 1, 1)
+        self.snapModeCombo = SnappingModeCombo(EditWidget)
+        self.snapModeCombo.setObjectName(_fromUtf8("snapModeCombo"))
+        self.gridLayout_2.addWidget(self.snapModeCombo, 0, 1, 1, 1)
+        self.snapTypeLabel = QtGui.QLabel(EditWidget)
+        self.snapTypeLabel.setObjectName(_fromUtf8("snapTypeLabel"))
+        self.gridLayout_2.addWidget(self.snapTypeLabel, 1, 0, 1, 1)
+        self.snapTypeCombo = SnappingTypeCombo(EditWidget)
+        self.snapTypeCombo.setObjectName(_fromUtf8("snapTypeCombo"))
+        self.gridLayout_2.addWidget(self.snapTypeCombo, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_2)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.snapPlanPointsTool = SnappingToolButton(EditWidget)
@@ -114,6 +129,8 @@ class Ui_EditWidget(object):
 
     def retranslateUi(self, EditWidget):
         EditWidget.setWindowTitle(_translate("EditWidget", "Form", None))
+        self.snapModeLabel.setText(_translate("EditWidget", "Snap Mode:", None))
+        self.snapTypeLabel.setText(_translate("EditWidget", "Snap Type:", None))
         self.snapPlanPointsTool.setText(_translate("EditWidget", "...", None))
         self.snapPlanLabel.setText(_translate("EditWidget", "Snap Plan Data:", None))
         self.snapLinesLabel.setText(_translate("EditWidget", "Lines", None))
@@ -132,4 +149,4 @@ class Ui_EditWidget(object):
         self.topologicalLabel.setText(_translate("EditWidget", "Topological editing:", None))
         self.topologicalTool.setText(_translate("EditWidget", "topo", None))
 
-from ..libarkqgis.snapping import SnappingToolButton, TopoEditToolButton
+from ..libarkqgis.snapping import SnappingModeCombo, SnappingToolButton, SnappingTypeCombo, TopoEditToolButton

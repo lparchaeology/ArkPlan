@@ -53,60 +53,55 @@ class PlanMetadata:
         self.filename = fileInfo.fileName()
         elements = string.split(fileInfo.completeBaseName(), '_')
         if (self.filename and len(elements) >= 2):
-            self.siteCode = elements[0]
-            type = elements[1][0]
-            if (type.lower() == 'p'):
-                self.name = 'Plan'
-                self.sourceClass = 'pln'
-                self.sourceId = int(elements[1][1:])
-            elif (type.lower() == 's'):
-                self.name = 'Section'
-                self.sourceClass = 'sec'
-                self.sourceId = int(elements[1][1:])
-            elif (type.lower() == 't'):
-                self.name = 'Top Plan'
-                self.sourceClass = 'top'
-                self.sourceId = 0
-            elif (type.lower() == 'm'):
-                self.name = 'Matrix'
-                self.sourceClass = 'mtx'
-                self.sourceId = 0
-            else:
-                self.name = 'Context'
-                self.sourceClass = 'cxt'
-                self.sourceId = int(elements[1])
             suffixPos = 3
-            if (len(elements) >= 4):
-                if (elements[2][0].lower() == 'e' and elements[3][0].lower() == 'n'):
-                    self.easting = int(elements[2][1:])
-                    self.northing = int(elements[3][1:])
-                    suffixPos = 4
-            if (len(elements) > suffixPos):
+            self.sourceClass = elements[0].lower()
+            self.siteCode = elements[1]
+            if (self.sourceClass == 'pln'):
+                self.name = 'Plan'
+                self.sourceId = int(elements[2])
+            elif (self.sourceClass == 'ctx'):
+                self.name = 'Context'
+                self.sourceId = int(elements[2])
+            elif (self.sourceClass == 'sec'):
+                self.name = 'Section'
+                self.sourceId = int(elements[2])
+            elif (self.sourceClass == 'tim'):
+                self.name = 'Timber'
+                self.sourceId = int(elements[2])
+            elif (self.sourceClass == 'top'):
+                self.name = 'Top Plan'
+                self.sourceId = None
+                suffixPos = 2
+            elif (self.sourceClass == 'mtx'):
+                self.name = 'Matrix'
+                self.sourceId = None
+                suffixPos = 2
+            else:
+                self.name = 'Unknown'
+                self.sourceId = None
+                self.easting = None
+                self.northing = None
+                self.suffix = None
+                return
+            if (len(elements) >= suffixPos + 2):
+                easting = elements[suffixPos]
+                northing = elements[suffixPos + 1]
+                if (len(easting) > 1 and len(northing) > 1 and
+                    easting[-1].lower() == 'e' and northing[-1].lower() == 'n'):
+                    self.easting = int(easting[:-1])
+                    self.northing = int(northing[:-1])
+                    suffixPos += 2
+            if (len(elements) >= suffixPos + 1):
                 self.suffix = elements[suffixPos]
                 if (self.suffix.lower() == 'r'):
                     self.suffix = ''
 
     def baseName(self):
-        name = self.siteCode + '_'
-        pad = 0
-        if (self.sourceClass.lower() == 'cxt'):
-            pad = 4
-        elif (self.sourceClass.lower() == 'pln'):
-            name += 'P'
-        elif (self.sourceClass.lower() == 'top'):
-            name += 'TP'
-        elif (self.sourceClass.lower() == 'sec'):
-            name += 'S'
-        elif (self.sourceClass.lower() == 'mtx'):
-            name += 'M'
+        name = self.sourceClass + '_' + self.siteCode
         if (self.sourceId > 0):
-            name += str(self.sourceId).zfill(pad)
+            name = name + '_' + str(self.sourceId)
         if (self.easting > 0 and self.northing > 0):
-            name += '_E'
-            name += str(self.easting).zfill(3)
-            name += '_N'
-            name += str(self.northing).zfill(3)
+            name = name + '_' + str(self.easting).zfill(3) + 'e_' + str(self.northing).zfill(3) + 'n'
         if self.suffix:
-            name += '_'
-            name += self.suffix
+            name = name + '_' + self.suffix
         return name

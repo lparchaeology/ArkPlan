@@ -202,9 +202,18 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.m_typeCombo.setCurrentIndex(2)
         elif (md.sourceClass == 'mtx'):
             self.m_typeCombo.setCurrentIndex(3)
-        self.m_numberSpin.setValue(md.sourceId)
-        self.m_eastSpin.setValue(md.easting)
-        self.m_northSpin.setValue(md.northing)
+        if md.sourceId is not None:
+            self.m_numberSpin.setValue(md.sourceId)
+        else:
+            self.m_numberSpin.setValue(0)
+        if md.easting is not None:
+            self.m_eastSpin.setValue(md.easting)
+        else:
+            self.m_eastSpin.setValue(0)
+        if md.northing is not None:
+            self.m_northSpin.setValue(md.northing)
+        else:
+            self.m_northSpin.setValue(0)
         self.m_suffixEdit.setText(md.suffix)
 
     def metadata(self):

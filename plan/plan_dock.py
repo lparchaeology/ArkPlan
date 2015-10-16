@@ -89,10 +89,16 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.siteEdit.setText(name)
 
     def setContextNumber(self, context):
-        self.contextNumberSpin.setValue(context)
+        if context is None:
+            self.contextNumberSpin.setValue(0)
+        else:
+            self.contextNumberSpin.setValue(sourceId)
 
     def setFeatureId(self, featureId):
-        self.featureIdSpin.setValue(featureId)
+        if featureId is None:
+            self.featureIdSpin.setValue(0)
+        else:
+            self.featureIdSpin.setValue(featureId)
 
     def setFeatureName(self, name):
         self.featureNameEdit.setText(name)
@@ -116,7 +122,10 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.sourceClassChanged.emit(self.sourceClassCombo.itemData(index))
 
     def setSourceId(self, sourceId):
-        self.sourceIdSpin.setValue(sourceId)
+        if sourceId is None:
+            self.sourceIdSpin.setValue(0)
+        else:
+            self.sourceIdSpin.setValue(sourceId)
 
     def setSourceFile(self, sourceFile):
         self.sourceFileEdit.setText(sourceFile)

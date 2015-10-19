@@ -229,7 +229,7 @@ class Plan(QObject):
     def loadContextPlans(self, context):
         planDir = self.project.processedPlanDir()
         planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        geoName = self.project.siteCode() + '*' + str(context) + '*_r.tif'
+        geoName = 'cxt_' + self.project.siteCode() + '_' + str(context) + '_*r.tif'
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:
@@ -245,7 +245,7 @@ class Plan(QObject):
     def loadPlans(self, plan):
         planDir = self.project.processedPlanDir()
         planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        geoName = self.project.siteCode() + '_P' + str(plan) + '*_r.tif'
+        geoName = 'pln_' + self.project.siteCode() + '_' + str(plan) + '_*r.tif'
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:

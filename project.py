@@ -230,7 +230,7 @@ class Project(QObject):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
-            self.showCriticalMessage('ARK Project not configured, unable to continue!')
+            self.plugin.showCriticalMessage('ARK Project not configured, unable to continue!')
 
     def isConfigured(self):
         return self.plugin.readBoolEntry('configured', False)

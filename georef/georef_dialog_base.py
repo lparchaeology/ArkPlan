@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'georef/georef_dialog_base.ui'
 #
-# Created: Thu May 28 08:48:36 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -40,7 +39,6 @@ class Ui_GeorefDialogBase(object):
         self.layoutWidget = QtGui.QWidget(self.splitter)
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_4.setMargin(0)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
@@ -142,7 +140,6 @@ class Ui_GeorefDialogBase(object):
         self.layoutWidget1 = QtGui.QWidget(self.splitter)
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.gridLayout = QtGui.QGridLayout(self.layoutWidget1)
-        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.gcpWidget1 = GcpWidget(self.layoutWidget1)
         self.gcpWidget1.setObjectName(_fromUtf8("gcpWidget1"))
@@ -183,5 +180,5 @@ class Ui_GeorefDialogBase(object):
         self.m_closeButton.setText(_translate("GeorefDialogBase", "Close", None))
         self.m_runCloseButton.setText(_translate("GeorefDialogBase", "Run and Close", None))
 
-from georef_graphics_view import GeorefGraphicsView
 from gcp_widget import GcpWidget
+from georef_graphics_view import GeorefGraphicsView

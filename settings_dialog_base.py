@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'core/settings_dialog_base.ui'
+# Form implementation generated from reading ui file 'settings_dialog_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #

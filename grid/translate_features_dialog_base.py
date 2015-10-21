@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/translate_features_dialog_base.ui'
 #
-# Created: Thu Jul 16 15:52:39 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 

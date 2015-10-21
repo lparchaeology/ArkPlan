@@ -27,7 +27,7 @@ from PyQt4.QtCore import Qt, pyqtSignal, QSize
 from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar, QSpacerItem, QSizePolicy
 
 from ..libarkqgis.dock import ArkDockWidget
-from ..libarkqgis.snapping import *
+from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction
 
 import edit_widget_base
 
@@ -53,9 +53,15 @@ class EditDock(ArkDockWidget):
         self.editToolbar.addAction(iface.actionZoomOut())
         self.editToolbar.addAction(iface.actionZoomLast())
         self.editToolbar.addAction(iface.actionZoomNext())
+        self.editToolbar.addSeparator()
+        self.editToolbar.addAction(TopologicalEditingAction(self))
+        self.editToolbar.addAction(IntersectionSnappingAction(self))
 
         self.editWidget = EditWidget()
         self.editWidget.setObjectName(u'editWidget')
+        self.editWidget.snapToleranceSpin.setIface(iface)
+        self.editWidget.snapModeCombo.snappingModeChanged.connect(self._changeSnapMode)
+        self._changeSnapMode(self.editWidget.snapModeCombo.currentMode())
 
         self.editSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -101,3 +107,19 @@ class EditDock(ArkDockWidget):
 
     def setBasePolygons(self, layer):
         self.editWidget.snapBasePolygonsTool.setLayer(layer)
+
+    def _changeSnapMode(self, mode):
+        enabled = not (mode == 'off' or mode == 'advanced')
+        self.editWidget.snapTypeCombo.setEnabled(enabled)
+        self.editWidget.snapUnitCombo.setEnabled(enabled)
+        self.editWidget.snapToleranceSpin.setEnabled(enabled)
+        enabled = (mode == 'advanced')
+        self.editWidget.snapBufferPointsTool.setEnabled(enabled)
+        self.editWidget.snapBufferLinesTool.setEnabled(enabled)
+        self.editWidget.snapBufferPolygonsTool.setEnabled(enabled)
+        self.editWidget.snapPlanPointsTool.setEnabled(enabled)
+        self.editWidget.snapPlanLinesTool.setEnabled(enabled)
+        self.editWidget.snapPlanPolygonsTool.setEnabled(enabled)
+        self.editWidget.snapBasePointsTool.setEnabled(enabled)
+        self.editWidget.snapBaseLinesTool.setEnabled(enabled)
+        self.editWidget.snapBasePolygonsTool.setEnabled(enabled)

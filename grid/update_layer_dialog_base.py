@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'grid/update_layer_dialog_base.ui'
 #
-# Created: Thu May 28 08:48:36 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 

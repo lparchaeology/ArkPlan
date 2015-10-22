@@ -10,7 +10,7 @@
 name=ArkPlan02
 qgisMinimumVersion=2.4
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.2.8
+version=0.2.9
 author=John Layt / L - P: Heritage LLP
 email=john@layt.net
 

@@ -28,6 +28,8 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon, QToolButton
 
+from qgis.core import QgsMessageLog
+
 from ..libarkqgis.dock import ArkDockWidget
 
 import plan_dock_base
@@ -39,16 +41,9 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadContextSelected = pyqtSignal()
     loadPlanSelected = pyqtSignal()
 
-    siteChanged = pyqtSignal(str)
     contextNumberChanged = pyqtSignal(int)
     featureIdChanged = pyqtSignal(int)
     featureNameChanged = pyqtSignal(str)
-    sourceCodeChanged = pyqtSignal(str)
-    sourceClassChanged = pyqtSignal(str)
-    sourceIdChanged = pyqtSignal(int)
-    sourceFileChanged = pyqtSignal(str)
-    commentChanged = pyqtSignal(str)
-    createdByChanged = pyqtSignal(str)
 
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
@@ -69,30 +64,30 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.loadContextButton.clicked.connect(self.loadContextSelected)
         self.loadPlanButton.clicked.connect(self.loadPlanSelected)
 
-        self.siteEdit.textChanged.connect(self.siteChanged)
         self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
         self.featureIdSpin.valueChanged.connect(self.featureIdChanged)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)
-        self.sourceCodeCombo.currentIndexChanged.connect(self.sourceCodeIndexChanged)
-        self.sourceClassCombo.currentIndexChanged.connect(self.sourceClassIndexChanged)
-        self.sourceIdSpin.valueChanged.connect(self.sourceIdChanged)
-        self.sourceFileEdit.textChanged.connect(self.sourceFileChanged)
-        self.commentEdit.textChanged.connect(self.commentChanged)
-        self.createdByEdit.textChanged.connect(self.createdByChanged)
 
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
+    def init(self, project):
+        self.metadataWidget.init(project)
+
     # Metadata Tools
 
-    def setSite(self, name):
-        self.siteEdit.setText(name)
+    def metadata(self):
+        return self.metadataWidget.metadata()
+
+    def setMetadata(self, md):
+        QgsMessageLog.logMessage('dock.setMetadata: = ' + md.createdBy, 'ArkPlan', QgsMessageLog.INFO)
+        self.metadataWidget.setMetadata(md)
 
     def setContextNumber(self, context):
         if context is None:
             self.contextNumberSpin.setValue(0)
         else:
-            self.contextNumberSpin.setValue(sourceId)
+            self.contextNumberSpin.setValue(context)
 
     def setFeatureId(self, featureId):
         if featureId is None:
@@ -102,39 +97,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def setFeatureName(self, name):
         self.featureNameEdit.setText(name)
-
-    def addSourceCode(self, name, code):
-        self.sourceCodeCombo.addItem(name, code)
-
-    def setSourceCode(self, sourceCode):
-        self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(sourceCode))
-
-    def addSourceClass(self, name, code):
-        self.sourceClassCombo.addItem(name, code)
-
-    def setSourceClass(self, sourceClass):
-        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(sourceClass))
-
-    def sourceCodeIndexChanged(self, index):
-        self.sourceCodeChanged.emit(self.sourceCodeCombo.itemData(index))
-
-    def sourceClassIndexChanged(self, index):
-        self.sourceClassChanged.emit(self.sourceClassCombo.itemData(index))
-
-    def setSourceId(self, sourceId):
-        if sourceId is None:
-            self.sourceIdSpin.setValue(0)
-        else:
-            self.sourceIdSpin.setValue(sourceId)
-
-    def setSourceFile(self, sourceFile):
-        self.sourceFileEdit.setText(sourceFile)
-
-    def setComment(self, comment):
-        self.commentEdit.setText(comment)
-
-    def setCreatedBy(self, creator):
-        self.createdByEdit.setText(creator)
 
     # Drawing Tools
 

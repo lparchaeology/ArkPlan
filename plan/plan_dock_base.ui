@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
-    <height>623</height>
+    <width>337</width>
+    <height>404</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,8 +43,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>328</width>
-         <height>531</height>
+         <width>313</width>
+         <height>312</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -86,111 +86,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="metadataGroup">
-          <property name="title">
-           <string>Metadata</string>
-          </property>
+         <widget class="MetadataWidget" name="metadataWidget" native="true">
           <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="1">
-            <widget class="QComboBox" name="sourceCodeCombo"/>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="sourceIdLabel">
-             <property name="text">
-              <string>Source ID:</string>
-             </property>
-             <property name="buddy">
-              <cstring>sourceClassCombo</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="siteLabel">
-             <property name="text">
-              <string>Site Code:</string>
-             </property>
-             <property name="buddy">
-              <cstring>siteEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="siteEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="sourceCodeLabel">
-             <property name="text">
-              <string>Source:</string>
-             </property>
-             <property name="buddy">
-              <cstring>sourceCodeCombo</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="sourceFileLabel">
-             <property name="text">
-              <string>Source File:</string>
-             </property>
-             <property name="buddy">
-              <cstring>sourceFileEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="sourceFileEdit"/>
-           </item>
-           <item row="4" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QComboBox" name="sourceClassCombo"/>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="sourceIdSpin">
-               <property name="toolTip">
-                <string>Source ID</string>
-               </property>
-               <property name="maximum">
-                <number>99999</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="commentLabel">
-             <property name="text">
-              <string>Comment:</string>
-             </property>
-             <property name="buddy">
-              <cstring>commentEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="commentEdit">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="createdByLabel">
-             <property name="text">
-              <string>Created By:</string>
-             </property>
-             <property name="buddy">
-              <cstring>createdByEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="createdByEdit"/>
-           </item>
+           <property name="margin">
+            <number>0</number>
+           </property>
           </layout>
          </widget>
         </item>
@@ -338,19 +238,18 @@
    <header>..libarkqgis.dock.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>MetadataWidget</class>
+   <extends>QWidget</extends>
+   <header>metadata_widget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
   <tabstop>loadRawButton</tabstop>
   <tabstop>loadGeoButton</tabstop>
   <tabstop>loadContextButton</tabstop>
-  <tabstop>siteEdit</tabstop>
-  <tabstop>commentEdit</tabstop>
-  <tabstop>createdByEdit</tabstop>
-  <tabstop>sourceCodeCombo</tabstop>
-  <tabstop>sourceClassCombo</tabstop>
-  <tabstop>sourceIdSpin</tabstop>
-  <tabstop>sourceFileEdit</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>contextNumberSpin</tabstop>
   <tabstop>clearButton</tabstop>

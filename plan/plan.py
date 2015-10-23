@@ -35,6 +35,7 @@ from ..georef.georef_dialog import GeorefDialog
 from plan_dock import PlanDock
 from edit_dock import EditDock
 from plan_util import *
+from metadata import Metadata
 
 class Plan(QObject):
 
@@ -45,18 +46,10 @@ class Plan(QObject):
     initialised = False
     _buffersInitialised = False
     module = None
-    siteCode = None
-    classCode = None
     contextNumber = None
     featureId = None
     featureName = None
     category = ''
-    sourceCode = None
-    sourceClass = None
-    sourceId = None
-    sourceFile = None
-    comment = None
-    createdBy = None
 
     actions = {}
     mapTools = {}
@@ -79,16 +72,10 @@ class Plan(QObject):
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
         self.dock.loadPlanSelected.connect(self._loadPlans)
-        self.dock.siteChanged.connect(self._setSite)
+        self.metadata().metadataChanged.connect(self.updateDefaultAttributes)
         self.dock.contextNumberChanged.connect(self._setContextNumber)
         self.dock.featureIdChanged.connect(self._setFeatureId)
         self.dock.featureNameChanged.connect(self._setFeatureName)
-        self.dock.sourceCodeChanged.connect(self._setSourceCode)
-        self.dock.sourceClassChanged.connect(self._setSourceClass)
-        self.dock.sourceIdChanged.connect(self._setSourceId)
-        self.dock.sourceFileChanged.connect(self._setSourceFile)
-        self.dock.commentChanged.connect(self._setComment)
-        self.dock.createdByChanged.connect(self._setCreatedBy)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -128,14 +115,8 @@ class Plan(QObject):
         if (not self.project.isInitialised()):
             return
 
-        self.dock.setSite(self.project.siteCode())
         self.initialiseBuffers()
-
-        for sourceCode in self.project.planSourceCodes:
-            self.dock.addSourceCode(sourceCode[0], sourceCode[1])
-
-        for sourceClass in self.project.planSourceClasses:
-            self.dock.addSourceClass(sourceClass[0], sourceClass[1])
+        self.dock.init(self.project)
 
         self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
@@ -189,20 +170,23 @@ class Plan(QObject):
             return
         self.initialised = False
 
+    def metadata(self):
+        return self.dock.metadata()
+
     # Plan Tools
 
-    def _setMetadata(self, md):
-        self.setSite(md.siteCode)
-        self.setSourceCode('drw')
-        self.setSourceClass(md.sourceClass)
-        self.setSourceId(md.sourceId)
-        self.setSourceFile(md.filename)
-        if md.sourceClass == 'cxt':
-            self.setContextNumber(md.sourceId)
+    def _setPlanMetadata(self, pmd):
+        self.metadata().setSiteCode(pmd.siteCode)
+        self.metadata().setSourceCode('drw')
+        self.metadata().setSourceClass(pmd.sourceClass)
+        self.metadata().setSourceId(pmd.sourceId)
+        self.metadata().setSourceFile(pmd.filename)
+        if pmd.sourceClass == 'cxt':
+            self.setContextNumber(pmd.sourceId)
             self.setFeatureId(0)
         else:
             self.setContextNumber(0)
-            self.setFeatureId(md.sourceId)
+            self.setFeatureId(pmd.sourceId)
 
     def _loadRawPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Drawing'), self.project.rawPlanPath(),
@@ -215,7 +199,7 @@ class Plan(QObject):
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
-            self._setMetadata(Metadata(geoFile))
+            self._setPlanMetadata(Metadata(geoFile))
             self.project.loadGeoLayer(geoFile)
         self._setSourceCode('drw')
         self._setSourceId(self.contextNumber)
@@ -233,7 +217,7 @@ class Plan(QObject):
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:
-            self._setMetadata(PlanMetadata(plan))
+            self._setPlanMetadata(PlanMetadata(plan))
             self.project.loadGeoLayer(plan)
 
     def _loadPlans(self):
@@ -249,18 +233,8 @@ class Plan(QObject):
         planDir.setNameFilters([geoName])
         plans = planDir.entryInfoList()
         for plan in plans:
-            self._setMetadata(PlanMetadata(plan))
+            self._setPlanMetadata(PlanMetadata(plan))
             self.project.loadGeoLayer(plan)
-
-    def setSite(self, siteCode):
-        self.dock.setSite(siteCode)
-
-    def _setSite(self, siteCode):
-        if siteCode is None or siteCode.strip() == '':
-            self.siteCode = None
-        else:
-            self.siteCode = siteCode
-        self.updateDefaultAttributes()
 
     def setContextNumber(self, context):
         self.dock.setContextNumber(context)
@@ -292,66 +266,6 @@ class Plan(QObject):
             self.featureName = featureName
         self.updateDefaultAttributes()
 
-    def setSourceCode(self, sourceCode):
-        self.dock.setSourceCode(sourceCode)
-
-    def _setSourceCode(self, sourceCode):
-        if sourceCode is None or sourceCode.strip() == '':
-            self.sourceCode = None
-        else:
-            self.sourceCode = sourceCode
-        self.updateDefaultAttributes()
-
-    def setSourceClass(self, sourceClass):
-        self.dock.setSourceClass(sourceClass)
-
-    def _setSourceClass(self, sourceClass):
-        if sourceClass is None or sourceClass.strip() == '':
-            self.sourceClass = None
-        else:
-            self.sourceClass = sourceClass
-        self.updateDefaultAttributes()
-
-    def setSourceId(self, sourceId):
-        self.dock.setSourceId(sourceId)
-
-    def _setSourceId(self, sourceId):
-        if sourceId is None or sourceId <= 0:
-            self.sourceId = None
-        else:
-            self.sourceId = sourceId
-        self.updateDefaultAttributes()
-
-    def setSourceFile(self, sourceFile):
-        self.dock.setSourceFile(sourceFile)
-
-    def _setSourceFile(self, sourceFile):
-        if sourceFile is None or sourceFile.strip() == '':
-            self.sourceFile = None
-        else:
-            self.sourceFile = sourceFile
-        self.updateDefaultAttributes()
-
-    def setComment(self, comment):
-        self.dock.setComment(comment)
-
-    def _setComment(self, comment):
-        if comment is None or comment.strip() == '':
-            self.comment = None
-        else:
-            self.comment = comment
-        self.updateDefaultAttributes()
-
-    def setCreatedBy(self, creator):
-        self.dock.setCreatedBy(creator)
-
-    def _setCreatedBy(self, creator):
-        if creator is None or creator.strip() == '':
-            self.createdBy = None
-        else:
-            self.createdBy = creator
-        self.updateDefaultAttributes()
-
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
@@ -360,7 +274,7 @@ class Plan(QObject):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
             md.filename = geoFile.fileName()
-            self._setMetadata(md)
+            self._setPlanMetadata(md)
             self.project.loadGeoLayer(geoFile)
 
     # Layer Methods
@@ -447,45 +361,51 @@ class Plan(QObject):
         layer = mapTool.layer()
         if (layer is None or not layer.isValid()):
             return
+        md = self.metadata()
         defaults = {}
-        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self.siteCode
-        defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = data['class']
+        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self._string(md.siteCode())
+        defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = self._string(data['class'])
         id = ''
         if data['class'] == 'cxt':
             id = self.contextNumber
         else:
             id = self.featureId
-        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = id
-        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self.featureName
-        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self.sourceCode
-        if self.sourceCode != 'svy':
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self.sourceClass
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self.sourceId
-        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self.sourceFile
-        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = data['category']
-        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self.comment
-        defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self.createdBy
+        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = self._number(id)
+        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self._string(self.featureName)
+        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self._string(md.sourceCode())
+        if md.sourceCode() != 'svy':
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self._string(md.sourceClass())
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self._number(md.sourceId())
+        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self._string(md.sourceFile())
+        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self._string(data['category'])
+        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self._string(md.comment())
+        defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self._string(md.createdBy())
         mapTool.setDefaultAttributes(defaults)
 
-    def validateStandard(self):
-        if self.siteCode is None or self.siteCode == '':
-            self.setSite(QInputDialog.getText(None, 'Site Code', 'Please enter a valid Site Code', text=self.project.siteCode())[0])
-        if self.createdBy is None or self.createdBy == '':
-            self.setCreatedBy(QInputDialog.getText(None, 'Created By', "Please enter your full name (e.g. 'Mortimer Wheeler')")[0])
-        if (self.sourceCode == 'drw' or self.sourceCode == 'unc' or self.sourceCode == 'svy') and (self.sourceFile is None or self.sourceFile == ''):
-            self.setSourceFile(QInputDialog.getText(None, 'Source File', "Please enter the source file name")[0])
-        if (self.sourceCode != 'svy') and (self.sourceId is None or self.sourceId <= 0):
-            self.setSourceId(QInputDialog.getInt(None, 'Source ID', 'Please enter a valid Source ID Number', 1, 1, 99999)[0])
+    def _string(self, value):
+        if value is None or value.strip() == '':
+            return None
+        else:
+            return value
+
+    def _number(self, value):
+        if value is None or value <= 0:
+            return None
+        else:
+            return value
 
     def validateContext(self):
         if self.contextNumber <= 0:
-            num = QInputDialog.getInt(None, 'Context Number', 'Please enter a valid Context Number', 1, 1, 99999)[0]
-            self.setContextNumber(num)
-            if self.sourceClass == 'cxt' and self.sourceId <= 0:
-                self.setSourceId(num)
-        self.validateStandard()
+            num, ok = QInputDialog.getInt(None, 'Context Number', 'Please enter a valid Context Number', 1, 1, 99999)
+            if ok:
+                self.setContextNumber(num)
+                if self.metadata().sourceClass() == 'cxt' and self.metadata().sourceId() <= 0:
+                    self.metadata().setSourceId(num)
+        self.metadata().validate()
 
     def validateFeature(self):
         if self.featureId <= 0:
-            self.setFeatureId(QInputDialog.getInt(None, 'Feature ID', 'Please enter a valid Feature ID', 1, 1, 99999)[0])
-        self.validateStandard()
+            num, ok = QInputDialog.getInt(None, 'Feature ID', 'Please enter a valid Feature ID', 1, 1, 99999)
+            if ok:
+                self.setFeatureId(num)
+        self.metadata().validate()

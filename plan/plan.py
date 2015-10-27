@@ -34,6 +34,7 @@ from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
 from edit_dock import EditDock
+from schematic_dock import SchematicDock
 from plan_util import *
 from metadata import Metadata
 
@@ -85,6 +86,24 @@ class Plan(QObject):
         self.editDock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)
 
+        self.schematicDock = SchematicDock()
+        action = self.project.addAction(':/plugins/ArkPlan/plan/task-delegate.png', self.tr(u'Check Context Schematics'), checkable=True)
+        self.schematicDock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
+        self.schematicDock.toggled.connect(self.runSchematic)
+        self.schematicDock.findContextSelected.connect(self._findContext)
+        self.schematicDock.findSourceSelected.connect(self._findSource)
+        self.schematicDock.cloneContextSelected.connect(self._cloneContext)
+        self.metadata().metadataChanged.connect(self.updateDefaultAttributes)
+        self.schematicDock.clearSelected.connect(self.clearBuffers)
+        self.schematicDock.mergeSelected.connect(self.mergeBuffers)
+
+    def _findContext(self):
+        return
+    def _findSource(self):
+        return
+    def _cloneContext(self):
+        return
+
     # Unload the module when plugin is unloaded
     def unload(self):
 
@@ -93,6 +112,7 @@ class Plan(QObject):
                 action.setChecked(False)
 
         # Unload the dock
+        self.schematicDock.unload()
         self.editDock.unload()
         self.dock.unload()
 
@@ -107,6 +127,10 @@ class Plan(QObject):
                 return
             self.initialiseBuffers()
 
+    def runSchematic(self, checked):
+        if checked:
+            self.initialise()
+
     def initialise(self):
         if self.initialised:
             return
@@ -117,6 +141,7 @@ class Plan(QObject):
 
         self.initialiseBuffers()
         self.dock.init(self.project)
+        self.schematicDock.init(self.project)
 
         self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)

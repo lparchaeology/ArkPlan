@@ -28,8 +28,6 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon, QToolButton
 
-from qgis.core import QgsMessageLog
-
 from ..libarkqgis.dock import ArkDockWidget
 
 import plan_dock_base
@@ -80,7 +78,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         return self.metadataWidget.metadata()
 
     def setMetadata(self, md):
-        QgsMessageLog.logMessage('dock.setMetadata: = ' + md.createdBy, 'ArkPlan', QgsMessageLog.INFO)
         self.metadataWidget.setMetadata(md)
 
     def setContextNumber(self, context):

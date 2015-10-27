@@ -1,0 +1,157 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'plan/schematic_dock_base.ui'
+#
+# Created by: PyQt4 UI code generator 4.11.4
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_SchematicDockWidget(object):
+    def setupUi(self, SchematicDockWidget):
+        SchematicDockWidget.setObjectName(_fromUtf8("SchematicDockWidget"))
+        SchematicDockWidget.resize(300, 550)
+        self.dockWidgetContents = QtGui.QWidget()
+        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
+        self.gridLayout_6 = QtGui.QGridLayout(self.dockWidgetContents)
+        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
+        self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents)
+        self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
+        self.gridLayout_5 = QtGui.QGridLayout(self.groupBox_4)
+        self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
+        self.contextDataLabel = QtGui.QLabel(self.groupBox_4)
+        self.contextDataLabel.setObjectName(_fromUtf8("contextDataLabel"))
+        self.gridLayout_5.addWidget(self.contextDataLabel, 1, 0, 1, 2)
+        self.contextLabel = QtGui.QLabel(self.groupBox_4)
+        self.contextLabel.setObjectName(_fromUtf8("contextLabel"))
+        self.gridLayout_5.addWidget(self.contextLabel, 0, 0, 1, 1)
+        self.contextSpin = QtGui.QSpinBox(self.groupBox_4)
+        self.contextSpin.setMaximum(99999)
+        self.contextSpin.setObjectName(_fromUtf8("contextSpin"))
+        self.gridLayout_5.addWidget(self.contextSpin, 0, 1, 1, 1)
+        self.findContextButton = QtGui.QPushButton(self.groupBox_4)
+        self.findContextButton.setObjectName(_fromUtf8("findContextButton"))
+        self.gridLayout_5.addWidget(self.findContextButton, 0, 2, 1, 1)
+        self.contextDataStatusLabel = QtGui.QLabel(self.groupBox_4)
+        self.contextDataStatusLabel.setMaximumSize(QtCore.QSize(16, 16))
+        self.contextDataStatusLabel.setText(_fromUtf8(""))
+        self.contextDataStatusLabel.setPixmap(QtGui.QPixmap(_fromUtf8(":/ArkPlan/user-offline.png")))
+        self.contextDataStatusLabel.setObjectName(_fromUtf8("contextDataStatusLabel"))
+        self.gridLayout_5.addWidget(self.contextDataStatusLabel, 1, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.contextSchematicStatusLabel = QtGui.QLabel(self.groupBox_4)
+        self.contextSchematicStatusLabel.setText(_fromUtf8(""))
+        self.contextSchematicStatusLabel.setPixmap(QtGui.QPixmap(_fromUtf8(":/ArkPlan/user-offline.png")))
+        self.contextSchematicStatusLabel.setObjectName(_fromUtf8("contextSchematicStatusLabel"))
+        self.gridLayout_5.addWidget(self.contextSchematicStatusLabel, 2, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.contextSchematicLabel = QtGui.QLabel(self.groupBox_4)
+        self.contextSchematicLabel.setObjectName(_fromUtf8("contextSchematicLabel"))
+        self.gridLayout_5.addWidget(self.contextSchematicLabel, 2, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.groupBox_4, 0, 0, 1, 1)
+        self.groupBox_2 = QtGui.QGroupBox(self.dockWidgetContents)
+        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
+        self.gridLayout_3 = QtGui.QGridLayout(self.groupBox_2)
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
+        self.sourceSchematicLabel = QtGui.QLabel(self.groupBox_2)
+        self.sourceSchematicLabel.setObjectName(_fromUtf8("sourceSchematicLabel"))
+        self.gridLayout_3.addWidget(self.sourceSchematicLabel, 2, 0, 1, 2)
+        self.sourceSchematicStatusLabel = QtGui.QLabel(self.groupBox_2)
+        self.sourceSchematicStatusLabel.setMaximumSize(QtCore.QSize(16, 16))
+        self.sourceSchematicStatusLabel.setText(_fromUtf8(""))
+        self.sourceSchematicStatusLabel.setPixmap(QtGui.QPixmap(_fromUtf8(":/ArkPlan/user-offline.png")))
+        self.sourceSchematicStatusLabel.setObjectName(_fromUtf8("sourceSchematicStatusLabel"))
+        self.gridLayout_3.addWidget(self.sourceSchematicStatusLabel, 2, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.sourceContextLabel = QtGui.QLabel(self.groupBox_2)
+        self.sourceContextLabel.setObjectName(_fromUtf8("sourceContextLabel"))
+        self.gridLayout_3.addWidget(self.sourceContextLabel, 0, 0, 1, 1)
+        self.sourceContextSpin = QtGui.QSpinBox(self.groupBox_2)
+        self.sourceContextSpin.setMaximum(99999)
+        self.sourceContextSpin.setObjectName(_fromUtf8("sourceContextSpin"))
+        self.gridLayout_3.addWidget(self.sourceContextSpin, 0, 1, 1, 1)
+        self.findSourceButton = QtGui.QPushButton(self.groupBox_2)
+        self.findSourceButton.setObjectName(_fromUtf8("findSourceButton"))
+        self.gridLayout_3.addWidget(self.findSourceButton, 0, 2, 1, 1)
+        self.cloneSourceButton = QtGui.QPushButton(self.groupBox_2)
+        self.cloneSourceButton.setObjectName(_fromUtf8("cloneSourceButton"))
+        self.gridLayout_3.addWidget(self.cloneSourceButton, 3, 2, 1, 1)
+        self.sourceDataStatusLabel = QtGui.QLabel(self.groupBox_2)
+        self.sourceDataStatusLabel.setMaximumSize(QtCore.QSize(16, 16))
+        self.sourceDataStatusLabel.setText(_fromUtf8(""))
+        self.sourceDataStatusLabel.setPixmap(QtGui.QPixmap(_fromUtf8(":/ArkPlan/user-offline.png")))
+        self.sourceDataStatusLabel.setObjectName(_fromUtf8("sourceDataStatusLabel"))
+        self.gridLayout_3.addWidget(self.sourceDataStatusLabel, 1, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.sourceDataLabel = QtGui.QLabel(self.groupBox_2)
+        self.sourceDataLabel.setObjectName(_fromUtf8("sourceDataLabel"))
+        self.gridLayout_3.addWidget(self.sourceDataLabel, 1, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.groupBox_2, 1, 0, 1, 1)
+        self.groupBox_3 = QtGui.QGroupBox(self.dockWidgetContents)
+        self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
+        self.gridLayout_4 = QtGui.QGridLayout(self.groupBox_3)
+        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.clearButton = QtGui.QPushButton(self.groupBox_3)
+        self.clearButton.setObjectName(_fromUtf8("clearButton"))
+        self.horizontalLayout_2.addWidget(self.clearButton)
+        self.mergeButton = QtGui.QPushButton(self.groupBox_3)
+        self.mergeButton.setObjectName(_fromUtf8("mergeButton"))
+        self.horizontalLayout_2.addWidget(self.mergeButton)
+        self.gridLayout_4.addLayout(self.horizontalLayout_2, 1, 0, 1, 2)
+        self.contextToolsLayout = QtGui.QGridLayout()
+        self.contextToolsLayout.setObjectName(_fromUtf8("contextToolsLayout"))
+        self.gridLayout_4.addLayout(self.contextToolsLayout, 0, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.groupBox_3, 2, 0, 1, 1)
+        self.metadataWidget = MetadataWidget(self.dockWidgetContents)
+        self.metadataWidget.setObjectName(_fromUtf8("metadataWidget"))
+        self.gridLayout_6.addWidget(self.metadataWidget, 3, 0, 1, 1)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.pushButton_4 = QtGui.QPushButton(self.dockWidgetContents)
+        self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
+        self.horizontalLayout.addWidget(self.pushButton_4)
+        self.gridLayout_6.addLayout(self.horizontalLayout, 4, 0, 1, 1)
+        spacerItem1 = QtGui.QSpacerItem(20, 115, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_6.addItem(spacerItem1, 5, 0, 1, 1)
+        SchematicDockWidget.setWidget(self.dockWidgetContents)
+
+        self.retranslateUi(SchematicDockWidget)
+        QtCore.QMetaObject.connectSlotsByName(SchematicDockWidget)
+
+    def retranslateUi(self, SchematicDockWidget):
+        SchematicDockWidget.setWindowTitle(_translate("SchematicDockWidget", "Context Schematic", None))
+        self.groupBox_4.setTitle(_translate("SchematicDockWidget", "Check", None))
+        self.contextDataLabel.setText(_translate("SchematicDockWidget", "Has Context Data:", None))
+        self.contextLabel.setText(_translate("SchematicDockWidget", "Context:", None))
+        self.findContextButton.setText(_translate("SchematicDockWidget", "Find", None))
+        self.contextSchematicLabel.setText(_translate("SchematicDockWidget", "Has Context Schematic:", None))
+        self.groupBox_2.setTitle(_translate("SchematicDockWidget", "Clone", None))
+        self.sourceSchematicLabel.setText(_translate("SchematicDockWidget", "Has Context Schematic:", None))
+        self.sourceContextLabel.setText(_translate("SchematicDockWidget", "Source Context:", None))
+        self.findSourceButton.setText(_translate("SchematicDockWidget", "Find", None))
+        self.cloneSourceButton.setText(_translate("SchematicDockWidget", "Clone", None))
+        self.sourceDataLabel.setText(_translate("SchematicDockWidget", "Has Context Data:", None))
+        self.groupBox_3.setTitle(_translate("SchematicDockWidget", "Draw", None))
+        self.clearButton.setToolTip(_translate("SchematicDockWidget", "Clear unsaved changes from work layers", None))
+        self.clearButton.setText(_translate("SchematicDockWidget", "Clear", None))
+        self.mergeButton.setToolTip(_translate("SchematicDockWidget", "Move new context to main layers", None))
+        self.mergeButton.setText(_translate("SchematicDockWidget", "Merge", None))
+        self.pushButton_4.setText(_translate("SchematicDockWidget", "Reset", None))
+
+from metadata_widget import MetadataWidget
+import resources_rc

@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/plugins/ArkPlan">
+    <file>user-busy.png</file>
+    <file>user-offline.png</file>
+    <file>user-online.png</file>
+  </qresource>
+</RCC>

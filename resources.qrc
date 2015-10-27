@@ -19,6 +19,7 @@
     <file>plan/draw-freehand.png</file>
   </qresource>
   <qresource prefix="/plugins/ArkPlan">
+    <file>plan/task-delegate.png</file>
     <file>plan/document-edit.png</file>
   </qresource>
 </RCC>

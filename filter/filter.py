@@ -114,6 +114,15 @@ class Filter(QObject):
 
     # Filter methods
 
+    def addFilter(self, filterType, classCode, filterRange):
+        return self.dock.addFilter(filterType, classCode, filterRange)
+
+    def removeFilter(self, filterIndex):
+        self.dock.removeFilter(filterIndex)
+
+    def hasFilterType(self, filterType):
+        return self.dock.hasFilterType(filterType)
+
     def applyFilters(self):
         excludeString = ''
         firstInclude = True

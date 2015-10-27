@@ -74,23 +74,35 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
         self._createNewFilterWidget()
 
-    def _addFilter(self):
-        self.newFilterWidget.filterAdded.disconnect(self._addFilter)
-        self.newFilterWidget.setIndex(self._filterIndex)
-        self._filters[self._filterIndex] = self.newFilterWidget
-        self.newFilterWidget.filterRemoved.connect(self._removeFilter)
+    def addFilter(self, filterType, classCode, filterRange):
+        filterWidget = self.createFilterWidget()
+        filterWidget.setFilterType(filterType)
+        filterWidget.setClassCode(classCode)
+        filterWidget.setFilterRange(filterRange)
+        return self._addFilter(filterWidget)
+
+    def _addNewFilter(self):
+        self.newFilterWidget.filterAdded.disconnect(self._addNewFilter)
+        self._addFilter(self.newFilterWidget)
+        self._createNewFilterWidget()
+
+    def _addFilter(self, filterWidget):
+        idx = self._filterIndex
+        filterWidget.setIndex(idx)
+        self._filters[idx] = self.newFilterWidget
+        self.newFilterWidget.filterRemoved.connect(self.removeFilter)
         self.newFilterWidget.filterChanged.connect(self.filterChanged)
         newItem = QListWidgetItem()
-        newItem.setData(Qt.UserRole, self._filterIndex)
+        newItem.setData(Qt.UserRole, idx)
         newItem.setSizeHint(self.newFilterWidget.minimumSizeHint())
         self.filterListWidget.addItem(newItem);
         self.filterListWidget.setItemWidget(newItem, self.newFilterWidget)
-        self._items[self._filterIndex] = newItem
+        self._items[idx] = newItem
         self._filterIndex += 1
-        self._createNewFilterWidget()
         self.filterChanged.emit()
+        return idx
 
-    def _removeFilter(self, index):
+    def removeFilter(self, index):
         if index is None or index < 0 or self._filters[index] == None:
             return
         self.filterListWidget.takeItem(self.filterListWidget.row(self._items[index]))
@@ -99,14 +111,24 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.filterChanged.emit()
 
     def _createNewFilterWidget(self):
-        self.newFilterWidget = FilterWidget(self)
-        self.newFilterWidget.setClassCodes(self._classCodes)
-        self.newFilterWidget.filterAdded.connect(self._addFilter)
+        self.newFilterWidget = self._createFilterWidget()
+        self.newFilterWidget.filterAdded.connect(self._addNewFilter)
         self.newFilterFrame.layout().addWidget(self.newFilterWidget)
+
+    def _createFilterWidget(self):
+        widget = FilterWidget(self)
+        widget.setClassCodes(self._classCodes)
+        return widget
+
+    def hasFilterType(self, filterType):
+        for index in self._filters.keys():
+            if self._filters[index].filterType() == filterType:
+                return True
+        return False
 
     def _clearFilterClicked(self):
         for index in self._filters.keys():
-            self._removeFilter(index)
+            self.removeFilter(index)
         self.clearFilterSelected.emit()
 
     def setSiteCodes(self, siteCodes):

@@ -97,11 +97,11 @@ class Plan(QObject):
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
 
-    def _findContext(self):
+    def _findContext(self, context):
         return
-    def _findSource(self):
+    def _findSource(self, source):
         return
-    def _cloneContext(self):
+    def _cloneContext(self, source):
         return
 
     # Unload the module when plugin is unloaded

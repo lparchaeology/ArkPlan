@@ -34,7 +34,8 @@ from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
 from edit_dock import EditDock
-from schematic_dock import SchematicDock
+from schematic_dock import SchematicDock, SearchStatus
+from ..filter.filter import FilterType
 from plan_util import *
 from metadata import Metadata
 
@@ -55,6 +56,11 @@ class Plan(QObject):
     actions = {}
     mapTools = {}
     currentMapTool = None
+
+    _schematicContextIncludeFilter = -1
+    _schematicContextHighlightFilter = -1
+    _schematicSourceIncludeFilter = -1
+    _schematicSourceHighlightFilter = -1
 
     def __init__(self, project):
         super(Plan, self).__init__()
@@ -92,17 +98,11 @@ class Plan(QObject):
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)
         self.schematicDock.findSourceSelected.connect(self._findSource)
-        self.schematicDock.cloneContextSelected.connect(self._cloneContext)
+        self.schematicDock.copySourceSelected.connect(self._copySource)
+        self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
         self.metadata().metadataChanged.connect(self.updateDefaultAttributes)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
-
-    def _findContext(self, context):
-        return
-    def _findSource(self, source):
-        return
-    def _cloneContext(self, source):
-        return
 
     # Unload the module when plugin is unloaded
     def unload(self):
@@ -434,3 +434,82 @@ class Plan(QObject):
             if ok:
                 self.setFeatureId(num)
         self.metadata().validate()
+
+    # SchematicDock methods
+
+    def _clearSchematicFilters(self):
+        self.project.plugin.filterModule.removeFilter(self._schematicContextIncludeFilter)
+        self._schematicContextIncludeFilter = -1
+        self.project.plugin.filterModule.removeFilter(self._schematicContextHighlightFilter)
+        self._schematicContextHighlightFilter = -1
+        self._clearSchematicSourceFilters()
+
+    def _clearSchematicSourceFilters(self):
+        self.project.plugin.filterModule.removeFilter(self._schematicSourceIncludeFilter)
+        self._schematicSourceIncludeFilter = -1
+        self.project.plugin.filterModule.removeFilter(self._schematicSourceHighlightFilter)
+        self._schematicSourceHighlightFilter = -1
+
+    def _findContext(self):
+        self._clearSchematicFilters()
+
+        filterModule = self.project.plugin.filterModule
+        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
+            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, 'cxt', str(self.schematicDock.context()))
+        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, 'cxt', str(self.schematicDock.context()))
+
+        classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
+        idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.context()) + '\''
+        schmExpr = '"' + self.project.fieldName('category') + '" = \'sch\''
+
+        request = QgsFeatureRequest()
+        request.setFilterExpression(classExpr + ' and ' + idExpr)
+        haveFeature = SearchStatus.Found
+        try:
+            self.project.plan.linesLayer.getFeatures(request).next()
+        except StopIteration:
+            haveFeature = SearchStatus.NotFound
+
+        request.setFilterExpression(classExpr + ' and ' + idExpr + ' and ' + schmExpr)
+        haveSchematic = SearchStatus.Found
+        try:
+            self.project.plan.polygonsLayer.getFeatures(request).next()
+        except StopIteration:
+            haveSchematic = SearchStatus.NotFound
+
+        self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
+
+    def _findSource(self):
+        self._clearSchematicSourceFilters()
+
+        filterModule = self.project.plugin.filterModule
+        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
+            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, 'cxt', str(self.schematicDock.sourceContext()))
+        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, 'cxt', str(self.schematicDock.sourceContext()))
+
+        classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
+        idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.sourceContext()) + '\''
+        schmExpr = '"' + self.project.fieldName('category') + '" = \'sch\''
+
+        request = QgsFeatureRequest()
+        request.setFilterExpression(classExpr + ' and ' + idExpr)
+        haveFeature = SearchStatus.Found
+        try:
+            self.project.plan.linesLayer.getFeatures(request).next()
+        except StopIteration:
+            haveFeature = SearchStatus.NotFound
+
+        request.setFilterExpression(classExpr + ' and ' + idExpr + ' and ' + schmExpr)
+        haveSchematic = SearchStatus.Found
+        try:
+            self.project.plan.polygonsLayer.getFeatures(request).next()
+        except StopIteration:
+            haveSchematic = SearchStatus.NotFound
+
+        self.schematicDock.setSourceContext(self.schematicDock.sourceContext(), haveFeature, haveSchematic)
+
+    def _copySource(self):
+        return
+
+    def _cloneSource(self):
+        return

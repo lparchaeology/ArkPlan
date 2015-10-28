@@ -95,6 +95,9 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
     def setIndex(self, index):
         self._filterIndex = index
 
+    def setFilterType(self, filterType):
+        self._filterType = filterType
+
     def filterType(self):
         return self._filterType
 
@@ -109,16 +112,16 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
             self.filterClassCombo.addItem(codes[key], key)
 
     def setClassCode(self, code):
-        self.filterClassCombo.setCurrentItem(self.filterClassCombo.findData(code))
+        self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(code))
 
     def filterRange(self):
         return self._normaliseRange(self.filterRangeCombo.currentText())
 
     def setFilterRange(self, filterRange):
-        self.filterRangeCombo.setText(filterRange)
+        self.filterRangeCombo.setEditText(filterRange)
 
     def clearFilterRange(self):
-        self.filterRangeCombo.setText('')
+        self.filterRangeCombo.clearEditText()
 
     def _normaliseRange(self, text):
         return text.replace(' - ', '-').replace(',', ' ').strip()

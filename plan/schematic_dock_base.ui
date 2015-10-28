@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>550</height>
+    <width>309</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Context Schematic</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QGridLayout" name="gridLayout_6">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
      <widget class="QGroupBox" name="groupBox_4">
       <property name="title">
        <string>Check</string>
@@ -24,7 +24,7 @@
        <item row="1" column="0" colspan="2">
         <widget class="QLabel" name="contextDataLabel">
          <property name="text">
-          <string>Has Context Data:</string>
+          <string>Has Features:</string>
          </property>
         </widget>
        </item>
@@ -32,6 +32,9 @@
         <widget class="QLabel" name="contextLabel">
          <property name="text">
           <string>Context:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextSpin</cstring>
          </property>
         </widget>
        </item>
@@ -78,14 +81,14 @@
        <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="contextSchematicLabel">
          <property name="text">
-          <string>Has Context Schematic:</string>
+          <string>Has Schematic:</string>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="title">
        <string>Clone</string>
@@ -94,7 +97,7 @@
        <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="sourceSchematicLabel">
          <property name="text">
-          <string>Has Context Schematic:</string>
+          <string>Has Schematic:</string>
          </property>
         </widget>
        </item>
@@ -118,6 +121,9 @@
         <widget class="QLabel" name="sourceContextLabel">
          <property name="text">
           <string>Source Context:</string>
+         </property>
+         <property name="buddy">
+          <cstring>sourceContextSpin</cstring>
          </property>
         </widget>
        </item>
@@ -161,53 +167,60 @@
        <item row="1" column="0" colspan="2">
         <widget class="QLabel" name="sourceDataLabel">
          <property name="text">
-          <string>Has Context Data:</string>
+          <string>Has Features:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="copySourceButton">
+         <property name="text">
+          <string>Copy</string>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item>
+     <widget class="MetadataWidget" name="metadataWidget" native="true"/>
+    </item>
+    <item>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
        <string>Draw</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="1" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="clearButton">
-           <property name="toolTip">
-            <string>Clear unsaved changes from work layers</string>
-           </property>
-           <property name="text">
-            <string>Clear</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="mergeButton">
-           <property name="toolTip">
-            <string>Move new context to main layers</string>
-           </property>
-           <property name="text">
-            <string>Merge</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="0" column="0" colspan="2">
         <layout class="QGridLayout" name="contextToolsLayout"/>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="MetadataWidget" name="metadataWidget" native="true"/>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="toolTip">
+         <string>Clear unsaved changes from work layers</string>
+        </property>
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="mergeButton">
+        <property name="toolTip">
+         <string>Move new context to main layers</string>
+        </property>
+        <property name="text">
+         <string>Merge</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item row="4" column="0">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <spacer name="horizontalSpacer">
@@ -231,7 +244,7 @@
       </item>
      </layout>
     </item>
-    <item row="5" column="0">
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>

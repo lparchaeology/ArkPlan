@@ -115,6 +115,7 @@ class Filter(QObject):
     # Filter methods
 
     def addFilter(self, filterType, classCode, filterRange):
+        self.initialise()
         return self.dock.addFilter(filterType, classCode, filterRange)
 
     def removeFilter(self, filterIndex):

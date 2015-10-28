@@ -42,9 +42,10 @@ class SearchStatus():
 
 class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
-    findContextSelected = pyqtSignal(int)
-    findSourceSelected = pyqtSignal(int)
-    cloneContextSelected = pyqtSignal(int)
+    findContextSelected = pyqtSignal()
+    findSourceSelected = pyqtSignal()
+    copySourceSelected = pyqtSignal()
+    cloneSourceSelected = pyqtSignal()
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
@@ -56,11 +57,14 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         super(SchematicDock, self).__init__(parent)
         self.setupUi(self)
 
-        self.findContextSpin.valueChanged.connect(self._findContextChanged)
-        self.findContextButton.clicked.connect(self._findContextSelected)
-        self.findSourceSpin.valueChanged.connect(self.findContextSelected)
-        self.findSourceButton.clicked.connect(self._findSourceSelected)
-        self.cloneSourceButton.clicked.connect(self._cloneContextSelected)
+        self.contextSpin.valueChanged.connect(self._contextChanged)
+        self.contextSpin.lineEdit().returnPressed.connect(self._contextChanged)
+        self.findContextButton.clicked.connect(self.findContextSelected)
+        self.sourceContextSpin.lineEdit().returnPressed.connect(self._sourceContextChanged)
+        self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
+        self.findSourceButton.clicked.connect(self.findSourceSelected)
+        self.copySourceButton.clicked.connect(self.copySourceSelected)
+        self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
@@ -94,10 +98,13 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     # Context Tools
 
+    def context(self):
+        return self.contextSpin.value()
+
     def setContext(self, context, foundData, foundSchematic):
         self.contextSpin.setValue(context)
         self._setContextStatus(foundData, foundSchematic)
-        self.setSource(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _setContextStatus(self, foundData, foundSchematic):
         self._setStatus(self.contextDataStatusLabel, foundData)
@@ -105,7 +112,10 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._enableSource(foundSchematic == SearchStatus.NotFound)
         self._enableDraw(foundSchematic == SearchStatus.NotFound)
 
-    def setSource(self, context, foundData, foundSchematic):
+    def sourceContext(self):
+        return self.sourceContextSpin.value()
+
+    def setSourceContext(self, context, foundData, foundSchematic):
         self.sourceContextSpin.setValue(context)
         self._setSourceStatus(foundData, foundSchematic)
 
@@ -135,15 +145,9 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.clearButton.setEnabled(enable)
         self.mergeButton.setEnabled(enable)
 
-    def _findContextChanged(self):
+    def _contextChanged(self):
         self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown)
-        self.setSource(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
-    def _findContextSelected(self):
-        self.findContextSelected.emit(self.findContextSpin.value())
-
-    def _findSourceChanged(self):
+    def _sourceContextChanged(self):
         self._setSourceStatus(SearchStatus.Unknown, SearchStatus.Unknown)
-
-    def _findSourceSelected(self):
-        self.findSourceSelected.emit(self.findSourceSpin.value())

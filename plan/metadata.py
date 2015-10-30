@@ -27,6 +27,18 @@ import string
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QInputDialog
 
+def _str(val):
+    if val == None:
+        return ''
+    else:
+        return str(val)
+
+def _int(val):
+    if val == None:
+        return 0
+    else:
+        return int(val)
+
 class Metadata(QObject):
 
     metadataChanged = pyqtSignal()
@@ -61,8 +73,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setSiteCode(self, siteCode):
-        self._siteCode = siteCode
-        self.siteCodeChanged.emit(siteCode)
+        self._siteCode = _str(siteCode)
+        self.siteCodeChanged.emit(self._siteCode)
 
     def comment(self):
         return self._comment
@@ -74,8 +86,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setComment(self, comment):
-        self._comment = comment
-        self.commentChanged.emit(comment)
+        self._comment = _str(comment)
+        self.commentChanged.emit(self._comment)
 
     def sourceCode(self):
         return self._sourceCode
@@ -87,8 +99,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setSourceCode(self, sourceCode):
-        self._sourceCode = sourceCode
-        self.sourceCodeChanged.emit(sourceCode)
+        self._sourceCode = _str(sourceCode)
+        self.sourceCodeChanged.emit(self._sourceCode)
 
     def sourceClass(self):
         return self._sourceClass
@@ -100,8 +112,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setSourceClass(self, sourceClass):
-        self._sourceClass = sourceClass
-        self.sourceClassChanged.emit(sourceClass)
+        self._sourceClass = _str(sourceClass)
+        self.sourceClassChanged.emit(self._sourceClass)
 
     def sourceId(self):
         return self._sourceId
@@ -113,8 +125,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setSourceId(self, sourceId):
-        self._sourceId = sourceId
-        self.sourceIdChanged.emit(sourceId)
+        self._sourceId = _int(sourceId)
+        self.sourceIdChanged.emit(self._sourceId)
 
     def sourceFile(self):
         return self._sourceFile
@@ -126,8 +138,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setSourceFile(self, sourceFile):
-        self._sourceFile = sourceFile
-        self.sourceFileChanged.emit(sourceFile)
+        self._sourceFile = _str(sourceFile)
+        self.sourceFileChanged.emit(self._sourceFile)
 
     def createdBy(self):
         return self._createdBy
@@ -139,8 +151,8 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def _setCreatedBy(self, createdBy):
-        self._createdBy = createdBy
-        self.createdByChanged.emit(createdBy)
+        self._createdBy = _str(createdBy)
+        self.createdByChanged.emit(self._createdBy)
 
     def validate(self):
         signalMetadata = False

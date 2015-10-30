@@ -139,6 +139,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
             self._enableClone(enable)
 
     def _enableClone(self, enable):
+        self.copySourceButton.setEnabled(enable)
         self.cloneSourceButton.setEnabled(enable)
 
     def _enableDraw(self, enable):

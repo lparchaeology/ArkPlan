@@ -39,6 +39,12 @@ from ..filter.filter import FilterType
 from plan_util import *
 from metadata import Metadata
 
+def _quote(string):
+    return "'" + string + "'"
+
+def _doublequote(string):
+    return '"' + string + '"'
+
 class Plan(QObject):
 
     # Project settings
@@ -502,14 +508,63 @@ class Plan(QObject):
         request.setFilterExpression(classExpr + ' and ' + idExpr + ' and ' + schmExpr)
         haveSchematic = SearchStatus.Found
         try:
-            self.project.plan.polygonsLayer.getFeatures(request).next()
+            feature = self.project.plan.polygonsLayer.getFeatures(request).next()
+            self._copyFeatureMetadata(feature)
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setSourceContext(self.schematicDock.sourceContext(), haveFeature, haveSchematic)
 
+    def _attribute(self, feature, fieldName):
+        val = feature.attribute(self.project.fieldName(fieldName))
+        if val == NULL:
+            return None
+        else:
+            return val
+
+    def _copyFeatureMetadata(self, feature):
+        self.schematicDock.metadata().setSiteCode(self._attribute(feature, 'site'))
+        #TODO FIXME WTF???
+        self.schematicDock.metadataWidget._setSiteCode(self.schematicDock.metadata().siteCode())
+        self.schematicDock.metadata().setComment(self._attribute(feature, 'comment'))
+        self.schematicDock.metadata().setSourceCode('cln')
+        self.schematicDock.metadata().setSourceClass('cxt')
+        self.schematicDock.metadata().setSourceId(self.schematicDock.sourceContext())
+        self.schematicDock.metadata().setSourceFile('')
+        self.schematicDock.metadata().validate()
+
+    def _classClause(self, classCode):
+        return _doublequote(self.project.fieldName('class')) + ' = ' + _quote(classCode)
+
+    def _idClause(self, num):
+        return _doublequote(self.project.fieldName('id')) + ' = ' + str(num)
+
+    def _categoryClause(self, category):
+        return _doublequote(self.project.fieldName('category')) + ' = ' + _quote(category)
+
     def _copySource(self):
-        return
+        request = QgsFeatureRequest()
+        request.setFilterExpression(self._classClause('cxt') + ' and ' + self._idClause(self.schematicDock.sourceContext()) + ' and ' + self._categoryClause('sch'))
+        schematic = self.project.plan.polygonsLayer.getFeatures(request)
+        try:
+            feature = schematic.next()
+            md = self.schematicDock.metadata()
+            feature.setAttribute(self.project.fieldName('site'), self._string(md.siteCode()))
+            feature.setAttribute(self.project.fieldName('class'), 'cxt')
+            feature.setAttribute(self.project.fieldName('id'), self._number(self.schematicDock.context()))
+            feature.setAttribute(self.project.fieldName('name'), None)
+            feature.setAttribute(self.project.fieldName('category'), 'sch')
+            feature.setAttribute(self.project.fieldName('source_cd'), self._string(md.sourceCode()))
+            feature.setAttribute(self.project.fieldName('source_cl'), self._string(md.sourceClass()))
+            feature.setAttribute(self.project.fieldName('source_id'), self._number(md.sourceId()))
+            feature.setAttribute(self.project.fieldName('file'), self._string(md.sourceFile()))
+            feature.setAttribute(self.project.fieldName('comment'), self._string(md.comment()))
+            feature.setAttribute(self.project.fieldName('created_by'), self._string(md.createdBy()))
+            feature.setAttribute(self.project.fieldName('created_on'), None)
+            self.project.plan.polygonsBuffer.addFeature(feature)
+        except StopIteration:
+            return
 
     def _cloneSource(self):
-        return
+        self._copySource()
+        self.mergeBuffers()

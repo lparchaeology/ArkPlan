@@ -29,7 +29,6 @@ from qgis.core import *
 from ..libarkqgis.map_tools import *
 from ..libarkqgis import utils
 
-from ..project import Project
 from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
@@ -71,8 +70,6 @@ class Plan(QObject):
     def __init__(self, project):
         super(Plan, self).__init__()
         self.project = project
-        # If the project gets changed, make sure we update too
-        self.project.projectChanged.connect(self.loadProject)
 
     # Load the module when plugin is loaded
     def load(self):
@@ -139,11 +136,8 @@ class Plan(QObject):
 
     def initialise(self):
         if self.initialised:
-            return
-
-        self.project.initialise()
-        if (not self.project.isInitialised()):
-            return
+            return False
+        self.project.plugin.logMessage('About to initialise Plan Module')
 
         self.initialiseBuffers()
         self.dock.init(self.project)
@@ -178,8 +172,10 @@ class Plan(QObject):
         self.addDrawingTool('plan', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
         self.addDrawingTool('plan', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
+        self.project.plugin.logMessage('Initialised Plan Module')
 
         self.initialised = True
+        return True
 
     def initialiseBuffers(self):
         if self._buffersInitialised:
@@ -460,9 +456,12 @@ class Plan(QObject):
         self._clearSchematicFilters()
 
         filterModule = self.project.plugin.filterModule
+        siteCode = self.schematicDock.metadata().siteCode()
+        if siteCode == '':
+            siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, 'cxt', str(self.schematicDock.context()))
-        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, 'cxt', str(self.schematicDock.context()))
+            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()))
+        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()))
 
         classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
         idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.context()) + '\''
@@ -489,9 +488,12 @@ class Plan(QObject):
         self._clearSchematicSourceFilters()
 
         filterModule = self.project.plugin.filterModule
+        siteCode = self.schematicDock.metadata().siteCode()
+        if siteCode == '':
+            siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, 'cxt', str(self.schematicDock.sourceContext()))
-        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, 'cxt', str(self.schematicDock.sourceContext()))
+            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
+        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
 
         classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
         idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.sourceContext()) + '\''

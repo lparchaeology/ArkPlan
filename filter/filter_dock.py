@@ -41,6 +41,8 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     zoomFilterSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
     showDataSelected = pyqtSignal()
+    filterSetChanged = pyqtSignal(str)
+    saveFilterSetSelected = pyqtSignal()
 
     newFilterWidget = None  # FilterWidget()
     _filterIndex = 0
@@ -72,11 +74,15 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.showDataTool.setDefaultAction(self.showDataAction)
         self.showDataTool.setHidden(True)
 
+        self.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
+        self.saveFilterSetButton.clicked.connect(self.saveFilterSetSelected)
+
         self._createNewFilterWidget()
 
-    def addFilter(self, filterType, classCode, filterRange):
+    def addFilter(self, filterType, siteCode, classCode, filterRange):
         filterWidget = self._createFilterWidget()
         filterWidget.setFilterType(filterType)
+        filterWidget.setSiteCode(siteCode)
         filterWidget.setClassCode(classCode)
         filterWidget.setFilterRange(filterRange)
         return self._addFilter(filterWidget)
@@ -110,8 +116,12 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         if index is None or index < 0 or self._filters[index] == None:
             return
         self.filterListWidget.takeItem(self.filterListWidget.row(self._items[index]))
-        self._filters[index] = None
-        self._items[index] = None
+        self._filters.pop(index)
+        self._items.pop(index)
+
+    def _clearFilters(self):
+        for index in self._filters.keys():
+            self._removeFilter(index)
 
     def _createNewFilterWidget(self):
         self.newFilterWidget = self._createFilterWidget()
@@ -121,6 +131,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def _createFilterWidget(self):
         widget = FilterWidget(self)
         widget.setClassCodes(self._classCodes)
+        widget.setSiteCode(self.siteCode())
         return widget
 
     def hasFilterType(self, filterType):
@@ -131,9 +142,15 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
     def _clearFilterClicked(self):
         for index in self._filters.keys():
-            self.removeFilter(index)
+            self._removeFilter(index)
         self.filterChanged.emit()
         self.clearFilterSelected.emit()
+
+    def filterSet(self):
+        return self.siteCodeCombo.currentText()
+
+    def _filterSetChanged(self, idx):
+        self.filterSetChanged.emit(self.filterSetCombo.currentText())
 
     def setSiteCodes(self, siteCodes):
         for site in siteCodes:
@@ -148,3 +165,25 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
     def activeFilters(self):
         return self._filters
+
+    def activeFilterSet(self):
+        fs = []
+        for idx in self._filters.keys():
+            fs.append(self._filters[idx].settings())
+        return fs
+
+    def toSettings(self, settings):
+        i = 0
+        for idx in self._filters.keys():
+            settings.setArrayIndex(i)
+            self._filters[idx].toSettings(settings)
+            i += 1
+
+    def fromSettings(self, settings, count):
+        self._clearFilters()
+        for i in range(0, count):
+            settings.setArrayIndex(i)
+            flt = self._createFilterWidget()
+            flt.fromSettings(settings)
+            self._addFilter(flt)
+        self.filterChanged.emit()

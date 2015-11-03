@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QObject, QRegExp
+from PyQt4.QtCore import Qt, QObject, QRegExp, QSettings
 from PyQt4.QtGui import QAction, QIcon, QFileDialog
 
 from qgis.core import *
@@ -30,7 +30,6 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 
-from ..project import Project
 from ..data_model import *
 
 from data_dialog import DataDialog
@@ -75,6 +74,8 @@ class Filter(QObject):
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
+        self.dock.filterSetChanged.connect(self.setFilterSet)
+        self.dock.saveFilterSetSelected.connect(self.saveFilterSet)
 
         self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.plugin.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
@@ -83,6 +84,9 @@ class Filter(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
+        self.saveFilterSet()
+        #FIXME Can't clear as layers already unloaded by main program!
+        #self.clearFilter()
         self.dock.unload()
 
 
@@ -93,11 +97,8 @@ class Filter(QObject):
 
     def initialise(self):
         if self.initialised:
-            return
-
-        self.project.initialise()
-        if (not self.project.isInitialised()):
-            return
+            return False
+        self.project.plugin.logMessage('About to initialise Filter Module')
 
         self.dock.setSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
@@ -109,14 +110,18 @@ class Filter(QObject):
             codes[code] = code
         self.dock.setClassCodes(codes)
 
+        self.loadFilterSet()
+        self.project.plugin.logMessage('Initialised Plan Module')
+
         self.initialised = True
+        return True
 
 
     # Filter methods
 
-    def addFilter(self, filterType, classCode, filterRange):
+    def addFilter(self, filterType, siteCode, classCode, filterRange):
         self.initialise()
-        return self.dock.addFilter(filterType, classCode, filterRange)
+        return self.dock.addFilter(filterType, siteCode, classCode, filterRange)
 
     def removeFilter(self, filterIndex):
         self.dock.removeFilter(filterIndex)
@@ -286,6 +291,8 @@ class Filter(QObject):
 
 
     def _rangeToClause(self, siteCode, filterClass, filterRange):
+        if siteCode is None or filterClass is None or filterRange is None:
+            return ''
         clause = '("' + self.project.fieldName('site') + '" = \'' + siteCode + '\''
         clause = clause + ' and "' + self.project.fieldName('class') + '" = \'' + filterClass + '\''
         subs = filterRange.split()
@@ -307,3 +314,19 @@ class Filter(QObject):
                 clause = clause + '"' + field + '" = ' + sub
         clause += '))'
         return clause
+
+    def setFilterSet(self, name):
+        return
+
+    def saveFilterSet(self):
+        settings = QSettings()
+        settings.remove('filterSet')
+        settings.beginWriteArray('filterSet')
+        self.dock.toSettings(settings)
+        settings.endArray()
+
+    def loadFilterSet(self):
+        settings = QSettings()
+        x = settings.beginReadArray('filterSet')
+        self.dock.fromSettings(settings, x)
+        settings.endArray()

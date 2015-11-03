@@ -32,6 +32,10 @@ from qgis.gui import QgsMessageBar
 from libarkqgis import utils, layers, layercollection
 from libarkqgis.layercollection import *
 
+from .grid.grid import GridModule
+from .plan.plan import Plan
+from .filter.filter import Filter
+
 from project_dock import ProjectDock
 from settings_dialog import SettingsDialog
 
@@ -43,6 +47,11 @@ class Project(QObject):
 
     project = None # QgsProject()
     plugin = None # Plugin()
+
+    # Modules
+    gridModule = None  # Grid()
+    planModule = None  # Plan()
+    filterModule = None  # Filter()
 
     projectGroupName = 'Ark'
     projectGroupIndex = -1
@@ -178,6 +187,12 @@ class Project(QObject):
         # If the legend indexes change make sure we stay updated
         self.plugin.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
+        self.gridModule = GridModule(self)
+        self.planModule = Plan(self)
+        # If the project gets changed, make sure we update too
+        self.projectChanged.connect(self.planModule.loadProject)
+        self.filterModule = Filter(self)
+
     # Load the module when plugin is loaded
     def load(self):
         self._showLayersDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
@@ -187,6 +202,9 @@ class Project(QObject):
         self.addAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self.triggerSettingsDialog)
         self.dock.load(self.plugin.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
+        self.gridModule.load()
+        self.planModule.load()
+        self.filterModule.load()
 
     def triggerSettingsDialog(self):
         if self.isConfigured():
@@ -196,6 +214,11 @@ class Project(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
+        # Unload the modules
+        self.filterModule.unload()
+        self.planModule.unload()
+        self.gridModule.unload()
+
         if self.plan is not None:
             self.plan.unload()
         if self.grid is not None:
@@ -214,11 +237,11 @@ class Project(QObject):
         else:
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
             self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
-            self.plugin.planModule.dock.menuAction().setChecked(False)
-            self.plugin.planModule.editDock.menuAction().setChecked(False)
-            self.plugin.planModule.schematicDock.menuAction().setChecked(False)
-            self.plugin.gridModule.dock.menuAction().setChecked(False)
-            self.plugin.filterModule.dock.menuAction().setChecked(False)
+            self.planModule.dock.menuAction().setChecked(False)
+            self.planModule.editDock.menuAction().setChecked(False)
+            self.planModule.schematicDock.menuAction().setChecked(False)
+            self.gridModule.dock.menuAction().setChecked(False)
+            self.filterModule.dock.menuAction().setChecked(False)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
@@ -267,7 +290,9 @@ class Project(QObject):
             self._createCollectionLayers('base', self.base._settings)
             self.plugin.iface.projectRead.connect(self.projectLoad)
             self.plugin.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()):
+            self.plugin.logMessage('About to initialise layers and modules')
+            if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()
+                and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
                 self._initialised = True
         return self._initialised
 

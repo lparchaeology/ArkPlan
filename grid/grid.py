@@ -32,8 +32,6 @@ from ..libarkqgis.maths import LinearTransformer
 from ..libarkqgis import utils
 from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 
-from ..project import Project
-
 from translate_features_dialog import TranslateFeaturesDialog
 from update_layer_dialog import UpdateLayerDialog
 from grid_wizard import GridWizard
@@ -85,12 +83,8 @@ class GridModule(QObject):
 
     def initialise(self):
         if self.initialised:
-            return
+            return False
 
-        if (not self.project.initialise()):
-            self.dock.setReadOnly(True)
-            self.dock.createGridTool.setEnabled(False)
-            return
         self.dock.createGridTool.setEnabled(True)
 
         # Check if files exist or need creating
@@ -110,6 +104,7 @@ class GridModule(QObject):
 
         self.dock.setReadOnly(False)
         self.initialised = True
+        return True
 
     def loadGridNames(self):
         names = set()

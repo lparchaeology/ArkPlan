@@ -27,6 +27,8 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon
 
+from ..libarkqgis.utils import *
+
 import filter_widget_base
 
 class FilterType():
@@ -42,6 +44,7 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
     _filterIndex = -1
     _filterType = FilterType.IncludeFilter
+    _siteCode = ''
 
     def __init__(self, parent=None):
         super(FilterWidget, self).__init__(parent)
@@ -89,6 +92,18 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
         self.filterTypeTool.setDefaultAction(self._includeAction)
 
+    def toSettings(self, settings):
+        settings.setValue('filterType', self.filterType())
+        settings.setValue('siteCode', self.siteCode())
+        settings.setValue('classCode', self.classCode())
+        settings.setValue('filterRange', self.filterRange())
+
+    def fromSettings(self, settings):
+        self.setFilterType(int(settings.value('filterType')))
+        self.setSiteCode(settings.value('siteCode'))
+        self.setClassCode(settings.value('classCode'))
+        self.setFilterRange(settings.value('filterRange'))
+
     def index(self):
         return self._filterIndex
 
@@ -100,6 +115,12 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
     def filterType(self):
         return self._filterType
+
+    def setSiteCode(self, siteCode):
+        self._siteCode = siteCode
+
+    def siteCode(self):
+        return self._siteCode
 
     def classCode(self):
         return self.filterClassCombo.itemData(self.filterClassCombo.currentIndex())

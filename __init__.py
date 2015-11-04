@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- ArkPlan
+                                    ArkPlan
                                  A QGIS plugin
  Plugin to assist in digitising of Archaeological plans.
                              -------------------
@@ -31,5 +31,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .ark import ArkPlan
+    from .arkplan import ArkPlan
     return ArkPlan(iface)

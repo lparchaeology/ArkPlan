@@ -59,12 +59,12 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.project.addAction(':/plugins/ArkPlan/filter/edit-node.png', self.tr(u'Identify contexts'), checkable=True)
+        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/edit-node.png', self.tr(u'Identify contexts'), checkable=True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
-        action = self.project.addAction(':/plugins/ArkPlan/filter/view-filter.png', self.tr(u'Filter contexts'), checkable=True)
-        self.dock.load(self.project.plugin.iface, Qt.LeftDockWidgetArea, action)
+        action = self.project.addDockAction(':/plugins/ArkPlan/filter/view-filter.png', self.tr(u'Filter contexts'), checkable=True)
+        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
         self.dock.filterChanged.connect(self.applyFilters)
@@ -77,7 +77,7 @@ class Filter(QObject):
         self.dock.filterSetChanged.connect(self.setFilterSet)
         self.dock.saveFilterSetSelected.connect(self.saveFilterSet)
 
-        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.plugin.mapCanvas())
+        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
@@ -98,7 +98,6 @@ class Filter(QObject):
     def initialise(self):
         if self.initialised:
             return False
-        self.project.plugin.logMessage('About to initialise Filter Module')
 
         self.dock.setSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
@@ -111,7 +110,6 @@ class Filter(QObject):
         self.dock.setClassCodes(codes)
 
         self.loadFilterSet()
-        self.project.plugin.logMessage('Initialised Plan Module')
 
         self.initialised = True
         return True
@@ -235,9 +233,9 @@ class Filter(QObject):
         if checked:
             #if not self.dataLoaded:
                 #self.data.loadData()
-            self.project.plugin.mapCanvas().setMapTool(self.identifyMapTool)
+            self.project.mapCanvas().setMapTool(self.identifyMapTool)
         else:
-            self.project.plugin.mapCanvas().unsetMapTool(self.identifyMapTool)
+            self.project.mapCanvas().unsetMapTool(self.identifyMapTool)
 
 
     def showIdentifyDialog(self, feature):
@@ -255,7 +253,7 @@ class Filter(QObject):
         for context in contextList:
             subList.append(self.data.subGroupForContext(context))
             groupList.append(self.data.groupForContext(context))
-        dataDialog = DataDialog(self.project.plugin.iface.mainWindow())
+        dataDialog = DataDialog(self.project.iface.mainWindow())
         dataDialog.contextTableView.setModel(self.data._contextProxyModel)
         self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(contextList))
         dataDialog.contextTableView.resizeColumnsToContents()

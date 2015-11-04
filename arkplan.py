@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
+ Ark
                                  A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+ Plugin to assist in digitising of Archaeological plans.
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : (C) 2014 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -22,6 +21,8 @@
  ***************************************************************************/
 """
 
+import os.path
+
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget
@@ -29,24 +30,26 @@ from PyQt4.QtGui import  QIcon, QAction, QDockWidget
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
 
-from libarkqgis import utils, layers, layercollection
-from libarkqgis.layercollection import *
+from .libarkqgis.plugin import Plugin
+from .libarkqgis.layercollection import *
+from .libarkqgis import utils, layers
 
 from .grid.grid import GridModule
 from .plan.plan import Plan
 from .filter.filter import Filter
 
-from project_dock import ProjectDock
+from arkplan_dock import ArkPlanDock
 from settings_dialog import SettingsDialog
 
+import resources_rc
 
-class Project(QObject):
+class ArkPlan(Plugin):
+    """QGIS Plugin Implementation."""
 
     # Signal when the project changes so modules can reload
     projectChanged = pyqtSignal()
 
     project = None # QgsProject()
-    plugin = None # Plugin()
 
     # Modules
     gridModule = None  # Grid()
@@ -180,45 +183,46 @@ class Project(QObject):
     # Private settings
     _initialised = False
 
-    def __init__(self, plugin):
-        super(Project, self).__init__()
-        self.plugin = plugin
+    def __init__(self, iface):
+        super(ArkPlan, self).__init__(iface, u'ArkPlan', ':/plugins/ArkPlan/icon.png',
+                                       os.path.dirname(__file__), Plugin.PluginsMenu)
+        # Set display / menu name now we have tr() set up
+        self.setDisplayName(self.tr(u'&ArkPlan'))
 
         # If the legend indexes change make sure we stay updated
-        self.plugin.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+        self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
         self.gridModule = GridModule(self)
         self.planModule = Plan(self)
-        # If the project gets changed, make sure we update too
-        self.projectChanged.connect(self.planModule.loadProject)
         self.filterModule = Filter(self)
 
-    # Load the module when plugin is loaded
-    def load(self):
-        self._showLayersDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
-        self._showBrowserDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
-        self.dock = ProjectDock()
-        action = self.plugin.addAction(self.plugin.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
-        self.addAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self.triggerSettingsDialog)
-        self.dock.load(self.plugin.iface, Qt.LeftDockWidgetArea, action)
+    # Load the plugin
+    def initGui(self):
+        super(ArkPlan, self).initGui()
+
+        # Load the Plugin
+        self._showLayersDock = self.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
+        self._showBrowserDock = self.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
+        self.dock = ArkPlanDock()
+        action = self.addAction(self.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
+        self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
+        self.dock.load(self.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
+
+        # Load the Modules
         self.gridModule.load()
         self.planModule.load()
         self.filterModule.load()
 
-    def triggerSettingsDialog(self):
-        if self.isConfigured():
-            self.showSettingsDialog()
-        else:
-            self.configure()
-
-    # Unload the module when plugin is unloaded
+    # Unload the plugin
     def unload(self):
+
         # Unload the modules
         self.filterModule.unload()
         self.planModule.unload()
         self.gridModule.unload()
 
+        # Unload the layers
         if self.plan is not None:
             self.plan.unload()
         if self.grid is not None:
@@ -227,16 +231,19 @@ class Project(QObject):
             self.base.unload()
         self.dock.unload()
 
+        # Removes the plugin menu item and icon from QGIS GUI.
+        super(ArkPlan, self).unload()
+
     def run(self, checked):
         if checked:
-            self._showLayersDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
-            self._showBrowserDock = self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
-            self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
-            self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
+            self._showLayersDock = self.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
+            self._showBrowserDock = self.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
+            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
+            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
             self.initialise()
         else:
-            self.plugin.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
-            self.plugin.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
+            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
+            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
             self.planModule.dock.menuAction().setChecked(False)
             self.planModule.editDock.menuAction().setChecked(False)
             self.planModule.schematicDock.menuAction().setChecked(False)
@@ -254,13 +261,13 @@ class Project(QObject):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
-            self.plugin.showCriticalMessage('ARK Project not configured, unable to continue!')
+            self.showCriticalMessage('ARK Project not configured, unable to continue!')
 
     def isConfigured(self):
-        return self.plugin.readBoolEntry('configured', False)
+        return self.readBoolEntry('configured', False)
 
     def _setIsConfigured(self, configured):
-        self.plugin.writeEntry('configured', configured)
+        self.writeEntry('configured', configured)
         if not configured:
             self._initialised = False
 
@@ -270,7 +277,7 @@ class Project(QObject):
             return True
         self.configure()
         if self.isConfigured():
-            self.projectGroupIndex = layers.createLayerGroup(self.plugin.iface, self.projectGroupName)
+            self.projectGroupIndex = layers.createLayerGroup(self.iface, self.projectGroupName)
             #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(self.projectGroupName), self);
             self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
             self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
@@ -288,9 +295,9 @@ class Project(QObject):
             self._createCollectionMultiLayers('plan', self.plan._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
-            self.plugin.iface.projectRead.connect(self.projectLoad)
-            self.plugin.iface.newProjectCreated.connect(self.projectLoad)
-            self.plugin.logMessage('About to initialise layers and modules')
+            self.iface.projectRead.connect(self.projectLoad)
+            self.iface.newProjectCreated.connect(self.projectLoad)
+            self.logMessage('About to initialise layers and modules')
             if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()
                 and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
                 self._initialised = True
@@ -301,6 +308,12 @@ class Project(QObject):
 
     def projectLoad(self):
         self.projectChanged.emit()
+
+    def _triggerSettingsDialog(self):
+        if self.isConfigured():
+            self.showSettingsDialog()
+        else:
+            self.configure()
 
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.projectGroupIndex):
@@ -317,9 +330,9 @@ class Project(QObject):
         self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.createLayerGroup(self.plugin.iface, self.planGroupName, self.projectGroupName)
-        self.plugin.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
-        self.plugin.mapCanvas().setExtent(self.geoLayer.extent())
+            self.planGroupIndex = layers.createLayerGroup(self.iface, self.planGroupName, self.projectGroupName)
+        self.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
+        self.mapCanvas().setExtent(self.geoLayer.extent())
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
@@ -372,23 +385,23 @@ class Project(QObject):
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
             lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
-        return LayerCollection(self.plugin.iface, lcs)
+        return LayerCollection(self.iface, lcs)
 
     def _createCollectionLayers(self, module, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.plugin.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.plugin.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.plugin.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, module, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.plugin.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.plugin.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.plugin.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
 
     def _layerFields(self, module, fieldsKey):
         fieldKeys = self._moduleDefault(module, fieldsKey)
@@ -397,7 +410,7 @@ class Project(QObject):
             fields.append(self.field(fieldKey))
         return fields
 
-    def addAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
+    def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         icon = QIcon(iconPath)
         parent = self.dock
         action = QAction(icon, text, parent)
@@ -430,55 +443,55 @@ class Project(QObject):
     # Project settings
 
     def useArkDB(self):
-        return self.plugin.readBoolEntry('useArkDB', True)
+        return self.readBoolEntry('useArkDB', True)
 
     def setUseArkDB(self, useArkDB):
-        self.plugin.writeEntry('useArkDB', useArkDB)
+        self.writeEntry('useArkDB', useArkDB)
 
     def projectDir(self):
         return QDir(self.projectPath())
 
     def projectPath(self):
-        return self.plugin.readEntry('projectPath', '')
+        return self.readEntry('projectPath', '')
 
     def setProjectPath(self, absolutePath):
-        self.plugin.writeEntry('projectPath', absolutePath)
+        self.writeEntry('projectPath', absolutePath)
 
     def multiSiteProject(self):
-        return self.plugin.readBoolEntry('multiSiteProject', False)
+        return self.readBoolEntry('multiSiteProject', False)
 
     def setMultiSiteProject(self, multiSite):
-        self.plugin.writeEntry('multiSiteProject', multiSite)
+        self.writeEntry('multiSiteProject', multiSite)
 
     def siteCode(self):
-        return self.plugin.readEntry('siteCode', '')
+        return self.readEntry('siteCode', '')
 
     def setSiteCode(self, siteCode):
-        self.plugin.writeEntry('siteCode', siteCode)
+        self.writeEntry('siteCode', siteCode)
 
     def prependSiteCode(self):
-        return self.plugin.readBoolEntry('prependSiteCode', True)
+        return self.readBoolEntry('prependSiteCode', True)
 
     def setPrependSiteCode(self, prepend):
-        self.plugin.writeEntry('prependSiteCode', prepend)
+        self.writeEntry('prependSiteCode', prepend)
 
     def useCustomStyles(self):
-        return self.plugin.readBoolEntry('useCustomStyles', False)
+        return self.readBoolEntry('useCustomStyles', False)
 
     def setUseCustomStyles(self, useCustomStyles):
-        self.plugin.writeEntry('useCustomStyles', useCustomStyles)
+        self.writeEntry('useCustomStyles', useCustomStyles)
 
     def styleDir(self):
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path =  self.plugin.readEntry('stylePath', '')
+        path =  self.readEntry('stylePath', '')
         if (not path):
-            return self.plugin.pluginPath + '/styles'
+            return self.pluginPath + '/styles'
         return path
 
     def setStylePath(self, absolutePath):
-        self.plugin.writeEntry('stylePath', absolutePath)
+        self.writeEntry('stylePath', absolutePath)
 
 
     # Module settings
@@ -487,10 +500,10 @@ class Project(QObject):
         return self.moduleDefaults[module][key]
 
     def _moduleEntry(self, module, key):
-        return self.plugin.readEntry(module + '/' + key, self._moduleDefault(module, key))
+        return self.readEntry(module + '/' + key, self._moduleDefault(module, key))
 
     def _setModuleEntry(self, module, key, value):
-        self.plugin.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
+        self.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
 
     def moduleDir(self, module):
         return QDir(self.modulePath(module))
@@ -594,20 +607,20 @@ class Project(QObject):
         return self.modulePath('planRaster')
 
     def setPlanRasterPath(self, absolutePath):
-        self.plugin.writeEntry('planRasterPath', absolutePath)
+        self.writeEntry('planRasterPath', absolutePath)
 
     def separateProcessedPlanFolder(self):
-        return self.plugin.readBoolEntry('separateProcessedPlanFolder', True)
+        return self.readBoolEntry('separateProcessedPlanFolder', True)
 
     def setSeparateProcessedPlanFolder(self, separatePlans):
-        self.plugin.writeEntry('separateProcessedPlanFolder', separatePlans)
+        self.writeEntry('separateProcessedPlanFolder', separatePlans)
 
     def planTransparency(self):
-        return self.plugin.readNumEntry('planTransparency', 50)
+        return self.readNumEntry('planTransparency', 50)
 
     def setPlanTransparency(self, transparency):
-        self.plugin.writeEntry('planTransparency', transparency)
+        self.writeEntry('planTransparency', transparency)
 
     def showSettingsDialog(self):
-        settingsDialog = SettingsDialog(self, self.plugin.iface.mainWindow())
+        settingsDialog = SettingsDialog(self, self.iface.mainWindow())
         return settingsDialog.exec_()

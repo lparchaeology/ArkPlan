@@ -23,37 +23,37 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal, QSize
+from PyQt4.QtCore import QSize
 from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar
 
 from qgis.gui import QgsLayerTreeView
 
 from .libarkqgis.dock import ArkDockWidget
 
-class ProjectDock(ArkDockWidget):
+class ArkPlanDock(ArkDockWidget):
 
     def __init__(self, parent=None):
-        super(ProjectDock, self).__init__(parent)
+        super(ArkPlanDock, self).__init__(parent)
 
         self.setWindowTitle(u'ARK Project Layers')
-        self.setObjectName(u'ProjectDock')
+        self.setObjectName(u'ArkPlanDock')
 
-        self.projectToolbar = QToolBar()
-        self.projectToolbar.setObjectName(u'projectToolbar')
-        self.projectToolbar.setIconSize(QSize(24, 24))
+        self.dockToolbar = QToolBar()
+        self.dockToolbar.setObjectName(u'dockToolbar')
+        self.dockToolbar.setIconSize(QSize(24, 24))
 
         self.projectLayerView = QgsLayerTreeView()
         self.projectLayerView.setObjectName(u'projectLayerView')
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u'verticalLayout')
-        self.verticalLayout.addWidget(self.projectToolbar)
+        self.verticalLayout.addWidget(self.dockToolbar)
         self.verticalLayout.addWidget(self.projectLayerView)
 
-        self.projectDockContents = QWidget()
-        self.projectDockContents.setObjectName(u'projectDockContents')
-        self.projectDockContents.setLayout(self.verticalLayout)
-        self.setWidget(self.projectDockContents)
+        self.dockContents = QWidget()
+        self.dockContents.setObjectName(u'dockContents')
+        self.dockContents.setLayout(self.verticalLayout)
+        self.setWidget(self.dockContents)
 
     def addAction(self, action):
-        self.projectToolbar.addAction(action)
+        self.dockToolbar.addAction(action)

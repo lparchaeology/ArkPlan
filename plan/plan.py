@@ -73,9 +73,12 @@ class Plan(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
+        # If the project gets changed, make sure we update too
+        self.project.projectChanged.connect(self.loadProject)
+
         self.dock = PlanDock()
-        action = self.project.addAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
-        self.dock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        self.dock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
@@ -90,14 +93,14 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.editDock = EditDock(self.project.plugin.iface)
-        action = self.project.addAction(':/plugins/ArkPlan/plan/document-edit.png', self.tr(u'Editing Tools'), checkable=True)
-        self.editDock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
+        self.editDock = EditDock(self.project.iface)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/document-edit.png', self.tr(u'Editing Tools'), checkable=True)
+        self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)
 
         self.schematicDock = SchematicDock()
-        action = self.project.addAction(':/plugins/ArkPlan/plan/task-delegate.png', self.tr(u'Check Context Schematics'), checkable=True)
-        self.schematicDock.load(self.project.plugin.iface, Qt.RightDockWidgetArea, action)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/task-delegate.png', self.tr(u'Check Context Schematics'), checkable=True)
+        self.schematicDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)
         self.schematicDock.findSourceSelected.connect(self._findSource)
@@ -137,7 +140,6 @@ class Plan(QObject):
     def initialise(self):
         if self.initialised:
             return False
-        self.project.plugin.logMessage('About to initialise Plan Module')
 
         self.initialiseBuffers()
         self.dock.init(self.project)
@@ -172,7 +174,6 @@ class Plan(QObject):
         self.addDrawingTool('plan', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
         self.addDrawingTool('plan', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
-        self.project.plugin.logMessage('Initialised Plan Module')
 
         self.initialised = True
         return True
@@ -296,7 +297,7 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.project.planRasterDir(), self.project.separateProcessedPlanFolder(), self.project.plugin.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
+        georefDialog = GeorefDialog(rawFile, self.project.planRasterDir(), self.project.separateProcessedPlanFolder(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
@@ -329,7 +330,7 @@ class Plan(QObject):
         return action
 
     def _newMapTool(self, name, featureType, buffer, action):
-        mapTool = ArkMapToolAddFeature(self.project.plugin.iface, buffer, featureType, name)
+        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, name)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
@@ -372,7 +373,7 @@ class Plan(QObject):
 
     def addSectionTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = ArkMapToolAddBaseline(self.project.plugin.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
+        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self._addMapTool(classCode, category, mapTool, action)
@@ -440,22 +441,22 @@ class Plan(QObject):
     # SchematicDock methods
 
     def _clearSchematicFilters(self):
-        self.project.plugin.filterModule.removeFilter(self._schematicContextIncludeFilter)
+        self.project.filterModule.removeFilter(self._schematicContextIncludeFilter)
         self._schematicContextIncludeFilter = -1
-        self.project.plugin.filterModule.removeFilter(self._schematicContextHighlightFilter)
+        self.project.filterModule.removeFilter(self._schematicContextHighlightFilter)
         self._schematicContextHighlightFilter = -1
         self._clearSchematicSourceFilters()
 
     def _clearSchematicSourceFilters(self):
-        self.project.plugin.filterModule.removeFilter(self._schematicSourceIncludeFilter)
+        self.project.filterModule.removeFilter(self._schematicSourceIncludeFilter)
         self._schematicSourceIncludeFilter = -1
-        self.project.plugin.filterModule.removeFilter(self._schematicSourceHighlightFilter)
+        self.project.filterModule.removeFilter(self._schematicSourceHighlightFilter)
         self._schematicSourceHighlightFilter = -1
 
     def _findContext(self):
         self._clearSchematicFilters()
 
-        filterModule = self.project.plugin.filterModule
+        filterModule = self.project.filterModule
         siteCode = self.schematicDock.metadata().siteCode()
         if siteCode == '':
             siteCode = self.project.siteCode()
@@ -487,7 +488,7 @@ class Plan(QObject):
     def _findSource(self):
         self._clearSchematicSourceFilters()
 
-        filterModule = self.project.plugin.filterModule
+        filterModule = self.project.filterModule
         siteCode = self.schematicDock.metadata().siteCode()
         if siteCode == '':
             siteCode = self.project.siteCode()

@@ -25,7 +25,7 @@ import os.path
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
@@ -277,6 +277,15 @@ class ArkPlan(Plugin):
             return True
         self.configure()
         if self.isConfigured():
+            #Show a loading indicator
+            progressMessageBar = self.iface.messageBar().createMessage("Loading ArkPlan, please wait...")
+            progress = QProgressBar()
+            progress.setMinimum(0)
+            progress.setMaximum(0)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
+
             self.projectGroupIndex = layers.createLayerGroup(self.iface, self.projectGroupName)
             #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(self.projectGroupName), self);
             self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
@@ -297,10 +306,10 @@ class ArkPlan(Plugin):
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            self.logMessage('About to initialise layers and modules')
             if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()
                 and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
                 self._initialised = True
+            self.iface.messageBar().clearWidgets()
         return self._initialised
 
     def isInitialised(self):

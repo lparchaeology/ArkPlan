@@ -25,7 +25,7 @@ import os.path
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QVariant, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
 
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsField, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
@@ -285,6 +285,7 @@ class ArkPlan(Plugin):
             progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
             progressMessageBar.layout().addWidget(progress)
             self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
+            QApplication.setOverrideCursor(Qt.WaitCursor)
 
             self.projectGroupIndex = layers.createLayerGroup(self.iface, self.projectGroupName)
             #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(self.projectGroupName), self);
@@ -310,6 +311,7 @@ class ArkPlan(Plugin):
                 and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
                 self._initialised = True
             self.iface.messageBar().clearWidgets()
+            QApplication.restoreOverrideCursor()
         return self._initialised
 
     def isInitialised(self):

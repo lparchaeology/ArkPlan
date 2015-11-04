@@ -33,6 +33,7 @@ from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 from ..data_model import *
 
 from data_dialog import DataDialog
+from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_widget import FilterWidget, FilterType
 
@@ -75,7 +76,7 @@ class Filter(QObject):
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
         self.dock.filterSetChanged.connect(self.setFilterSet)
-        self.dock.saveFilterSetSelected.connect(self.saveFilterSet)
+        self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
 
         self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
@@ -316,10 +317,11 @@ class Filter(QObject):
     def setFilterSet(self, name):
         return
 
-    def saveFilterSet(self):
+    def saveFilterSet(self, name, key):
+        group = 'filterset/' + key
         settings = QSettings()
-        settings.remove('filterSet')
-        settings.beginWriteArray('filterSet')
+        settings.remove(group)
+        settings.beginWriteArray(group)
         self.dock.toSettings(settings)
         settings.endArray()
 
@@ -328,3 +330,14 @@ class Filter(QObject):
         x = settings.beginReadArray('filterSet')
         self.dock.fromSettings(settings, x)
         settings.endArray()
+
+    def _saveFilterSetSelected(self):
+        dialog = FilterExportDialog()
+        dialog.setName('')
+        if dialog.exec_():
+            if dialog.saveFilterSet():
+                pass
+            elif dialog.exportSchematic():
+                pass
+            elif dialog.exportData():
+                pass

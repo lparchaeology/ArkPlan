@@ -141,7 +141,7 @@ class Ui_FilterDock(object):
         self.showDataTool.setText(_translate("FilterDock", "Show", None))
         self.siteCodeLabel.setText(_translate("FilterDock", "Site:", None))
         self.filterSetLabel.setText(_translate("FilterDock", "Filter Set:", None))
-        self.filterSetCombo.setItemText(0, _translate("FilterDock", "[Current work set]", None))
+        self.filterSetCombo.setItemText(0, _translate("FilterDock", "Plan Data", None))
         self.saveFilterSetButton.setText(_translate("FilterDock", "Save", None))
         self.zoomFilterAction.setText(_translate("FilterDock", "Zoom To Selection", None))
         self.buildFilterAction.setText(_translate("FilterDock", "Build Filter", None))

@@ -127,7 +127,7 @@
        <widget class="QComboBox" name="filterSetCombo">
         <item>
          <property name="text">
-          <string>[Current work set]</string>
+          <string>Plan Data</string>
          </property>
         </item>
        </widget>

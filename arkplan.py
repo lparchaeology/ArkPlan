@@ -168,6 +168,7 @@ class ArkPlan(Plugin):
         ['Checked Drawing', 'drw'],
         ['Unchecked Drawing', 'unc'],
         ['Survey Data', 'svy'],
+        ['Sketch', 'skt'],
         ['Cloned from Source', 'cln'],
         ['Modified from Source', 'mod'],
         ['Inferred from Source', 'inf']

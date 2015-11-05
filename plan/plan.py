@@ -228,10 +228,8 @@ class Plan(QObject):
                                                        self.tr('GeoTiff Files (*.tif *.tiff)')))
         if fileName:
             geoFile = QFileInfo(fileName)
-            self._setPlanMetadata(Metadata(geoFile))
+            self._setPlanMetadata(PlanMetadata(geoFile))
             self.project.loadGeoLayer(geoFile)
-        self._setSourceCode('drw')
-        self._setSourceId(self.contextNumber)
 
     def _loadContextPlans(self):
         context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)

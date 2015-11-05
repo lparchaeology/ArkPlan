@@ -64,6 +64,12 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         super(GeorefDialog, self).__init__(parent)
         self.setupUi(self)
 
+        self.m_typeCombo.addItem('Context', 'cxt')
+        self.m_typeCombo.addItem('Plan', 'pln')
+        self.m_typeCombo.addItem('Section', 'sec')
+        self.m_typeCombo.addItem('Matrix', 'mtx')
+        self.m_typeCombo.setCurrentIndex(0)
+
         self.gdal_translate.setFile(QDir(self.gdalPath()), 'gdal_translate')
         self.gdalwarp.setFile(QDir(self.gdalPath()), 'gdalwarp')
         self.showText('GDAL Path: ' + self.gdalPath())
@@ -194,14 +200,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     def setMetadata(self, md):
         self.m_fileEdit.setText(self.rawFile.baseName())
         self.m_siteEdit.setText(md.siteCode)
-        if (md.sourceClass == 'cxt'):
-            self.m_typeCombo.setCurrentIndex(0)
-        elif (md.sourceClass == 'pln'):
-            self.m_typeCombo.setCurrentIndex(1)
-        elif (md.sourceClass == 'sec'):
-            self.m_typeCombo.setCurrentIndex(2)
-        elif (md.sourceClass == 'mtx'):
-            self.m_typeCombo.setCurrentIndex(3)
+        self.m_typeCombo.setCurrentIndex(self.m_typeCombo.findData(md.sourceClass))
         if md.sourceId is not None:
             self.m_numberSpin.setValue(md.sourceId)
         else:
@@ -218,7 +217,7 @@ class GeorefDialog(QtGui.QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def metadata(self):
         md = PlanMetadata()
-        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.currentText(), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text())
+        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.itemData(self.m_typeCombo.currentIndex()), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text())
         return md
 
     def geoRefFile(self):

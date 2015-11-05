@@ -59,7 +59,7 @@ class PlanMetadata:
             if (self.sourceClass == 'pln'):
                 self.name = 'Plan'
                 self.sourceId = int(elements[2])
-            elif (self.sourceClass == 'ctx'):
+            elif (self.sourceClass == 'cxt'):
                 self.name = 'Context'
                 self.sourceId = int(elements[2])
             elif (self.sourceClass == 'sec'):
@@ -83,14 +83,14 @@ class PlanMetadata:
                 self.northing = None
                 self.suffix = None
                 return
-            if (len(elements) >= suffixPos + 2):
-                easting = elements[suffixPos]
-                northing = elements[suffixPos + 1]
-                if (len(easting) > 1 and len(northing) > 1 and
-                    easting[-1].lower() == 'e' and northing[-1].lower() == 'n'):
-                    self.easting = int(easting[:-1])
-                    self.northing = int(northing[:-1])
-                    suffixPos += 2
+            if (len(elements) >= suffixPos + 1):
+                location = elements[suffixPos]
+                #FIXME Make generic able to handle any length grid references
+                #TODO Add support for Baseline names
+                if len(location) == 8 and location[3].lower() == 'e' and location[7].lower() == 'n':
+                    self.easting = int(location[0:3])
+                    self.northing = int(location[4:7])
+                    suffixPos += 1
             if (len(elements) >= suffixPos + 1):
                 self.suffix = elements[suffixPos]
                 if (self.suffix.lower() == 'r'):
@@ -101,7 +101,7 @@ class PlanMetadata:
         if (self.sourceId > 0):
             name = name + '_' + str(self.sourceId)
         if (self.easting > 0 and self.northing > 0):
-            name = name + '_' + str(self.easting).zfill(3) + 'e_' + str(self.northing).zfill(3) + 'n'
+            name = name + '_' + str(self.easting).zfill(3) + 'e' + str(self.northing).zfill(3) + 'n'
         if self.suffix:
             name = name + '_' + self.suffix
         return name

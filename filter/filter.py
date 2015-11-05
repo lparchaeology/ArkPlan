@@ -339,7 +339,9 @@ class Filter(QObject):
         settings.endArray()
 
     def _deleteFilterSet(self, key):
-        pass
+        group = self._filterSetGroup(key)
+        settings = QSettings()
+        settings.remove(group)
 
     def _exportFilterSet(self, key):
         pass
@@ -384,7 +386,9 @@ class Filter(QObject):
                 self.dock.setFilterSet(saveKey)
 
     def _deleteFilterSetSelected(self, key):
-        pass
+        self._deleteFilterSet(key)
+        self.dock.removeFilterSet(key)
+        self.loadFilterSet()
 
     def _exportFilterSetSelected(self, key, name):
         dialog = FilterExportDialog()

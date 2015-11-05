@@ -1,6 +1,9 @@
 <RCC>
   <qresource prefix="/plugins/ArkPlan">
+    <file>mActionCreateMemory.png</file>
+    <file>mActionRefresh.png</file>
     <file>document-save.png</file>
+    <file>mActionDeleteSelected.svg</file>
     <file>mIconExpressionSelect.svg</file>
     <file>list-add.png</file>
     <file>mIconSelected.svg</file>

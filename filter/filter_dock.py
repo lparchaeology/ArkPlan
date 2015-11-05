@@ -24,7 +24,7 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal, QSize
-from PyQt4.QtGui import QListWidgetItem, QLabel
+from PyQt4.QtGui import QListWidgetItem, QLabel, QActionGroup, QMenu
 
 from ..libarkqgis.dock import ArkDockWidget
 
@@ -42,7 +42,9 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     loadDataSelected = pyqtSignal()
     showDataSelected = pyqtSignal()
     filterSetChanged = pyqtSignal(str)
-    saveFilterSetSelected = pyqtSignal()
+    saveFilterSetSelected = pyqtSignal(str, str)
+    deleteFilterSetSelected = pyqtSignal(str)
+    exportFilterSetSelected = pyqtSignal(str, str)
 
     newFilterWidget = None  # FilterWidget()
     _filterIndex = 0
@@ -75,9 +77,35 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.showDataTool.setHidden(True)
 
         self.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
-        self.saveFilterSetButton.clicked.connect(self.saveFilterSetSelected)
+
+        self.saveFilterSetAction.triggered.connect(self._saveFilterSetSelected)
+        self.deleteFilterSetAction.triggered.connect(self._deleteFilterSetSelected)
+        self.exportFilterSetAction.triggered.connect(self._exportFilterSetSelected)
+        self._filterSetActionGroup = QActionGroup(self)
+        self._filterSetActionGroup.addAction(self.saveFilterSetAction)
+        self._filterSetActionGroup.addAction(self.deleteFilterSetAction)
+        self._filterSetActionGroup.addAction(self.exportFilterSetAction)
+        self._filterSetMenu = QMenu(self)
+        self._filterSetMenu.addActions(self._filterSetActionGroup.actions())
+        self.filterSetTool.setMenu(self._filterSetMenu)
+        self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
 
         self._createNewFilterWidget()
+
+    def _currentFilterSetKey(self):
+        return self.filterSetCombo.itemData(self.filterSetCombo.currentIndex())
+
+    def _currentFilterSetName(self):
+        return self.filterSetCombo.currentText()
+
+    def _saveFilterSetSelected(self):
+        self.saveFilterSetSelected.emit(self._currentFilterSetKey(), self._currentFilterSetName())
+
+    def _deleteFilterSetSelected(self):
+        self.deleteFilterSetSelected.emit(self._currentFilterSetKey())
+
+    def _exportFilterSetSelected(self):
+        self.exportFilterSetSelected.emit(self._currentFilterSetKey(), self._currentFilterSetName())
 
     def addFilter(self, filterType, siteCode, classCode, filterRange):
         filterWidget = self._createFilterWidget()
@@ -149,8 +177,17 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def filterSet(self):
         return self.siteCodeCombo.currentText()
 
+    def addFilterSet(self, key, name):
+        self.filterSetCombo.addItem(name, key)
+
+    def setFilterSet(self, key):
+        self.filterSetCombo.setCurrentIndex(self.filterSetCombo.findData(key))
+
+    def removeFilterSet(self, key):
+        self.filterSetCombo.removeItem(self.filterSetCombo.findData(key))
+
     def _filterSetChanged(self, idx):
-        self.filterSetChanged.emit(self.filterSetCombo.currentText())
+        self.filterSetChanged.emit(self.filterSetCombo.itemData(idx))
 
     def setSiteCodes(self, siteCodes):
         for site in siteCodes:

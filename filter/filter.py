@@ -21,9 +21,10 @@
  *                                                                         *
  ***************************************************************************/
 """
+import re
 
 from PyQt4.QtCore import Qt, QObject, QRegExp, QSettings
-from PyQt4.QtGui import QAction, QIcon, QFileDialog
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
@@ -75,12 +76,15 @@ class Filter(QObject):
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
-        self.dock.filterSetChanged.connect(self.setFilterSet)
-        self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
 
         self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.mapCanvas())
         self.identifyMapTool.setAction(self.identifyAction)
         self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
+
+        self.dock.filterSetChanged.connect(self._loadFilterSet)
+        self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
+        self.dock.deleteFilterSetSelected.connect(self._deleteFilterSetSelected)
+        self.dock.exportFilterSetSelected.connect(self._exportFilterSetSelected)
 
 
     # Unload the module when plugin is unloaded
@@ -110,6 +114,7 @@ class Filter(QObject):
             codes[code] = code
         self.dock.setClassCodes(codes)
 
+        self._initFilterSets()
         self.loadFilterSet()
 
         self.initialised = True
@@ -314,30 +319,81 @@ class Filter(QObject):
         clause += '))'
         return clause
 
-    def setFilterSet(self, name):
-        return
+    def _filterSetGroup(self, key):
+        return 'filterset/' + key
 
-    def saveFilterSet(self, name, key):
-        group = 'filterset/' + key
+    def _makeKey(self, name):
+        name = re.sub(r'[^\w\s]','', name)
+        return re.sub(r'\s+', '', name)
+
+    def saveFilterSet(self):
+        self._saveFilterSet('Default', 'Default')
+
+    def _saveFilterSet(self, key, name):
+        group = self._filterSetGroup(key)
         settings = QSettings()
         settings.remove(group)
+        settings.setValue(group + '/' + 'Name', name)
         settings.beginWriteArray(group)
         self.dock.toSettings(settings)
         settings.endArray()
 
-    def loadFilterSet(self):
+    def _deleteFilterSet(self, key):
+        pass
+
+    def _exportFilterSet(self, key):
+        pass
+
+    def _initFilterSets(self):
+        self.dock.addFilterSet('Default', 'Default')
+        filterSets = self._listFilterSets()
+        for filterSet in filterSets:
+            if filterSet[0] != 'Default':
+                self.dock.addFilterSet(filterSet[0], filterSet[1])
+
+    def _listFilterSets(self):
+        filterSets = []
         settings = QSettings()
-        x = settings.beginReadArray('filterSet')
+        settings.beginGroup('filterset')
+        groups = settings.childGroups()
+        for group in groups:
+            settings.beginGroup(group)
+            filterSets.append([group, settings.value('Name')])
+            settings.endGroup()
+        settings.endGroup()
+        return filterSets
+
+    def loadFilterSet(self):
+        self._loadFilterSet('Default')
+        self.dock.setFilterSet('Default')
+
+    def _loadFilterSet(self, key):
+        group = self._filterSetGroup(key)
+        settings = QSettings()
+        x = settings.beginReadArray(group)
         self.dock.fromSettings(settings, x)
         settings.endArray()
 
-    def _saveFilterSetSelected(self):
+    def _saveFilterSetSelected(self, key, name):
+        saveName, ok = QInputDialog.getText(None, 'Save Filter Set', 'Enter Name of Filter Set', text=name)
+        if ok:
+            saveKey = self._makeKey(saveName)
+            self._saveFilterSet(saveKey, saveName)
+            if saveKey != key:
+                self.dock.addFilterSet(saveKey, saveName)
+                self.dock.setFilterSet(saveKey)
+
+    def _deleteFilterSetSelected(self, key):
+        pass
+
+    def _exportFilterSetSelected(self, key, name):
         dialog = FilterExportDialog()
-        dialog.setName('')
+        dialog.setFilterSetName(name)
+        dialog.setExportName(name)
         if dialog.exec_():
-            if dialog.saveFilterSet():
-                pass
-            elif dialog.exportSchematic():
+            exportName = dialog.exportName()
+            exportKey = self._makeKey(exportName)
+            if dialog.exportSchematic():
                 pass
             elif dialog.exportData():
                 pass

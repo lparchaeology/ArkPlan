@@ -40,14 +40,14 @@ class FilterExportDialog(QDialog, Ui_FilterExportDialog):
     def accept(self):
         return super(FilterExportDialog, self).accept()
 
-    def setName(self, name):
+    def setFilterSetName(self, name):
         self.filterSetNameEdit.setText(name)
 
-    def name(self):
-        return self.filterSetNameEdit.text()
+    def setExportName(self, name):
+        self.exportNameEdit.setText(name)
 
-    def saveFilterSet(self):
-        return self.saveFilterSetButton.isChecked()
+    def exportName(self):
+        return self.exportNameEdit.text()
 
     def exportSchematic(self):
         return self.exportSchematicButton.isChecked()

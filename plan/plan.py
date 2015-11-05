@@ -153,6 +153,7 @@ class Plan(QObject):
         self.addDrawingTool('plan', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
         self.dock.newDrawingToolRow('plan')
         self.addDrawingTool('plan', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
+        self.addDrawingTool('plan', 'cxt', 'vbs', self.tr('Vertical Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
         self.addDrawingTool('plan', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
         self.addDrawingTool('plan', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
         self.addDrawingTool('plan', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)

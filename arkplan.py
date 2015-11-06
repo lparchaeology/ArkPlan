@@ -276,6 +276,7 @@ class ArkPlan(Plugin):
     def initialise(self):
         if self._initialised:
             return True
+
         self.configure()
         if self.isConfigured():
             #Show a loading indicator
@@ -288,18 +289,27 @@ class ArkPlan(Plugin):
             self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
             QApplication.setOverrideCursor(Qt.WaitCursor)
 
+            # Create the Layer Model and View
             self.projectGroupIndex = layers.createLayerGroup(self.iface, self.projectGroupName)
+            #TODO Should only show our subgroup but crashes!
             #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(self.projectGroupName), self);
             self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
             self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, False)
+            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, True)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeRename, False)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
             self.projectLayerModel.setAutoCollapseLegendNodes(-1)
             self.dock.projectLayerView.setModel(self.projectLayerModel)
+            self.dock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
+            self.dock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+            self.dock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
+            self.dock.projectLayerView.setCurrentLayer(self.iface.activeLayer())
+            self.iface.currentLayerChanged.connect(self.dock.projectLayerView.setCurrentLayer)
+
+            #Load the layer collections
             self.grid = self._createCollection('grid')
             self._createCollectionLayers('grid', self.grid._settings)
             self.plan = self._createCollection('plan')
@@ -311,8 +321,11 @@ class ArkPlan(Plugin):
             if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()
                 and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
                 self._initialised = True
+
+            #Remove the loading indicator
             self.iface.messageBar().clearWidgets()
             QApplication.restoreOverrideCursor()
+
         return self._initialised
 
     def isInitialised(self):

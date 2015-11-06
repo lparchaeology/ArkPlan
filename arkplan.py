@@ -220,17 +220,25 @@ class ArkPlan(Plugin):
 
         # Unload the modules
         self.filterModule.unload()
+        del self.filterModule
         self.planModule.unload()
+        del self.planModule
         self.gridModule.unload()
+        del self.gridModule
 
         # Unload the layers
         if self.plan is not None:
             self.plan.unload()
+        del self.plan
         if self.grid is not None:
             self.grid.unload()
+        del self.grid
         if self.base is not None:
             self.base.unload()
+        del self.base
+
         self.dock.unload()
+        del self.dock
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkPlan, self).unload()

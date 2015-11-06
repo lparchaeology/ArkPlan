@@ -38,22 +38,27 @@ class ArkPlanDock(ArkDockWidget):
         self.setWindowTitle(u'ARK Project Layers')
         self.setObjectName(u'ArkPlanDock')
 
-        self.dockToolbar = QToolBar()
+        self.dockToolbar = QToolBar(self)
         self.dockToolbar.setObjectName(u'dockToolbar')
         self.dockToolbar.setIconSize(QSize(24, 24))
 
-        self.projectLayerView = QgsLayerTreeView()
+        self.projectLayerView = QgsLayerTreeView(self)
         self.projectLayerView.setObjectName(u'projectLayerView')
 
-        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName(u'verticalLayout')
         self.verticalLayout.addWidget(self.dockToolbar)
         self.verticalLayout.addWidget(self.projectLayerView)
 
-        self.dockContents = QWidget()
+        self.dockContents = QWidget(self)
         self.dockContents.setObjectName(u'dockContents')
         self.dockContents.setLayout(self.verticalLayout)
         self.setWidget(self.dockContents)
 
     def addAction(self, action):
         self.dockToolbar.addAction(action)
+
+    def unload(self):
+        del self.projectLayerView
+        self.projectLayerView = None
+        super(ArkPlanDock, self).unload()

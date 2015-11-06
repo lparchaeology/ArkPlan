@@ -52,17 +52,6 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
         super(GridDock, self).__init__(parent)
         self.setupUi(self)
 
-        #FIXME Hack around resource file issue, clean-up when separate plugin
-        self.createGridAction.setIcon(QIcon(':/plugins/ArkGrid/get-hot-new-stuff.png'))
-        self.identifyGridAction.setIcon(QIcon(':/plugins/ArkGrid/snap-orthogonal.png'))
-        self.updateLayerAction.setIcon(QIcon(':/images/themes/default/mActionNewAttribute.png'))
-        self.translateFeaturesAction.setIcon(QIcon(':/images/themes/default/mActionMoveFeature.png'))
-        self.panToAction.setIcon(QIcon(':/images/themes/default/mActionPanToSelected.svg'))
-        self.copyMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
-        self.copyLocalPointAction.setIcon(QIcon(':/images/themes/default/mActionEditCopy.png'))
-        self.pasteMapPointAction.setIcon(QIcon(':/images/themes/default/mActionEditPaste.png'))
-        self.addMapPointAction.setIcon(QIcon(':/images/themes/default/mActionCapturePoint.png'))
-
         self.gridCombo.activated.connect(self.gridComboChanged)
 
         self.createGridTool.setDefaultAction(self.createGridAction)

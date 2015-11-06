@@ -38,6 +38,8 @@ from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_widget import FilterWidget, FilterType
 
+import resources_rc
+
 class Filter(QObject):
 
     project = None # Project()
@@ -61,11 +63,11 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/edit-node.png', self.tr(u'Identify contexts'), checkable=True)
+        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock = FilterDock()
-        action = self.project.addDockAction(':/plugins/ArkPlan/filter/view-filter.png', self.tr(u'Filter contexts'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ArkPlan/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 

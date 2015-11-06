@@ -1,7 +1,10 @@
 <RCC>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>user-busy.png</file>
-    <file>user-offline.png</file>
-    <file>user-online.png</file>
+  <qresource prefix="/plugins/ArkPlan/plan">
+    <file alias="drawPlans.png">resources/draw-freehand.png</file>
+    <file alias="checkSchematic.png">resources/task-delegate.png</file>
+    <file alias="editingTools.png">resources/document-edit.png</file>
+    <file alias="statusNotFound.png">resources/user-busy.png</file>
+    <file alias="statusUnknown.png">resources/user-offline.png</file>
+    <file alias="statusFound.png">resources/user-online.png</file>
   </qresource>
 </RCC>

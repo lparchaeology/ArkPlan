@@ -50,32 +50,32 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
         super(FilterWidget, self).__init__(parent)
         self.setupUi(self)
 
-        self._addIcon = QIcon(':/plugins/ArkPlan/mActionAdd.svg')
+        self._addIcon = QIcon(':/plugins/ArkPlan/filter/addFilter.svg')
         self._addAction = QAction(self._addIcon, 'Add filter', self)
         self._addAction.setStatusTip('Add filter')
         self._addAction.triggered.connect(self._addFilterClicked)
         self.filterRangeCombo.lineEdit().returnPressed.connect(self._addFilterClicked)
 
-        self._removeIcon = QIcon(':/plugins/ArkPlan/mActionRemove.svg')
+        self._removeIcon = QIcon(':/plugins/ArkPlan/filter/removeFilter.svg')
         self._removeAction = QAction(self._removeIcon, 'Remove filter', self)
         self._removeAction.setStatusTip('Remove filter')
         self._removeAction.triggered.connect(self._removeFilterClicked)
 
         self.filterActionTool.setDefaultAction(self._addAction)
 
-        self._includeIcon = QIcon(':/plugins/ArkPlan/list-add.png')
+        self._includeIcon = QIcon(':/plugins/ArkPlan/filter/includeFilter.png')
         self._includeAction = QAction(self._includeIcon, 'Include', self)
         self._includeAction.setStatusTip('Include items in selection')
         self._includeAction.setCheckable(True)
         self._includeAction.triggered.connect(self._includeFilterChecked)
 
-        self._excludeIcon = QIcon(':/plugins/ArkPlan/list-remove.png')
+        self._excludeIcon = QIcon(':/plugins/ArkPlan/filter/excludeFilter.png')
         self._excludeAction = QAction(self._excludeIcon, 'Exclude', self)
         self._excludeAction.setStatusTip('Exclude items from selection')
         self._excludeAction.setCheckable(True)
         self._excludeAction.triggered.connect(self._excludeFilterChecked)
 
-        self._highlightIcon = QIcon(':/plugins/ArkPlan/mIconSelected.svg')
+        self._highlightIcon = QIcon(':/plugins/ArkPlan/filter/highlightFilter.svg')
         self._highlightAction = QAction(self._highlightIcon, 'Highlight', self)
         self._highlightAction.setStatusTip('Highlight items')
         self._highlightAction.setCheckable(True)

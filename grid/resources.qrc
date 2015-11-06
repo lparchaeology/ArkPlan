@@ -1,13 +1,13 @@
 <RCC>
-  <qresource prefix="/plugins/ArkGrid">
-    <file>mActionMoveFeature.png</file>
-    <file>mActionPanToSelected.svg</file>
-    <file>mActionCapturePoint.png</file>
-    <file>mActionEditCopy.png</file>
-    <file>mActionEditPaste.png</file>
-    <file>view-grid.png</file>
-    <file>snap-orthogonal.png</file>
-    <file>mActionNewAttribute.png</file>
-    <file>get-hot-new-stuff.png</file>
+  <qresource prefix="/plugins/ArkPlan/grid">
+    <file alias="translateFeature.png">resources/mActionMoveFeature.png</file>
+    <file alias="panToSelected.svg">resources/mActionPanToSelected.svg</file>
+    <file alias="addPoint.png">resources/mActionCapturePoint.png</file>
+    <file alias="copyPoint.png">resources/mActionEditCopy.png</file>
+    <file alias="pastePoint.png">resources/mActionEditPaste.png</file>
+    <file alias="grid.png">resources/view-grid.png</file>
+    <file alias="identifyCoordinates.png">resources/snap-orthogonal.png</file>
+    <file alias="updateLayer.png">resources/mActionNewAttribute.png</file>
+    <file alias="newGrid.png">resources/get-hot-new-stuff.png</file>
   </qresource>
 </RCC>

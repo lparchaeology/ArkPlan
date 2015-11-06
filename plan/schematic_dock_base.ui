@@ -64,7 +64,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>:/ArkPlan/user-offline.png</pixmap>
+          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
          </property>
         </widget>
        </item>
@@ -74,7 +74,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>:/ArkPlan/user-offline.png</pixmap>
+          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
          </property>
         </widget>
        </item>
@@ -113,7 +113,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>:/ArkPlan/user-offline.png</pixmap>
+          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
          </property>
         </widget>
        </item>
@@ -160,7 +160,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>:/ArkPlan/user-offline.png</pixmap>
+          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
          </property>
         </widget>
        </item>

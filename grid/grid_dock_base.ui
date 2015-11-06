@@ -24,7 +24,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/get-hot-new-stuff.png</normaloff>:/plugins/ArkGrid/get-hot-new-stuff.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/newGrid.png</normaloff>:/plugins/ArkPlan/grid/newGrid.png</iconset>
         </property>
        </widget>
       </item>
@@ -35,7 +35,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/snap-orthogonal.png</normaloff>:/plugins/ArkGrid/snap-orthogonal.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/identifyCoordinates.png</normaloff>:/plugins/ArkPlan/grid/identifyCoordinates.png</iconset>
         </property>
        </widget>
       </item>
@@ -46,7 +46,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/pastePoint.png</normaloff>:/plugins/ArkPlan/grid/pastePoint.png</iconset>
         </property>
        </widget>
       </item>
@@ -57,7 +57,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionPanToSelected.svg</normaloff>:/plugins/ArkGrid/mActionPanToSelected.svg</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/panToSelected.svg</normaloff>:/plugins/ArkPlan/grid/panToSelected.svg</iconset>
         </property>
        </widget>
       </item>
@@ -68,7 +68,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/addPoint.png</normaloff>:/plugins/ArkPlan/grid/addPoint.png</iconset>
         </property>
        </widget>
       </item>
@@ -79,7 +79,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/updateLayer.png</normaloff>:/plugins/ArkPlan/grid/updateLayer.png</iconset>
         </property>
        </widget>
       </item>
@@ -90,7 +90,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionMoveFeature.png</normaloff>:/plugins/ArkGrid/mActionMoveFeature.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/translateFeature.png</normaloff>:/plugins/ArkPlan/grid/translateFeature.png</iconset>
         </property>
        </widget>
       </item>
@@ -154,7 +154,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/copyPoint.png</normaloff>:/plugins/ArkPlan/grid/copyPoint.png</iconset>
         </property>
        </widget>
       </item>
@@ -188,7 +188,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+          <normaloff>:/plugins/ArkPlan/grid/copyPoint.png</normaloff>:/plugins/ArkPlan/grid/copyPoint.png</iconset>
         </property>
        </widget>
       </item>
@@ -244,7 +244,7 @@
   <action name="createGridAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/get-hot-new-stuff.png</normaloff>:/plugins/ArkGrid/get-hot-new-stuff.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/newGrid.png</normaloff>:/plugins/ArkPlan/grid/newGrid.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -259,7 +259,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/snap-orthogonal.png</normaloff>:/plugins/ArkGrid/snap-orthogonal.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/identifyCoordinates.png</normaloff>:/plugins/ArkPlan/grid/identifyCoordinates.png</iconset>
    </property>
    <property name="text">
     <string>Identify</string>
@@ -271,7 +271,7 @@
   <action name="updateLayerAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</normaloff>:/plugins/ArkGrid/mActionNewAttribute.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/updateLayer.png</normaloff>:/plugins/ArkPlan/grid/updateLayer.png</iconset>
    </property>
    <property name="text">
     <string>Update</string>
@@ -283,7 +283,7 @@
   <action name="copyMapPointAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/copyPoint.png</normaloff>:/plugins/ArkPlan/grid/copyPoint.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -295,7 +295,7 @@
   <action name="pasteMapPointAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/pastePoint.png</normaloff>:/plugins/ArkPlan/grid/pastePoint.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -307,7 +307,7 @@
   <action name="copyLocalPointAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionEditCopy.png</normaloff>:/plugins/ArkGrid/mActionEditCopy.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/copyPoint.png</normaloff>:/plugins/ArkPlan/grid/copyPoint.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -316,22 +316,10 @@
     <string>Copy Local Point</string>
    </property>
   </action>
-  <action name="pasteLocalPointAction">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionEditPaste.png</normaloff>:/plugins/ArkGrid/mActionEditPaste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Paste</string>
-   </property>
-   <property name="toolTip">
-    <string>Paste Local Point</string>
-   </property>
-  </action>
   <action name="addMapPointAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/addPoint.png</normaloff>:/plugins/ArkPlan/grid/addPoint.png</iconset>
    </property>
    <property name="text">
     <string>Add to Layer</string>
@@ -343,7 +331,7 @@
   <action name="panToAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</normaloff>:/plugins/ArkGrid/mActionCapturePoint.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/panToSelected.svg</normaloff>:/plugins/ArkPlan/grid/panToSelected.svg</iconset>
    </property>
    <property name="text">
     <string>Pan</string>
@@ -355,7 +343,7 @@
   <action name="translateFeaturesAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkGrid/mActionMoveFeature.png</normaloff>:/plugins/ArkGrid/mActionMoveFeature.png</iconset>
+     <normaloff>:/plugins/ArkPlan/grid/translateFeature.png</normaloff>:/plugins/ArkPlan/grid/translateFeature.png</iconset>
    </property>
    <property name="text">
     <string>Translate</string>

@@ -38,6 +38,8 @@ from ..filter.filter import FilterType
 from plan_util import *
 from metadata import Metadata
 
+import resources_rc
+
 def _quote(string):
     return "'" + string + "'"
 
@@ -77,7 +79,7 @@ class Plan(QObject):
         self.project.projectChanged.connect(self.loadProject)
 
         self.dock = PlanDock()
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/draw-freehand.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
         self.dock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
@@ -94,12 +96,12 @@ class Plan(QObject):
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.editDock = EditDock(self.project.iface)
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/document-edit.png', self.tr(u'Editing Tools'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
         self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)
 
         self.schematicDock = SchematicDock()
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/task-delegate.png', self.tr(u'Check Context Schematics'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)

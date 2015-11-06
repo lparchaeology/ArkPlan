@@ -24,7 +24,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mActionZoomToSelected.svg</normaloff>:/plugins/ArkPlan/mActionZoomToSelected.svg</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/zoomToFilterSet.svg</normaloff>:/plugins/ArkPlan/filter/zoomToFilterSet.svg</iconset>
         </property>
        </widget>
       </item>
@@ -35,7 +35,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mIconExpressionEditorOpen.svg</normaloff>:/plugins/ArkPlan/mIconExpressionEditorOpen.svg</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/buildFilter.svg</normaloff>:/plugins/ArkPlan/filter/buildFilter.svg</iconset>
         </property>
        </widget>
       </item>
@@ -46,7 +46,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mIconExpressionSelect.svg</normaloff>:/plugins/ArkPlan/mIconExpressionSelect.svg</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/buildSelection.svg</normaloff>:/plugins/ArkPlan/filter/buildSelection.svg</iconset>
         </property>
        </widget>
       </item>
@@ -57,7 +57,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mActionRemove.svg</normaloff>:/plugins/ArkPlan/mActionRemove.svg</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/removeFilter.svg</normaloff>:/plugins/ArkPlan/filter/removeFilter.svg</iconset>
         </property>
        </widget>
       </item>
@@ -71,7 +71,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mIconDbSchema.png</normaloff>:/plugins/ArkPlan/mIconDbSchema.png</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/loadData.png</normaloff>:/plugins/ArkPlan/filter/loadData.png</iconset>
         </property>
        </widget>
       </item>
@@ -85,7 +85,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/mActionOpenTable.png</normaloff>:/plugins/ArkPlan/mActionOpenTable.png</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/viewData.png</normaloff>:/plugins/ArkPlan/filter/viewData.png</iconset>
         </property>
        </widget>
       </item>
@@ -133,7 +133,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/document-save.png</normaloff>:/plugins/ArkPlan/document-save.png</iconset>
+          <normaloff>:/plugins/ArkPlan/filter/saveFilterSet.png</normaloff>:/plugins/ArkPlan/filter/saveFilterSet.png</iconset>
         </property>
         <property name="popupMode">
          <enum>QToolButton::MenuButtonPopup</enum>
@@ -169,7 +169,7 @@
   <action name="zoomFilterAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mActionZoomToSelected.svg</normaloff>:/plugins/ArkPlan/mActionZoomToSelected.svg</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/zoomToFilterSet.svg</normaloff>:/plugins/ArkPlan/filter/zoomToFilterSet.svg</iconset>
    </property>
    <property name="text">
     <string>Zoom To Selection</string>
@@ -178,7 +178,7 @@
   <action name="buildFilterAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mIconExpressionEditorOpen.svg</normaloff>:/plugins/ArkPlan/mIconExpressionEditorOpen.svg</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/buildFilter.svg</normaloff>:/plugins/ArkPlan/filter/buildFilter.svg</iconset>
    </property>
    <property name="text">
     <string>Build Filter</string>
@@ -187,7 +187,7 @@
   <action name="clearFilterAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mActionRemove.svg</normaloff>:/plugins/ArkPlan/mActionRemove.svg</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/removeFilter.svg</normaloff>:/plugins/ArkPlan/filter/removeFilter.svg</iconset>
    </property>
    <property name="text">
     <string>Clear Filter</string>
@@ -196,7 +196,7 @@
   <action name="loadDataAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mIconDbSchema.png</normaloff>:/plugins/ArkPlan/mIconDbSchema.png</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/loadData.png</normaloff>:/plugins/ArkPlan/filter/loadData.png</iconset>
    </property>
    <property name="text">
     <string>Load Data</string>
@@ -205,7 +205,7 @@
   <action name="showDataAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mActionOpenTable.png</normaloff>:/plugins/ArkPlan/mActionOpenTable.png</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/viewData.png</normaloff>:/plugins/ArkPlan/filter/viewData.png</iconset>
    </property>
    <property name="text">
     <string>Show Data</string>
@@ -214,7 +214,7 @@
   <action name="buildSelectionAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mIconExpressionSelect.svg</normaloff>:/plugins/ArkPlan/mIconExpressionSelect.svg</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/buildSelection.svg</normaloff>:/plugins/ArkPlan/filter/buildSelection.svg</iconset>
    </property>
    <property name="text">
     <string>Build Selection</string>
@@ -226,7 +226,7 @@
   <action name="saveFilterSetAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/document-save.png</normaloff>:/plugins/ArkPlan/document-save.png</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/saveFilterSet.png</normaloff>:/plugins/ArkPlan/filter/saveFilterSet.png</iconset>
    </property>
    <property name="text">
     <string>Save Filter Set</string>
@@ -235,7 +235,7 @@
   <action name="deleteFilterSetAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mActionDeleteSelected.svg</normaloff>:/plugins/ArkPlan/mActionDeleteSelected.svg</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/deleteFilterSet.svg</normaloff>:/plugins/ArkPlan/filter/deleteFilterSet.svg</iconset>
    </property>
    <property name="text">
     <string>Delete Filter Set</string>
@@ -244,7 +244,7 @@
   <action name="exportFilterSetAction">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/plugins/ArkPlan/mActionCreateMemory.png</normaloff>:/plugins/ArkPlan/mActionCreateMemory.png</iconset>
+     <normaloff>:/plugins/ArkPlan/filter/exportFilterSet.png</normaloff>:/plugins/ArkPlan/filter/exportFilterSet.png</iconset>
    </property>
    <property name="text">
     <string>Export Filter Set</string>

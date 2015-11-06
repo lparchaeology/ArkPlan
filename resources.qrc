@@ -3,23 +3,4 @@
     <file>settings.svg</file>
     <file>icon.png</file>
   </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>filter/edit-node.png</file>
-  </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>filter/view-filter.png</file>
-  </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>grid/snap-orthogonal.png</file>
-  </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>grid/view-grid.png</file>
-  </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>plan/draw-freehand.png</file>
-  </qresource>
-  <qresource prefix="/plugins/ArkPlan">
-    <file>plan/task-delegate.png</file>
-    <file>plan/document-edit.png</file>
-  </qresource>
 </RCC>

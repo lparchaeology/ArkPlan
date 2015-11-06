@@ -125,12 +125,12 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._enableClone(foundSchematic == SearchStatus.Found)
 
     def _setStatus(self, label, status):
-        if status == SearchStatus.Unknown:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/user-offline.png'))
-        elif status == SearchStatus.Found:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/user-online.png'))
+        if status == SearchStatus.Found:
+            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusFound.png'))
         elif status == SearchStatus.NotFound:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/user-busy.png'))
+            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusNotFound.png'))
+        else:
+            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusUnknown.png'))
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)

@@ -37,6 +37,8 @@ from update_layer_dialog import UpdateLayerDialog
 from grid_wizard import GridWizard
 from grid_dock import GridDock
 
+import resources_rc
+
 class GridModule(QObject):
 
     project = None # Project()
@@ -55,7 +57,7 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def load(self):
         self.dock = GridDock()
-        action = self.project.addDockAction(':/plugins/ArkPlan/grid/view-grid.png', self.tr(u'Local Grid'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ArkPlan/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
         self.dock.createGridSelected.connect(self.showGridWizard)

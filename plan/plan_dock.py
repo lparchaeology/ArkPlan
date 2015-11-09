@@ -42,6 +42,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     contextNumberChanged = pyqtSignal(int)
     featureIdChanged = pyqtSignal(int)
     featureNameChanged = pyqtSignal(str)
+    autoSchematicSelected = pyqtSignal()
 
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
@@ -65,6 +66,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
         self.featureIdSpin.valueChanged.connect(self.featureIdChanged)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)
+        self.autoSchematicTool.clicked.connect(self.autoSchematicSelected)
 
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)

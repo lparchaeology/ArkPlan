@@ -28,6 +28,7 @@ from qgis.core import *
 
 from ..libarkqgis.map_tools import *
 from ..libarkqgis import utils
+from ..libarkqgis import processing
 
 from ..georef.georef_dialog import GeorefDialog
 
@@ -64,6 +65,7 @@ class Plan(QObject):
     mapTools = {}
     currentMapTool = None
 
+    _definitiveCategories = set()
     _schematicContextIncludeFilter = -1
     _schematicContextHighlightFilter = -1
     _schematicSourceIncludeFilter = -1
@@ -91,6 +93,7 @@ class Plan(QObject):
         self.dock.contextNumberChanged.connect(self._setContextNumber)
         self.dock.featureIdChanged.connect(self._setFeatureId)
         self.dock.featureNameChanged.connect(self._setFeatureName)
+        self.dock.autoSchematicSelected.connect(self._autoSchematic)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -153,6 +156,8 @@ class Plan(QObject):
                 self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
             else:
                 self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
+            if category[6] == True:
+                self._definitiveCategories.add(category[2])
 
         self.initialised = True
         return True
@@ -358,7 +363,9 @@ class Plan(QObject):
     def setDefaultAttributes(self, data, mapTool):
         if mapTool is None:
             return
-        layer = mapTool.layer()
+        mapTool.setDefaultAttributes(self.defaultAttributes(data, mapTool.layer()))
+
+    def defaultAttributes(self, data, layer):
         if (layer is None or not layer.isValid()):
             return
         md = self.metadata()
@@ -380,7 +387,7 @@ class Plan(QObject):
         defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self._string(data['category'])
         defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self._string(md.comment())
         defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self._string(md.createdBy())
-        mapTool.setDefaultAttributes(defaults)
+        return defaults
 
     def _string(self, value):
         if value is None or value.strip() == '':
@@ -409,6 +416,29 @@ class Plan(QObject):
             if ok:
                 self.setFeatureId(num)
         self.metadata().validate()
+
+    def _autoSchematic(self):
+        layer =  self.project.plan.linesBuffer
+        definitiveFeatures = []
+        featureIter = None
+        if layer.selectedFeatureCount() > 0:
+            featureIter = layer.selectedFeaturesIterator()
+        else:
+            featureIter = layer.getFeatures()
+        for feature in featureIter:
+            if feature.attribute(self.project.fieldName('id')) == self.contextNumber and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                definitiveFeatures.append(feature)
+        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, self.project.plan.linesBuffer.fields())
+        if len(schematicFeatures) <= 0:
+            return
+        data = self.actions['sch'].data()
+        attrs = self.defaultAttributes(data, self.project.plan.linesBuffer)
+        layer.beginEditCommand("Add Auto Schematic")
+        for feature in schematicFeatures:
+            for attr in attrs.keys():
+                feature.setAttribute(attr, attrs[attr])
+            self.project.plan.polygonsBuffer.addFeature(feature)
+        layer.endEditCommand()
 
     # SchematicDock methods
 

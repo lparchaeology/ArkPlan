@@ -147,36 +147,12 @@ class Plan(QObject):
         self.dock.init(self.project)
         self.schematicDock.init(self.project)
 
-        self.addDrawingTool('plan', 'cxt', 'ext', self.tr('Extent'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'veg', self.tr('Vertical Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'ueg', self.tr('Uncertain Edge'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'loe', self.tr('Limit of Excavation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'trn', self.tr('Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'vtr', self.tr('Vertical Truncation'), QIcon(), ArkMapToolAddFeature.Line)
-        self.dock.newDrawingToolRow('plan')
-        self.addDrawingTool('plan', 'cxt', 'bos', self.tr('Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'vbs', self.tr('Vertical Break of Slope'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'cxt', 'hch', self.tr('Hachure'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('plan', 'cxt', 'unc', self.tr('Undercut'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.addDrawingTool('plan', 'cxt', 'ros', self.tr('Return of Slope'), QIcon(), ArkMapToolAddFeature.Segment)
-        self.dock.newDrawingToolRow('plan')
-        self.addDrawingTool('plan', 'cxt', 'cbm', self.tr('CBM'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'brk', self.tr('Brick'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'til', self.tr('Tile'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'pot', self.tr('Pot'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'sto', self.tr('Stone'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'fli', self.tr('Flint'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'cha', self.tr('Charcol'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'tim', self.tr('Timber'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.addDrawingTool('plan', 'cxt', 'clk', self.tr('Chalk'), QIcon(), ArkMapToolAddFeature.Polygon)
-        self.dock.newDrawingToolRow('plan')
-        self.addLevelTool('plan', 'cxt', 'lvl', self.tr('Level'), QIcon())
-        self.addSchemaTool('plan', 'cxt', 'sch', self.tr('Schema'), QIcon())
-
-        self.addDrawingTool('plan', 'sec', 'sec', self.tr('Section Pin'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('plan', 'sec', 'sln', self.tr('Section Line'), QIcon(), ArkMapToolAddFeature.Line)
-        self.addDrawingTool('plan', 'rgf', 'spf', self.tr('Special Find'), QIcon(), ArkMapToolAddFeature.Point)
-        self.addDrawingTool('plan', 'smp', 'spl', self.tr('Sample'), QIcon(), ArkMapToolAddFeature.Point)
+        for category in self.project.featureCategories:
+            #TODO Select by map tool type enum
+            if category[2] == 'lvl':
+                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
+            else:
+                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
 
         self.initialised = True
         return True
@@ -352,9 +328,9 @@ class Plan(QObject):
     def addDrawingTool(self, module, classCode, category, name, icon, featureType):
         action = self._newMapToolAction(module, classCode, category, name, icon)
         layer = None
-        if (featureType == ArkMapToolAddFeature.Line or featureType == ArkMapToolAddFeature.Segment):
+        if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
             layer = self.project.collection(module).linesBuffer
-        elif featureType == ArkMapToolAddFeature.Polygon:
+        elif featureType == FeatureType.Polygon:
             layer = self.project.collection(module).polygonsBuffer
         else:
             layer = self.project.collection(module).pointsBuffer
@@ -363,18 +339,13 @@ class Plan(QObject):
 
     def addLevelTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = self._newMapTool(name, ArkMapToolAddFeature.Point, self.project.collection(module).pointsBuffer, action)
+        mapTool = self._newMapTool(name, FeatureType.Point, self.project.collection(module).pointsBuffer, action)
         mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -1000, 1000, 2)
-        self._addMapTool(classCode, category, mapTool, action)
-
-    def addSchemaTool(self, module, classCode, category, name, icon):
-        action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = self._newMapTool(name, ArkMapToolAddFeature.Polygon, self.project.collection(module).polygonsBuffer, action)
         self._addMapTool(classCode, category, mapTool, action)
 
     def addSectionTool(self, module, classCode, category, name, icon):
         action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, ArkMapToolAddFeature.Line, self.tr('Add section'))
+        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, FeatureType.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self._addMapTool(classCode, category, mapTool, action)

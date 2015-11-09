@@ -33,6 +33,7 @@ from qgis.gui import QgsMessageBar
 from .libarkqgis.plugin import Plugin
 from .libarkqgis.layercollection import *
 from .libarkqgis import utils, layers
+from .libarkqgis.map_tools import FeatureType
 
 from .grid.grid import GridModule
 from .plan.plan import Plan
@@ -179,6 +180,36 @@ class ArkPlan(Plugin):
         ['Plan', 'pln'],
         ['Section', 'sec'],
         ['Find', 'rgf']
+    ]
+
+    featureCategories = [
+        # module, classCode, category, decsription, icon, featureType
+        ['plan', 'cxt', 'ext', 'Extent',                  '', FeatureType.Line],
+        ['plan', 'cxt', 'veg', 'Vertical Edge',           '', FeatureType.Line],
+        ['plan', 'cxt', 'ueg', 'Uncertain Edge',          '', FeatureType.Line],
+        ['plan', 'cxt', 'loe', 'Limit of Excavation',     '', FeatureType.Line],
+        ['plan', 'cxt', 'trn', 'Truncation',              '', FeatureType.Line],
+        ['plan', 'cxt', 'vtr', 'Vertical Truncation',     '', FeatureType.Line],
+        ['plan', 'cxt', 'bos', 'Break of Slope',          '', FeatureType.Line],
+        ['plan', 'cxt', 'vbs', 'Vertical Break of Slope', '', FeatureType.Line],
+        ['plan', 'cxt', 'hch', 'Hachure',                 '', FeatureType.Segment],
+        ['plan', 'cxt', 'unc', 'Undercut',                '', FeatureType.Segment],
+        ['plan', 'cxt', 'ros', 'Return of Slope',         '', FeatureType.Segment],
+        ['plan', 'cxt', 'cbm', 'CBM',                     '', FeatureType.Polygon],
+        ['plan', 'cxt', 'brk', 'Brick',                   '', FeatureType.Polygon],
+        ['plan', 'cxt', 'til', 'Tile',                    '', FeatureType.Polygon],
+        ['plan', 'cxt', 'pot', 'Pot',                     '', FeatureType.Polygon],
+        ['plan', 'cxt', 'sto', 'Stone',                   '', FeatureType.Polygon],
+        ['plan', 'cxt', 'fli', 'Flint',                   '', FeatureType.Polygon],
+        ['plan', 'cxt', 'cha', 'Charcol',                 '', FeatureType.Polygon],
+        ['plan', 'cxt', 'tim', 'Timber',                  '', FeatureType.Polygon],
+        ['plan', 'cxt', 'clk', 'Chalk',                   '', FeatureType.Polygon],
+        ['plan', 'cxt', 'lvl', 'Level',                   '', FeatureType.Point],
+        ['plan', 'cxt', 'sch', 'Schema',                  '', FeatureType.Polygon],
+        ['plan', 'sec', 'sec', 'Section Pin',             '', FeatureType.Point],
+        ['plan', 'sec', 'sln', 'Section Line',            '', FeatureType.Line],
+        ['plan', 'rgf', 'spf', 'Special Find',            '', FeatureType.Point],
+        ['plan', 'smp', 'spl', 'Sample',                  '', FeatureType.Point],
     ]
 
     # Private settings

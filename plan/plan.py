@@ -37,7 +37,7 @@ from edit_dock import EditDock
 from schematic_dock import SchematicDock, SearchStatus
 from ..filter.filter import FilterType
 from plan_util import *
-from metadata import Metadata
+from metadata import Metadata, FeatureData
 
 import resources_rc
 
@@ -55,11 +55,8 @@ class Plan(QObject):
     # Internal variables
     initialised = False
     _buffersInitialised = False
-    module = None
-    contextNumber = None
-    featureId = None
-    featureName = None
-    category = ''
+
+    _featureData = FeatureData()
 
     actions = {}
     mapTools = {}
@@ -89,11 +86,11 @@ class Plan(QObject):
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
         self.dock.loadPlanSelected.connect(self._loadPlans)
-        self.metadata().metadataChanged.connect(self.updateDefaultAttributes)
-        self.dock.contextNumberChanged.connect(self._setContextNumber)
-        self.dock.featureIdChanged.connect(self._setFeatureId)
-        self.dock.featureNameChanged.connect(self._setFeatureName)
-        self.dock.autoSchematicSelected.connect(self._autoSchematic)
+        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
+        self.dock.contextNumberChanged.connect(self._featureIdChanged)
+        self.dock.featureIdChanged.connect(self._featureIdChanged)
+        self.dock.featureNameChanged.connect(self._featureNameChanged)
+        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -111,7 +108,7 @@ class Plan(QObject):
         self.schematicDock.findSourceSelected.connect(self._findSource)
         self.schematicDock.copySourceSelected.connect(self._copySource)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
-        self.metadata().metadataChanged.connect(self.updateDefaultAttributes)
+        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
 
@@ -194,11 +191,11 @@ class Plan(QObject):
         self.metadata().setSourceId(pmd.sourceId)
         self.metadata().setSourceFile(pmd.filename)
         if pmd.sourceClass == 'cxt':
-            self.setContextNumber(pmd.sourceId)
-            self.setFeatureId(0)
+            self.dock.setContextNumber(pmd.sourceId)
+            self.dock.setFeatureId(0)
         else:
-            self.setContextNumber(0)
-            self.setFeatureId(pmd.sourceId)
+            self.dock.setContextNumber(0)
+            self.dock.setFeatureId(pmd.sourceId)
 
     def _loadRawPlan(self):
         fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Drawing'), self.project.rawPlanPath(),
@@ -246,35 +243,16 @@ class Plan(QObject):
             self._setPlanMetadata(PlanMetadata(plan))
             self.project.loadGeoLayer(plan)
 
-    def setContextNumber(self, context):
-        self.dock.setContextNumber(context)
+    def _featureIdChanged(self, featureId):
+        self._featureData.setFeatureId(featureId)
+        self.updateMapToolAttributes()
 
-    def _setContextNumber(self, context):
-        if context is None or context <= 0:
-            self.contextNumber = None
-        else:
-            self.contextNumber = context
-        self.updateDefaultAttributes()
-
-    def setFeatureId(self, featureId):
-        self.dock.setFeatureId(featureId)
-
-    def _setFeatureId(self, featureId):
-        if featureId is None or featureId <= 0:
-            self.featureId = None
-        else:
-            self.featureId = featureId
-        self.updateDefaultAttributes()
-
-    def setFeatureName(self, featureName):
-        self.dock.setFeatureName(featureName)
-
-    def _setFeatureName(self, featureName):
+    def _featureNameChanged(self, featureName):
         if featureName is None or featureName.strip() == '':
-            self.featureName = None
+            self._featureData.setFeatureName('')
         else:
-            self.featureName = featureName
-        self.updateDefaultAttributes()
+            self._featureData.setFeatureName(featureName)
+        self.updateMapToolAttributes()
 
     # Georeference Tools
 
@@ -299,146 +277,127 @@ class Plan(QObject):
 
     # Drawing tools
 
-    def _newMapToolAction(self, module, classCode, category, name, icon):
+    def _newMapToolAction(self, classCode, category, toolName, icon):
         data = {}
-        data['module'] = module
         data['class'] = classCode
         data['category'] = category
-        data['name'] = name
         action = QAction(icon, category, self.dock)
         action.setData(data)
-        action.setToolTip(name)
+        action.setToolTip(toolName)
         action.setCheckable(True)
         return action
 
-    def _newMapTool(self, name, featureType, buffer, action):
-        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, name)
+    def _newMapTool(self, toolName, featureType, buffer, action):
+        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, toolName)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
         mapTool.setSnappingEnabled(True)
         mapTool.setShowSnappableVertices(True)
-        mapTool.activated.connect(self.updateDefaultAttributes)
+        mapTool.activated.connect(self.updateMapToolAttributes)
         return mapTool
 
     def _addMapTool(self, classCode, category, mapTool, action):
-        if classCode == 'cxt':
-            action.triggered.connect(self.validateContext)
-        else:
-            action.triggered.connect(self.validateFeature)
+        action.triggered.connect(self.validateFeature)
         self.dock.addDrawingTool(classCode, action)
         self.actions[category] = action
         self.mapTools[category] = mapTool
 
-    def addDrawingTool(self, module, classCode, category, name, icon, featureType):
-        action = self._newMapToolAction(module, classCode, category, name, icon)
+    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType):
+        action = self._newMapToolAction(classCode, category, toolName, icon)
         layer = None
         if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            layer = self.project.collection(module).linesBuffer
+            layer = self.project.collection(collection).linesBuffer
         elif featureType == FeatureType.Polygon:
-            layer = self.project.collection(module).polygonsBuffer
+            layer = self.project.collection(collection).polygonsBuffer
         else:
-            layer = self.project.collection(module).pointsBuffer
-        mapTool = self._newMapTool(name, featureType, layer, action)
+            layer = self.project.collection(collection).pointsBuffer
+        mapTool = self._newMapTool(toolName, featureType, layer, action)
         self._addMapTool(classCode, category, mapTool, action)
 
-    def addLevelTool(self, module, classCode, category, name, icon):
-        action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = self._newMapTool(name, FeatureType.Point, self.project.collection(module).pointsBuffer, action)
+    def addLevelTool(self, collection, classCode, category, toolName, icon):
+        action = self._newMapToolAction(classCode, category, toolName, icon)
+        mapTool = self._newMapTool(toolName, FeatureType.Point, self.project.collection(collection).pointsBuffer, action)
         mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -1000, 1000, 2)
         self._addMapTool(classCode, category, mapTool, action)
 
-    def addSectionTool(self, module, classCode, category, name, icon):
-        action = self._newMapToolAction(module, classCode, category, name, icon)
-        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(module).linesBuffer, FeatureType.Line, self.tr('Add section'))
+    def addSectionTool(self, collection, classCode, category, toolName, icon):
+        action = self._newMapToolAction(classCode, category, toolName, icon)
+        mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(collection).linesBuffer, FeatureType.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self._addMapTool(classCode, category, mapTool, action)
 
-    def updateDefaultAttributes(self):
+    def updateMapToolAttributes(self):
         for mapTool in self.mapTools.values():
             if mapTool.action().isChecked():
-                self.setDefaultAttributes(mapTool.action().data(), mapTool)
+                self.setMapToolAttributes(mapTool)
 
-    def setDefaultAttributes(self, data, mapTool):
+    def setMapToolAttributes(self, mapTool):
         if mapTool is None:
             return
-        mapTool.setDefaultAttributes(self.defaultAttributes(data, mapTool.layer()))
+        toolData = mapTool.action().data()
+        self._featureData.setClassCode(toolData['class'])
+        self._featureData.setCategory(toolData['category'])
+        attrs = self.featureAttributes(self.metadata(), self._featureData, mapTool.layer())
+        mapTool.setDefaultAttributes(attrs)
 
-    def defaultAttributes(self, data, layer):
+    def featureAttributes(self, md, fd, layer):
         if (layer is None or not layer.isValid()):
             return
-        md = self.metadata()
         defaults = {}
-        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = self._string(md.siteCode())
-        defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = self._string(data['class'])
-        id = ''
-        if data['class'] == 'cxt':
-            id = self.contextNumber
-        else:
-            id = self.featureId
-        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = self._number(id)
-        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = self._string(self.featureName)
-        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = self._string(md.sourceCode())
+        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = md.siteCode(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = fd.classCode(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = fd.featureId(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = fd.name(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = md.sourceCode(True)
         if md.sourceCode() != 'svy':
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = self._string(md.sourceClass())
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = self._number(md.sourceId())
-        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = self._string(md.sourceFile())
-        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = self._string(data['category'])
-        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = self._string(md.comment())
-        defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = self._string(md.createdBy())
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = md.sourceClass(True)
+            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = md.sourceId(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = md.sourceFile(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = fd.category(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = md.comment(True)
+        defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = md.createdBy(True)
         return defaults
 
-    def _string(self, value):
-        if value is None or value.strip() == '':
-            return None
-        else:
-            return value
-
-    def _number(self, value):
-        if value is None or value <= 0:
-            return None
-        else:
-            return value
-
-    def validateContext(self):
-        if self.contextNumber <= 0:
-            num, ok = QInputDialog.getInt(None, 'Context Number', 'Please enter a valid Context Number', 1, 1, 99999)
-            if ok:
-                self.setContextNumber(num)
-                if self.metadata().sourceClass() == 'cxt' and self.metadata().sourceId() <= 0:
-                    self.metadata().setSourceId(num)
-        self.metadata().validate()
-
     def validateFeature(self):
-        if self.featureId <= 0:
-            num, ok = QInputDialog.getInt(None, 'Feature ID', 'Please enter a valid Feature ID', 1, 1, 99999)
-            if ok:
-                self.setFeatureId(num)
+        self._featureData.validate()
+        if self._featureData.classCode() == 'cxt':
+            self.dock.setContextNumber(self._featureData.featureId())
+            self.dock.setFeatureId(0)
+        else:
+            self.dock.setContextNumber(0)
+            self.dock.setFeatureId(self._featureData.featureId())
+        self.dock.setFeatureName(self._featureData.name())
+        if self.metadata().sourceClass() == self._featureData.classCode() and self.metadata().sourceId() <= 0:
+            self.metadata().setSourceId(self._featureData.featureId())
         self.metadata().validate()
 
-    def _autoSchematic(self):
-        layer =  self.project.plan.linesBuffer
+    def _autoSchematicSelected(self):
+        self.mapTools['sch'].activate()
+        self.setMapToolAttributes(self.mapTools['sch'])
+        self._autoSchematic(self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
+        self.project.mapCanvas().refresh()
+
+    def _autoSchematic(self, fd, md, inLayer, outLayer):
         definitiveFeatures = []
-        featureIter = None
-        if layer.selectedFeatureCount() > 0:
-            featureIter = layer.selectedFeaturesIterator()
+        if inLayer.selectedFeatureCount() > 0:
+            definitiveFeatures = inLayer.selectedFeatures()
         else:
-            featureIter = layer.getFeatures()
-        for feature in featureIter:
-            if feature.attribute(self.project.fieldName('id')) == self.contextNumber and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
-                definitiveFeatures.append(feature)
-        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, self.project.plan.linesBuffer.pendingFields())
+            featureIter = inLayer.getFeatures()
+            for feature in featureIter:
+                if feature.attribute(self.project.fieldName('id')) == fd.featureId() and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                    definitiveFeatures.append(feature)
+        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
             return
-        data = self.actions['sch'].data()
-        attrs = self.defaultAttributes(data, self.project.plan.linesBuffer)
-        layer.beginEditCommand("Add Auto Schematic")
+        attrs = self.featureAttributes(md, fd, outLayer)
+        outLayer.beginEditCommand("Add Auto Schematic")
         for feature in schematicFeatures:
             for attr in attrs.keys():
                 feature.setAttribute(attr, attrs[attr])
-            self.project.plan.polygonsBuffer.addFeature(feature)
-        layer.endEditCommand()
+            outLayer.addFeature(feature)
+        outLayer.endEditCommand()
 
     # SchematicDock methods
 
@@ -554,17 +513,17 @@ class Plan(QObject):
         try:
             feature = schematic.next()
             md = self.schematicDock.metadata()
-            feature.setAttribute(self.project.fieldName('site'), self._string(md.siteCode()))
+            feature.setAttribute(self.project.fieldName('site'), md.siteCode(True))
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
-            feature.setAttribute(self.project.fieldName('id'), self._number(self.schematicDock.context()))
+            feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context(True))
             feature.setAttribute(self.project.fieldName('name'), None)
             feature.setAttribute(self.project.fieldName('category'), 'sch')
-            feature.setAttribute(self.project.fieldName('source_cd'), self._string(md.sourceCode()))
-            feature.setAttribute(self.project.fieldName('source_cl'), self._string(md.sourceClass()))
-            feature.setAttribute(self.project.fieldName('source_id'), self._number(md.sourceId()))
-            feature.setAttribute(self.project.fieldName('file'), self._string(md.sourceFile()))
-            feature.setAttribute(self.project.fieldName('comment'), self._string(md.comment()))
-            feature.setAttribute(self.project.fieldName('created_by'), self._string(md.createdBy()))
+            feature.setAttribute(self.project.fieldName('source_cd'), md.sourceCode(True))
+            feature.setAttribute(self.project.fieldName('source_cl'), md.sourceClass(True))
+            feature.setAttribute(self.project.fieldName('source_id'), md.sourceId(True))
+            feature.setAttribute(self.project.fieldName('file'), md.sourceFile(True))
+            feature.setAttribute(self.project.fieldName('comment'), md.comment(True))
+            feature.setAttribute(self.project.fieldName('created_by'), md.createdBy(True))
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
         except StopIteration:

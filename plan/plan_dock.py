@@ -82,17 +82,26 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setMetadata(self, md):
         self.metadataWidget.setMetadata(md)
 
+    def contextNumber(self):
+        return self.contextNumberSpin.value()
+
     def setContextNumber(self, context):
         if context is None:
             self.contextNumberSpin.setValue(0)
         else:
             self.contextNumberSpin.setValue(context)
 
+    def featureId(self):
+        return self.featureIdSpin.value()
+
     def setFeatureId(self, featureId):
         if featureId is None:
             self.featureIdSpin.setValue(0)
         else:
             self.featureIdSpin.setValue(featureId)
+
+    def featureName(self):
+        return self.featureNameEdit.text()
 
     def setFeatureName(self, name):
         self.featureNameEdit.setText(name)

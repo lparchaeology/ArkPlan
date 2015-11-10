@@ -183,7 +183,7 @@ class ArkPlan(Plugin):
     ]
 
     featureCategories = [
-        # module, classCode, category, decsription, icon, featureType, definitiveFeature
+        # collection, classCode, category, toolName, icon, featureType, definitiveFeature
         ['plan', 'cxt', 'ext', 'Extent',                  '', FeatureType.Line,    True],
         ['plan', 'cxt', 'veg', 'Vertical Edge',           '', FeatureType.Line,    True],
         ['plan', 'cxt', 'ueg', 'Uncertain Edge',          '', FeatureType.Line,    True],
@@ -302,6 +302,7 @@ class ArkPlan(Plugin):
         else:
             self._setIsConfigured(False)
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
+            self.dock.menuAction().setChecked(False)
 
     def isConfigured(self):
         return self.readBoolEntry('configured', False)

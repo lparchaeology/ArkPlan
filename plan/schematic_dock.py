@@ -58,10 +58,10 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.setupUi(self)
 
         self.contextSpin.valueChanged.connect(self._contextChanged)
-        self.contextSpin.lineEdit().returnPressed.connect(self._contextChanged)
+        self.contextSpin.lineEdit().returnPressed.connect(self.findContextSelected)
         self.findContextButton.clicked.connect(self.findContextSelected)
-        self.sourceContextSpin.lineEdit().returnPressed.connect(self._sourceContextChanged)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
+        self.sourceContextSpin.lineEdit().returnPressed.connect(self.findSourceSelected)
         self.findSourceButton.clicked.connect(self.findSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)

@@ -428,7 +428,7 @@ class Plan(QObject):
         for feature in featureIter:
             if feature.attribute(self.project.fieldName('id')) == self.contextNumber and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                 definitiveFeatures.append(feature)
-        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, self.project.plan.linesBuffer.fields())
+        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, self.project.plan.linesBuffer.pendingFields())
         if len(schematicFeatures) <= 0:
             return
         data = self.actions['sch'].data()

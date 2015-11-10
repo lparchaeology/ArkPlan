@@ -249,6 +249,8 @@ class ArkPlan(Plugin):
     # Unload the plugin
     def unload(self):
 
+        self.dock.menuAction().setChecked(False)
+
         # Unload the modules
         self.filterModule.unload()
         del self.filterModule

@@ -10,7 +10,7 @@
 name=ArkPlan02
 qgisMinimumVersion=2.4
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.2.13
+version=0.2.14
 author=John Layt / L - P: Heritage LLP
 email=john@layt.net
 
@@ -19,7 +19,7 @@ email=john@layt.net
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-changelog=Changed shapefile and attribute table config so bump the version number as no longer compatible.
+changelog=Added Auto Schematic Tool.
 
 # Tags are comma separated with spaces allowed
 tags=vector

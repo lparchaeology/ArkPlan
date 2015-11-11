@@ -311,7 +311,7 @@ class Plan(QObject):
         mapTool.setZoomingEnabled(True)
         mapTool.setSnappingEnabled(True)
         mapTool.setShowSnappableVertices(True)
-        mapTool.activated.connect(self.updateMapToolAttributes)
+        mapTool.activated.connect(self.mapToolActivated)
         return mapTool
 
     def _addMapTool(self, classCode, category, mapTool, action):
@@ -344,6 +344,13 @@ class Plan(QObject):
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
         self._addMapTool(classCode, category, mapTool, action)
+
+    def mapToolActivated(self):
+        for mapTool in self.mapTools.values():
+            if mapTool.action().isChecked():
+                if not mapTool.layer().isEditable():
+                    mapTool.layer().startEditing()
+                self.setMapToolAttributes(mapTool)
 
     def updateMapToolAttributes(self):
         for mapTool in self.mapTools.values():

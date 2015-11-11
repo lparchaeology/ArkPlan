@@ -175,6 +175,9 @@ class Plan(QObject):
         if self._buffersInitialised:
             return
         self.project.plan.createBuffers()
+        self.project.plan.pointsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+        self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+        self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
         self._buffersInitialised = True
         self.editDock.setBufferPoints(self.project.plan.pointsBuffer)
         self.editDock.setBufferLines(self.project.plan.linesBuffer)

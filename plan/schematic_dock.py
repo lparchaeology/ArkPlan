@@ -26,7 +26,9 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QPixmap
+from PyQt4.QtGui import QDockWidget, QPixmap, QToolButton
+
+from qgis.core import QgsMessageLog
 
 from ..libarkqgis.dock import ArkDockWidget
 
@@ -46,12 +48,20 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
     findSourceSelected = pyqtSignal()
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
+    autoSchematicSelected = pyqtSignal(int)
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
+
+    _contextDataStatus = SearchStatus.Unknown
+    _contextSchematicStatus = SearchStatus.Unknown
+    _sourceDataStatus = SearchStatus.Unknown
+    _sourceSchematicStatus = SearchStatus.Unknown
 
     _drawColMax = 3
     _drawCol = 0
     _drawRow = 0
+
+    _tools = []
 
     def __init__(self, parent=None):
         super(SchematicDock, self).__init__(parent)
@@ -65,6 +75,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.findSourceButton.clicked.connect(self.findSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
+        self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
@@ -87,7 +98,8 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
         self.contextToolsLayout.addWidget(toolButton, self._drawRow, self._drawCol, Qt.AlignCenter)
-        if self._cgCol == self._cgColMax:
+        self._tools.append(toolButton)
+        if self._drawCol == self._drawColMax:
             self.newDrawingToolRow()
         else:
             self._drawCol += 1
@@ -107,10 +119,13 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _setContextStatus(self, foundData, foundSchematic):
-        self._setStatus(self.contextDataStatusLabel, foundData)
-        self._setStatus(self.contextSchematicStatusLabel, foundSchematic)
+        self._contextDataStatus = foundData
+        self._contextSchematicStatus = foundSchematic
+        self._setStatusLabel(self.contextDataStatusLabel, foundData)
+        self._setStatusLabel(self.contextSchematicStatusLabel, foundSchematic)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
         self._enableDraw(foundSchematic == SearchStatus.NotFound)
+        self._enableAuto()
 
     def sourceContext(self):
         return self.sourceContextSpin.value()
@@ -120,11 +135,14 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._setSourceStatus(foundData, foundSchematic)
 
     def _setSourceStatus(self, foundData, foundSchematic):
-        self._setStatus(self.sourceDataStatusLabel, foundData)
-        self._setStatus(self.sourceSchematicStatusLabel, foundSchematic)
+        self._sourceDataStatus = foundData
+        self._sourceSchematicStatus = foundSchematic
+        self._setStatusLabel(self.sourceDataStatusLabel, foundData)
+        self._setStatusLabel(self.sourceSchematicStatusLabel, foundSchematic)
         self._enableClone(foundSchematic == SearchStatus.Found)
+        self._enableAuto()
 
-    def _setStatus(self, label, status):
+    def _setStatusLabel(self, label, status):
         if status == SearchStatus.Found:
             label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusFound.png'))
         elif status == SearchStatus.NotFound:
@@ -143,8 +161,17 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.cloneSourceButton.setEnabled(enable)
 
     def _enableDraw(self, enable):
+        self.metadataWidget.setEnabled(enable)
+        for tool in self._tools:
+            tool.setEnabled(enable)
         self.clearButton.setEnabled(enable)
         self.mergeButton.setEnabled(enable)
+
+    def _enableAuto(self):
+        auto = (self._contextDataStatus == SearchStatus.Found and self._contextSchematicStatus == SearchStatus.NotFound) or self._sourceDataStatus == SearchStatus.Found
+        if auto:
+            self.metadataWidget.setEnabled(True)
+        self.autoSchematicTool.setEnabled(auto)
 
     def _contextChanged(self):
         self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown)
@@ -152,3 +179,11 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     def _sourceContextChanged(self):
         self._setSourceStatus(SearchStatus.Unknown, SearchStatus.Unknown)
+
+    def _autoSchematicSelected(self):
+        if self._sourceDataStatus == SearchStatus.Found:
+            self.metadata().validate()
+            self.autoSchematicSelected.emit(self.sourceContext())
+        elif self._contextDataStatus == SearchStatus.Found:
+            self.metadata().validate()
+            self.autoSchematicSelected.emit(self.context())

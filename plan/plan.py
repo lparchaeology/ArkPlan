@@ -52,6 +52,10 @@ class Plan(QObject):
     # Project settings
     project = None # Project()
 
+    dock = None # PlanDock()
+    editDock = None # EditDock()
+    schematicDock = None # SchematicDock()
+
     # Internal variables
     initialised = False
     _buffersInitialised = False
@@ -86,11 +90,10 @@ class Plan(QObject):
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
         self.dock.loadPlanSelected.connect(self._loadPlans)
-        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
         self.dock.contextNumberChanged.connect(self._featureIdChanged)
         self.dock.featureIdChanged.connect(self._featureIdChanged)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
-        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
+        self.dock.autoSchematicSelected.connect(self._autoSchematicBufferSelected)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -108,12 +111,16 @@ class Plan(QObject):
         self.schematicDock.findSourceSelected.connect(self._findSource)
         self.schematicDock.copySourceSelected.connect(self._copySource)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
-        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
+        self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
 
+        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
+
     # Unload the module when plugin is unloaded
     def unload(self):
+
+        self._clearSchematicFilters()
 
         for action in self.actions.values():
             if action.isChecked():
@@ -127,6 +134,7 @@ class Plan(QObject):
     def run(self, checked):
         if checked:
             self.initialise()
+            self.schematicDock.menuAction().setChecked(False)
 
     def runEdit(self, checked):
         if checked:
@@ -138,6 +146,7 @@ class Plan(QObject):
     def runSchematic(self, checked):
         if checked:
             self.initialise()
+            self.dock.menuAction().setChecked(False)
 
     def initialise(self):
         if self.initialised:
@@ -155,6 +164,9 @@ class Plan(QObject):
                 self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
+
+        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
+        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
 
         self.initialised = True
         return True
@@ -180,6 +192,8 @@ class Plan(QObject):
         self.initialised = False
 
     def metadata(self):
+        if self.schematicDock.menuAction().isChecked():
+            return self.schematicDock.metadata()
         return self.dock.metadata()
 
     # Plan Tools
@@ -373,20 +387,24 @@ class Plan(QObject):
             self.metadata().setSourceId(self._featureData.featureId())
         self.metadata().validate()
 
-    def _autoSchematicSelected(self):
+    def _autoSchematicBufferSelected(self, sourceId):
         self.mapTools['sch'].activate()
         self.setMapToolAttributes(self.mapTools['sch'])
-        self._autoSchematic(self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
-        self.project.mapCanvas().refresh()
+        self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
 
-    def _autoSchematic(self, fd, md, inLayer, outLayer):
+    def _autoSchematicLayerSelected(self, sourceId):
+        self.mapTools['sch'].activate()
+        self.setMapToolAttributes(self.mapTools['sch'])
+        self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesLayer, self.project.plan.polygonsBuffer)
+
+    def _autoSchematic(self, sourceId, fd, md, inLayer, outLayer):
         definitiveFeatures = []
         if inLayer.selectedFeatureCount() > 0:
             definitiveFeatures = inLayer.selectedFeatures()
         else:
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
-                if feature.attribute(self.project.fieldName('id')) == fd.featureId() and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                if feature.attribute(self.project.fieldName('id')) == sourceId and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
         schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
@@ -398,15 +416,22 @@ class Plan(QObject):
                 feature.setAttribute(attr, attrs[attr])
             outLayer.addFeature(feature)
         outLayer.endEditCommand()
+        self.project.mapCanvas().refresh()
 
     # SchematicDock methods
 
     def _clearSchematicFilters(self):
+        self._clearSchematicContextIncludeFilter()
+        self._clearSchematicContextHighlightFilter()
+        self._clearSchematicSourceFilters()
+
+    def _clearSchematicContextIncludeFilter(self):
         self.project.filterModule.removeFilter(self._schematicContextIncludeFilter)
         self._schematicContextIncludeFilter = -1
+
+    def _clearSchematicContextHighlightFilter(self):
         self.project.filterModule.removeFilter(self._schematicContextHighlightFilter)
         self._schematicContextHighlightFilter = -1
-        self._clearSchematicSourceFilters()
 
     def _clearSchematicSourceFilters(self):
         self.project.filterModule.removeFilter(self._schematicSourceIncludeFilter)
@@ -434,6 +459,7 @@ class Plan(QObject):
         haveFeature = SearchStatus.Found
         try:
             self.project.plan.linesLayer.getFeatures(request).next()
+            self._copyFeatureMetadata(feature)
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
@@ -445,6 +471,7 @@ class Plan(QObject):
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
+        self._featureIdChanged(self.schematicDock.context())
 
     def _findSource(self):
         self._clearSchematicSourceFilters()
@@ -454,8 +481,9 @@ class Plan(QObject):
         if siteCode == '':
             siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
-        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
+            self._schematicSourceIncludeFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
+        self._clearSchematicContextHighlightFilter()
+        self._schematicSourceHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
 
         classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
         idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.sourceContext()) + '\''

@@ -141,7 +141,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.filterChanged.emit()
 
     def _removeFilter(self, index):
-        if index is None or index < 0 or self._filters[index] == None:
+        if index not in self._filters:
             return
         self.filterListWidget.takeItem(self.filterListWidget.row(self._items[index]))
         self._filters.pop(index)

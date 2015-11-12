@@ -25,7 +25,7 @@
 import os
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import Qt, pyqtSignal, QObject, QEvent
 from PyQt4.QtGui import QDockWidget, QPixmap, QToolButton
 
 from qgis.core import QgsMessageLog
@@ -40,6 +40,20 @@ class SearchStatus():
     Unknown = 0
     Found = 1
     NotFound = 2
+
+
+class ReturnPressedFilter(QObject):
+
+    returnPressed = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(ReturnPressedFilter, self).__init__(parent)
+
+    def eventFilter(self, obj, event):
+        if (event.type() == QEvent.KeyPress and (event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter)):
+            self.returnPressed.emit()
+            return True
+        return super(ReturnPressedFilter, self).eventFilter(obj, event)
 
 
 class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
@@ -68,10 +82,14 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.setupUi(self)
 
         self.contextSpin.valueChanged.connect(self._contextChanged)
-        self.contextSpin.lineEdit().returnPressed.connect(self.findContextSelected)
+        self.contextSpinFilter = ReturnPressedFilter(self)
+        self.contextSpin.installEventFilter(self.contextSpinFilter)
+        self.contextSpinFilter.returnPressed.connect(self.findContextSelected)
         self.findContextButton.clicked.connect(self.findContextSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
-        self.sourceContextSpin.lineEdit().returnPressed.connect(self.findSourceSelected)
+        self.sourceSpinFilter = ReturnPressedFilter(self)
+        self.sourceContextSpin.installEventFilter(self.sourceSpinFilter)
+        self.sourceSpinFilter.returnPressed.connect(self.findSourceSelected)
         self.findSourceButton.clicked.connect(self.findSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)

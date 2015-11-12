@@ -533,7 +533,6 @@ class Plan(QObject):
         self.schematicDock.metadata().setSourceClass('cxt')
         self.schematicDock.metadata().setSourceId(self.schematicDock.sourceContext())
         self.schematicDock.metadata().setSourceFile('')
-        self.schematicDock.metadata().validate()
 
     def _classClause(self, classCode):
         return _doublequote(self.project.fieldName('class')) + ' = ' + _quote(classCode)

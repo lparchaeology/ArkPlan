@@ -468,7 +468,7 @@ class Plan(QObject):
         request.setFilterExpression(classExpr + ' and ' + idExpr)
         haveFeature = SearchStatus.Found
         try:
-            self.project.plan.linesLayer.getFeatures(request).next()
+            feature = self.project.plan.linesLayer.getFeatures(request).next()
             self._copyFeatureMetadata(feature)
         except StopIteration:
             haveFeature = SearchStatus.NotFound

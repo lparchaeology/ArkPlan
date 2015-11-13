@@ -63,6 +63,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     autoSchematicSelected = pyqtSignal(int)
+    resetSelected = pyqtSignal()
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
@@ -94,6 +95,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
         self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
+        self.resetButton.clicked.connect(self.resetSelected)
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 

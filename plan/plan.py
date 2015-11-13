@@ -112,6 +112,7 @@ class Plan(QObject):
         self.schematicDock.copySourceSelected.connect(self._copySource)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
         self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
+        self.schematicDock.resetSelected.connect(self._resetSchematic)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
 
@@ -436,6 +437,10 @@ class Plan(QObject):
         self.project.mapCanvas().refresh()
 
     # SchematicDock methods
+
+    def _resetSchematic(self):
+        self._clearSchematicFilters()
+        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _clearSchematicFilters(self):
         self._clearSchematicContextIncludeFilter()

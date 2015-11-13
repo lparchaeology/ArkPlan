@@ -415,11 +415,20 @@ class ArkPlan(Plugin):
     def _moduleDefault(self, module, key):
         return Config.moduleDefaults[module][key]
 
-    def _moduleEntry(self, module, key):
-        return self.readEntry(module + '/' + key, self._moduleDefault(module, key))
+    def _moduleEntry(self, module, key, default=None):
+        if default is None:
+            return self.readEntry(module + '/' + key, self._moduleDefault(module, key))
+        return self.readEntry(module + '/' + key, default)
 
-    def _setModuleEntry(self, module, key, value):
-        self.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
+    def _moduleBoolEntry(self, module, key, default=None):
+        if default is None:
+            return self.readBoolEntry(module + '/' + key, self._moduleDefault(module, key))
+        return self.readBoolEntry(module + '/' + key, default)
+
+    def _setModuleEntry(self, module, key, value, default=None):
+        if default is None:
+            self.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
+        self.setEntry(module + '/' + key, value, default)
 
     def moduleDir(self, module):
         return QDir(self.modulePath(module))
@@ -441,6 +450,12 @@ class ArkPlan(Plugin):
 
     def setModulePath(self, module, absolutePath):
         self._setModuleEntry(module, 'path', absolutePath)
+
+    def useCustomModulePath(self, module):
+        return self._moduleBoolEntry(module, 'useCustomPath', False)
+
+    def setUseCustomModulePath(self, module, useCustomPath):
+        self._setModuleEntry(module, 'useCustomPath', useCustomPath)
 
     def layersGroupName(self, module):
         return self._moduleEntry(module, 'layersGroupName')

@@ -42,7 +42,7 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         super(SelectDrawingDialog, self).__init__(parent)
         self.setupUi(self)
         for drawType in Config.drawingTypes:
-            self.drawingTypeCombo.addItem(drawType[0], drawType[1])
+            self.drawingTypeCombo.addItem(drawType['label'], drawType['code'])
         self.drawingTypeCombo.currentIndexChanged.connect(self._findFiles)
         self.findFilter = ReturnPressedFilter(self)
         self.findFilter.returnPressed.connect(self._findFiles)

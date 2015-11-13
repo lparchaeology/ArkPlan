@@ -77,7 +77,10 @@ class GridModule(QObject):
 
     # Unload the module when plugin is unloaded
     def unload(self):
+        # Reset the initialisation
+        self.initialised = False
         self.dock.unload()
+        self.dock.deleteLater()
 
     def run(self, checked):
         if checked:

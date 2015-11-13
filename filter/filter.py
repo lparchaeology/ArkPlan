@@ -92,9 +92,13 @@ class Filter(QObject):
     # Unload the module when plugin is unloaded
     def unload(self):
         self.saveFilterSet()
-        #FIXME Can't clear as layers already unloaded by main program!
-        #self.clearFilter()
+        #FIXME Doesn't clear on quit as layers already unloaded by main program!
+        self.clearFilter()
+        # Reset the initialisation
+        self.initialised = False
+        self.dataLoaded = False
         self.dock.unload()
+        self.dock.deleteLater()
 
 
     def run(self, checked):
@@ -136,6 +140,8 @@ class Filter(QObject):
         return self.dock.hasFilterType(filterType)
 
     def applyFilters(self):
+        if not self.initialised:
+            return
         excludeString = ''
         firstInclude = True
         includeString = ''
@@ -200,12 +206,16 @@ class Filter(QObject):
 
 
     def clearFilter(self):
+        if not self.initialised:
+            return
         del self.contextList[:]
         self.applyFilter('')
         self.applySelection('')
 
 
     def applyFilter(self, expression):
+        if not self.initialised:
+            return
         self.project.plan.applyFilter(expression)
 
 

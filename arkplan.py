@@ -249,29 +249,25 @@ class ArkPlan(Plugin):
     # Unload the plugin
     def unload(self):
 
+        # Restore the original QGIS gui
         self.dock.menuAction().setChecked(False)
 
-        # Unload the modules
-        self.filterModule.unload()
-        del self.filterModule
+        # Unload the modules in dependence order
         self.planModule.unload()
-        del self.planModule
+        self.filterModule.unload()
         self.gridModule.unload()
-        del self.gridModule
 
         # Unload the layers
         if self.plan is not None:
             self.plan.unload()
-        del self.plan
         if self.grid is not None:
             self.grid.unload()
-        del self.grid
         if self.base is not None:
             self.base.unload()
-        del self.base
 
+        # Unload this dock and uninitialise
         self.dock.unload()
-        del self.dock
+        self._initialised = False
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkPlan, self).unload()

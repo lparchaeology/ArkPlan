@@ -126,10 +126,17 @@ class Plan(QObject):
             if action.isChecked():
                 action.setChecked(False)
 
+        # Reset the initialisation
+        self.initialised = False
+        self._buffersInitialised = False
+
         # Unload the dock
         self.schematicDock.unload()
+        self.schematicDock.deleteLater()
         self.editDock.unload()
+        self.editDock.deleteLater()
         self.dock.unload()
+        self.dock.deleteLater()
 
     def run(self, checked):
         if checked:

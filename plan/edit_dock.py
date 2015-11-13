@@ -76,6 +76,18 @@ class EditDock(ArkDockWidget):
         self.editDockContents.setLayout(self.verticalLayout)
         self.setWidget(self.editDockContents)
 
+    def unload(self):
+        self.setBufferPoints(None)
+        self.setBufferLines(None)
+        self.setBufferPolygons(None)
+        self.setPlanPoints(None)
+        self.setPlanLines(None)
+        self.setPlanPolygons(None)
+        self.setBasePoints(None)
+        self.setBaseLines(None)
+        self.setBasePolygons(None)
+        super(EditDock, self).unload()
+
     def addAction(self, action):
         self.editToolbar.addAction(action)
 

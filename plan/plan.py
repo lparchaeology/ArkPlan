@@ -167,7 +167,7 @@ class Plan(QObject):
 
         for category in self.project.featureCategories:
             #TODO Select by map tool type enum
-            if category[2] == 'lvl':
+            if category[2] == 'lvl' or category[2] == 'llv':
                 self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
             else:
                 self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])

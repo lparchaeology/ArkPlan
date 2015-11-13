@@ -44,9 +44,10 @@
   <renderer-v2 attr="category" symbollevels="0" type="categorizedSymbol">
     <categories>
       <category render="true" symbol="0" value="lvl" label="Level"/>
-      <category render="true" symbol="1" value="spf" label="Special Find"/>
-      <category render="true" symbol="2" value="sec" label="Section Pin"/>
-      <category render="true" symbol="3" value="" label="UNKNOWN"/>
+      <category render="true" symbol="1" value="llv" label="Lowest Level"/>
+      <category render="true" symbol="2" value="spf" label="Special Find"/>
+      <category render="true" symbol="3" value="sec" label="Section Pin"/>
+      <category render="true" symbol="4" value="" label="UNKNOWN"/>
     </categories>
     <symbols>
       <symbol alpha="1" type="marker" name="0">
@@ -85,6 +86,41 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="marker" name="1">
+        <layer pass="0" class="FontMarker" locked="0">
+          <prop k="angle" v="270"/>
+          <prop k="chr" v="&lt;"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="font" v="Dingbats"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="offset" v="1,-0.3"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="size" v="4"/>
+          <prop k="size_map_unit_scale" v="0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+        <layer pass="1" class="SimpleMarker" locked="0">
+          <prop k="angle" v="270"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="line"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="3.2"/>
+          <prop k="size_map_unit_scale" v="0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="marker" name="2">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,0"/>
@@ -105,7 +141,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" type="marker" name="2">
+      <symbol alpha="1" type="marker" name="3">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="202,117,178,255"/>
@@ -126,7 +162,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" type="marker" name="3">
+      <symbol alpha="1" type="marker" name="4">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="255,0,222,255"/>

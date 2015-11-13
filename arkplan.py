@@ -205,6 +205,7 @@ class ArkPlan(Plugin):
         ['plan', 'cxt', 'tim', 'Timber',                  '', FeatureType.Polygon, False],
         ['plan', 'cxt', 'clk', 'Chalk',                   '', FeatureType.Polygon, False],
         ['plan', 'cxt', 'lvl', 'Level',                   '', FeatureType.Point,   False],
+        ['plan', 'cxt', 'llv', 'Lowest Level',            '', FeatureType.Point,   False],
         ['plan', 'cxt', 'sch', 'Schema',                  '', FeatureType.Polygon, False],
         ['plan', 'sec', 'sec', 'Section Pin',             '', FeatureType.Point,   False],
         ['plan', 'sec', 'sln', 'Section Line',            '', FeatureType.Line,    False],

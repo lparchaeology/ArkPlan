@@ -101,6 +101,10 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.metadataWidget.init(project)
         self.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
+    def unload(self):
+        self.sourceContextSpin.removeEventFilter(self.sourceSpinFilter)
+        super(SchematicDock, self).unload()
+
     # Metadata Tools
 
     def metadata(self):

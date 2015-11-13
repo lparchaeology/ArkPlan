@@ -39,6 +39,7 @@ from select_drawing_dialog import SelectDrawingDialog
 
 from ..filter.filter import FilterType, FilterAction
 from plan_util import *
+from ..config import Config
 from metadata import Metadata, FeatureData
 
 import resources_rc
@@ -167,7 +168,7 @@ class Plan(QObject):
         self.dock.init(self.project)
         self.schematicDock.init(self.project)
 
-        for category in self.project.featureCategories:
+        for category in Config.featureCategories:
             #TODO Select by map tool type enum
             if category[2] == 'lvl' or category[2] == 'llv':
                 self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))

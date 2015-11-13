@@ -29,6 +29,8 @@ from PyQt4.QtGui import QWidget
 import metadata_widget_base
 from metadata import Metadata
 
+from ..config import Config
+
 class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
     _md = Metadata()
@@ -38,9 +40,9 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         self.setupUi(self)
 
     def init(self, project):
-        for sourceCode in project.planSourceCodes:
+        for sourceCode in Config.planSourceCodes:
             self.sourceCodeCombo.addItem(sourceCode[0], sourceCode[1])
-        for sourceClass in project.planSourceClasses:
+        for sourceClass in Config.planSourceClasses:
             self.sourceClassCombo.addItem(sourceClass[0], sourceClass[1])
 
         self._md.siteCodeChanged.connect(self._setSiteCode)

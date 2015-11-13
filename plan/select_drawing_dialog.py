@@ -31,23 +31,17 @@ from PyQt4.QtGui import QDialog, QDialogButtonBox, QAbstractItemView
 from select_drawing_dialog_base import *
 from schematic_dock import ReturnPressedFilter
 
+from ..config import Config
+
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
 
     _dir = None # QDir
     _fileList = []
 
-    #TODO Move to new config or metadata file
-    drawingTypes = [
-        ['Context', 'cxt'],
-        ['Plan', 'pln'],
-        ['Section', 'sec'],
-        ['Matrix', 'mtx'],
-    ]
-
     def __init__(self, drawingPath, siteCode='', parent=None):
         super(SelectDrawingDialog, self).__init__(parent)
         self.setupUi(self)
-        for drawType in self.drawingTypes:
+        for drawType in Config.drawingTypes:
             self.drawingTypeCombo.addItem(drawType[0], drawType[1])
         self.drawingTypeCombo.currentIndexChanged.connect(self._findFiles)
         self.findFilter = ReturnPressedFilter(self)

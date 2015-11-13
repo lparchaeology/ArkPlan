@@ -36,7 +36,7 @@ from ..data_model import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
-from filter_widget import FilterWidget, FilterType
+from filter_widget import FilterWidget, FilterType, FilterAction
 
 import resources_rc
 
@@ -129,9 +129,9 @@ class Filter(QObject):
 
     # Filter methods
 
-    def addFilter(self, filterType, siteCode, classCode, filterRange):
+    def addFilter(self, filterType, siteCode, classCode, filterRange, filterAction):
         self.initialise()
-        return self.dock.addFilter(filterType, siteCode, classCode, filterRange)
+        return self.dock.addFilter(filterType, siteCode, classCode, filterRange, filterAction)
 
     def removeFilter(self, filterIndex):
         self.dock.removeFilter(filterIndex)

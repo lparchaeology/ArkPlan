@@ -35,7 +35,7 @@ from ..georef.georef_dialog import GeorefDialog
 from plan_dock import PlanDock
 from edit_dock import EditDock
 from schematic_dock import SchematicDock, SearchStatus
-from ..filter.filter import FilterType
+from ..filter.filter import FilterType, FilterAction
 from plan_util import *
 from metadata import Metadata, FeatureData
 
@@ -464,8 +464,8 @@ class Plan(QObject):
         if siteCode == '':
             siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()))
-        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()))
+            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
+        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
 
         classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
         idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.context()) + '\''
@@ -498,9 +498,9 @@ class Plan(QObject):
         if siteCode == '':
             siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
+            self._schematicSourceIncludeFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()))
+        self._schematicSourceHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
 
         classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
         idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.sourceContext()) + '\''

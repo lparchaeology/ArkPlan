@@ -107,12 +107,13 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def _exportFilterSetSelected(self):
         self.exportFilterSetSelected.emit(self._currentFilterSetKey(), self._currentFilterSetName())
 
-    def addFilter(self, filterType, siteCode, classCode, filterRange):
+    def addFilter(self, filterType, siteCode, classCode, filterRange, filterAction):
         filterWidget = self._createFilterWidget()
         filterWidget.setFilterType(filterType)
         filterWidget.setSiteCode(siteCode)
         filterWidget.setClassCode(classCode)
         filterWidget.setFilterRange(filterRange)
+        filterWidget.setFilterAction(filterAction)
         return self._addFilter(filterWidget)
 
     def _addNewFilter(self):

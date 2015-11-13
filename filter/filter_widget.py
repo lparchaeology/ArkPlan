@@ -36,6 +36,11 @@ class FilterType():
     ExcludeFilter = 1
     HighlightFilter = 2
 
+class FilterAction():
+    AddFilter = 0
+    RemoveFilter = 1
+    LockFilter = 2
+
 class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
     filterAdded = pyqtSignal()
@@ -44,6 +49,7 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
     _filterIndex = -1
     _filterType = FilterType.IncludeFilter
+    _filterActionStatus = -1
     _siteCode = ''
 
     def __init__(self, parent=None):
@@ -54,14 +60,13 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
         self._addAction = QAction(self._addIcon, 'Add filter', self)
         self._addAction.setStatusTip('Add filter')
         self._addAction.triggered.connect(self._addFilterClicked)
-        self.filterRangeCombo.lineEdit().returnPressed.connect(self._addFilterClicked)
 
         self._removeIcon = QIcon(':/plugins/ArkPlan/filter/removeFilter.svg')
         self._removeAction = QAction(self._removeIcon, 'Remove filter', self)
         self._removeAction.setStatusTip('Remove filter')
         self._removeAction.triggered.connect(self._removeFilterClicked)
 
-        self.filterActionTool.setDefaultAction(self._addAction)
+        self.setFilterAction(FilterAction.AddFilter)
 
         self._includeIcon = QIcon(':/plugins/ArkPlan/filter/includeFilter.png')
         self._includeAction = QAction(self._includeIcon, 'Include', self)
@@ -90,7 +95,7 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
         self._typeMenu.addActions(self._typeActionGroup.actions())
         self.filterTypeTool.setMenu(self._typeMenu)
 
-        self.filterTypeTool.setDefaultAction(self._includeAction)
+        self.setFilterType(FilterType.IncludeFilter)
 
     def toSettings(self, settings):
         settings.setValue('filterType', self.filterType())
@@ -112,6 +117,15 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
 
     def setFilterType(self, filterType):
         self._filterType = filterType
+        if filterType == FilterType.ExcludeFilter:
+            self._excludeAction.setChecked(True)
+            self.filterTypeTool.setDefaultAction(self._excludeAction)
+        elif filterType == FilterType.HighlightFilter:
+            self._highlightAction.setChecked(True)
+            self.filterTypeTool.setDefaultAction(self._highlightAction)
+        else:
+            self._includeAction.setChecked(True)
+            self.filterTypeTool.setDefaultAction(self._includeAction)
 
     def filterType(self):
         return self._filterType
@@ -144,32 +158,47 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
     def clearFilterRange(self):
         self.filterRangeCombo.clearEditText()
 
+    def setFilterAction(self, action):
+        if self._filterActionStatus == FilterAction.AddFilter:
+            self.filterRangeCombo.lineEdit().returnPressed.disconnect(self._addFilterClicked)
+        elif self._filterActionStatus == FilterAction.RemoveFilter:
+            self.filterRangeCombo.lineEdit().editingFinished.disconnect(self._filterRangeChanged)
+        self._filterActionStatus = action
+        if action == FilterAction.LockFilter:
+            self.filterActionTool.removeAction(self._addAction)
+            self.filterActionTool.setDefaultAction(self._removeAction)
+            self.setEnabled(False)
+        elif action == FilterAction.RemoveFilter:
+            self.filterActionTool.removeAction(self._addAction)
+            self.filterActionTool.setDefaultAction(self._removeAction)
+            self.filterRangeCombo.lineEdit().editingFinished.connect(self._filterRangeChanged)
+            self.setEnabled(True)
+        else:
+            self.filterActionTool.removeAction(self._removeAction)
+            self.filterActionTool.setDefaultAction(self._addAction)
+            self.filterRangeCombo.lineEdit().returnPressed.connect(self._addFilterClicked)
+            self.setEnabled(True)
+
     def _normaliseRange(self, text):
         return text.replace(' - ', '-').replace(',', ' ').strip()
 
     def _addFilterClicked(self):
-        self.filterActionTool.removeAction(self._addAction)
-        self.filterActionTool.setDefaultAction(self._removeAction)
+        self.setFilterAction(FilterAction.RemoveFilter)
         self.filterAdded.emit()
-        self.filterRangeCombo.lineEdit().returnPressed.disconnect(self._addFilterClicked)
-        self.filterRangeCombo.lineEdit().editingFinished.connect(self._filterRangeChanged)
 
     def _removeFilterClicked(self):
         self.filterRemoved.emit(self._filterIndex)
 
     def _includeFilterChecked(self):
-        self._filterType = FilterType.IncludeFilter
-        self.filterTypeTool.setDefaultAction(self._includeAction)
+        self.setFilterType(FilterType.IncludeFilter)
         self.filterChanged.emit(self._filterIndex)
 
     def _excludeFilterChecked(self):
-        self._filterType = FilterType.ExcludeFilter
-        self.filterTypeTool.setDefaultAction(self._excludeAction)
+        self.setFilterType(FilterType.ExcludeFilter)
         self.filterChanged.emit(self._filterIndex)
 
     def _highlightFilterChecked(self):
-        self._filterType = FilterType.HighlightFilter
-        self.filterTypeTool.setDefaultAction(self._highlightAction)
+        self.setFilterType(FilterType.HighlightFilter)
         self.filterChanged.emit(self._filterIndex)
 
     def _filterRangeChanged(self):

@@ -115,6 +115,7 @@ class Plan(QObject):
         self.schematicDock.resetSelected.connect(self._resetSchematic)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
+        self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
         self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
 

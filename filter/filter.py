@@ -23,7 +23,7 @@
 """
 import re
 
-from PyQt4.QtCore import Qt, QObject, QRegExp, QSettings
+from PyQt4.QtCore import Qt, QObject, QRegExp, QSettings, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
 from qgis.core import *
@@ -41,6 +41,8 @@ from filter_widget import FilterWidget, FilterType, FilterAction
 import resources_rc
 
 class Filter(QObject):
+
+    filterSetCleared = pyqtSignal()
 
     project = None # Project()
     data = None  # DataManager()
@@ -74,7 +76,8 @@ class Filter(QObject):
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.buildSelectionSelected.connect(self.buildSelection)
-        self.dock.clearFilterSelected.connect(self.clearFilter)
+        self.dock.clearFilterSelected.connect(self.clearFilterSet)
+        self.dock.clearFilterSelected.connect(self.filterSetCleared)
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
@@ -93,7 +96,7 @@ class Filter(QObject):
     def unload(self):
         self.saveFilterSet()
         #FIXME Doesn't clear on quit as layers already unloaded by main program!
-        self.clearFilter()
+        self.clearFilterSet()
         # Reset the initialisation
         self.initialised = False
         self.dataLoaded = False
@@ -205,7 +208,7 @@ class Filter(QObject):
         self.dock.displayFilter(self.project.plan.filter)
 
 
-    def clearFilter(self):
+    def clearFilterSet(self):
         if not self.initialised:
             return
         del self.contextList[:]

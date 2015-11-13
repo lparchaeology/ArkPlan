@@ -35,6 +35,8 @@ from ..georef.georef_dialog import GeorefDialog
 from plan_dock import PlanDock
 from edit_dock import EditDock
 from schematic_dock import SchematicDock, SearchStatus
+from select_drawing_dialog import SelectDrawingDialog
+
 from ..filter.filter import FilterType, FilterAction
 from plan_util import *
 from metadata import Metadata, FeatureData
@@ -224,18 +226,18 @@ class Plan(QObject):
             self.dock.setFeatureId(pmd.sourceId)
 
     def _loadRawPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Raw Drawing'), self.project.rawPlanPath(),
-                                                       self.tr('Image Files (*.png *.tif *.tiff)')))
-        if fileName:
-            self.georeferencePlan(QFileInfo(fileName))
+        dialog = SelectDrawingDialog(self.project.rawPlanPath(), self.project.siteCode())
+        if (dialog.exec_()):
+            for filePath in dialog.selectedFiles():
+                self.georeferencePlan(QFileInfo(filePath))
 
     def _loadGeoPlan(self):
-        fileName = unicode(QFileDialog.getOpenFileName(None, self.tr('Load Georeferenced Drawing'), self.project.processedPlanPath(),
-                                                       self.tr('GeoTiff Files (*.tif *.tiff)')))
-        if fileName:
-            geoFile = QFileInfo(fileName)
-            self._setPlanMetadata(PlanMetadata(geoFile))
-            self.project.loadGeoLayer(geoFile)
+        dialog = SelectDrawingDialog(self.project.processedPlanPath(), self.project.siteCode())
+        if (dialog.exec_()):
+            for filePath in dialog.selectedFiles():
+                geoFile = QFileInfo(filePath)
+                self._setPlanMetadata(PlanMetadata(geoFile))
+                self.project.loadGeoLayer(geoFile)
 
     def _loadContextPlans(self):
         context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)

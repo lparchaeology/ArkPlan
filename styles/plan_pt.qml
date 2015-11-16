@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.8.3-Wien" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.8.3-Wien" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="ste_cd">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
@@ -251,7 +251,7 @@
     <property key="labeling/distMapUnitMaxScale" value="0"/>
     <property key="labeling/distMapUnitMinScale" value="0"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="CASE&#xa;    WHEN &quot;category&quot; = 'lvl' THEN format_number(&quot;elevation&quot;,2)&#xa;    WHEN &quot;category&quot; ='sec' THEN format_number(&quot;elevation&quot;,2)&#xa;    WHEN &quot;category&quot; ='spf' THEN  &quot;item_no&quot;&#xa;    WHEN &quot;name&quot; IS NOT NULL THEN &quot;name&quot;&#xa;&#x9;ELSE ' ' &#xa;END"/>
+    <property key="labeling/fieldName" value="CASE&#xa;    WHEN &quot;category&quot; = 'lvl' THEN format_number(&quot;elevation&quot;,2)&#xa;    WHEN &quot;category&quot; = 'llv' THEN format_number(&quot;elevation&quot;,2)&#xa;    WHEN &quot;category&quot; ='sec' THEN format_number(&quot;elevation&quot;,2)&#xa;    WHEN &quot;category&quot; ='spf' THEN  &quot;item_no&quot;&#xa;    WHEN &quot;name&quot; IS NOT NULL THEN &quot;name&quot;&#xa;&#x9;ELSE ' ' &#xa;END"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="Gill Sans"/>

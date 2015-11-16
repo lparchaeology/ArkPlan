@@ -21,8 +21,6 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
@@ -69,9 +67,9 @@ class ArkPlan(Plugin):
     # Private settings
     _initialised = False
 
-    def __init__(self, iface):
+    def __init__(self, iface, pluginPath):
         super(ArkPlan, self).__init__(iface, u'ArkPlan', ':/plugins/ArkPlan/icon.png',
-                                       os.path.dirname(__file__), Plugin.PluginsMenu)
+                                       pluginPath, Plugin.PluginsMenu)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ArkPlan'))
 
@@ -399,9 +397,6 @@ class ArkPlan(Plugin):
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
 
-    def setUseCustomStyles(self, useCustomStyles):
-        self.writeEntry('useCustomStyles', useCustomStyles)
-
     def styleDir(self):
         return QDir(self.stylePath())
 
@@ -411,8 +406,12 @@ class ArkPlan(Plugin):
             return self.pluginPath + '/styles'
         return path
 
-    def setStylePath(self, absolutePath):
-        self.writeEntry('stylePath', absolutePath)
+    def setStylePath(self, useCustomStyles, absolutePath):
+        self.writeEntry('useCustomStyles', useCustomStyles)
+        if useCustomStyles:
+            self.writeEntry('stylePath', absolutePath)
+        else:
+            self.writeEntry('stylePath', '')
 
 
     # Group settings

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'settings_dialog_base.ui'
+# Form implementation generated from reading ui file 'src/settings_dialog_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -347,7 +347,7 @@ class Ui_SettingsDialogBase(object):
         self.georefFolderLabel.setBuddy(self.georefFolderCheck)
 
         self.retranslateUi(SettingsDialogBase)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), SettingsDialogBase.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), SettingsDialogBase.reject)
         QtCore.QObject.connect(self.gridFolderCheck, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.gridFolderEdit.setEnabled)

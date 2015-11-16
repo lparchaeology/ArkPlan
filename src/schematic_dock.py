@@ -33,7 +33,8 @@ from qgis.core import QgsMessageLog
 from ..libarkqgis.dock import ArkDockWidget
 
 import schematic_dock_base
-import resources_rc
+
+from ..resources_rc import *
 
 class SearchStatus():
 

@@ -30,19 +30,20 @@ from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
 from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
 
-from .libarkqgis.plugin import Plugin
-from .libarkqgis.layercollection import *
-from .libarkqgis import utils, layers
+from ..libarkqgis.plugin import Plugin
+from ..libarkqgis.layercollection import *
+from ..libarkqgis import utils, layers
 
-from .grid.grid import GridModule
-from .plan.plan import Plan
-from .filter.filter import Filter
+from ..grid.grid import GridModule
+
+from plan import Plan
+from filter import Filter
 
 from config import Config
 from arkplan_dock import ArkPlanDock
 from settings_dialog import SettingsDialog
 
-import resources_rc
+from ..resources_rc import *
 
 class ArkPlan(Plugin):
     """QGIS Plugin Implementation."""

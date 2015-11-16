@@ -31,5 +31,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .arkplan import ArkPlan
+    from .src.arkplan import ArkPlan
     return ArkPlan(iface)

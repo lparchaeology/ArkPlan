@@ -28,7 +28,7 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar
 
 from qgis.gui import QgsLayerTreeView
 
-from .libarkqgis.dock import ArkDockWidget
+from ..libarkqgis.dock import ArkDockWidget
 
 class ArkPlanDock(ArkDockWidget):
 

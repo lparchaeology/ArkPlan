@@ -31,14 +31,13 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 
-from ..data_model import *
-
+from data_model import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_widget import FilterWidget, FilterType, FilterAction
 
-import resources_rc
+from ..resources_rc import *
 
 class Filter(QObject):
 

@@ -4,4 +4,30 @@
     <file alias="settings.svg">resources/settings.svg</file>
     <file>icon.png</file>
   </qresource>
+  <qresource prefix="/plugins/ArkPlan/plan">
+    <file alias="drawPlans.png">resources/draw-freehand.png</file>
+    <file alias="checkSchematic.png">resources/task-delegate.png</file>
+    <file alias="editingTools.png">resources/document-edit.png</file>
+    <file alias="statusNotFound.png">resources/user-busy.png</file>
+    <file alias="statusUnknown.png">resources/user-offline.png</file>
+    <file alias="statusFound.png">resources/user-online.png</file>
+  </qresource>
+  <qresource prefix="/plugins/ArkPlan/filter">
+    <file alias="filter.png">resources/view-filter.png</file>
+    <file alias="identify.png">resources/edit-node.png</file>
+    <file alias="buildFilter.svg">resources/mIconExpressionEditorOpen.svg</file>
+    <file alias="buildSelection.svg">resources/mIconExpressionSelect.svg</file>
+    <file alias="loadData.png">resources/mIconDbSchema.png</file>
+    <file alias="viewData.png">resources/mActionOpenTable.png</file>
+    <file alias="zoomToFilterSet.svg">resources/mActionZoomToSelected.svg</file>
+    <file alias="exportFilterSet.png">resources/mActionCreateMemory.png</file>
+    <file alias="refreshFilterSet.png">resources/mActionRefresh.png</file>
+    <file alias="saveFilterSet.png">resources/document-save.png</file>
+    <file alias="deleteFilterSet.svg">resources/mActionDeleteSelected.svg</file>
+    <file alias="includeFilter.png">resources/list-add.png</file>
+    <file alias="excludeFilter.png">resources/list-remove.png</file>
+    <file alias="highlightFilter.svg">resources/mIconSelected.svg</file>
+    <file alias="addFilter.svg">resources/mActionAdd.svg</file>
+    <file alias="removeFilter.svg">resources/mActionRemove.svg</file>
+  </qresource>
 </RCC>

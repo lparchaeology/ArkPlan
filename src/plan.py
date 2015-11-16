@@ -37,12 +37,12 @@ from edit_dock import EditDock
 from schematic_dock import SchematicDock, SearchStatus
 from select_drawing_dialog import SelectDrawingDialog
 
-from ..filter.filter import FilterType, FilterAction
+from filter import FilterType, FilterAction
 from plan_util import *
-from ..config import Config
+from config import Config
 from metadata import Metadata, FeatureData
 
-import resources_rc
+from ..resources_rc import *
 
 def _quote(string):
     return "'" + string + "'"

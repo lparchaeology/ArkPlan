@@ -29,7 +29,7 @@ from PyQt4 import QtGui, uic
 
 from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer, QgsMessageLog
 
-from ..plan.plan_util import *
+from ..src.plan_util import *
 
 import georef_dialog_base
 import georef_graphics_view

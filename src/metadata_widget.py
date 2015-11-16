@@ -28,8 +28,7 @@ from PyQt4.QtGui import QWidget
 
 import metadata_widget_base
 from metadata import Metadata
-
-from ..config import Config
+from config import Config
 
 class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 

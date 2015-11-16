@@ -25,7 +25,7 @@ from PyQt4.QtCore import QVariant
 
 from qgis.core import QgsField
 
-from libarkqgis.map_tools import FeatureType
+from ..libarkqgis.map_tools import FeatureType
 
 class Config():
 

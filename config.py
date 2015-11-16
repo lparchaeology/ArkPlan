@@ -30,7 +30,6 @@ from libarkqgis.map_tools import FeatureType
 class Config():
 
     projectGroupName = 'Ark'
-    planGroupName = 'Context Plans'
 
     # Field deafults to use if *not* using ARK DB, so as not to confuse normal users
     fieldDefaults = {
@@ -74,10 +73,10 @@ class Config():
         'created_by': QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By')
     }
 
-    moduleDefaults = {
+    groupDefaults = {
         'plan' : {
             'path'             : '',
-            'pathSuffix'       : 'vectors/plan',
+            'pathSuffix'       : 'vector/plan',
             'layersGroupName'  : 'Plan Data',
             'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
@@ -93,7 +92,7 @@ class Config():
         },
         'grid' : {
             'path'             : '',
-            'pathSuffix'       : 'vectors/grid',
+            'pathSuffix'       : 'vector/grid',
             'layersGroupName'  : 'Grid',
             'buffersGroupName' : '',
             'bufferSuffix'     : '',
@@ -109,7 +108,7 @@ class Config():
         },
         'base' : {
             'path'             : '',
-            'pathSuffix'       : 'vectors/base',
+            'pathSuffix'       : 'vector/base',
             'layersGroupName'  : 'Base Data',
             'buffersGroupName' : 'Edit Data',
             'bufferSuffix'     : '_mem',
@@ -123,11 +122,27 @@ class Config():
             'linesFields'      : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
         },
-        'planRaster' : {
+        'cxt' : {
+            'class'            : 'cxt',
+            'label'            : 'Context',
             'path'             : '',
-            'pathSuffix'       : 'plans',
-            'layersGroupName'  : 'Context Plans'
-        }
+            'pathSuffix'       : 'raster/context',
+            'layersGroupName'  : 'Drawings'
+        },
+        'pln' : {
+            'class'            : 'pln',
+            'label'            : 'Plan',
+            'path'             : '',
+            'pathSuffix'       : 'raster/plan',
+            'layersGroupName'  : 'Drawings'
+        },
+        'sec' : {
+            'class'            : 'sec',
+            'label'            : 'Section',
+            'path'             : '',
+            'pathSuffix'       : 'raster/section',
+            'layersGroupName'  : 'Drawings'
+        },
     }
 
     planSourceCodes = [
@@ -147,29 +162,7 @@ class Config():
         ['Find',    'rgf']
     ]
 
-    drawingTypes = {
-        'cxt' : {
-            'code'             : 'cxt',
-            'class'            : 'cxt',
-            'label'            : 'Context',
-            'pathSuffix'       : 'context',
-            'layersGroupName'  : 'Drawings'
-        }
-        'pln' : {
-            'code'             : 'pln',
-            'class'            : 'pln',
-            'label'            : 'Plan',
-            'pathSuffix'       : 'plan',
-            'layersGroupName'  : 'Drawings'
-        }
-        'sec' : {
-            'code'             : 'sec',
-            'class'            : 'sec',
-            'label'            : 'Section',
-            'pathSuffix'       : 'section',
-            'layersGroupName'  : 'Drawings'
-        }
-    }
+    drawingTypes = ['cxt', 'pln']
 
     featureCategories = [
         # collection, classCode, category, toolName, icon, featureType, definitiveFeature

@@ -43,20 +43,22 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.projectFolderButton.clicked.connect(self._selectProjectFolder)
         self.multiSiteCheck.setChecked(project.multiSiteProject())
         self.siteCodeEdit.setText(project.siteCode())
-        self.prependSiteCodeCheck.setChecked(project.prependSiteCode())
+        self.styleFolderCheck.setChecked(project.useCustomStyles())
         if project.useCustomStyles():
-            self.defaultStylesCheck.setChecked(False)
-            self.styleFolderEdit.setText(project.stylePath())
             self.styleFolderEdit.setEnabled(True)
             self.styleFolderButton.setEnabled(True)
-        self.defaultStylesCheck.toggled.connect(self._toggleDefaultStyle)
+        self.styleFolderCheck.toggled.connect(self._toggleDefaultStyle)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
         self.useArkCheck.setChecked(project.useArkDB())
         if project.isConfigured():
             self.useArkCheck.setEnabled(False)
 
         # Grid tab settings
-        self.gridFolderEdit.setText(project.modulePath('grid'))
+        self.gridFolderCheck.setChecked(project.useCustomPath('grid'))
+        if project.useCustomPath('grid'):
+            self.gridFolderEdit.setEnabled(True)
+            self.gridFolderButton.setEnabled(True)
+        self.gridFolderEdit.setText(project.groupPath('grid'))
         self.gridFolderButton.clicked.connect(self._selectGridFolder)
         self.gridGroupNameEdit.setText(project.layersGroupName('grid'))
         self.gridPointsNameEdit.setText(project.pointsBaseName('grid'))
@@ -64,7 +66,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.gridPolygonsNameEdit.setText(project.polygonsBaseName('grid'))
 
         # Base tab settings
-        self.baseFolderEdit.setText(project.modulePath('base'))
+        self.baseFolderCheck.setChecked(project.useCustomPath('base'))
+        if project.useCustomPath('base'):
+            self.baseFolderEdit.setEnabled(True)
+            self.baseFolderButton.setEnabled(True)
+        self.baseFolderEdit.setText(project.groupPath('base'))
         self.baseFolderButton.clicked.connect(self._selectBaseFolder)
         self.baseGroupNameEdit.setText(project.layersGroupName('base'))
         self.basePointsNameEdit.setText(project.pointsBaseName('base'))
@@ -72,52 +78,72 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.basePolygonsNameEdit.setText(project.polygonsBaseName('base'))
 
         # Plan tab settings
-        self.planVectorFolderEdit.setText(project.modulePath('plan'))
-        self.planVectorFolderButton.clicked.connect(self._selectPlanFolder)
-        self.planGroupNameEdit.setText(project.layersGroupName('plan'))
+        self.planDataFolderCheck.setChecked(project.useCustomPath('plan'))
+        if project.useCustomPath('plan'):
+            self.planFolderEdit.setEnabled(True)
+            self.planFolderButton.setEnabled(True)
+        self.planDataFolderEdit.setText(project.groupPath('plan'))
+        self.planDataFolderButton.clicked.connect(self._selectPlanFolder)
+        self.planDataGroupNameEdit.setText(project.layersGroupName('plan'))
         self.planBufferGroupNameEdit.setText(project.buffersGroupName('plan'))
         self.planPointsNameEdit.setText(project.pointsBaseName('plan'))
         self.planLinesNameEdit.setText(project.linesBaseName('plan'))
         self.planPolygonsNameEdit.setText(project.polygonsBaseName('plan'))
-        self.planRasterFolderEdit.setText(project.planRasterPath())
-        self.planRasterFolderButton.clicked.connect(self._selectPlanRasterFolder)
-        self.separateGeorefFolderCheck.setChecked(project.separateProcessedPlanFolder())
-        self.planTransparencySpin.setValue(project.planTransparency())
+
+        # Drawings tab settings
+        self.drawingGroupNameEdit.setText(project.layersGroupName('cxt'))
+        self.drawingTransparencySpin.setValue(project.drawingTransparency())
+        self.georefFolderCheck.setChecked(project.useGeorefFolder())
+        self.contextDrawingFolderCheck.setChecked(project.useCustomPath('cxt'))
+        if project.useCustomPath('cxt'):
+            self.contextDrawingFolderEdit.setEnabled(True)
+            self.contextDrawingFolderButton.setEnabled(True)
+        self.contextDrawingFolderEdit.setText(project.groupPath('cxt'))
+        self.contextDrawingFolderButton.clicked.connect(self._selectContextDrawingFolder)
+        if project.useCustomPath('pln'):
+            self.planDrawingFolderEdit.setEnabled(True)
+            self.planDrawingFolderButton.setEnabled(True)
+        self.planDrawingFolderEdit.setText(project.groupPath('pln'))
+        self.planDrawingFolderButton.clicked.connect(self._selectPlanDrawingFolder)
 
     def accept(self):
         # Project tab settings
         self._project.setProjectPath(self.projectFolderEdit.text())
         self._project.setMultiSiteProject(self.multiSiteCheck.isChecked())
         self._project.setSiteCode(self.siteCodeEdit.text())
-        self._project.setPrependSiteCode(self.prependSiteCodeCheck.isChecked())
         self._project.setUseCustomStyles(self.styleFolderEdit.text() != '')
         self._project.setStylePath(self.styleFolderEdit.text())
         self._project.setUseArkDB(self.useArkCheck.isChecked())
 
         # Grid tab settings
-        self._project.setModulePath('grid', self.gridFolderEdit.text())
+        self._project.setGroupPath('grid', self.gridFolderCheck.isChecked(), self.gridFolderEdit.text())
         self._project.setLayersGroupName('grid', self.gridGroupNameEdit.text())
         self._project.setPointsBaseName('grid', self.gridPointsNameEdit.text())
         self._project.setLinesBaseName('grid', self.gridLinesNameEdit.text())
         self._project.setPolygonsBaseName('grid', self.gridPolygonsNameEdit.text())
 
         # Base tab settings
-        self._project.setModulePath('base', self.baseFolderEdit.text())
+        self._project.setGroupPath('base', self.baseFolderCheck.isChecked(), self.baseFolderEdit.text())
         self._project.setLayersGroupName('base', self.baseGroupNameEdit.text())
         self._project.setPointsBaseName('base', self.basePointsNameEdit.text())
         self._project.setLinesBaseName('base', self.baseLinesNameEdit.text())
         self._project.setPolygonsBaseName('base', self.basePolygonsNameEdit.text())
 
         # Plan tab settings
-        self._project.setModulePath('plan', self.planVectorFolderEdit.text())
-        self._project.setLayersGroupName('plan', self.planGroupNameEdit.text())
+        self._project.setGroupPath('plan', self.planDataFolderCheck.isChecked(), self.planDataFolderEdit.text())
+        self._project.setLayersGroupName('plan', self.planDataGroupNameEdit.text())
         self._project.setBuffersGroupName('plan', self.planBufferGroupNameEdit.text())
         self._project.setPointsBaseName('plan', self.planPointsNameEdit.text())
         self._project.setLinesBaseName('plan', self.planLinesNameEdit.text())
         self._project.setPolygonsBaseName('plan', self.planPolygonsNameEdit.text())
-        self._project.setPlanRasterPath(self.planRasterFolderEdit.text())
-        self._project.setSeparateProcessedPlanFolder(self.separateGeorefFolderCheck.isChecked())
-        self._project.setPlanTransparency(self.planTransparencySpin.value())
+
+        # Drawings tab settings
+        self._project.setGroupPath('cxt', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
+        self._project.setLayersGroupName('cxt', self.drawingGroupNameEdit.text())
+        self._project.setGroupPath('pln', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
+        self._project.setLayersGroupName('pln', self.drawingGroupNameEdit.text())
+        self._project.setUseGeorefFolder(self.georefFolderCheck.isChecked())
+        self._project.setDrawingTransparency(self.drawingTransparencySpin.value())
 
         return super(SettingsDialog, self).accept()
 
@@ -148,12 +174,17 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
             self.styleFolderEdit.setText(folderName)
 
     def _selectPlanFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Data Folder'), self.planVectorFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Data Folder'), self.planDataFolderEdit.text()))
         if folderName:
-            self.planVectorFolderEdit.setText(folderName)
+            self.planDataFolderEdit.setText(folderName)
 
-    def _selectPlanRasterFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Image Folder'), self.planRasterFolderEdit.text()))
+    def _selectContextDrawingFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Context Drawing Folder'), self.contextDrawingFolderEdit.text()))
         if folderName:
-            self.planRasterFolderEdit.setText(folderName)
+            self.contextDrawingFolderEdit.setText(folderName)
+
+    def _selectPlanDrawingFolder(self):
+        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Drawing Folder'), self.planDrawingFolderEdit.text()))
+        if folderName:
+            self.planDrawingFolderEdit.setText(folderName)
 

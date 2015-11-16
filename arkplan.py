@@ -146,9 +146,19 @@ class ArkPlan(Plugin):
         if self.isConfigured():
             return
         # TODO more validation, check if files exist, etc
-        if (self.showSettingsDialog() and self.siteCode() and self.projectDir().mkpath('.') and self.siteCode() and
-            self.planRasterDir().mkpath('.') and self.planRasterDir().mkpath('.') and self.processedPlanDir().mkpath('.') and self.rawPlanDir().mkpath('.') and
-            self.moduleDir('grid').mkpath('.') and self.moduleDir('plan').mkpath('.') and self.moduleDir('base').mkpath('.')):
+        if (self.showSettingsDialog()
+            and self.siteCode()
+            and self.projectDir().mkpath('.')
+            and self.siteCode()
+            and self.groupDir('cxt').mkpath('.')
+            and self.rawDrawingDir('cxt').mkpath('.')
+            and self.georefDrawingDir('cxt').mkpath('.')
+            and self.groupDir('pln').mkpath('.')
+            and self.rawDrawingDir('pln').mkpath('.')
+            and self.georefDrawingDir('pln').mkpath('.')
+            and self.groupDir('grid').mkpath('.')
+            and self.groupDir('plan').mkpath('.')
+            and self.groupDir('base').mkpath('.')):
             self._setIsConfigured(True)
         else:
             self._setIsConfigured(False)
@@ -236,17 +246,17 @@ class ArkPlan(Plugin):
             self.projectGroupIndex = newIndex
 
     def _layerName(self, baseName):
-        if (baseName and self.prependSiteCode() and self.siteCode()):
+        if (baseName and not self.multiSiteProject() and self.siteCode()):
             return self.siteCode() + '_' + baseName
-        return baseName
+        return 'ark_' + baseName
 
     def loadGeoLayer(self, geoFile):
         #TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self.planTransparency()/100.0)
+        self.geoLayer.renderer().setOpacity(self.drawingTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.createLayerGroup(self.iface, Config.planGroupName, Config.projectGroupName)
+            self.planGroupIndex = layers.createLayerGroup(self.iface, self.layersGroupName('cxt'), Config.projectGroupName)
         self.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         self.mapCanvas().setExtent(self.geoLayer.extent())
 
@@ -273,54 +283,54 @@ class ArkPlan(Plugin):
         # If we didn't find that then something is wrong!
         return ''
 
-    def _createCollection(self, module):
-        path = self.modulePath(module)
+    def _createCollection(self, collection):
+        path = self.groupPath(collection)
         lcs = LayerCollectionSettings()
-        lcs.collectionGroupName = self.layersGroupName(module)
+        lcs.collectionGroupName = self.layersGroupName(collection)
         lcs.parentGroupName = Config.projectGroupName
-        lcs.buffersGroupName = self.buffersGroupName(module)
-        lcs.bufferSuffix = self._moduleDefault(module, 'bufferSuffix')
-        layerName = self.pointsLayerName(module)
+        lcs.buffersGroupName = self.buffersGroupName(collection)
+        lcs.bufferSuffix = self._groupDefault(collection, 'bufferSuffix')
+        layerName = self.pointsLayerName(collection)
         if layerName:
             lcs.pointsLayerProvider = 'ogr'
-            lcs.pointsLayerLabel = self._moduleDefault(module, 'pointsLabel')
+            lcs.pointsLayerLabel = self._groupDefault(collection, 'pointsLabel')
             lcs.pointsLayerName = layerName
             lcs.pointsLayerPath = self._shapeFile(path, layerName)
-            lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(module), self.pointsBaseNameDefault(module))
-        layerName = self.linesLayerName(module)
+            lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(collection), self.pointsBaseNameDefault(collection))
+        layerName = self.linesLayerName(collection)
         if layerName:
             lcs.linesLayerProvider = 'ogr'
-            lcs.linesLayerLabel = self._moduleDefault(module, 'linesLabel')
+            lcs.linesLayerLabel = self._groupDefault(collection, 'linesLabel')
             lcs.linesLayerName = layerName
             lcs.linesLayerPath = self._shapeFile(path, layerName)
-            lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(module), self.linesBaseNameDefault(module))
-        layerName = self.polygonsLayerName(module)
+            lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(collection), self.linesBaseNameDefault(collection))
+        layerName = self.polygonsLayerName(collection)
         if layerName:
             lcs.polygonsLayerProvider = 'ogr'
-            lcs.poolygonsLayerLabel = self._moduleDefault(module, 'polygonsLabel')
+            lcs.poolygonsLayerLabel = self._groupDefault(collection, 'polygonsLabel')
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
-            lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(module), self.polygonsBaseNameDefault(module))
+            lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(collection), self.polygonsBaseNameDefault(collection))
         return LayerCollection(self.iface, lcs)
 
-    def _createCollectionLayers(self, module, settings):
+    def _createCollectionLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
-    def _createCollectionMultiLayers(self, module, settings):
+    def _createCollectionMultiLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(module, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(module, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(module, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
-    def _layerFields(self, module, fieldsKey):
-        fieldKeys = self._moduleDefault(module, fieldsKey)
+    def _layerFields(self, collection, fieldsKey):
+        fieldKeys = self._groupDefault(collection, fieldsKey)
         fields = QgsFields()
         for fieldKey in fieldKeys:
             fields.append(self.field(fieldKey))
@@ -385,12 +395,6 @@ class ArkPlan(Plugin):
     def setSiteCode(self, siteCode):
         self.writeEntry('siteCode', siteCode)
 
-    def prependSiteCode(self):
-        return self.readBoolEntry('prependSiteCode', True)
-
-    def setPrependSiteCode(self, prepend):
-        self.writeEntry('prependSiteCode', prepend)
-
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
 
@@ -410,147 +414,139 @@ class ArkPlan(Plugin):
         self.writeEntry('stylePath', absolutePath)
 
 
-    # Module settings
+    # Group settings
 
-    def _moduleDefault(self, module, key):
-        return Config.moduleDefaults[module][key]
+    def _groupDefault(self, group, key):
+        return Config.groupDefaults[group][key]
 
-    def _moduleEntry(self, module, key, default=None):
+    def _groupEntry(self, group, key, default=None):
         if default is None:
-            return self.readEntry(module + '/' + key, self._moduleDefault(module, key))
-        return self.readEntry(module + '/' + key, default)
+            default = self._groupDefault(group, key)
+        return self.readEntry(group + '/' + key, default)
 
-    def _moduleBoolEntry(self, module, key, default=None):
+    def _groupBoolEntry(self, group, key, default=None):
         if default is None:
-            return self.readBoolEntry(module + '/' + key, self._moduleDefault(module, key))
-        return self.readBoolEntry(module + '/' + key, default)
+            default = self._groupDefault(group, key)
+        return self.readBoolEntry(group + '/' + key, default)
 
-    def _setModuleEntry(self, module, key, value, default=None):
+    def _setGroupEntry(self, group, key, value, default=None):
         if default is None:
-            self.setEntry(module + '/' + key, value, self._moduleDefault(module, key))
-        self.setEntry(module + '/' + key, value, default)
+            default = self._groupDefault(group, key)
+        self.setEntry(group + '/' + key, value, default)
 
-    def moduleDir(self, module):
-        return QDir(self.modulePath(module))
+    def groupDir(self, group):
+        return QDir(self.groupPath(group))
 
-    def modulePath(self, module):
-        path =  self._moduleEntry(module, 'path')
+    def groupPath(self, group):
+        path =  self._groupEntry(group, 'path')
         if (not path):
-            return self.modulePathDefault(module)
+            return self.groupPathDefault(group)
         return path
 
-    def modulePathDefault(self, module):
-        path = self._moduleDefault(module, 'path')
+    def groupPathDefault(self, group):
+        path = self._groupDefault(group, 'path')
         if not path:
             path = self.projectPath()
-            suffix = self._moduleDefault(module, 'pathSuffix')
+            suffix = self._groupDefault(group, 'pathSuffix')
             if path and suffix:
                 path = path + '/' + suffix
         return path
 
-    def setModulePath(self, module, absolutePath):
-        self._setModuleEntry(module, 'path', absolutePath)
+    def setGroupPath(self, group, useCustomFolder, absolutePath):
+        self._setGroupEntry(group, 'useCustomFolder', useCustomFolder, False)
+        if useCustomFolder:
+            self._setGroupEntry(group, 'path', absolutePath)
+        else:
+            self._setGroupEntry(group, 'path', '')
 
-    def useCustomModulePath(self, module):
-        return self._moduleBoolEntry(module, 'useCustomPath', False)
+    def useCustomPath(self, group):
+        return self._groupBoolEntry(group, 'useCustomPath', False)
 
-    def setUseCustomModulePath(self, module, useCustomPath):
-        self._setModuleEntry(module, 'useCustomPath', useCustomPath)
+    def layersGroupName(self, group):
+        return self._groupEntry(group, 'layersGroupName')
 
-    def layersGroupName(self, module):
-        return self._moduleEntry(module, 'layersGroupName')
+    def setLayersGroupName(self, group, layersGroupName):
+        self._setGroupEntry(group, 'layersGroupName', layersGroupName)
 
-    def setLayersGroupName(self, module, layersGroupName):
-        self._setModuleEntry(module, 'layersGroupName', layersGroupName)
+    # Vector Collection settings
 
-    def buffersGroupName(self, module):
-        return self._moduleEntry(module, 'buffersGroupName')
+    def buffersGroupName(self, collection):
+        return self._groupEntry(collection, 'buffersGroupName')
 
-    def setBuffersGroupName(self, module, buffersGroupName):
-        self._setModuleEntry(module, 'buffersGroupName', buffersGroupName)
+    def setBuffersGroupName(self, collection, buffersGroupName):
+        self._setGroupEntry(collection, 'buffersGroupName', buffersGroupName)
 
-    def pointsBaseNameDefault(self, module):
-        return self._moduleDefault(module, 'pointsBaseName')
+    def pointsBaseNameDefault(self, collection):
+        return self._groupDefault(collection, 'pointsBaseName')
 
-    def pointsBaseName(self, module):
-        return self._moduleEntry(module, 'pointsBaseName')
+    def pointsBaseName(self, collection):
+        return self._groupEntry(collection, 'pointsBaseName')
 
-    def setPointsBaseName(self, module, pointsBaseName):
-        self._setModuleEntry(module, 'pointsBaseName', pointsBaseName)
+    def setPointsBaseName(self, collection, pointsBaseName):
+        self._setGroupEntry(collection, 'pointsBaseName', pointsBaseName)
 
-    def pointsLayerName(self, module):
-        return self._layerName(self.pointsBaseName(module))
+    def pointsLayerName(self, collection):
+        return self._layerName(self.pointsBaseName(collection))
 
-    def linesBaseNameDefault(self, module):
-        return self._moduleDefault(module, 'linesBaseName')
+    def linesBaseNameDefault(self, collection):
+        return self._groupDefault(collection, 'linesBaseName')
 
-    def linesBaseName(self, module):
-        return self._moduleEntry(module, 'linesBaseName')
+    def linesBaseName(self, collection):
+        return self._groupEntry(collection, 'linesBaseName')
 
-    def setLinesBaseName(self, module, linesBaseName):
-        self._setModuleEntry(module, 'linesBaseName', linesBaseName)
+    def setLinesBaseName(self, collection, linesBaseName):
+        self._setGroupEntry(collection, 'linesBaseName', linesBaseName)
 
-    def linesLayerName(self, module):
-        return self._layerName(self.linesBaseName(module))
+    def linesLayerName(self, collection):
+        return self._layerName(self.linesBaseName(collection))
 
-    def polygonsBaseNameDefault(self, module):
-        return self._moduleDefault(module, 'polygonsBaseName')
+    def polygonsBaseNameDefault(self, collection):
+        return self._groupDefault(collection, 'polygonsBaseName')
 
-    def polygonsBaseName(self, module):
-        return self._moduleEntry(module, 'polygonsBaseName')
+    def polygonsBaseName(self, collection):
+        return self._groupEntry(collection, 'polygonsBaseName')
 
-    def setPolygonsBaseName(self, module, polygonsBaseName):
-        self._setModuleEntry(module, 'polygonsBaseName', polygonsBaseName)
+    def setPolygonsBaseName(self, collection, polygonsBaseName):
+        self._setGroupEntry(collection, 'polygonsBaseName', polygonsBaseName)
 
-    def polygonsLayerName(self, module):
-        return self._layerName(self.polygonsBaseName(module))
+    def polygonsLayerName(self, collection):
+        return self._layerName(self.polygonsBaseName(collection))
 
-    def collection(self, module):
-        if module == 'plan':
+    def collection(self, collection):
+        if collection == 'plan':
             return self.plan
-        elif module == 'grid':
+        elif collection == 'grid':
             return self.grid
-        elif module == 'base':
+        elif collection == 'base':
             return self.base
 
-    # Plan Raster settings
+    # Raster Drawings settings
 
-    def planRasterDir(self):
-        return QDir(self.planRasterPath())
+    def rawDrawingDir(self, group):
+        return QDir(self.rawDrawingPath(group))
 
-    def rawPlanDir(self):
-        return QDir(self.rawPlanPath())
+    def rawDrawingPath(self, group):
+        return self.groupPath(group)
 
-    def processedPlanDir(self):
-        return QDir(self.processedPlanPath())
+    def georefDrawingDir(self, group):
+        return QDir(self.georefDrawingPath(group))
 
-    def rawPlanPath(self):
-        if self.separateProcessedPlanFolder():
-            return QDir(self.planRasterPath() + '/raw').absolutePath()
-        return self.planRasterPath()
+    def georefDrawingPath(self, group):
+        if self.useGeorefFolder():
+            return QDir(self.groupPath(group) + '/georef').absolutePath()
+        return self.groupPath(group)
 
-    def processedPlanPath(self):
-        if self.separateProcessedPlanFolder():
-            return QDir(self.planRasterPath() + '/processed').absolutePath()
-        return self.planRasterPath()
+    def useGeorefFolder(self):
+        return self.readBoolEntry('useGeorefFolder', True)
 
-    def planRasterPath(self):
-        return self.modulePath('planRaster')
+    def setUseGeorefFolder(self, useGeorefFolder):
+        self.writeEntry('useGeorefFolder', useGeorefFolder)
 
-    def setPlanRasterPath(self, absolutePath):
-        self.writeEntry('planRasterPath', absolutePath)
+    def drawingTransparency(self):
+        return self.readNumEntry('drawingTransparency', 50)
 
-    def separateProcessedPlanFolder(self):
-        return self.readBoolEntry('separateProcessedPlanFolder', True)
-
-    def setSeparateProcessedPlanFolder(self, separatePlans):
-        self.writeEntry('separateProcessedPlanFolder', separatePlans)
-
-    def planTransparency(self):
-        return self.readNumEntry('planTransparency', 50)
-
-    def setPlanTransparency(self, transparency):
-        self.writeEntry('planTransparency', transparency)
+    def setDrawingTransparency(self, transparency):
+        self.writeEntry('drawingTransparency', transparency)
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

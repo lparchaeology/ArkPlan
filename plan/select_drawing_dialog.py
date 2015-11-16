@@ -38,11 +38,15 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
     _dir = None # QDir
     _fileList = []
 
-    def __init__(self, drawingPath, siteCode='', parent=None):
+    def __init__(self, project, drawingType, siteCode='', georef=False, parent=None):
         super(SelectDrawingDialog, self).__init__(parent)
         self.setupUi(self)
+        self._project = project
+        self._georef = georef
+
         for drawType in Config.drawingTypes:
-            self.drawingTypeCombo.addItem(drawType['label'], drawType['code'])
+            self.drawingTypeCombo.addItem(Config.groupDefaults[drawType]['label'], drawType)
+        self.drawingTypeCombo.setCurrentIndex(self.drawingTypeCombo.findData(drawingType))
         self.drawingTypeCombo.currentIndexChanged.connect(self._findFiles)
         self.findFilter = ReturnPressedFilter(self)
         self.findFilter.returnPressed.connect(self._findFiles)
@@ -54,7 +58,10 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         self.fileList.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.buttonBox.button(QDialogButtonBox.Open).setDefault(True)
 
-        self._dir = QDir(drawingPath)
+        if georef:
+            self._dir = QDir(project.georefDrawingPath(drawingType))
+        else:
+            self._dir = QDir(project.rawDrawingPath(drawingType))
         self._dir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         self.siteCodeEdit.setText(siteCode)
         self.findButton.clicked.connect(self._findFiles)
@@ -71,9 +78,12 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         return self._fileList
 
     def _findFiles(self):
-        name = self.drawingTypeCombo.itemData(self.drawingTypeCombo.currentIndex())
-        name = name + '_' + self._str(self.siteCodeEdit.text())
-        name = name + '_' + self._str(self.idSpin.value())
+        drawingType = self.drawingTypeCombo.itemData(self.drawingTypeCombo.currentIndex())
+        if self._georef:
+            self._dir.setPath(self._project.georefDrawingPath(drawingType))
+        else:
+            self._dir.setPath(self._project.rawDrawingPath(drawingType))
+        name = drawingType + '_' + self._str(self.siteCodeEdit.text()) + '_' + self._str(self.idSpin.value())
         if self.eastingSpin.value() > 0 or self.northingSpin.value() > 0:
             name = name + '_' + self._str(self.eastingSpin.value()) + 'e' + self._str(self.northingSpin.value()) + 'n'
 

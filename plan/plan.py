@@ -227,13 +227,13 @@ class Plan(QObject):
             self.dock.setFeatureId(pmd.sourceId)
 
     def _loadRawPlan(self):
-        dialog = SelectDrawingDialog(self.project.rawPlanPath(), self.project.siteCode())
+        dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode())
         if (dialog.exec_()):
             for filePath in dialog.selectedFiles():
                 self.georeferencePlan(QFileInfo(filePath))
 
     def _loadGeoPlan(self):
-        dialog = SelectDrawingDialog(self.project.processedPlanPath(), self.project.siteCode())
+        dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode(), True)
         if (dialog.exec_()):
             for filePath in dialog.selectedFiles():
                 geoFile = QFileInfo(filePath)
@@ -242,35 +242,30 @@ class Plan(QObject):
 
     def _loadContextPlans(self):
         context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)
-        if (not ok or context <= 0):
-            return
-        self.loadContextPlans(context)
-
-    def loadContextPlans(self, context):
-        planDir = self.project.processedPlanDir()
-        planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        geoName = 'cxt_' + self.project.siteCode() + '_' + str(context) + '_*r.tif'
-        planDir.setNameFilters([geoName])
-        plans = planDir.entryInfoList()
-        for plan in plans:
-            self._setPlanMetadata(PlanMetadata(plan))
-            self.project.loadGeoLayer(plan)
+        if (ok and context > 0):
+            self.loadDrawing('cxt', self.project.siteCode(), context)
 
     def _loadPlans(self):
         plan, ok = QInputDialog.getInt(None, 'Load Plans', 'Please enter the Plan number to load all drawings for:', 1, 1, 99999)
-        if (not ok or plan <= 0):
-            return
-        self.loadPlans(plan)
+        if (ok and plan > 0):
+            self.loadDrawing('pln', self.project.siteCode(), plan)
 
-    def loadPlans(self, plan):
-        planDir = self.project.processedPlanDir()
-        planDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        geoName = 'pln_' + self.project.siteCode() + '_' + str(plan) + '_*r.tif'
-        planDir.setNameFilters([geoName])
-        plans = planDir.entryInfoList()
-        for plan in plans:
-            self._setPlanMetadata(PlanMetadata(plan))
-            self.project.loadGeoLayer(plan)
+    def loadDrawing(self, drawingType, siteCode, drawingId):
+        drawingDir = self.project.georefDrawingDir(drawingType)
+        drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
+        name = drawingType + '_' + siteCode + '_' + str(drawingId)
+        nameList = []
+        nameList.append(name + '.png')
+        nameList.append(name + '.tif')
+        nameList.append(name + '.tiff')
+        nameList.append(name + '_*.png')
+        nameList.append(name + '_*.tif')
+        nameList.append(name + '_*.tiff')
+        drawingDir.setNameFilters(nameList)
+        drawings = drawingDir.entryInfoList()
+        for drawing in drawings:
+            self._setPlanMetadata(PlanMetadata(drawing))
+            self.project.loadGeoLayer(drawing)
 
     def _featureIdChanged(self, featureId):
         self._featureData.setFeatureId(featureId)
@@ -286,7 +281,8 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, rawFile):
-        georefDialog = GeorefDialog(rawFile, self.project.planRasterDir(), self.project.separateProcessedPlanFolder(), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
+        pmd = PlanMetadata(rawFile)
+        georefDialog = GeorefDialog(rawFile, self.project.georefDrawingDir(pmd.sourceClass), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()

@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/plugins/ArkPlan">
-    <file>settings.svg</file>
+    <file alias="folder.png">resources/folder.png</file>
+    <file alias="settings.svg">resources/settings.svg</file>
     <file>icon.png</file>
   </qresource>
 </RCC>

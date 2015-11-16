@@ -34,7 +34,7 @@ from ..libarkqgis.dock import ArkDockWidget
 
 import schematic_dock_base
 
-from ..resources_rc import *
+import resources_rc
 
 class SearchStatus():
 

@@ -43,7 +43,7 @@ from config import Config
 from arkplan_dock import ArkPlanDock
 from settings_dialog import SettingsDialog
 
-from ..resources_rc import *
+import resources_rc
 
 class ArkPlan(Plugin):
     """QGIS Plugin Implementation."""

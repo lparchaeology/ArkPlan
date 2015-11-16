@@ -42,7 +42,7 @@ from plan_util import *
 from config import Config
 from metadata import Metadata, FeatureData
 
-from ..resources_rc import *
+import resources_rc
 
 def _quote(string):
     return "'" + string + "'"

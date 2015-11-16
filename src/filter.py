@@ -37,7 +37,7 @@ from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_widget import FilterWidget, FilterType, FilterAction
 
-from ..resources_rc import *
+import resources_rc
 
 class Filter(QObject):
 

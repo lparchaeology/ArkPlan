@@ -76,7 +76,7 @@ class Plan(QObject):
     _schematicSourceHighlightFilter = -1
 
     def __init__(self, project):
-        super(Plan, self).__init__()
+        super(Plan, self).__init__(self.project)
         self.project = project
 
     # Load the module when plugin is loaded
@@ -84,7 +84,7 @@ class Plan(QObject):
         # If the project gets changed, make sure we update too
         self.project.projectChanged.connect(self.loadProject)
 
-        self.dock = PlanDock()
+        self.dock = PlanDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
         self.dock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
@@ -101,7 +101,7 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.schematicDock = SchematicDock()
+        self.schematicDock = SchematicDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.toggled.connect(self.runSchematic)
@@ -115,7 +115,7 @@ class Plan(QObject):
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
-        self.editDock = EditDock(self.project.iface)
+        self.editDock = EditDock(self.project.iface, self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
         self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)

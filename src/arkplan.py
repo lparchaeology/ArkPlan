@@ -65,6 +65,8 @@ class ArkPlan(Plugin):
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
+    dock = None # ArkPlanDock()
+
     # Private settings
     _initialised = False
 

@@ -106,6 +106,8 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     def unload(self):
         self.sourceContextSpin.removeEventFilter(self.sourceSpinFilter)
+        del self.sourceSpinFilter
+        self.sourceSpinFilter = None
         super(SchematicDock, self).unload()
 
     # Metadata Tools

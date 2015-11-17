@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Wizard</class>
+ <widget class="QWizard" name="Wizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>686</width>
+    <height>357</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Wizard</string>
+  </property>
+  <property name="options">
+   <set>QWizard::CancelButtonOnLeft|QWizard::NoBackButtonOnLastPage|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
+  </property>
+  <widget class="QWizardPage" name="welcomePage">
+   <property name="title">
+    <string>New Project Wizard</string>
+   </property>
+   <property name="subTitle">
+    <string>This wizard will walk you through setting up a new ArkPlan project.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">welcomePage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="1">
+     <widget class="QPushButton" name="advancedButton">
+      <property name="text">
+       <string>Advanced</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="advancedLabel">
+      <property name="text">
+       <string>If you require advanced custom settings, please click on the Advanced button to use the Settings dialog instead.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>advancedButton</cstring>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="folderPage">
+   <property name="title">
+    <string>Project Folder</string>
+   </property>
+   <property name="subTitle">
+    <string>Please choose the folder where the project files will be stored.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">folderPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QLabel" name="folderLabel">
+      <property name="text">
+       <string>This folder is usually something like &quot;Projects/TST01/GIS/&quot; where TST01 is the Site Code. The folder will be created if it does not already exist.
+
+ArkPlan will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.
+</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>projectFolderEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="projectFolderLayout">
+      <item>
+       <widget class="QLineEdit" name="projectFolderEdit"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="projectFolderButton">
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="siteCodePage">
+   <property name="title">
+    <string>Site Code</string>
+   </property>
+   <property name="subTitle">
+    <string>Enter the Site Code for the project.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">siteCodePage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="3" column="0" colspan="2">
+     <widget class="QLineEdit" name="siteCodeEdit"/>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QLabel" name="siteCodeLabel">
+      <property name="text">
+       <string>Enter the Site Code. If a Multi Site Project then enter a default Site Code.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>siteCodeEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="multiSiteLabel">
+      <property name="text">
+       <string>Choose if this project will support multiple sites and site codes in the same set of spatial files.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>multiSiteCheck</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QCheckBox" name="multiSiteCheck">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="arkPage">
+   <property name="title">
+    <string>ARK Database</string>
+   </property>
+   <property name="subTitle">
+    <string>Configure working with an ARK Database. This is entirely optional.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">arkPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="useArkCheck">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="arkUrlLabel">
+      <property name="text">
+       <string>Please enter the root path to the ARK Database that you will be using, for example &quot;http://100minories.lparchaeology.com/data/&quot;.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>arkUrlEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="useArkLabel">
+      <property name="text">
+       <string>Please tick if you will be using ArkPlan with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ArkPlan data with the ARK Database. </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>useArkCheck</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLineEdit" name="arkUrlEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="confirmPage">
+   <property name="title">
+    <string>Create Project</string>
+   </property>
+   <property name="subTitle">
+    <string>Create your new project.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">confirmPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
+     <widget class="QLabel" name="confirmLabel">
+      <property name="text">
+       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>useArkCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>arkUrlEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>211</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>249</x>
+     <y>192</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

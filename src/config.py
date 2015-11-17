@@ -49,7 +49,8 @@ class Config():
         'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
         'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By')
+        'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By'),
+        'updated_on': QgsField('updated_on', QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
     }
 
     # Field defaults to use if using ARK DB, matches field names in ARK
@@ -70,7 +71,8 @@ class Config():
         'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
         'created_on': QgsField('cre_on',     QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'created_by': QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By')
+        'created_by': QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By'),
+        'updated_on': QgsField('mod_on', QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
     }
 
     groupDefaults = {
@@ -86,9 +88,9 @@ class Config():
             'pointsBaseName'   : 'plan_pt',
             'linesBaseName'    : 'plan_pl',
             'polygonsBaseName' : 'plan_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on'],
         },
         'grid' : {
             'path'             : '',

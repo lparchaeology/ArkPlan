@@ -101,11 +101,6 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.editDock = EditDock(self.project.iface)
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
-        self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.editDock.toggled.connect(self.runEdit)
-
         self.schematicDock = SchematicDock()
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
@@ -119,6 +114,11 @@ class Plan(QObject):
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
+
+        self.editDock = EditDock(self.project.iface)
+        action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
+        self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.editDock.toggled.connect(self.runEdit)
 
         self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
 
@@ -145,23 +145,33 @@ class Plan(QObject):
 
     def run(self, checked):
         if checked:
-            self.initialise()
-            self.schematicDock.menuAction().setChecked(False)
+            if self.initialise():
+                self.schematicDock.menuAction().setChecked(False)
+                self.editDock.menuAction().setChecked(False)
+            else:
+                self.dock.menuAction().setChecked(False)
 
     def runEdit(self, checked):
         if checked:
-            self.project.initialise()
-            if (not self.project.isInitialised()):
-                return
-            self.initialiseBuffers()
+            if self.initialise():
+                self.schematicDock.menuAction().setChecked(False)
+                self.dock.menuAction().setChecked(False)
+            else:
+                self.editDock.menuAction().setChecked(False)
 
     def runSchematic(self, checked):
         if checked:
-            self.initialise()
-            self.dock.menuAction().setChecked(False)
+            if self.initialise():
+                self.dock.menuAction().setChecked(False)
+                self.editDock.menuAction().setChecked(False)
+            else:
+                self.schematicDock.menuAction().setChecked(False)
 
     def initialise(self):
         if self.initialised:
+            return True
+
+        if not self.project.initialise():
             return False
 
         self.initialiseBuffers()

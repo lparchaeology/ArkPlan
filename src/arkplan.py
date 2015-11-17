@@ -95,9 +95,11 @@ class ArkPlan(Plugin):
         self.dock.toggled.connect(self.run)
 
         # Load the Modules
+        self.dock.addSeparator()
         self.gridModule.load()
-        self.planModule.load()
         self.filterModule.load()
+        self.dock.addSeparator()
+        self.planModule.load()
 
     # Unload the plugin
     def unload(self):
@@ -224,8 +226,7 @@ class ArkPlan(Plugin):
             self._createCollectionLayers('base', self.base._settings)
             self.iface.projectRead.connect(self.projectLoad)
             self.iface.newProjectCreated.connect(self.projectLoad)
-            if (self.grid.initialise() and self.plan.initialise() and self.base.initialise()
-                and self.gridModule.initialise() and self.planModule.initialise() and self.filterModule.initialise()):
+            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 self._initialised = True
 
             #Remove the loading indicator

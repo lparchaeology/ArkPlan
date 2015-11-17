@@ -64,13 +64,13 @@ class Filter(QObject):
 
     # Load the module when plugin is loaded
     def load(self):
-        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
-        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
-
         self.dock = FilterDock()
         action = self.project.addDockAction(':/plugins/ArkPlan/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
+
+        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
+        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
 
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)

@@ -58,6 +58,9 @@ class ArkPlanDock(ArkDockWidget):
     def addAction(self, action):
         self.dockToolbar.addAction(action)
 
+    def addSeparator(self):
+        self.dockToolbar.addSeparator()
+
     def unload(self):
         del self.projectLayerView
         self.projectLayerView = None

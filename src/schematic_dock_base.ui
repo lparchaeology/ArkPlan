@@ -6,208 +6,246 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>304</width>
-    <height>507</height>
+    <width>330</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Context Schematic</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QGroupBox" name="checkGroup">
-      <property name="title">
-       <string>Check</string>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="1" column="0" colspan="2">
-        <widget class="QLabel" name="contextDataLabel">
-         <property name="text">
-          <string>Has Features:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="contextLabel">
-         <property name="text">
-          <string>Context:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextSpin</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="contextSpin">
-         <property name="maximum">
-          <number>99999</number>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="findContextButton">
-         <property name="text">
-          <string>Find</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="contextDataStatusLabel">
-         <property name="maximumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="contextSchematicStatusLabel">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="contextSchematicLabel">
-         <property name="text">
-          <string>Has Schematic:</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="cloneGroup">
-      <property name="title">
-       <string>Clone</string>
+      <property name="widgetResizable">
+       <bool>true</bool>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="sourceSchematicLabel">
-         <property name="text">
-          <string>Has Schematic:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="sourceSchematicStatusLabel">
-         <property name="maximumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="sourceContextLabel">
-         <property name="text">
-          <string>Source Context:</string>
-         </property>
-         <property name="buddy">
-          <cstring>sourceContextSpin</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="sourceContextSpin">
-         <property name="maximum">
-          <number>99999</number>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="findSourceButton">
-         <property name="text">
-          <string>Find</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="cloneSourceButton">
-         <property name="text">
-          <string>Clone</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="sourceDataStatusLabel">
-         <property name="maximumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLabel" name="sourceDataLabel">
-         <property name="text">
-          <string>Has Features:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="copySourceButton">
-         <property name="text">
-          <string>Copy</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="MetadataWidget" name="metadataWidget" native="true"/>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="drawGroup">
-      <property name="title">
-       <string>Draw</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0" colspan="2">
-        <layout class="QGridLayout" name="contextToolsLayout"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="autoSchematiclLabel">
-         <property name="text">
-          <string>Auto Schematic:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QToolButton" name="autoSchematicTool">
-         <property name="text">
-          <string>Auto</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>304</width>
+         <height>430</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QGroupBox" name="checkGroup">
+          <property name="title">
+           <string>Check</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="0" colspan="2">
+            <widget class="QLabel" name="contextDataLabel">
+             <property name="text">
+              <string>Has Features:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="contextLabel">
+             <property name="text">
+              <string>Context:</string>
+             </property>
+             <property name="buddy">
+              <cstring>contextSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="contextSpin">
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="findContextButton">
+             <property name="text">
+              <string>Find</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="contextDataStatusLabel">
+             <property name="maximumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="contextSchematicStatusLabel">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QLabel" name="contextSchematicLabel">
+             <property name="text">
+              <string>Has Schematic:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="cloneGroup">
+          <property name="title">
+           <string>Clone</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="2" column="2" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="sourceSchematicStatusLabel">
+             <property name="maximumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="sourceContextLabel">
+             <property name="text">
+              <string>Source Context:</string>
+             </property>
+             <property name="buddy">
+              <cstring>sourceContextSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QLabel" name="sourceSchematicLabel">
+             <property name="text">
+              <string>Has Schematic:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLabel" name="sourceDataLabel">
+             <property name="text">
+              <string>Has Features:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="sourceDataStatusLabel">
+             <property name="maximumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="sourceContextSpin">
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="copySourceButton">
+             <property name="text">
+              <string>Copy</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="findSourceButton">
+             <property name="text">
+              <string>Find</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QPushButton" name="cloneSourceButton">
+             <property name="text">
+              <string>Clone</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="MetadataWidget" name="metadataWidget" native="true"/>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="drawGroup">
+          <property name="title">
+           <string>Draw</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0" colspan="2">
+            <layout class="QGridLayout" name="contextToolsLayout"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="autoSchematiclLabel">
+             <property name="text">
+              <string>Auto Schematic:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QToolButton" name="autoSchematicTool">
+             <property name="text">
+              <string>Auto</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>17</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -240,19 +278,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>115</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>

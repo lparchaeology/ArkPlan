@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Wizard</class>
- <widget class="QWizard" name="Wizard">
+ <class>SettingsWizard</class>
+ <widget class="QWizard" name="SettingsWizard">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -204,7 +204,7 @@ ArkPlan will automatically organise the data under this folder. If you wish to o
     <item row="0" column="0">
      <widget class="QLabel" name="useArkLabel">
       <property name="text">
-       <string>Please tick if you will be using ArkPlan with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ArkPlan data with the ARK Database. </string>
+       <string>Please tick if you will be using ArkPlan with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ArkPlan data with the ARK Database. Note that this setting cannot be changed later.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>

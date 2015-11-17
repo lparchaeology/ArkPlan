@@ -24,22 +24,27 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWizard
+from PyQt4.QtGui import QWizard, QFileDialog
 
 from settings_wizard_base import *
 
 class SettingsWizard(QWizard, Ui_SettingsWizard):
 
-    def __init__(self, project, parent=None):
+    _advanced = False
+
+    def __init__(self, parent=None):
         super(SettingsWizard, self).__init__(parent)
         self.setupUi(self)
         self.advancedButton.clicked.connect(self._advancedSettings)
         self.projectFolderButton.clicked.connect(self._selectProjectFolder)
 
-    def projectFolder(self):
+    def advancedMode(self):
+        return self._advanced
+
+    def projectPath(self):
         return self.projectFolderEdit.text()
 
-    def multiSite(self):
+    def multiSiteProject(self):
         return self.multiSiteCheck.isChecked()
 
     def siteCode(self):
@@ -52,7 +57,8 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
         return self.arkUrlEdit.text()
 
     def _advancedSettings(self):
-        pass
+        self._advanced = True
+        self.accept()
 
     def _selectProjectFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))

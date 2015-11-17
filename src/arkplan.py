@@ -39,6 +39,7 @@ from filter import Filter
 
 from config import Config
 from arkplan_dock import ArkPlanDock
+from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 
 import resources_rc
@@ -145,22 +146,27 @@ class ArkPlan(Plugin):
         if self.isConfigured():
             return
         # TODO more validation, check if files exist, etc
-        if (self.showSettingsDialog()
-            and self.siteCode()
-            and self.projectDir().mkpath('.')
-            and self.siteCode()
-            and self.groupDir('cxt').mkpath('.')
-            and self.rawDrawingDir('cxt').mkpath('.')
-            and self.georefDrawingDir('cxt').mkpath('.')
-            and self.groupDir('pln').mkpath('.')
-            and self.rawDrawingDir('pln').mkpath('.')
-            and self.georefDrawingDir('pln').mkpath('.')
-            and self.groupDir('grid').mkpath('.')
-            and self.groupDir('plan').mkpath('.')
-            and self.groupDir('base').mkpath('.')):
-            self._setIsConfigured(True)
-        else:
-            self._setIsConfigured(False)
+        wizard = SettingsWizard()
+        if wizard.exec_() and (not wizard.advancedMode() or self.showSettingsDialog()):
+            if not wizard.advancedMode():
+                self.setProjectPath(wizard.projectPath())
+                self.setMultiSiteProject(wizard.multiSiteProject())
+                self.setSiteCode(wizard.siteCode())
+                self.setUseArkDB(wizard.useArkDB())
+            if (self.siteCode()
+                and self.projectDir().mkpath('.')
+                and self.siteCode()
+                and self.groupDir('cxt').mkpath('.')
+                and self.rawDrawingDir('cxt').mkpath('.')
+                and self.georefDrawingDir('cxt').mkpath('.')
+                and self.groupDir('pln').mkpath('.')
+                and self.rawDrawingDir('pln').mkpath('.')
+                and self.georefDrawingDir('pln').mkpath('.')
+                and self.groupDir('grid').mkpath('.')
+                and self.groupDir('plan').mkpath('.')
+                and self.groupDir('base').mkpath('.')):
+                self._setIsConfigured(True)
+        if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
             self.dock.menuAction().setChecked(False)
 

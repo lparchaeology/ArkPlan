@@ -416,13 +416,11 @@ class Plan(QObject):
         self.metadata().validate()
 
     def _autoSchematicBufferSelected(self, sourceId):
-        self.mapTools['sch'].activate()
-        self.setMapToolAttributes(self.mapTools['sch'])
+        self.actions['sch'].trigger()
         self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
 
     def _autoSchematicLayerSelected(self, sourceId):
-        self.mapTools['sch'].activate()
-        self.setMapToolAttributes(self.mapTools['sch'])
+        self.actions['sch'].trigger()
         self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesLayer, self.project.plan.polygonsBuffer)
 
     def _autoSchematic(self, sourceId, fd, md, inLayer, outLayer):

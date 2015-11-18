@@ -30,12 +30,14 @@ from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
+from ..libarkqgis import layers
 
 from data_model import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_widget import FilterWidget, FilterType, FilterAction
+from config import Config
 
 import resources_rc
 
@@ -51,6 +53,7 @@ class Filter(QObject):
     dataLoaded = False
     contextList = []
     _useGroups = False
+    _filterSetGroupIndex = -1
 
     identifyMapTool = None  # ArkMapToolIndentifyFeatures()
 
@@ -412,6 +415,31 @@ class Filter(QObject):
             exportName = dialog.exportName()
             exportKey = self._makeKey(exportName)
             if dialog.exportSchematic():
-                pass
+                self._exportSchematic(exportKey, exportName, dialog.schematicColor())
             elif dialog.exportData():
-                pass
+                self._exportLayers(exportKey, exportName)
+
+    def _exportSchematic(self, key, name, schematicColor):
+        if self._filterSetGroupIndex < 0:
+            self._filterSetGroupIndex = layers.createLayerGroup(self.project.iface, Config.filterSetGroupName, Config.projectGroupName)
+        layer = self.project.plan.polygonsLayer
+        mem = layers.cloneAsMemoryLayer(layer, name, 'DefaultStyle')
+        mem.rendererV2().symbols()[0].setColor(schematicColor)
+        mem.startEditing()
+        fi = layer.getFeatures()
+        for feature in fi:
+            if feature.attribute(self.project.fieldName('category')) == 'sch':
+                mem.addFeature(feature)
+        mem.commitChanges()
+        mem = layers.addLayerToLegend(self.project.iface, mem, self._filterSetGroupIndex)
+
+    def _exportLayers(self, key, name):
+        if self._filterSetGroupIndex < 0:
+            self._filterSetGroupIndex = layers.createLayerGroup(self.project.iface, Config.filterSetGroupName, Config.projectGroupName)
+        exportGroup = layers.createLayerGroup(self.project.iface, name, Config.filterSetGroupName)
+        pgMem = layers.duplicateAsMemoryLayer(self.project.plan.polygonsLayer, key + '_pg')
+        plMem = layers.duplicateAsMemoryLayer(self.project.plan.linesLayer, key + '_pl')
+        ptMem = layers.duplicateAsMemoryLayer(self.project.plan.pointsLayer, key + '_pt')
+        layers.addLayerToLegend(self.project.iface, pgMem, exportGroup)
+        layers.addLayerToLegend(self.project.iface, plMem, exportGroup)
+        layers.addLayerToLegend(self.project.iface, ptMem, exportGroup)

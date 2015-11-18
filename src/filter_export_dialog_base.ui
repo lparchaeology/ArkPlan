@@ -6,27 +6,95 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>432</width>
-    <height>222</height>
+    <width>436</width>
+    <height>298</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Filter Set Export</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <widget class="QLabel" name="exportNameLabel">
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="exportNameEdit"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="filterSetNameEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="filterSetNameLabel">
      <property name="text">
-      <string>Export Name:</string>
+      <string>Filter Set:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="infoLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Export the results of the selected filter set. Note the resulting layer(s) will not be updated as the source Plan Data is updated. Choosing the name of an existing export will overwrite the existing layer(s).</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::LogText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QRadioButton" name="exportDataButton">
-     <property name="text">
-      <string>Export selected Plan Data to scratch layers</string>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>20</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QLabel" name="schematicColorLabel">
+       <property name="text">
+        <string>Schematic colour:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QgsColorButtonV2" name="schematicColorTool">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item row="3" column="1">
     <widget class="QRadioButton" name="exportSchematicButton">
@@ -38,48 +106,42 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
+   <item row="2" column="0">
+    <widget class="QLabel" name="exportNameLabel">
+     <property name="text">
+      <string>Export Name:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QRadioButton" name="exportDataButton">
+     <property name="text">
+      <string>Export selected Plan Data to scratch layers</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="filterSetNameEdit">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="exportNameEdit"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="filterSetNameLabel">
-     <property name="text">
-      <string>Filter Set:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="infoLabel">
-     <property name="text">
-      <string>Export the results of the selected filter set. Note the resulting layer(s) will not be updated as the source Plan Data is updated. Choosing the name of an existing export will overwrite the existing layer(s).</string>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::LogText</enum>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
+    </spacer>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsColorButtonV2</class>
+   <extends>QToolButton</extends>
+   <header>qgis.gui</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

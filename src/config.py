@@ -30,6 +30,7 @@ from ..libarkqgis.map_tools import FeatureType
 class Config():
 
     projectGroupName = 'Ark'
+    filterSetGroupName = 'Filter Export Data'
 
     # Field deafults to use if *not* using ARK DB, so as not to confuse normal users
     fieldDefaults = {

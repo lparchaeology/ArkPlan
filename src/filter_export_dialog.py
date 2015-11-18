@@ -26,7 +26,7 @@ import os.path
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog
+from PyQt4.QtGui import QDialog, QColor
 
 from filter_export_dialog_base import *
 
@@ -36,6 +36,11 @@ class FilterExportDialog(QDialog, Ui_FilterExportDialog):
         super(FilterExportDialog, self).__init__(parent)
 
         self.setupUi(self)
+        self.schematicColorTool.setAllowAlpha(True)
+        self.schematicColorTool.setColorDialogTitle('Choose Schematic Color')
+        self.schematicColorTool.setDefaultColor(QColor(165, 191, 221, 102))
+        self.schematicColorTool.setToDefaultColor()
+        self.schematicColorTool.setShowNoColor(True)
 
     def accept(self):
         return super(FilterExportDialog, self).accept()
@@ -54,3 +59,6 @@ class FilterExportDialog(QDialog, Ui_FilterExportDialog):
 
     def exportData(self):
         return self.exportDataButton.isChecked()
+
+    def schematicColor(self):
+        return self.schematicColorTool.color()

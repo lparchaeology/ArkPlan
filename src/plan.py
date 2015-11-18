@@ -568,9 +568,8 @@ class Plan(QObject):
     def _copySource(self):
         request = QgsFeatureRequest()
         request.setFilterExpression(self._classClause('cxt') + ' and ' + self._idClause(self.schematicDock.sourceContext()) + ' and ' + self._categoryClause('sch'))
-        schematic = self.project.plan.polygonsLayer.getFeatures(request)
-        try:
-            feature = schematic.next()
+        fi = self.project.plan.polygonsLayer.getFeatures(request)
+        for feature in fi:
             md = self.schematicDock.metadata()
             feature.setAttribute(self.project.fieldName('site'), md.siteCode(True))
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
@@ -585,8 +584,6 @@ class Plan(QObject):
             feature.setAttribute(self.project.fieldName('created_by'), md.createdBy(True))
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
-        except StopIteration:
-            return
 
     def _cloneSource(self):
         self._copySource()

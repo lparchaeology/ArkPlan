@@ -136,6 +136,7 @@ class ArkPlan(Plugin):
             self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
             self.initialise()
+            self.filterModule.initialise()
         else:
             self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)

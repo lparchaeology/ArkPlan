@@ -113,7 +113,7 @@ class Filter(QObject):
 
     def initialise(self):
         if self.initialised:
-            return False
+            return True
 
         self.dock.setSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
@@ -127,8 +127,8 @@ class Filter(QObject):
 
         self._initFilterSets()
         self.loadFilterSet()
-
         self.initialised = True
+        self.applyFilters()
         return True
 
 

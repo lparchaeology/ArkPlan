@@ -88,8 +88,6 @@ class ArkPlan(Plugin):
         super(ArkPlan, self).initGui()
 
         # Load the Plugin
-        self._showLayersDock = self.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
-        self._showBrowserDock = self.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
         self.dock = ArkPlanDock()
         action = self.addAction(self.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
         self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
@@ -131,15 +129,13 @@ class ArkPlan(Plugin):
 
     def run(self, checked):
         if checked:
-            self._showLayersDock = self.iface.mainWindow().findChild(QDockWidget, "Layers").isVisible()
-            self._showBrowserDock = self.iface.mainWindow().findChild(QDockWidget, "Browser").isVisible()
             self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
             self.initialise()
             self.filterModule.initialise()
         else:
-            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(self._showLayersDock)
-            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(self._showBrowserDock)
+            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(True)
+            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(True)
             self.planModule.dock.menuAction().setChecked(False)
             self.planModule.editDock.menuAction().setChecked(False)
             self.planModule.schematicDock.menuAction().setChecked(False)

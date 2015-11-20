@@ -76,71 +76,83 @@ class ArkPlan(Plugin):
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ArkPlan'))
 
-        # If the legend indexes change make sure we stay updated
-        self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
-
         self.gridModule = GridModule(self)
         self.planModule = Plan(self)
         self.filterModule = Filter(self)
 
-    # Load the plugin
+    # Load the plugin gui
     def initGui(self):
         super(ArkPlan, self).initGui()
+        self.gridModule.initGui()
+        self.planModule.initGui()
+        self.filterModule.initGui()
 
         # Load the Plugin
-        self.dock = ArkPlanDock()
+        self.dock = ArkPlanDock(self)
         action = self.addAction(self.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
         self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
-        self.dock.load(self.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
-        # Load the Modules
-        self.dock.addSeparator()
-        self.gridModule.load()
-        self.filterModule.load()
-        self.dock.addSeparator()
-        self.planModule.load()
+    # Load the project settings when project is loaded
+    def loadProject(self):
+        self.gridModule.loadProject()
+        self.planModule.loadProject()
+        self.filterModule.loadProject()
+
+    # Write the project for saving
+    def writeProject(self):
+        self.gridModule.writeProject()
+        self.planModule.writeProject()
+        self.filterModule.writeProject()
+
+    # Close the project
+    def closeProject(self):
+        self.gridModule.closeProject()
+        self.planModule.closeProject()
+        self.filterModule.closeProject()
 
     # Unload the plugin
-    def unload(self):
+    def unloadGui(self):
 
         # Restore the original QGIS gui
         self.dock.menuAction().setChecked(False)
 
-        # Unload the modules in dependence order
-        self.planModule.unload()
-        self.filterModule.unload()
-        self.gridModule.unload()
+        if self._initialised:
+            # Unload the modules in dependence order
+            self.planModule.unload()
+            self.filterModule.unload()
+            self.gridModule.unload()
 
-        # Unload the layers
-        if self.plan is not None:
-            self.plan.unload()
-        if self.grid is not None:
-            self.grid.unload()
-        if self.base is not None:
-            self.base.unload()
+            # Unload the layers
+            if self.plan is not None:
+                self.plan.unload()
+            if self.grid is not None:
+                self.grid.unload()
+            if self.base is not None:
+                self.base.unload()
 
-        # Unload this dock and uninitialise
-        self.dock.unload()
-        self._initialised = False
+            # Unload this dock and uninitialise
+            self.dock.unload()
+            self._initialised = False
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkPlan, self).unload()
 
     def run(self, checked):
         if checked:
-            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
-            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
-            self.initialise()
-            self.filterModule.initialise()
+            if self.initialise():
+                self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
+                self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
         else:
-            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(True)
+            if self._initialised:
+                self.planModule.dock.menuAction().setChecked(False)
+                self.planModule.editDock.menuAction().setChecked(False)
+                self.planModule.schematicDock.menuAction().setChecked(False)
+                self.gridModule.dock.menuAction().setChecked(False)
+                self.filterModule.dock.menuAction().setChecked(False)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(True)
-            self.planModule.dock.menuAction().setChecked(False)
-            self.planModule.editDock.menuAction().setChecked(False)
-            self.planModule.schematicDock.menuAction().setChecked(False)
-            self.gridModule.dock.menuAction().setChecked(False)
-            self.filterModule.dock.menuAction().setChecked(False)
+            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(True)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
@@ -210,11 +222,7 @@ class ArkPlan(Plugin):
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
             self.projectLayerModel.setAutoCollapseLegendNodes(-1)
             self.dock.projectLayerView.setModel(self.projectLayerModel)
-            self.dock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
-            self.dock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
-            self.dock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
             self.dock.projectLayerView.setCurrentLayer(self.iface.activeLayer())
-            self.iface.currentLayerChanged.connect(self.dock.projectLayerView.setCurrentLayer)
 
             #Load the layer collections
             self.grid = self._createCollection('grid')
@@ -223,9 +231,25 @@ class ArkPlan(Plugin):
             self._createCollectionMultiLayers('plan', self.plan._settings)
             self.base = self._createCollection('base')
             self._createCollectionLayers('base', self.base._settings)
-            self.iface.projectRead.connect(self.projectLoad)
-            self.iface.newProjectCreated.connect(self.projectLoad)
-            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
+
+            #TODO Maybe do module inti here too?
+            if self.grid.initialise() and self.plan.initialise() and self.base.initialise() and self.filterModule.initialise():
+                # Load the Modules
+                self.dock.addSeparator()
+                self.gridModule.load()
+                self.filterModule.load()
+                self.dock.addSeparator()
+                self.planModule.load()
+
+                # If the project or layers or legend indexes change make sure we stay updated
+                self.dock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
+                self.dock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+                self.dock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
+                self.iface.currentLayerChanged.connect(self.dock.projectLayerView.setCurrentLayer)
+                self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+                self.iface.projectRead.connect(self.projectLoad)
+                self.iface.newProjectCreated.connect(self.projectLoad)
+
                 self._initialised = True
 
             #Remove the loading indicator

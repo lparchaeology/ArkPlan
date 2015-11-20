@@ -35,6 +35,8 @@ class ArkPlanDock(ArkDockWidget):
     def __init__(self, parent=None):
         super(ArkPlanDock, self).__init__(parent)
 
+    def initGui(self, iface, location, menuAction):
+        super(ArkPlanDock, self).initGui(iface, location, menuAction)
         self.setWindowTitle(u'ARK Project Layers')
         self.setObjectName(u'ArkPlanDock')
 

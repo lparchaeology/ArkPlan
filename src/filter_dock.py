@@ -54,6 +54,9 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
     def __init__(self, parent=None):
         super(FilterDock, self).__init__(parent)
+
+    def initGui(self, iface, location, menuAction):
+        super(FilterDock, self).initGui(iface, location, menuAction)
         self.setupUi(self)
 
         self.zoomFilterAction.triggered.connect(self.zoomFilterSelected)
@@ -175,8 +178,8 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.filterChanged.emit()
         self.clearFilterSelected.emit()
 
-    def filterSet(self):
-        return self.siteCodeCombo.currentText()
+    def currentFilterSet(self):
+        return self.filterSetCombo.itemData(self.siteCodeCombo.currentIndex())
 
     def addFilterSet(self, key, name):
         self.filterSetCombo.addItem(name, key)
@@ -190,16 +193,23 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def _filterSetChanged(self, idx):
         self.filterSetChanged.emit(self.filterSetCombo.itemData(idx))
 
-    def setSiteCodes(self, siteCodes):
+    def initSiteCodes(self, siteCodes):
+        self.siteCodeCombo.clear()
         for site in siteCodes:
             self.siteCodeCombo.addItem(site)
 
     def siteCode(self):
         return self.siteCodeCombo.currentText()
 
-    def setClassCodes(self, classCodes):
+    def initClassCodes(self, classCodes):
         self._classCodes = classCodes
         self.newFilterWidget.setClassCodes(classCodes)
+
+    def initFilterSets(self, filterSets)
+        self.addFilterSet('Default', 'Default')
+        for filterSet in filterSets:
+            if filterSet[0] != 'Default':
+                self.dock.addFilterSet(filterSet[0], filterSet[1])
 
     def activeFilters(self):
         return self._filters

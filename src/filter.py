@@ -49,8 +49,9 @@ class Filter(QObject):
     data = None  # DataManager()
 
     # Internal variables
-    initialised = False
-    dataLoaded = False
+    dock = None # FilterDock()
+    _initialised = False
+    _dataLoaded = False
     contextList = []
     _useGroups = False
     _filterSetGroupIndex = -1
@@ -58,18 +59,17 @@ class Filter(QObject):
     identifyMapTool = None  # ArkMapToolIndentifyFeatures()
 
     def __init__(self, project):
-        super(Filter, self).__init__()
+        super(Filter, self).__init__(project)
         self.project = project
         self.data = DataManager(project)
 
-
     # Standard Dock methods
 
-    # Load the module when plugin is loaded
-    def load(self):
-        self.dock = FilterDock()
+    # Create the gui when the plugin is first created
+    def initGui(self):
+        self.dock = FilterDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
-        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
         self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
@@ -93,29 +93,12 @@ class Filter(QObject):
         self.dock.deleteFilterSetSelected.connect(self._deleteFilterSetSelected)
         self.dock.exportFilterSetSelected.connect(self._exportFilterSetSelected)
 
+    # Load the project settings when project is loaded
+    def loadProject(self):
+        # Load the Site Codes
+        self.dock.initSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
 
-    # Unload the module when plugin is unloaded
-    def unload(self):
-        self.saveFilterSet()
-        #FIXME Doesn't clear on quit as layers already unloaded by main program!
-        self.clearFilterSet()
-        # Reset the initialisation
-        self.initialised = False
-        self.dataLoaded = False
-        self.dock.unload()
-        self.dock.deleteLater()
-
-
-    def run(self, checked):
-        if checked:
-            self.initialise()
-
-
-    def initialise(self):
-        if self.initialised:
-            return True
-
-        self.dock.setSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
+        # Load the Class Codes
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
         if 'cxt' in codeList and self._useGroups:
             codeList.append('sub')
@@ -123,14 +106,37 @@ class Filter(QObject):
         codes = {}
         for code in codeList:
             codes[code] = code
-        self.dock.setClassCodes(codes)
+        self.dock.initClassCodes(codes)
 
-        self._initFilterSets()
-        self.loadFilterSet()
-        self.initialised = True
-        self.applyFilters()
-        return True
+        # Load the saved Filter Sets
+        self.dock.initFilterSets(self._listFilterSets())
 
+        self._initialised = True
+        self.loadFilterSet('Default')
+        return self._initialised
+
+    # Save the project
+    def writeProject(self):
+        if self.dock.currentFilterSet() = 'Default':
+            self._saveFilterSet('Default', 'Default')
+
+    # Close the project
+    def closeProject(self):
+        self.writeProject()
+        #FIXME Doesn't clear on quit as layers already unloaded by main program!
+        self.clearFilterSet()
+        # Reset the initialisation
+        self._initialised = False
+        self._dataLoaded = False
+
+    # Unload the gui when the plugin is unloaded
+    def unloadGui(self):
+        self.dock.unloadGui()
+
+    def run(self, checked):
+        if checked:
+            if not self._initialised:
+                self.loadProject()
 
     # Filter methods
 
@@ -145,7 +151,7 @@ class Filter(QObject):
         return self.dock.hasFilterType(filterType)
 
     def applyFilters(self):
-        if not self.initialised:
+        if not self._initialised:
             return
         excludeString = ''
         firstInclude = True
@@ -211,7 +217,7 @@ class Filter(QObject):
 
 
     def clearFilterSet(self):
-        if not self.initialised:
+        if not self._initialised:
             return
         del self.contextList[:]
         self.applyFilter('')
@@ -219,7 +225,7 @@ class Filter(QObject):
 
 
     def applyFilter(self, expression):
-        if not self.initialised:
+        if not self._initialised:
             return
         self.project.plan.applyFilter(expression)
 
@@ -245,7 +251,7 @@ class Filter(QObject):
     def loadData(self):
         self.data.loadData()
         self.dock.enableGroupFilters(True)
-        self.dataLoaded = True
+        self._dataLoaded = True
 
 
     def zoomFilter(self):
@@ -254,7 +260,7 @@ class Filter(QObject):
 
     def triggerIdentifyAction(self, checked):
         if checked:
-            #if not self.dataLoaded:
+            #if not self._dataLoaded:
                 #self.data.loadData()
             self.project.mapCanvas().setMapTool(self.identifyMapTool)
         else:
@@ -343,9 +349,6 @@ class Filter(QObject):
         name = re.sub(r'[^\w\s]','', name)
         return re.sub(r'\s+', '', name)
 
-    def saveFilterSet(self):
-        self._saveFilterSet('Default', 'Default')
-
     def _saveFilterSet(self, key, name):
         group = self._filterSetGroup(key)
         settings = QSettings()
@@ -363,13 +366,6 @@ class Filter(QObject):
     def _exportFilterSet(self, key):
         pass
 
-    def _initFilterSets(self):
-        self.dock.addFilterSet('Default', 'Default')
-        filterSets = self._listFilterSets()
-        for filterSet in filterSets:
-            if filterSet[0] != 'Default':
-                self.dock.addFilterSet(filterSet[0], filterSet[1])
-
     def _listFilterSets(self):
         filterSets = []
         settings = QSettings()
@@ -382,9 +378,10 @@ class Filter(QObject):
         settings.endGroup()
         return filterSets
 
-    def loadFilterSet(self):
-        self._loadFilterSet('Default')
-        self.dock.setFilterSet('Default')
+    def loadFilterSet(self, filterSet='Default'):
+        self._loadFilterSet(filterSet)
+        self.dock.setFilterSet(filterSet)
+        self.applyFilters(filterSet)
 
     def _loadFilterSet(self, key):
         group = self._filterSetGroup(key)
@@ -405,7 +402,7 @@ class Filter(QObject):
     def _deleteFilterSetSelected(self, key):
         self._deleteFilterSet(key)
         self.dock.removeFilterSet(key)
-        self.loadFilterSet()
+        self.loadFilterSet('Default')
 
     def _exportFilterSetSelected(self, key, name):
         dialog = FilterExportDialog()

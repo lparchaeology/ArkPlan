@@ -28,7 +28,6 @@ from PyQt4.QtGui import QWidget
 
 import metadata_widget_base
 from metadata import Metadata
-from config import Config
 
 class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
@@ -38,11 +37,7 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         super(MetadataWidget, self).__init__(parent)
         self.setupUi(self)
 
-    def init(self, project):
-        for sourceCode in Config.planSourceCodes:
-            self.sourceCodeCombo.addItem(sourceCode[0], sourceCode[1])
-        for sourceClass in Config.planSourceClasses:
-            self.sourceClassCombo.addItem(sourceClass[0], sourceClass[1])
+    def initGui(self):
 
         self._md.siteCodeChanged.connect(self._setSiteCode)
         self._md.sourceCodeChanged.connect(self._setSourceCode)
@@ -60,13 +55,22 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         self.commentEdit.textChanged.connect(self._md.setComment)
         self.createdByEdit.textChanged.connect(self._md.setCreatedBy)
 
-        self._md.setSiteCode(project.siteCode())
-        self._md.setSourceCode(self.sourceCodeCombo.itemData(0))
-        self._md.setSourceClass(self.sourceClassCombo.itemData(0))
         self._md.setSourceId(self.sourceIdSpin.value())
 
     def metadata(self):
         return self._md
+
+    def initSourceCodes(self, sourceCodes):
+        self.sourceCodeCombo.clear()
+        for sourceCode in sourceCodes:
+            self.sourceCodeCombo.addItem(sourceCode[0], sourceCode[1])
+        self._md.setSourceCode(self.sourceCodeCombo.itemData(0))
+
+    def initSourceClasses(self, sourceClasses):
+        self.sourceClassCombo.clear()
+        for sourceClass in sourceClasses:
+            self.sourceClassCombo.addItem(sourceClass[0], sourceClass[1])
+        self._md.setSourceClass(self.sourceClassCombo.itemData(0))
 
     def _setSiteCode(self, siteCode):
         self.siteEdit.setText(siteCode)

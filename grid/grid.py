@@ -55,7 +55,7 @@ class GridModule(QObject):
     # Standard Dock methods
 
     # Load the module when plugin is loaded
-    def load(self):
+    def initGui(self):
         self.dock = GridDock()
         action = self.project.addDockAction(':/plugins/ArkPlan/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
         self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
@@ -75,21 +75,12 @@ class GridModule(QObject):
         self.dock.setReadOnly(True)
         self.dock.createGridTool.setEnabled(False)
 
-    # Unload the module when plugin is unloaded
-    def unload(self):
-        # Reset the initialisation
-        self.initialised = False
-        self.dock.unload()
-        self.dock.deleteLater()
+        self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
+        self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
+        self.mapTool.setAction(self.dock.identifyGridAction)
+        self.mapTool.canvasClicked.connect(self.pointSelected)
 
-    def run(self, checked):
-        if checked:
-            self.initialise()
-
-    def initialise(self):
-        if self.initialised:
-            return False
-
+    def loadProject(self):
         self.dock.createGridTool.setEnabled(True)
 
         # Check if files exist or need creating
@@ -102,14 +93,19 @@ class GridModule(QObject):
         if not self.initialiseGrid(self.dock.siteCode(), self.dock.gridName()):
             return
 
-        self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
-        self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
-        self.mapTool.setAction(self.dock.identifyGridAction)
-        self.mapTool.canvasClicked.connect(self.pointSelected)
-
         self.dock.setReadOnly(False)
         self.initialised = True
         return True
+
+    # Unload the module when plugin is unloaded
+    def unloadGui(self):
+        # Reset the initialisation
+        self.initialised = False
+        self.dock.unloadGui()
+
+    def run(self, checked):
+        if checked:
+            self.initialise()
 
     def loadGridNames(self):
         names = set()

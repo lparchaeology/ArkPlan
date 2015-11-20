@@ -50,6 +50,9 @@ class GridDock(ArkDockWidget, grid_dock_base.Ui_GridDock):
 
     def __init__(self, parent=None):
         super(GridDock, self).__init__(parent)
+
+    def initGui(self, iface, location, menuAction):
+        super(GridDock, self).initGui(iface, location, menuAction)
         self.setupUi(self)
 
         self.gridCombo.activated.connect(self.gridComboChanged)

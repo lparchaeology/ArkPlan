@@ -81,6 +81,9 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     def __init__(self, parent=None):
         super(SchematicDock, self).__init__(parent)
+
+    def initGui(self, iface, location, menuAction):
+        super(SchematicDock, self).initGui(iface, location, menuAction)
         self.setupUi(self)
 
         self.contextSpin.valueChanged.connect(self._contextChanged)
@@ -100,17 +103,19 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
-    def init(self, project):
-        self.metadataWidget.init(project)
-        self.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
-
-    def unload(self):
+    def unloadGui(self):
         self.sourceContextSpin.removeEventFilter(self.sourceSpinFilter)
         del self.sourceSpinFilter
         self.sourceSpinFilter = None
-        super(SchematicDock, self).unload()
+        super(SchematicDock, self).unloadGui()
 
     # Metadata Tools
+
+    def initSourceCodes(self, sourceCodes):
+        self.metadataWidget.initSourceCodes(sourceCodes)
+
+    def initSourceClasses(self, sourceClasses):
+        self.metadataWidget.initSourceClasses(sourceClasses)
 
     def metadata(self):
         return self.metadataWidget.metadata()

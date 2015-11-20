@@ -79,15 +79,21 @@ class Plan(QObject):
         super(Plan, self).__init__(self.project)
         self.project = project
 
-    # Load the module when plugin is loaded
-    def load(self):
-        # If the project gets changed, make sure we update too
-        self.project.projectChanged.connect(self.loadProject)
-
+    # Create the gui when the plugin is first created
+    def initGui(self):
         self.dock = PlanDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
-        self.dock.load(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
+
+        for category in Config.featureCategories:
+            #TODO Select by map tool type enum
+            if category[2] == 'lvl' or category[2] == 'llv':
+                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
+            else:
+                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
+            if category[6] == True:
+                self._definitiveCategories.add(category[2])
 
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
@@ -103,7 +109,9 @@ class Plan(QObject):
 
         self.schematicDock = SchematicDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
-        self.schematicDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
+        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)
         self.schematicDock.findSourceSelected.connect(self._findSource)
@@ -115,17 +123,36 @@ class Plan(QObject):
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
+
         self.editDock = EditDock(self.project.iface, self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
-        self.editDock.load(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.editDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)
 
         self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
 
-    # Unload the module when plugin is unloaded
-    def unload(self):
+    # Load the project settings when project is loaded
+    def loadProject(self):
+        self.initialiseBuffers()
+        self.dock.initSourceCodes(Config.planSourceCodes)
+        self.dock.initSourceClasses(Config.planSourceClasses)
+        self.schematicDock.initSourceCodes(Config.planSourceCodes)
+        self.schematicDock.initSourceClasses(Config.planSourceClasses)
+        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
+
+    # Save the project
+    def writeProject(self):
+        pass
+
+    # Close the project
+    def closeProject(self):
         self._clearSchematicFilters()
+
+    # Unload the module when plugin is unloaded
+    def unloadGui(self):
+
+        self.closeProject()
 
         for action in self.actions.values():
             if action.isChecked():
@@ -135,13 +162,10 @@ class Plan(QObject):
         self.initialised = False
         self._buffersInitialised = False
 
-        # Unload the dock
-        self.schematicDock.unload()
-        self.schematicDock.deleteLater()
-        self.editDock.unload()
-        self.editDock.deleteLater()
-        self.dock.unload()
-        self.dock.deleteLater()
+        # Unload the docks
+        self.schematicDock.unloadGui()
+        self.editDock.unloadGui()
+        self.dock.unloadGui()
 
     def run(self, checked):
         if checked:
@@ -167,32 +191,6 @@ class Plan(QObject):
             else:
                 self.schematicDock.menuAction().setChecked(False)
 
-    def initialise(self):
-        if self.initialised:
-            return True
-
-        if not self.project.initialise():
-            return False
-
-        self.initialiseBuffers()
-        self.dock.init(self.project)
-        self.schematicDock.init(self.project)
-
-        for category in Config.featureCategories:
-            #TODO Select by map tool type enum
-            if category[2] == 'lvl' or category[2] == 'llv':
-                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
-            else:
-                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
-            if category[6] == True:
-                self._definitiveCategories.add(category[2])
-
-        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
-        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
-
-        self.initialised = True
-        return True
-
     def initialiseBuffers(self):
         if self._buffersInitialised:
             return
@@ -210,11 +208,6 @@ class Plan(QObject):
         self.editDock.setBasePoints(self.project.base.pointsLayer)
         self.editDock.setBaseLines(self.project.base.linesLayer)
         self.editDock.setBasePolygons(self.project.base.polygonsLayer)
-
-    def loadProject(self):
-        if not self.initialised:
-            return
-        self.initialised = False
 
     def metadata(self):
         if self.schematicDock.menuAction().isChecked():

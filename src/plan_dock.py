@@ -56,6 +56,9 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(parent)
+
+    def initGui(self, iface, location, menuAction):
+        super(PlanDock, self).initGui(iface, location, menuAction)
         self.setupUi(self)
 
         self.loadRawButton.clicked.connect(self.loadRawFileSelected)
@@ -71,10 +74,13 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
-    def init(self, project):
-        self.metadataWidget.init(project)
-
     # Metadata Tools
+
+    def initSourceCodes(self, sourceCodes):
+        self.metadataWidget.initSourceCodes(sourceCodes)
+
+    def initSourceClasses(self, sourceClasses):
+        self.metadataWidget.initSourceClasses(sourceClasses)
 
     def metadata(self):
         return self.metadataWidget.metadata()

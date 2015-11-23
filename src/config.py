@@ -189,6 +189,7 @@ class Config():
         ['plan', 'cxt', 'cha', 'Charcol',                 '', FeatureType.Polygon, False],
         ['plan', 'cxt', 'tim', 'Timber',                  '', FeatureType.Polygon, False],
         ['plan', 'cxt', 'clk', 'Chalk',                   '', FeatureType.Polygon, False],
+        ['plan', 'cxt', 'mtr', 'Mortar',                  '', FeatureType.Polygon, False],
         ['plan', 'cxt', 'lvl', 'Level',                   '', FeatureType.Point,   False],
         ['plan', 'cxt', 'llv', 'Lowest Level',            '', FeatureType.Point,   False],
         ['plan', 'cxt', 'sch', 'Schema',                  '', FeatureType.Polygon, False],

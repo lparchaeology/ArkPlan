@@ -48,7 +48,7 @@ class GridWizard(QWizard, Ui_GridWizard):
         self._iface = iface
 
         self.setupUi(self)
-        self.gridFolderEdit.setText(project.modulePath('grid'))
+        self.gridFolderEdit.setText(project.groupPath('grid'))
         self.gridGroupNameEdit.setText(project.layersGroupName('grid'))
         self.gridPointsNameEdit.setText(project.pointsBaseName('grid'))
         self.gridLinesNameEdit.setText(project.linesBaseName('grid'))

@@ -117,7 +117,7 @@ class Filter(QObject):
 
     # Save the project
     def writeProject(self):
-        if self.dock.currentFilterSet() = 'Default':
+        if self.dock.currentFilterSet() == 'Default':
             self._saveFilterSet('Default', 'Default')
 
     # Close the project
@@ -381,7 +381,7 @@ class Filter(QObject):
     def loadFilterSet(self, filterSet='Default'):
         self._loadFilterSet(filterSet)
         self.dock.setFilterSet(filterSet)
-        self.applyFilters(filterSet)
+        self.applyFilters()
 
     def _loadFilterSet(self, key):
         group = self._filterSetGroup(key)

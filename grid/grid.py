@@ -58,7 +58,7 @@ class GridModule(QObject):
     def initGui(self):
         self.dock = GridDock()
         action = self.project.addDockAction(':/plugins/ArkPlan/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
-        self.dock.load(self.project.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
         self.dock.createGridSelected.connect(self.showGridWizard)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
@@ -97,6 +97,15 @@ class GridModule(QObject):
         self.initialised = True
         return True
 
+    # Save the project
+    def writeProject(self):
+        pass
+
+    # Close the project
+    def closeProject(self):
+        self.writeProject()
+        self.initialised = False
+
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Reset the initialisation
@@ -105,7 +114,8 @@ class GridModule(QObject):
 
     def run(self, checked):
         if checked:
-            self.initialise()
+            if not self.initialised:
+                self.loadProject()
 
     def loadGridNames(self):
         names = set()

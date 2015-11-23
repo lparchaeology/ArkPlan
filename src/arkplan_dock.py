@@ -63,7 +63,7 @@ class ArkPlanDock(ArkDockWidget):
     def addSeparator(self):
         self.dockToolbar.addSeparator()
 
-    def unload(self):
+    def unloadGui(self):
         del self.projectLayerView
         self.projectLayerView = None
-        super(ArkPlanDock, self).unload()
+        super(ArkPlanDock, self).unloadGui()

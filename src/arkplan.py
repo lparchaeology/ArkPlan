@@ -83,16 +83,20 @@ class ArkPlan(Plugin):
     # Load the plugin gui
     def initGui(self):
         super(ArkPlan, self).initGui()
-        self.gridModule.initGui()
-        self.planModule.initGui()
-        self.filterModule.initGui()
 
-        # Load the Plugin
+        # Init the main dock
         self.dock = ArkPlanDock(self)
         action = self.addAction(self.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
-        self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
         self.dock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
+        self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
         self.dock.toggled.connect(self.run)
+
+        # Init the modules
+        self.dock.addSeparator()
+        self.gridModule.initGui()
+        self.filterModule.initGui()
+        self.dock.addSeparator()
+        self.planModule.initGui()
 
     # Load the project settings when project is loaded
     def loadProject(self):
@@ -113,16 +117,19 @@ class ArkPlan(Plugin):
         self.filterModule.closeProject()
 
     # Unload the plugin
-    def unloadGui(self):
+    def unload(self):
 
         # Restore the original QGIS gui
         self.dock.menuAction().setChecked(False)
 
         if self._initialised:
+            # Close the project
+            self.closeProject()
+
             # Unload the modules in dependence order
-            self.planModule.unload()
-            self.filterModule.unload()
-            self.gridModule.unload()
+            self.planModule.unloadGui()
+            self.filterModule.unloadGui()
+            self.gridModule.unloadGui()
 
             # Unload the layers
             if self.plan is not None:
@@ -133,7 +140,7 @@ class ArkPlan(Plugin):
                 self.base.unload()
 
             # Unload this dock and uninitialise
-            self.dock.unload()
+            self.dock.unloadGui()
             self._initialised = False
 
         # Removes the plugin menu item and icon from QGIS GUI.
@@ -233,13 +240,9 @@ class ArkPlan(Plugin):
             self._createCollectionLayers('base', self.base._settings)
 
             #TODO Maybe do module inti here too?
-            if self.grid.initialise() and self.plan.initialise() and self.base.initialise() and self.filterModule.initialise():
-                # Load the Modules
-                self.dock.addSeparator()
-                self.gridModule.load()
-                self.filterModule.load()
-                self.dock.addSeparator()
-                self.planModule.load()
+            if self.grid.initialise() and self.plan.initialise() and self.base.initialise() and self.filterModule.loadProject():
+                # Load the Project
+                self.loadProject()
 
                 # If the project or layers or legend indexes change make sure we stay updated
                 self.dock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)

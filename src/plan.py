@@ -86,15 +86,6 @@ class Plan(QObject):
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
-        for category in Config.featureCategories:
-            #TODO Select by map tool type enum
-            if category[2] == 'lvl' or category[2] == 'llv':
-                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
-            else:
-                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
-            if category[6] == True:
-                self._definitiveCategories.add(category[2])
-
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
@@ -110,8 +101,6 @@ class Plan(QObject):
         self.schematicDock = SchematicDock(self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
-        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)
         self.schematicDock.findSourceSelected.connect(self._findSource)
@@ -122,7 +111,6 @@ class Plan(QObject):
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
-
 
         self.editDock = EditDock(self.project.iface, self.project.dock)
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
@@ -136,10 +124,22 @@ class Plan(QObject):
         self.initialiseBuffers()
         self.dock.initSourceCodes(Config.planSourceCodes)
         self.dock.initSourceClasses(Config.planSourceClasses)
+        for category in Config.featureCategories:
+            #TODO Select by map tool type enum
+            if category[2] == 'lvl' or category[2] == 'llv':
+                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
+            else:
+                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
+            if category[6] == True:
+                self._definitiveCategories.add(category[2])
+
         self.schematicDock.initSourceCodes(Config.planSourceCodes)
         self.schematicDock.initSourceClasses(Config.planSourceClasses)
         self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
+        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
 
+        self.initialised = True
 
     # Save the project
     def writeProject(self):
@@ -148,6 +148,8 @@ class Plan(QObject):
     # Close the project
     def closeProject(self):
         self._clearSchematicFilters()
+        self.writeProject()
+        self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
@@ -168,28 +170,25 @@ class Plan(QObject):
         self.dock.unloadGui()
 
     def run(self, checked):
-        if checked:
-            if self.initialise():
-                self.schematicDock.menuAction().setChecked(False)
-                self.editDock.menuAction().setChecked(False)
-            else:
-                self.dock.menuAction().setChecked(False)
+        if checked and self.initialised:
+            self.schematicDock.menuAction().setChecked(False)
+            self.editDock.menuAction().setChecked(False)
+        else:
+            self.dock.menuAction().setChecked(False)
 
     def runEdit(self, checked):
-        if checked:
-            if self.initialise():
-                self.schematicDock.menuAction().setChecked(False)
-                self.dock.menuAction().setChecked(False)
-            else:
-                self.editDock.menuAction().setChecked(False)
+        if checked and self.initialised:
+            self.schematicDock.menuAction().setChecked(False)
+            self.dock.menuAction().setChecked(False)
+        else:
+            self.editDock.menuAction().setChecked(False)
 
     def runSchematic(self, checked):
-        if checked:
-            if self.initialise():
-                self.dock.menuAction().setChecked(False)
-                self.editDock.menuAction().setChecked(False)
-            else:
-                self.schematicDock.menuAction().setChecked(False)
+        if checked and self.initialised:
+            self.dock.menuAction().setChecked(False)
+            self.editDock.menuAction().setChecked(False)
+        else:
+            self.schematicDock.menuAction().setChecked(False)
 
     def initialiseBuffers(self):
         if self._buffersInitialised:

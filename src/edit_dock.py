@@ -27,7 +27,7 @@ from PyQt4.QtCore import Qt, pyqtSignal, QSize
 from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar, QSpacerItem, QSizePolicy
 
 from ..libarkqgis.dock import ArkDockWidget
-from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction
+from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction, SnappingModeTool
 
 import edit_widget_base
 
@@ -56,6 +56,7 @@ class EditDock(ArkDockWidget):
         self.editToolbar.addSeparator()
         self.editToolbar.addAction(TopologicalEditingAction(self))
         self.editToolbar.addAction(IntersectionSnappingAction(self))
+        self.editToolbar.addWidget(SnappingModeTool(self))
 
         self.editWidget = EditWidget()
         self.editWidget.setObjectName(u'editWidget')

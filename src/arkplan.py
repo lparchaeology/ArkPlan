@@ -25,7 +25,7 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
 
-from qgis.core import QgsProject, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
+from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar
 
 from ..libarkqgis.plugin import Plugin

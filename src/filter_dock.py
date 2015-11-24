@@ -209,7 +209,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.addFilterSet('Default', 'Default')
         for filterSet in filterSets:
             if filterSet[0] != 'Default':
-                self.dock.addFilterSet(filterSet[0], filterSet[1])
+                self.addFilterSet(filterSet[0], filterSet[1])
 
     def activeFilters(self):
         return self._filters

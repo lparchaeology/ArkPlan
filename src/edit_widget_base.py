@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'plan/edit_widget_base.ui'
+# Form implementation generated from reading ui file 'src/edit_widget_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -25,35 +25,29 @@ except AttributeError:
 class Ui_EditWidget(object):
     def setupUi(self, EditWidget):
         EditWidget.setObjectName(_fromUtf8("EditWidget"))
-        EditWidget.resize(265, 255)
+        EditWidget.resize(265, 225)
         self.verticalLayout = QtGui.QVBoxLayout(EditWidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.gridLayout_2 = QtGui.QGridLayout()
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.snapModeLabel = QtGui.QLabel(EditWidget)
-        self.snapModeLabel.setObjectName(_fromUtf8("snapModeLabel"))
-        self.gridLayout_2.addWidget(self.snapModeLabel, 0, 0, 1, 1)
-        self.snapTypeCombo = SnappingTypeCombo(EditWidget)
-        self.snapTypeCombo.setObjectName(_fromUtf8("snapTypeCombo"))
-        self.gridLayout_2.addWidget(self.snapTypeCombo, 1, 1, 1, 1)
-        self.snapModeCombo = SnappingModeCombo(EditWidget)
-        self.snapModeCombo.setObjectName(_fromUtf8("snapModeCombo"))
-        self.gridLayout_2.addWidget(self.snapModeCombo, 0, 1, 1, 1)
         self.snapToleranceLabel = QtGui.QLabel(EditWidget)
         self.snapToleranceLabel.setObjectName(_fromUtf8("snapToleranceLabel"))
-        self.gridLayout_2.addWidget(self.snapToleranceLabel, 3, 0, 1, 1)
-        self.snapTypeLabel = QtGui.QLabel(EditWidget)
-        self.snapTypeLabel.setObjectName(_fromUtf8("snapTypeLabel"))
-        self.gridLayout_2.addWidget(self.snapTypeLabel, 1, 0, 1, 1)
-        self.snapToleranceSpin = SnappingToleranceSpinBox(EditWidget)
-        self.snapToleranceSpin.setObjectName(_fromUtf8("snapToleranceSpin"))
-        self.gridLayout_2.addWidget(self.snapToleranceSpin, 3, 1, 1, 1)
-        self.snapUnitLabel = QtGui.QLabel(EditWidget)
-        self.snapUnitLabel.setObjectName(_fromUtf8("snapUnitLabel"))
-        self.gridLayout_2.addWidget(self.snapUnitLabel, 2, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.snapToleranceLabel, 2, 0, 1, 1)
         self.snapUnitCombo = SnappingUnitCombo(EditWidget)
         self.snapUnitCombo.setObjectName(_fromUtf8("snapUnitCombo"))
-        self.gridLayout_2.addWidget(self.snapUnitCombo, 2, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.snapUnitCombo, 1, 1, 1, 1)
+        self.snapUnitLabel = QtGui.QLabel(EditWidget)
+        self.snapUnitLabel.setObjectName(_fromUtf8("snapUnitLabel"))
+        self.gridLayout_2.addWidget(self.snapUnitLabel, 1, 0, 1, 1)
+        self.snapTypeCombo = SnappingTypeCombo(EditWidget)
+        self.snapTypeCombo.setObjectName(_fromUtf8("snapTypeCombo"))
+        self.gridLayout_2.addWidget(self.snapTypeCombo, 0, 1, 1, 1)
+        self.snapTypeLabel = QtGui.QLabel(EditWidget)
+        self.snapTypeLabel.setObjectName(_fromUtf8("snapTypeLabel"))
+        self.gridLayout_2.addWidget(self.snapTypeLabel, 0, 0, 1, 1)
+        self.snapToleranceSpin = SnappingToleranceSpinBox(EditWidget)
+        self.snapToleranceSpin.setObjectName(_fromUtf8("snapToleranceSpin"))
+        self.gridLayout_2.addWidget(self.snapToleranceSpin, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -121,17 +115,15 @@ class Ui_EditWidget(object):
         self.snapPointsLabel.setObjectName(_fromUtf8("snapPointsLabel"))
         self.gridLayout.addWidget(self.snapPointsLabel, 0, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
-        self.snapModeLabel.setBuddy(self.snapModeCombo)
         self.snapToleranceLabel.setBuddy(self.snapToleranceSpin)
-        self.snapTypeLabel.setBuddy(self.snapTypeCombo)
         self.snapUnitLabel.setBuddy(self.snapUnitCombo)
+        self.snapTypeLabel.setBuddy(self.snapTypeCombo)
         self.snapPlanLabel.setBuddy(self.snapPlanPointsTool)
         self.snapBuffersLabel.setBuddy(self.snapBufferPointsTool)
         self.snapBaseLabel.setBuddy(self.snapBasePointsTool)
 
         self.retranslateUi(EditWidget)
         QtCore.QMetaObject.connectSlotsByName(EditWidget)
-        EditWidget.setTabOrder(self.snapModeCombo, self.snapTypeCombo)
         EditWidget.setTabOrder(self.snapTypeCombo, self.snapUnitCombo)
         EditWidget.setTabOrder(self.snapUnitCombo, self.snapToleranceSpin)
         EditWidget.setTabOrder(self.snapToleranceSpin, self.snapBufferPointsTool)
@@ -146,10 +138,9 @@ class Ui_EditWidget(object):
 
     def retranslateUi(self, EditWidget):
         EditWidget.setWindowTitle(_translate("EditWidget", "Form", None))
-        self.snapModeLabel.setText(_translate("EditWidget", "Snap Mode:", None))
         self.snapToleranceLabel.setText(_translate("EditWidget", "Snap Tolerance:", None))
-        self.snapTypeLabel.setText(_translate("EditWidget", "Snap Type:", None))
         self.snapUnitLabel.setText(_translate("EditWidget", "Snap Units", None))
+        self.snapTypeLabel.setText(_translate("EditWidget", "Snap Type:", None))
         self.snapPlanPointsTool.setText(_translate("EditWidget", "...", None))
         self.snapPlanLabel.setText(_translate("EditWidget", "Snap Plan Data:", None))
         self.snapLinesLabel.setText(_translate("EditWidget", "Lines", None))
@@ -166,4 +157,4 @@ class Ui_EditWidget(object):
         self.snapBasePolygonsTool.setText(_translate("EditWidget", "...", None))
         self.snapPointsLabel.setText(_translate("EditWidget", "Points", None))
 
-from ..libarkqgis.snapping import SnappingModeCombo, SnappingToleranceSpinBox, SnappingToolButton, SnappingTypeCombo, SnappingUnitCombo
+from ..libarkqgis.snapping import SnappingToleranceSpinBox, SnappingToolButton, SnappingTypeCombo, SnappingUnitCombo

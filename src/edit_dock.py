@@ -29,7 +29,7 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar, QSpacerItem, QSizePolicy
 from qgis.core import QgsProject
 
 from ..libarkqgis.dock import ArkDockWidget
-from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction, SnappingModeTool, projectSnappingMode
+from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction, SnappingModeTool, Snapping
 
 import edit_widget_base
 
@@ -131,7 +131,7 @@ class EditDock(ArkDockWidget):
         self.editWidget.snapBasePolygonsTool.setLayer(layer)
 
     def _refresh(self):
-        advanced = (projectSnappingMode() == 'advanced')
+        advanced = (Snapping.projectSnappingMode() == 'advanced')
         self.editWidget.snapTypeCombo.setDisabled(advanced)
         self.editWidget.snapUnitCombo.setDisabled(advanced)
         self.editWidget.snapToleranceSpin.setDisabled(advanced)

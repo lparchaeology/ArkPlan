@@ -141,13 +141,18 @@ class Filter(QObject):
     # Filter methods
 
     def addFilter(self, filterType, siteCode, classCode, filterRange, filterAction):
-        self.initialise()
+        if not self._initialised:
+            return
         return self.dock.addFilter(filterType, siteCode, classCode, filterRange, filterAction)
 
     def removeFilter(self, filterIndex):
+        if not self._initialised:
+            return
         self.dock.removeFilter(filterIndex)
 
     def hasFilterType(self, filterType):
+        if not self._initialised:
+            return
         return self.dock.hasFilterType(filterType)
 
     def applyFilters(self):
@@ -192,6 +197,8 @@ class Filter(QObject):
 
 
     def applyContextFilter(self, contextRange):
+        if not self._initialised:
+            return
         del self.contextList[:]
         self.contextList = self._rangeToList(contextRange)
         self.project.plan.applyFieldFilterRange(self.project.fieldName('id'), contextRange)
@@ -199,6 +206,8 @@ class Filter(QObject):
 
 
     def applySubGroupFilter(self, subRange):
+        if not self._initialised:
+            return
         del self.contextList[:]
         sublist = self._rangeToList(subRange)
         for sub in subList:
@@ -208,6 +217,8 @@ class Filter(QObject):
 
 
     def applyGroupFilter(self, groupRange):
+        if not self._initialised:
+            return
         del self.contextList[:]
         groupList = self._rangeToList(groupRange)
         for group in groupList:

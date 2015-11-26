@@ -86,6 +86,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.findSourceButton.clicked.connect(self.findSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
+        self.metadataWidget.initGui()
         self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
         self.resetButton.clicked.connect(self.resetSelected)
         self.clearButton.clicked.connect(self.clearSelected)

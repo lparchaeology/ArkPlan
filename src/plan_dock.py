@@ -66,6 +66,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.loadContextButton.clicked.connect(self.loadContextSelected)
         self.loadPlanButton.clicked.connect(self.loadPlanSelected)
 
+        self.metadataWidget.initGui()
+
         self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
         self.featureIdSpin.valueChanged.connect(self.featureIdChanged)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)

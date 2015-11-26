@@ -55,8 +55,6 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         self.commentEdit.textChanged.connect(self._md.setComment)
         self.createdByEdit.textChanged.connect(self._md.setCreatedBy)
 
-        self._md.setSourceId(self.sourceIdSpin.value())
-
     def metadata(self):
         return self._md
 

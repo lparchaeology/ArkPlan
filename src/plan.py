@@ -563,7 +563,7 @@ class Plan(QObject):
             md = self.schematicDock.metadata()
             feature.setAttribute(self.project.fieldName('site'), md.siteCode(True))
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
-            feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context(True))
+            feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context())
             feature.setAttribute(self.project.fieldName('name'), None)
             feature.setAttribute(self.project.fieldName('category'), 'sch')
             feature.setAttribute(self.project.fieldName('source_cd'), md.sourceCode(True))

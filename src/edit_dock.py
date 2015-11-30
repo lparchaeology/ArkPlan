@@ -131,7 +131,7 @@ class EditDock(ArkDockWidget):
         self.editWidget.snapBasePolygonsTool.setLayer(layer)
 
     def _refresh(self):
-        advanced = (Snapping.projectSnappingMode() == 'advanced')
+        advanced = (Snapping.snappingMode() == Snapping.SelectedLayers)
         self.editWidget.snapTypeCombo.setDisabled(advanced)
         self.editWidget.snapUnitCombo.setDisabled(advanced)
         self.editWidget.snapToleranceSpin.setDisabled(advanced)

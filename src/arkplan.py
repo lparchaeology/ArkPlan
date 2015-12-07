@@ -36,6 +36,7 @@ from ..grid.grid import GridModule
 
 from plan import Plan
 from filter import Filter
+from identify import MapToolIndentifyItems
 
 from config import Config
 from arkplan_dock import ArkPlanDock
@@ -51,6 +52,9 @@ class ArkPlan(Plugin):
     projectChanged = pyqtSignal()
 
     project = None # QgsProject()
+
+    # Tools
+    identifyMapTool = None  # MapToolIndentifyItems()
 
     # Modules
     gridModule = None  # Grid()
@@ -90,6 +94,13 @@ class ArkPlan(Plugin):
         self.dock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
         self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
         self.dock.toggled.connect(self.run)
+
+        # Init the identify tool
+        self.dock.addSeparator()
+        self.identifyAction = self.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
+        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
+        self.identifyMapTool = MapToolIndentifyItems(self)
+        self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the modules
         self.dock.addSeparator()
@@ -584,3 +595,11 @@ class ArkPlan(Plugin):
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())
         return settingsDialog.exec_()
+
+    # Identify Tool
+
+    def triggerIdentifyAction(self, checked):
+        if checked:
+            self.mapCanvas().setMapTool(self.identifyMapTool)
+        else:
+            self.mapCanvas().unsetMapTool(self.identifyMapTool)

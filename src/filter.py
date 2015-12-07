@@ -56,8 +56,6 @@ class Filter(QObject):
     _useGroups = False
     _filterSetGroupIndex = -1
 
-    identifyMapTool = None  # ArkMapToolIndentifyFeatures()
-
     def __init__(self, project):
         super(Filter, self).__init__(project)
         self.project = project
@@ -72,9 +70,6 @@ class Filter(QObject):
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
-        self.identifyAction = self.project.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
-        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
-
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.buildSelectionSelected.connect(self.buildSelection)
@@ -83,10 +78,6 @@ class Filter(QObject):
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
-
-        self.identifyMapTool = ArkMapToolIndentifyFeatures(self.project.mapCanvas())
-        self.identifyMapTool.setAction(self.identifyAction)
-        self.identifyMapTool.featureIdentified.connect(self.showIdentifyDialog)
 
         self.dock.filterSetChanged.connect(self._loadFilterSet)
         self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
@@ -267,15 +258,6 @@ class Filter(QObject):
 
     def zoomFilter(self):
         self.project.plan.zoomToExtent()
-
-
-    def triggerIdentifyAction(self, checked):
-        if checked:
-            #if not self._dataLoaded:
-                #self.data.loadData()
-            self.project.mapCanvas().setMapTool(self.identifyMapTool)
-        else:
-            self.project.mapCanvas().unsetMapTool(self.identifyMapTool)
 
 
     def showIdentifyDialog(self, feature):

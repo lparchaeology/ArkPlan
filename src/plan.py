@@ -104,7 +104,7 @@ class Plan(QObject):
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findContext)
         self.schematicDock.findSourceSelected.connect(self._findSource)
-        self.schematicDock.copySourceSelected.connect(self._copySource)
+        self.schematicDock.copySourceSelected.connect(self._editSource)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
         self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
         self.schematicDock.resetSelected.connect(self._resetSchematic)
@@ -575,6 +575,15 @@ class Plan(QObject):
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 
+    def _editSource(self):
+        self._clearSchematicSourceFilters()
+        self._copySource()
+        self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
+        self.project.iface.actionZoomToLayer().trigger()
+        self.project.plan.polygonsBuffer.selectAll()
+        self.project.iface.actionNodeTool().trigger()
+
     def _cloneSource(self):
+        self._clearSchematicSourceFilters()
         self._copySource()
         self.mergeBuffers()

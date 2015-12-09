@@ -80,6 +80,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
                 self._menu.addAction(site + ':')
             action = IdentifyItemAction(item[0], item[1], item[2], self._project)
             action.openInArkSelected.connect(self._openInArk)
+            action.editItemSelected.connect(self._editInBuffers)
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
@@ -136,9 +137,13 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         if browser:
             browser.open_new_tab(url)
 
+    def _editInBuffers(self, classCode, siteCode, itemId):
+        self._project.planModule.editInBuffers(siteCode, classCode, itemId)
+
 class IdentifyItemAction(QAction):
 
     openInArkSelected = pyqtSignal(str, str, str)
+    editItemSelected = pyqtSignal(str, str, str)
 
     siteCode = ''
     classCode = ''
@@ -172,6 +177,9 @@ class IdentifyItemAction(QAction):
             self.linkAction = QAction('Open in ARK', parent)
             self.linkAction.triggered.connect(self._openArk)
             menu.addAction(self.linkAction)
+        self.editAction = QAction('Edit Item', parent)
+        self.editAction.triggered.connect(self._editItem)
+        menu.addAction(self.editAction)
         menu.addSeparator()
         if source is None:
             menu.addAction('No Schematic')
@@ -198,3 +206,6 @@ class IdentifyItemAction(QAction):
 
     def _openArk(self):
         self.openInArkSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _editItem(self):
+        self.editItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))

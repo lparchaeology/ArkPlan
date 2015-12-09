@@ -436,6 +436,64 @@ class Plan(QObject):
         outLayer.endEditCommand()
         self.project.mapCanvas().refresh()
 
+    def _confirmDelete(self, itemId, title='Confirm Delete Item'):
+        label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'
+        confirm, ok = QInputDialog.getText(None, title, label, text='')
+        return ok and confirm == str(itemId)
+
+    def editInBuffers(self, siteCode, classCode, itemId):
+        if self._confirmDelete(itemId, 'Confirm Move Item'):
+            self._editInBuffers(siteCode, classCode, itemId)
+
+    def _editInBuffers(self, siteCode, classCode, itemId):
+        request = self._itemRequest(siteCode, classCode, itemId)
+        self.project.plan.moveToBuffers(request)
+        if classCode == 'cxt':
+            self.dock.setContextNumber(int(itemId))
+            self.dock.setFeatureId(0)
+        else:
+            self.dock.setContextNumber(0)
+            self.dock.setFeatureId(itemId)
+        self.metadata().setSiteCode(siteCode)
+        self.metadata().setComment('')
+        self.metadata().setSourceCode('drw')
+        self.metadata().setSourceClass(classCode)
+        self.metadata().setSourceId(itemId)
+        self.metadata().setSourceFile('')
+
+    # Feature Request Methods
+
+    def _eqClause(self, field, value):
+        return _doublequote(self.project.fieldName(field)) + ' = ' + _quote(str(value))
+
+    def _siteClause(self, siteCode):
+        return self._eqClause('site', siteCode)
+
+    def _classClause(self, classCode):
+        return self._eqClause('class', classCode)
+
+    def _idClause(self, itemId):
+        return self._eqClause('id', itemId)
+
+    def _categoryClause(self, category):
+        return self._eqClause('category', category)
+        return _doublequote(self.project.fieldName('category')) + ' = ' + _quote(category)
+
+    def _itemExpr(self, siteCode, classCode, itemId):
+        return self._siteClause(siteCode) + ' and ' + self._classClause(classCode) + ' and ' + self._idClause(itemId)
+
+    def _featureRequest(self, expr):
+        request = QgsFeatureRequest()
+        request.setFilterExpression(expr)
+        return request
+
+    def _itemRequest(self, siteCode, classCode, itemId):
+        expr = self._itemExpr(siteCode, classCode, itemId)
+        return self._featureRequest(expr)
+
+    def _categoryRequest(self, siteCode, classCode, itemId, category):
+        return self._featureRequest(self._itemExpr(siteCode, classCode, itemId) + ' and ' + self._categoryClause(category))
+
     # SchematicDock methods
 
     def _resetSchematic(self):
@@ -472,23 +530,18 @@ class Plan(QObject):
             self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
         self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
 
-        classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
-        idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.context()) + '\''
-        schmExpr = '"' + self.project.fieldName('category') + '" = \'sch\''
-
-        request = QgsFeatureRequest()
-        request.setFilterExpression(classExpr + ' and ' + idExpr)
+        itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.context())
         haveFeature = SearchStatus.Found
         try:
-            feature = self.project.plan.linesLayer.getFeatures(request).next()
+            feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
             self._copyFeatureMetadata(feature)
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
-        request.setFilterExpression(classExpr + ' and ' + idExpr + ' and ' + schmExpr)
+        schRequest = self._categoryRequest(siteCode, 'cxt', self.schematicDock.context(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
-            self.project.plan.polygonsLayer.getFeatures(request).next()
+            self.project.plan.polygonsLayer.getFeatures(schRequest).next()
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
@@ -507,22 +560,17 @@ class Plan(QObject):
         self._clearSchematicContextHighlightFilter()
         self._schematicSourceHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
 
-        classExpr = '"' + self.project.fieldName('class') + '" = \'' + 'cxt' + '\''
-        idExpr = '"' + self.project.fieldName('id') + '" = \'' + str(self.schematicDock.sourceContext()) + '\''
-        schmExpr = '"' + self.project.fieldName('category') + '" = \'sch\''
-
-        request = QgsFeatureRequest()
-        request.setFilterExpression(classExpr + ' and ' + idExpr)
+        itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.sourceContext())
         haveFeature = SearchStatus.Found
         try:
-            self.project.plan.linesLayer.getFeatures(request).next()
+            self.project.plan.linesLayer.getFeatures(itemRequest).next()
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
-        request.setFilterExpression(classExpr + ' and ' + idExpr + ' and ' + schmExpr)
+        schRequest = self._categoryRequest(siteCode, 'cxt', self.schematicDock.sourceContext(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
-            feature = self.project.plan.polygonsLayer.getFeatures(request).next()
+            feature = self.project.plan.polygonsLayer.getFeatures(schRequest).next()
             self._copyFeatureMetadata(feature)
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
@@ -546,18 +594,8 @@ class Plan(QObject):
         self.schematicDock.metadata().setSourceId(self.schematicDock.sourceContext())
         self.schematicDock.metadata().setSourceFile('')
 
-    def _classClause(self, classCode):
-        return _doublequote(self.project.fieldName('class')) + ' = ' + _quote(classCode)
-
-    def _idClause(self, num):
-        return _doublequote(self.project.fieldName('id')) + ' = ' + str(num)
-
-    def _categoryClause(self, category):
-        return _doublequote(self.project.fieldName('category')) + ' = ' + _quote(category)
-
     def _copySource(self):
-        request = QgsFeatureRequest()
-        request.setFilterExpression(self._classClause('cxt') + ' and ' + self._idClause(self.schematicDock.sourceContext()) + ' and ' + self._categoryClause('sch'))
+        request = self._categoryRequest(siteCode, 'cxt', self.schematicDock.sourceContext(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
             md = self.schematicDock.metadata()

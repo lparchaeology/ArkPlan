@@ -21,6 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 """
+import webbrowser
+
 from PyQt4.QtCore import Qt, pyqtSignal, QSettings
 from PyQt4.QtGui import QAction, QMenu, QColor
 
@@ -77,6 +79,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
                 self._menu.addSeparator()
                 self._menu.addAction(site + ':')
             action = IdentifyItemAction(item[0], item[1], item[2], self._project)
+            action.openInArkSelected.connect(self._openInArk)
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
@@ -123,8 +126,19 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         hl.setMinWidth(minWidth)
         self._highlights.append(hl)
 
+    def _openInArk(self, classCode, siteCode, itemId):
+        mod_cd = classCode + '_cd'
+        item = siteCode + '_' + itemId
+        url = self._project.arkUrl() + 'micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
+        browser = webbrowser.get('firefox')
+        if browser is None:
+            browser = webbrowser.get()
+        if browser:
+            browser.open_new_tab(url)
 
 class IdentifyItemAction(QAction):
+
+    openInArkSelected = pyqtSignal(str, str, str)
 
     siteCode = ''
     classCode = ''
@@ -154,11 +168,14 @@ class IdentifyItemAction(QAction):
                           str(feature.attribute(project.fieldName('source_cl'))),
                           str(feature.attribute(project.fieldName('source_id'))))
                 area.append(feature.geometry().area())
-        menu.addAction('Actions go here!')
+        if project.useArkDB() and project.arkUrl():
+            self.linkAction = QAction('Open in ARK', parent)
+            self.linkAction.triggered.connect(self._openArk)
+            menu.addAction(self.linkAction)
+        menu.addSeparator()
         if source is None:
             menu.addAction('No Schematic')
         else:
-            menu.addSeparator()
             sourceCode = feature.attribute(project.fieldName('source_cd'))
             sourceClass = feature.attribute(project.fieldName('source_cl'))
             sourceId = feature.attribute(project.fieldName('source_id'))
@@ -178,3 +195,6 @@ class IdentifyItemAction(QAction):
             for a in area:
                 menu.addAction('Area: ' + str(a))
         self.setMenu(menu)
+
+    def _openArk(self):
+        self.openInArkSelected.emit(self.classCode, self.siteCode, str(self.itemId))

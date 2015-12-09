@@ -49,6 +49,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
             self.styleFolderButton.setEnabled(True)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
         self.useArkCheck.setChecked(project.useArkDB())
+        self.arkUrlEdit.setText(project.arkUrl())
         if project.isConfigured():
             self.useArkCheck.setEnabled(False)
 
@@ -112,6 +113,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setSiteCode(self.siteCodeEdit.text())
         self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
         self._project.setUseArkDB(self.useArkCheck.isChecked())
+        self._project.setArkUrl(self.arkUrlEdit.text())
 
         # Grid tab settings
         self._project.setGroupPath('grid', self.gridFolderCheck.isChecked(), self.gridFolderEdit.text())

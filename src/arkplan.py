@@ -184,6 +184,7 @@ class ArkPlan(Plugin):
                 self.setMultiSiteProject(wizard.multiSiteProject())
                 self.setSiteCode(wizard.siteCode())
                 self.setUseArkDB(wizard.useArkDB())
+                self.setArkUrl(wizard.arkUrl())
             if (self.siteCode()
                 and self.projectDir().mkpath('.')
                 and self.siteCode()
@@ -416,6 +417,12 @@ class ArkPlan(Plugin):
 
     def setUseArkDB(self, useArkDB):
         self.writeEntry('useArkDB', useArkDB)
+
+    def arkUrl(self):
+        return self.readEntry('arkUrl', '')
+
+    def setArkUrl(self, arkUrl):
+        self.writeEntry('arkUrl', arkUrl)
 
     def projectDir(self):
         return QDir(self.projectPath())

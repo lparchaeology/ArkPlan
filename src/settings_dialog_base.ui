@@ -24,20 +24,10 @@
        <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="4" column="2">
-        <widget class="QCheckBox" name="useArkCheck">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="useArkLabel">
          <property name="text">
-          <string>Use ARK DB mode:</string>
-         </property>
-         <property name="buddy">
-          <cstring>useArkCheck</cstring>
+          <string>Use ARK DB:</string>
          </property>
         </widget>
        </item>
@@ -147,6 +137,24 @@
        </item>
        <item row="2" column="2">
         <widget class="QLineEdit" name="siteCodeEdit"/>
+       </item>
+       <item row="4" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QCheckBox" name="useArkCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="arkUrlEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -674,7 +682,6 @@
   <tabstop>styleFolderCheck</tabstop>
   <tabstop>styleFolderEdit</tabstop>
   <tabstop>styleFolderButton</tabstop>
-  <tabstop>useArkCheck</tabstop>
   <tabstop>buttonBox</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>gridLinesNameEdit</tabstop>
@@ -934,6 +941,22 @@
     <hint type="destinationlabel">
      <x>257</x>
      <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>useArkCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>arkUrlEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>230</x>
+     <y>200</y>
     </hint>
    </hints>
   </connection>

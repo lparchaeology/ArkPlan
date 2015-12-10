@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>349</width>
-    <height>535</height>
+    <width>330</width>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,8 +31,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>323</width>
-         <height>441</height>
+         <width>304</width>
+         <height>531</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -42,60 +42,7 @@
            <string>Check</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
-            <widget class="QLabel" name="contextLabel">
-             <property name="text">
-              <string>Context:</string>
-             </property>
-             <property name="buddy">
-              <cstring>contextSpin</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QSpinBox" name="contextSpin">
-             <property name="maximum">
-              <number>99999</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QToolButton" name="findContextTool">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <normaloff>:/plugins/ArkPlan/plan/search.svg</normaloff>:/plugins/ArkPlan/plan/search.svg</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="3">
-            <widget class="QLabel" name="contextSchematicLabel">
-             <property name="text">
-              <string>Has Schematic:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="3">
-            <widget class="QLabel" name="contextDataLabel">
-             <property name="text">
-              <string>Has Features:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QToolButton" name="zoomContextTool">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <normaloff>:/plugins/ArkPlan/plan/zoomToItem.svg</normaloff>:/plugins/ArkPlan/plan/zoomToItem.svg</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4" alignment="Qt::AlignHCenter">
+           <item row="2" column="7" alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="contextDataStatusLabel">
              <property name="maximumSize">
               <size>
@@ -111,13 +58,94 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="4" alignment="Qt::AlignHCenter">
+           <item row="0" column="7">
+            <widget class="QToolButton" name="zoomContextTool">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/plugins/ArkPlan/plan/zoomToItem.svg</normaloff>:/plugins/ArkPlan/plan/zoomToItem.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="contextLabel">
+             <property name="text">
+              <string>Check Context:</string>
+             </property>
+             <property name="buddy">
+              <cstring>contextSpin</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="7" alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="contextSchematicStatusLabel">
              <property name="text">
               <string/>
              </property>
              <property name="pixmap">
               <pixmap resource="resources.qrc">:/plugins/ArkPlan/plan/statusUnknown.png</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="6">
+            <widget class="QToolButton" name="findContextTool">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/plugins/ArkPlan/plan/search.svg</normaloff>:/plugins/ArkPlan/plan/search.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="3">
+            <widget class="QSpinBox" name="contextSpin">
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="4">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Edit Context:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="4">
+            <widget class="QLabel" name="contextSchematicLabel">
+             <property name="text">
+              <string>Has Schematic:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="4">
+            <widget class="QLabel" name="contextDataLabel">
+             <property name="text">
+              <string>Has Features:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="6">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="6">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="6" colspan="2">
+            <widget class="QPushButton" name="editContextButton">
+             <property name="text">
+              <string>Edit</string>
              </property>
             </widget>
            </item>
@@ -130,6 +158,20 @@
            <string>Clone</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
+           <item row="2" column="0" colspan="3">
+            <widget class="QLabel" name="sourceDataLabel">
+             <property name="text">
+              <string>Has Features:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="3">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Copy and Edit Schematic:</string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="4" alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="sourceSchematicStatusLabel">
              <property name="maximumSize">
@@ -162,31 +204,38 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1" colspan="4">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="copySourceButton">
-               <property name="text">
-                <string>Copy</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cloneSourceButton">
-               <property name="text">
-                <string>Clone</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="sourceContextLabel">
+           <item row="5" column="3" colspan="2">
+            <widget class="QPushButton" name="copySourceButton">
              <property name="text">
-              <string>Source Context:</string>
+              <string>Copy</string>
              </property>
-             <property name="buddy">
-              <cstring>sourceContextSpin</cstring>
+            </widget>
+           </item>
+           <item row="4" column="3" colspan="2">
+            <widget class="QPushButton" name="cloneSourceButton">
+             <property name="text">
+              <string>Clone</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLabel" name="sourceSchematicLabel">
+             <property name="text">
+              <string>Has Schematic:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="3">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Clone and Save Schematic:</string>
              </property>
             </widget>
            </item>
@@ -219,17 +268,34 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="4">
-            <widget class="QLabel" name="sourceSchematicLabel">
+           <item row="0" column="0">
+            <widget class="QLabel" name="sourceContextLabel">
              <property name="text">
-              <string>Has Schematic:</string>
+              <string>Source Context:</string>
+             </property>
+             <property name="buddy">
+              <cstring>sourceContextSpin</cstring>
              </property>
             </widget>
            </item>
-           <item row="2" column="0" colspan="4">
-            <widget class="QLabel" name="sourceDataLabel">
+           <item row="3" column="3">
+            <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>Has Features:</string>
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="3">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Edit Source Context:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="3" colspan="2">
+            <widget class="QPushButton" name="editSourceButton">
+             <property name="text">
+              <string>Edit</string>
              </property>
             </widget>
            </item>

@@ -103,10 +103,12 @@ class Plan(QObject):
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findPanContext)
         self.schematicDock.zoomContextSelected.connect(self._findZoomContext)
+        self.schematicDock.editContextSelected.connect(self._editSchematicContext)
         self.schematicDock.findSourceSelected.connect(self._findPanSource)
         self.schematicDock.zoomSourceSelected.connect(self._findZoomSource)
-        self.schematicDock.copySourceSelected.connect(self._editSource)
-        self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
+        self.schematicDock.copySourceSelected.connect(self._editSourceSchematic)
+        self.schematicDock.cloneSourceSelected.connect(self._cloneSourceSchematic)
+        self.schematicDock.editSourceSelected.connect(self._editSource)
         self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
         self.schematicDock.resetSelected.connect(self._resetSchematic)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
@@ -464,6 +466,8 @@ class Plan(QObject):
 
     def panToItem(self, siteCode, classCode, itemId):
         extent = self.itemExtent(siteCode, classCode, itemId)
+        if extent == None or extent.isNull() or extent.isEmpty():
+            return
         self.project.mapCanvas().setCenter(extent.center())
         self.project.mapCanvas().refresh()
 
@@ -573,6 +577,9 @@ class Plan(QObject):
         if self.schematicDock.contextStatus() == SearchStatus.Found:
             self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
 
+    def _editSchematicContext(self):
+        self.editInBuffers(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+
     def _findContext(self):
         self._clearSchematicFilters()
 
@@ -613,6 +620,9 @@ class Plan(QObject):
             self._findSource()
         if self.schematicDock.sourceStatus() == SearchStatus.Found:
             self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
+
+    def _editSource(self):
+        self.editInBuffers(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
 
     def _findSource(self):
         self._clearSchematicSourceFilters()
@@ -660,8 +670,8 @@ class Plan(QObject):
         self.schematicDock.metadata().setSourceId(self.schematicDock.sourceContext())
         self.schematicDock.metadata().setSourceFile('')
 
-    def _copySource(self):
-        request = self._categoryRequest(siteCode, 'cxt', self.schematicDock.sourceContext(), 'sch')
+    def _copySourceSchematic(self):
+        request = self._categoryRequest(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
             md = self.schematicDock.metadata()
@@ -679,15 +689,15 @@ class Plan(QObject):
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 
-    def _editSource(self):
+    def _editSourceSchematic(self):
         self._clearSchematicSourceFilters()
-        self._copySource()
+        self._copySourceSchematic()
         self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
         self.project.iface.actionZoomToLayer().trigger()
         self.project.plan.polygonsBuffer.selectAll()
         self.project.iface.actionNodeTool().trigger()
 
-    def _cloneSource(self):
+    def _cloneSourceSchematic(self):
         self._clearSchematicSourceFilters()
-        self._copySource()
+        self._copySourceSchematic()
         self.mergeBuffers()

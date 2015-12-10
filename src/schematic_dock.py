@@ -49,10 +49,12 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     findContextSelected = pyqtSignal()
     zoomContextSelected = pyqtSignal()
+    editContextSelected = pyqtSignal()
     findSourceSelected = pyqtSignal()
     zoomSourceSelected = pyqtSignal()
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
+    editSourceSelected = pyqtSignal()
     autoSchematicSelected = pyqtSignal(int)
     resetSelected = pyqtSignal()
     clearSelected = pyqtSignal()
@@ -82,6 +84,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.contextSpinFilter.returnPressed.connect(self.findContextSelected)
         self.findContextTool.clicked.connect(self.findContextSelected)
         self.zoomContextTool.clicked.connect(self.zoomContextSelected)
+        self.editContextButton.clicked.connect(self.editContextSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
         self.sourceSpinFilter = ReturnPressedFilter(self)
         self.sourceContextSpin.installEventFilter(self.sourceSpinFilter)
@@ -90,6 +93,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.zoomSourceTool.clicked.connect(self.zoomSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
+        self.editSourceButton.clicked.connect(self.editSourceSelected)
         self.metadataWidget.initGui()
         self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
         self.resetButton.clicked.connect(self.resetSelected)
@@ -156,6 +160,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._contextSchematicStatus = foundSchematic
         self._setStatusLabel(self.contextDataStatusLabel, foundData)
         self._setStatusLabel(self.contextSchematicStatusLabel, foundSchematic)
+        self.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
         self._enableDraw(foundSchematic == SearchStatus.NotFound)
         self._enableAuto()
@@ -180,6 +185,7 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._setStatusLabel(self.sourceDataStatusLabel, foundData)
         self._setStatusLabel(self.sourceSchematicStatusLabel, foundSchematic)
         self._enableClone(foundSchematic == SearchStatus.Found)
+        self.editSourceButton.setEnabled(self.sourceStatus() == SearchStatus.Found)
         self._enableAuto()
 
     def _setStatusLabel(self, label, status):
@@ -205,8 +211,6 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.metadataWidget.setEnabled(enable)
         for tool in self._tools:
             tool.setEnabled(enable)
-        self.clearButton.setEnabled(enable)
-        self.mergeButton.setEnabled(enable)
 
     def _enableAuto(self):
         auto = (self._contextDataStatus == SearchStatus.Found and self._contextSchematicStatus == SearchStatus.NotFound) or self._sourceDataStatus == SearchStatus.Found

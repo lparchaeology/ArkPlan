@@ -48,7 +48,9 @@ class SearchStatus():
 class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     findContextSelected = pyqtSignal()
+    zoomContextSelected = pyqtSignal()
     findSourceSelected = pyqtSignal()
+    zoomSourceSelected = pyqtSignal()
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     autoSchematicSelected = pyqtSignal(int)
@@ -78,12 +80,14 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self.contextSpinFilter = ReturnPressedFilter(self)
         self.contextSpin.installEventFilter(self.contextSpinFilter)
         self.contextSpinFilter.returnPressed.connect(self.findContextSelected)
-        self.findContextButton.clicked.connect(self.findContextSelected)
+        self.findContextTool.clicked.connect(self.findContextSelected)
+        self.zoomContextTool.clicked.connect(self.zoomContextSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
         self.sourceSpinFilter = ReturnPressedFilter(self)
         self.sourceContextSpin.installEventFilter(self.sourceSpinFilter)
         self.sourceSpinFilter.returnPressed.connect(self.findSourceSelected)
-        self.findSourceButton.clicked.connect(self.findSourceSelected)
+        self.findSourceTool.clicked.connect(self.findSourceSelected)
+        self.zoomSourceTool.clicked.connect(self.zoomSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
         self.metadataWidget.initGui()
@@ -140,6 +144,13 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         self._setContextStatus(foundData, foundSchematic)
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
+    def contextStatus(self):
+        if self._contextDataStatus == SearchStatus.Unknown or self._contextSchematicStatus == SearchStatus.Unknown:
+            return SearchStatus.Unknown
+        if self._contextDataStatus == SearchStatus.Found or self._contextSchematicStatus == SearchStatus.Found:
+            return SearchStatus.Found
+        return SearchStatus.NotFound
+
     def _setContextStatus(self, foundData, foundSchematic):
         self._contextDataStatus = foundData
         self._contextSchematicStatus = foundSchematic
@@ -155,6 +166,13 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
     def setSourceContext(self, context, foundData, foundSchematic):
         self.sourceContextSpin.setValue(context)
         self._setSourceStatus(foundData, foundSchematic)
+
+    def sourceStatus(self):
+        if self._sourceDataStatus == SearchStatus.Unknown or self._sourceSchematicStatus == SearchStatus.Unknown:
+            return SearchStatus.Unknown
+        if self._sourceDataStatus == SearchStatus.Found or self._sourceSchematicStatus == SearchStatus.Found:
+            return SearchStatus.Found
+        return SearchStatus.NotFound
 
     def _setSourceStatus(self, foundData, foundSchematic):
         self._sourceDataStatus = foundData
@@ -174,7 +192,8 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)
-        self.findSourceButton.setEnabled(enable)
+        self.findSourceTool.setEnabled(enable)
+        self.zoomSourceTool.setEnabled(enable)
         if not enable:
             self._enableClone(enable)
 

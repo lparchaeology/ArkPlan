@@ -5,6 +5,8 @@
     <file alias="settings.svg">../resources/settings.svg</file>
   </qresource>
   <qresource prefix="/plugins/ArkPlan/plan">
+    <file alias="search.svg">../resources/mActionSearch.svg</file>
+    <file alias="zoomToItem.svg">../resources/mActionZoomToSelected.svg</file>
     <file alias="drawPlans.png">../resources/draw-freehand.png</file>
     <file alias="checkSchematic.png">../resources/task-delegate.png</file>
     <file alias="editingTools.png">../resources/document-edit.png</file>

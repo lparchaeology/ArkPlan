@@ -101,8 +101,10 @@ class Plan(QObject):
         action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.toggled.connect(self.runSchematic)
-        self.schematicDock.findContextSelected.connect(self._findContext)
-        self.schematicDock.findSourceSelected.connect(self._findSource)
+        self.schematicDock.findContextSelected.connect(self._findPanContext)
+        self.schematicDock.zoomContextSelected.connect(self._findZoomContext)
+        self.schematicDock.findSourceSelected.connect(self._findPanSource)
+        self.schematicDock.zoomSourceSelected.connect(self._findZoomSource)
         self.schematicDock.copySourceSelected.connect(self._editSource)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSource)
         self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
@@ -559,6 +561,18 @@ class Plan(QObject):
         self.project.filterModule.removeFilter(self._schematicSourceHighlightFilter)
         self._schematicSourceHighlightFilter = -1
 
+    def _findPanContext(self):
+        if self.schematicDock.contextStatus() == SearchStatus.Unknown:
+            self._findContext()
+        if self.schematicDock.contextStatus() == SearchStatus.Found:
+            self.panToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+
+    def _findZoomContext(self):
+        if self.schematicDock.contextStatus() == SearchStatus.Unknown:
+            self._findContext()
+        if self.schematicDock.contextStatus() == SearchStatus.Found:
+            self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+
     def _findContext(self):
         self._clearSchematicFilters()
 
@@ -588,8 +602,17 @@ class Plan(QObject):
         self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
         self._featureIdChanged(self.schematicDock.context())
 
-        if haveSchematic == SearchStatus.Found or haveFeature == SearchStatus.Found:
-            self.panToItem(siteCode, 'cxt', self.schematicDock.context())
+    def _findPanSource(self):
+        if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
+            self._findSource()
+        if self.schematicDock.sourceStatus() == SearchStatus.Found:
+            self.panToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
+
+    def _findZoomSource(self):
+        if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
+            self._findSource()
+        if self.schematicDock.sourceStatus() == SearchStatus.Found:
+            self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
 
     def _findSource(self):
         self._clearSchematicSourceFilters()
@@ -619,9 +642,6 @@ class Plan(QObject):
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setSourceContext(self.schematicDock.sourceContext(), haveFeature, haveSchematic)
-
-        if haveSchematic == SearchStatus.Found or haveFeature == SearchStatus.Found:
-            self.panToItem(siteCode, 'cxt', self.schematicDock.sourceContext())
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))

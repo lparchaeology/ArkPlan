@@ -27,8 +27,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 from qgis.core import *
 
 from ..libarkqgis.map_tools import *
-from ..libarkqgis import utils
-from ..libarkqgis import processing
+from ..libarkqgis import utils, layers, processing
 
 from ..georef.georef_dialog import GeorefDialog
 
@@ -461,6 +460,47 @@ class Plan(QObject):
         self.metadata().setSourceId(itemId)
         self.metadata().setSourceFile('')
 
+    def panToItem(self, siteCode, classCode, itemId):
+        extent = self.itemExtent(siteCode, classCode, itemId)
+        self.project.mapCanvas().setCenter(extent.center())
+        self.project.mapCanvas().refresh()
+
+    def zoomToItem(self, siteCode, classCode, itemId):
+        extent = self.itemExtent(siteCode, classCode, itemId)
+        if extent == None or extent.isNull() or extent.isEmpty():
+            return
+        extent.scale(1.05)
+        self.project.mapCanvas().setExtent(extent)
+        self.project.mapCanvas().refresh()
+
+    def itemExtent(self, siteCode, classCode, itemId):
+        request = self._itemRequest(siteCode, classCode, itemId)
+        points = self._requestAsLayer(request, self.project.plan.pointsLayer, 'points')
+        lines = self._requestAsLayer(request, self.project.plan.linesLayer, 'lines')
+        polygons = self._requestAsLayer(request, self.project.plan.polygonsLayer, 'polygons')
+        extent = None
+        extent = self._combineExtentWith(extent, polygons)
+        extent = self._combineExtentWith(extent, lines)
+        extent = self._combineExtentWith(extent, points)
+        return extent
+
+    def _requestAsLayer(self, request, fromLayer, toName):
+        toLayer = layers.cloneAsMemoryLayer(fromLayer, toName)
+        layers.copyFeatureRequest(request, fromLayer, toLayer)
+        toLayer.updateExtents()
+        return toLayer
+
+    def _combineExtentWith(self, extent, layer):
+        if (layer is not None and layer.isValid() and layer.featureCount() > 0):
+            layerExtent = layer.extent()
+            if layerExtent.isNull() or layerExtent.isEmpty():
+                return extent
+            if extent == None:
+                extent = layerExtent
+            else:
+                extent.combineExtentWith(layerExtent)
+        return extent
+
     # Feature Request Methods
 
     def _eqClause(self, field, value):
@@ -548,6 +588,9 @@ class Plan(QObject):
         self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
         self._featureIdChanged(self.schematicDock.context())
 
+        if haveSchematic == SearchStatus.Found or haveFeature == SearchStatus.Found:
+            self.panToItem(siteCode, 'cxt', self.schematicDock.context())
+
     def _findSource(self):
         self._clearSchematicSourceFilters()
 
@@ -576,6 +619,9 @@ class Plan(QObject):
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setSourceContext(self.schematicDock.sourceContext(), haveFeature, haveSchematic)
+
+        if haveSchematic == SearchStatus.Found or haveFeature == SearchStatus.Found:
+            self.panToItem(siteCode, 'cxt', self.schematicDock.sourceContext())
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))

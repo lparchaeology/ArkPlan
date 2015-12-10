@@ -79,6 +79,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
                 self._menu.addSeparator()
                 self._menu.addAction(site + ':')
             action = IdentifyItemAction(item[0], item[1], item[2], self._project)
+            action.zoomToItemSelected.connect(self._zoom)
+            action.panToItemSelected.connect(self._pan)
             action.openInArkSelected.connect(self._openInArk)
             action.editItemSelected.connect(self._editInBuffers)
             self._actions.append(action)
@@ -127,6 +129,12 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         hl.setMinWidth(minWidth)
         self._highlights.append(hl)
 
+    def _zoom(self, classCode, siteCode, itemId):
+        self._project.planModule.zoomToItem(siteCode, classCode, itemId)
+
+    def _pan(self, classCode, siteCode, itemId):
+        self._project.planModule.panToItem(siteCode, classCode, itemId)
+
     def _openInArk(self, classCode, siteCode, itemId):
         mod_cd = classCode + '_cd'
         item = siteCode + '_' + itemId
@@ -144,6 +152,8 @@ class IdentifyItemAction(QAction):
 
     openInArkSelected = pyqtSignal(str, str, str)
     editItemSelected = pyqtSignal(str, str, str)
+    panToItemSelected = pyqtSignal(str, str, str)
+    zoomToItemSelected = pyqtSignal(str, str, str)
 
     siteCode = ''
     classCode = ''
@@ -173,6 +183,12 @@ class IdentifyItemAction(QAction):
                           str(feature.attribute(project.fieldName('source_cl'))),
                           str(feature.attribute(project.fieldName('source_id'))))
                 area.append(feature.geometry().area())
+        self.zoomAction = QAction('Zoom to Item', parent)
+        self.zoomAction.triggered.connect(self._zoomToItem)
+        menu.addAction(self.zoomAction)
+        self.panAction = QAction('Pan to Item', parent)
+        self.panAction.triggered.connect(self._panToItem)
+        menu.addAction(self.panAction)
         if project.useArkDB() and project.arkUrl():
             self.linkAction = QAction('Open in ARK', parent)
             self.linkAction.triggered.connect(self._openArk)
@@ -209,3 +225,9 @@ class IdentifyItemAction(QAction):
 
     def _editItem(self):
         self.editItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _panToItem(self):
+        self.panToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _zoomToItem(self):
+        self.zoomToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))

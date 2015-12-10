@@ -27,7 +27,7 @@ from PyQt4.QtCore import Qt, pyqtSignal, QSettings
 from PyQt4.QtGui import QAction, QMenu, QColor
 
 from qgis.core import *
-from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify
+from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from config import Config
 
@@ -43,13 +43,20 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     _actions = []
     _highlights = []
     _project = None
+    _vertexMarker = None  # QgsVertexMarker
 
     def __init__(self, project):
         super(MapToolIndentifyItems, self).__init__(project.mapCanvas())
         mToolName = self.tr('Identify feature')
+        self._vertexMarker = QgsVertexMarker(project.mapCanvas())
+        self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
         self._project = project
         self._menu = QMenu(project.mapCanvas())
         self._menu.hovered.connect(self._highlight)
+
+    def deactivate(self):
+        self._reset()
+        super(MapToolIndentifyItems, self).deactivate()
 
     def canvasPressEvent(self, e):
         self._reset()
@@ -88,6 +95,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             self._menu.addAction(action)
         self._menu.addSeparator()
         mapPoint = self.toMapCoordinates(e.pos())
+        self._vertexMarker.setCenter(mapPoint)
         localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
         self._menu.addAction(mapPoint.toString(3))
         self._menu.addAction(localPoint.toString(3))
@@ -103,6 +111,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._menu.clear()
         del self._highlights[:]
         del self._actions[:]
+        self._vertexMarker.setCenter(QgsPoint())
 
     def _highlight(self, item):
         del self._highlights[:]
@@ -194,16 +203,17 @@ class IdentifyItemAction(QAction):
         self.panAction = QAction('Pan to Item', parent)
         self.panAction.triggered.connect(self._panToItem)
         menu.addAction(self.panAction)
+        if project.useArkDB() and project.arkUrl():
+            self.linkAction = QAction('Open in ARK', parent)
+            self.linkAction.triggered.connect(self._openArk)
+            menu.addAction(self.linkAction)
+        menu.addSeparator()
         self.editAction = QAction('Edit Item', parent)
         self.editAction.triggered.connect(self._editItem)
         menu.addAction(self.editAction)
         self.deleteAction = QAction('Delete Item', parent)
         self.deleteAction.triggered.connect(self._deleteItem)
         menu.addAction(self.deleteAction)
-        if project.useArkDB() and project.arkUrl():
-            self.linkAction = QAction('Open in ARK', parent)
-            self.linkAction.triggered.connect(self._openArk)
-            menu.addAction(self.linkAction)
         menu.addSeparator()
         if source is None:
             menu.addAction('No Schematic')

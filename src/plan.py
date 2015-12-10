@@ -464,6 +464,11 @@ class Plan(QObject):
         self.metadata().setSourceId(itemId)
         self.metadata().setSourceFile('')
 
+    def deleteItem(self, siteCode, classCode, itemId):
+        if self._confirmDelete(itemId, 'Confirm Delete Item'):
+            request = self._itemRequest(siteCode, classCode, itemId)
+            self.project.plan.deleteRequest(request)
+
     def panToItem(self, siteCode, classCode, itemId):
         extent = self.itemExtent(siteCode, classCode, itemId)
         if extent == None or extent.isNull() or extent.isEmpty():

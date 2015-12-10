@@ -81,8 +81,9 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             action = IdentifyItemAction(item[0], item[1], item[2], self._project)
             action.zoomToItemSelected.connect(self._zoom)
             action.panToItemSelected.connect(self._pan)
-            action.openInArkSelected.connect(self._openInArk)
             action.editItemSelected.connect(self._editInBuffers)
+            action.deleteItemSelected.connect(self._delete)
+            action.openInArkSelected.connect(self._openInArk)
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
@@ -148,10 +149,14 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     def _editInBuffers(self, classCode, siteCode, itemId):
         self._project.planModule.editInBuffers(siteCode, classCode, itemId)
 
+    def _delete(self, classCode, siteCode, itemId):
+        self._project.planModule.deleteItem(siteCode, classCode, itemId)
+
 class IdentifyItemAction(QAction):
 
     openInArkSelected = pyqtSignal(str, str, str)
     editItemSelected = pyqtSignal(str, str, str)
+    deleteItemSelected = pyqtSignal(str, str, str)
     panToItemSelected = pyqtSignal(str, str, str)
     zoomToItemSelected = pyqtSignal(str, str, str)
 
@@ -189,13 +194,16 @@ class IdentifyItemAction(QAction):
         self.panAction = QAction('Pan to Item', parent)
         self.panAction.triggered.connect(self._panToItem)
         menu.addAction(self.panAction)
+        self.editAction = QAction('Edit Item', parent)
+        self.editAction.triggered.connect(self._editItem)
+        menu.addAction(self.editAction)
+        self.deleteAction = QAction('Delete Item', parent)
+        self.deleteAction.triggered.connect(self._deleteItem)
+        menu.addAction(self.deleteAction)
         if project.useArkDB() and project.arkUrl():
             self.linkAction = QAction('Open in ARK', parent)
             self.linkAction.triggered.connect(self._openArk)
             menu.addAction(self.linkAction)
-        self.editAction = QAction('Edit Item', parent)
-        self.editAction.triggered.connect(self._editItem)
-        menu.addAction(self.editAction)
         menu.addSeparator()
         if source is None:
             menu.addAction('No Schematic')
@@ -225,6 +233,9 @@ class IdentifyItemAction(QAction):
 
     def _editItem(self):
         self.editItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _deleteItem(self):
+        self.deleteItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
 
     def _panToItem(self):
         self.panToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))

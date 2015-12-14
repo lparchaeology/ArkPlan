@@ -78,6 +78,13 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
         super(SchematicDock, self).initGui(iface, location, menuAction)
         self.setupUi(self)
 
+        self.navToolbar.addAction(iface.actionPan())
+        self.navToolbar.addAction(iface.actionZoomIn())
+        self.navToolbar.addAction(iface.actionZoomOut())
+        self.navToolbar.addAction(iface.actionZoomFullExtent())
+        self.navToolbar.addAction(iface.actionZoomLast())
+        self.navToolbar.addAction(iface.actionZoomNext())
+
         self.contextSpin.valueChanged.connect(self._contextChanged)
         self.contextSpinFilter = ReturnPressedFilter(self)
         self.contextSpin.installEventFilter(self.contextSpinFilter)

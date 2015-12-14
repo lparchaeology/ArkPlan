@@ -93,6 +93,9 @@ class Plan(QObject):
         self.dock.featureIdChanged.connect(self._featureIdChanged)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
         self.dock.autoSchematicSelected.connect(self._autoSchematicBufferSelected)
+        self.dock.editPointsSelected.connect(self._editPointsLayer)
+        self.dock.editLinesSelected.connect(self._editLinesLayer)
+        self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
@@ -110,6 +113,8 @@ class Plan(QObject):
         self.schematicDock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.schematicDock.editSourceSelected.connect(self._editSource)
         self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
+        self.schematicDock.editLinesSelected.connect(self._editLinesLayer)
+        self.schematicDock.editPolygonsSelected.connect(self._editPolygonsLayer)
         self.schematicDock.resetSelected.connect(self._resetSchematic)
         self.schematicDock.clearSelected.connect(self.clearBuffers)
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
@@ -438,6 +443,18 @@ class Plan(QObject):
             outLayer.addFeature(feature)
         outLayer.endEditCommand()
         self.project.mapCanvas().refresh()
+
+    def _editPointsLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.pointsBuffer)
+        self.project.iface.actionNodeTool().trigger()
+
+    def _editLinesLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.linesBuffer)
+        self.project.iface.actionNodeTool().trigger()
+
+    def _editPolygonsLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
+        self.project.iface.actionNodeTool().trigger()
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item'):
         label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'

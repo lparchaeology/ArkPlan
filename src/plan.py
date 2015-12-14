@@ -92,7 +92,7 @@ class Plan(QObject):
         self.dock.contextNumberChanged.connect(self._featureIdChanged)
         self.dock.featureIdChanged.connect(self._featureIdChanged)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
-        self.dock.autoSchematicSelected.connect(self._autoSchematicBufferSelected)
+        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
         self.dock.editPointsSelected.connect(self._editPointsLayer)
         self.dock.editLinesSelected.connect(self._editLinesLayer)
         self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
@@ -112,7 +112,7 @@ class Plan(QObject):
         self.schematicDock.copySourceSelected.connect(self._editSourceSchematic)
         self.schematicDock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.schematicDock.editSourceSelected.connect(self._editSource)
-        self.schematicDock.autoSchematicSelected.connect(self._autoSchematicLayerSelected)
+        self.schematicDock.autoSchematicSelected.connect(self._autoSchematicSelected)
         self.schematicDock.editLinesSelected.connect(self._editLinesLayer)
         self.schematicDock.editPolygonsSelected.connect(self._editPolygonsLayer)
         self.schematicDock.resetSelected.connect(self._resetSchematic)
@@ -415,13 +415,9 @@ class Plan(QObject):
             self.metadata().setSourceId(self._featureData.featureId())
         self.metadata().validate()
 
-    def _autoSchematicBufferSelected(self, sourceId):
+    def _autoSchematicSelected(self, sourceId):
         self.actions['sch'].trigger()
         self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
-
-    def _autoSchematicLayerSelected(self, sourceId):
-        self.actions['sch'].trigger()
-        self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesLayer, self.project.plan.polygonsBuffer)
 
     def _autoSchematic(self, sourceId, fd, md, inLayer, outLayer):
         definitiveFeatures = []
@@ -435,12 +431,12 @@ class Plan(QObject):
         schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
             return
+        schematic = processing.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
         attrs = self.featureAttributes(md, fd, outLayer)
+        for attr in attrs.keys():
+            schematic.setAttribute(attr, attrs[attr])
         outLayer.beginEditCommand("Add Auto Schematic")
-        for feature in schematicFeatures:
-            for attr in attrs.keys():
-                feature.setAttribute(attr, attrs[attr])
-            outLayer.addFeature(feature)
+        outLayer.addFeature(schematic)
         outLayer.endEditCommand()
         self.project.mapCanvas().refresh()
 

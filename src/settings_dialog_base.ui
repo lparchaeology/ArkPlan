@@ -40,7 +40,7 @@
           <widget class="QPushButton" name="projectFolderButton">
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -106,7 +106,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -261,7 +261,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -369,7 +369,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -490,7 +490,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -583,7 +583,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
@@ -642,7 +642,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>

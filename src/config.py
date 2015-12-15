@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Ark
-                                 A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-12-13
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -29,7 +32,7 @@ from ..libarkqgis.map_tools import FeatureType
 
 class Config():
 
-    projectGroupName = 'Ark'
+    projectGroupName = 'Ark Spatial'
     filterSetGroupName = 'Filter Export Data'
 
     # Field deafults to use if *not* using ARK DB, so as not to confuse normal users

@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -80,8 +82,8 @@ class Plan(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = PlanDock(self.project.dock)
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        self.dock = PlanDock(self.project.layerDock)
+        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 
@@ -100,8 +102,8 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.schematicDock = SchematicDock(self.project.dock)
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
+        self.schematicDock = SchematicDock(self.project.layerDock)
+        action = self.project.addDockAction(':/plugins/ark/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
         self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findPanContext)
@@ -120,8 +122,8 @@ class Plan(QObject):
         self.schematicDock.mergeSelected.connect(self.mergeBuffers)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
-        self.editDock = EditDock(self.project.iface, self.project.dock)
-        action = self.project.addDockAction(':/plugins/ArkPlan/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
+        self.editDock = EditDock(self.project.iface, self.project.layerDock)
+        action = self.project.addDockAction(':/plugins/ark/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
         self.editDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.editDock.toggled.connect(self.runEdit)
 

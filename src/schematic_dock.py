@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-10-27
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -31,8 +33,7 @@ from PyQt4.QtGui import QDockWidget, QPixmap, QToolButton
 from qgis.core import QgsMessageLog
 
 from ..libarkqgis.dock import ArkDockWidget
-
-from event_filters import ReturnPressedFilter
+from ..libarkqgis.event_filters import ReturnPressedFilter
 
 import schematic_dock_base
 
@@ -201,11 +202,11 @@ class SchematicDock(ArkDockWidget, schematic_dock_base.Ui_SchematicDockWidget):
 
     def _setStatusLabel(self, label, status):
         if status == SearchStatus.Found:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusFound.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/plan/statusFound.png'))
         elif status == SearchStatus.NotFound:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusNotFound.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/plan/statusNotFound.png'))
         else:
-            label.setPixmap(QPixmap(':/plugins/ArkPlan/plan/statusUnknown.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/plan/statusUnknown.png'))
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)

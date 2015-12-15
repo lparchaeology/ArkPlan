@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'filter/filter_widget_base.ui'
+# Form implementation generated from reading ui file 'src/filter_widget_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -31,7 +31,7 @@ class Ui_FilterWidget(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.filterTypeTool = QtGui.QToolButton(FilterWidget)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/filter/includeFilter.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/filter/includeFilter.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.filterTypeTool.setIcon(icon)
         self.filterTypeTool.setPopupMode(QtGui.QToolButton.InstantPopup)
         self.filterTypeTool.setObjectName(_fromUtf8("filterTypeTool"))
@@ -50,7 +50,7 @@ class Ui_FilterWidget(object):
         self.horizontalLayout.addWidget(self.filterRangeCombo)
         self.filterActionTool = QtGui.QToolButton(FilterWidget)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/filter/addFilter.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/filter/addFilter.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.filterActionTool.setIcon(icon1)
         self.filterActionTool.setObjectName(_fromUtf8("filterActionTool"))
         self.horizontalLayout.addWidget(self.filterActionTool)

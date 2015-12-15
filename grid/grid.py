@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -57,7 +59,7 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def initGui(self):
         self.dock = GridDock()
-        action = self.project.addDockAction(':/plugins/ArkPlan/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
         self.dock.createGridSelected.connect(self.showGridWizard)

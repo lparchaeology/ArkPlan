@@ -88,7 +88,7 @@ class Ui_PlanDockWidget(object):
         self.gridLayout_4.addWidget(self.editLinesLabel, 4, 0, 1, 1)
         self.autoSchematicTool = QtGui.QToolButton(self.contextsTab)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/plan/autoSchematic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/plan/autoSchematic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.autoSchematicTool.setIcon(icon)
         self.autoSchematicTool.setObjectName(_fromUtf8("autoSchematicTool"))
         self.gridLayout_4.addWidget(self.autoSchematicTool, 2, 2, 1, 1)
@@ -110,7 +110,7 @@ class Ui_PlanDockWidget(object):
         self.gridLayout_4.addWidget(self.editPointsLabel, 3, 0, 1, 1)
         self.editPointsTool = QtGui.QToolButton(self.contextsTab)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/plan/nodeTool.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/plan/nodeTool.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.editPointsTool.setIcon(icon1)
         self.editPointsTool.setObjectName(_fromUtf8("editPointsTool"))
         self.gridLayout_4.addWidget(self.editPointsTool, 3, 2, 1, 1)
@@ -179,7 +179,7 @@ class Ui_PlanDockWidget(object):
         PlanDockWidget.setTabOrder(self.featureIdSpin, self.featureNameEdit)
 
     def retranslateUi(self, PlanDockWidget):
-        PlanDockWidget.setWindowTitle(_translate("PlanDockWidget", "ArkPlan", None))
+        PlanDockWidget.setWindowTitle(_translate("PlanDockWidget", "Draw Plans", None))
         self.groupBox_2.setTitle(_translate("PlanDockWidget", "Load Drawings", None))
         self.loadRawButton.setText(_translate("PlanDockWidget", "Raw", None))
         self.loadGeoButton.setText(_translate("PlanDockWidget", "Geo", None))

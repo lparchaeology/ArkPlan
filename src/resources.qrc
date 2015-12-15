@@ -1,10 +1,10 @@
 <RCC>
-  <qresource prefix="/plugins/ArkPlan">
+  <qresource prefix="/plugins/ark">
     <file alias="icon.png">../icon.png</file>
     <file alias="folder.png">../resources/folder.png</file>
     <file alias="settings.svg">../resources/settings.svg</file>
   </qresource>
-  <qresource prefix="/plugins/ArkPlan/plan">
+  <qresource prefix="/plugins/ark/plan">
     <file alias="autoSchematic.png">../resources/mActionCustomProjection.png</file>
     <file alias="nodeTool.png">../resources/mActionNodeTool.png</file>
     <file alias="search.svg">../resources/mActionSearch.svg</file>
@@ -16,7 +16,7 @@
     <file alias="statusUnknown.png">../resources/user-offline.png</file>
     <file alias="statusFound.png">../resources/user-online.png</file>
   </qresource>
-  <qresource prefix="/plugins/ArkPlan/filter">
+  <qresource prefix="/plugins/ark/filter">
     <file alias="filter.png">../resources/view-filter.png</file>
     <file alias="identify.png">../resources/edit-node.png</file>
     <file alias="buildFilter.svg">../resources/mIconExpressionEditorOpen.svg</file>

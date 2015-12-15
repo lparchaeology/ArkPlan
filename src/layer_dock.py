@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -30,15 +32,15 @@ from qgis.gui import QgsLayerTreeView
 
 from ..libarkqgis.dock import ArkDockWidget
 
-class ArkPlanDock(ArkDockWidget):
+class LayerDock(ArkDockWidget):
 
     def __init__(self, parent=None):
-        super(ArkPlanDock, self).__init__(parent)
+        super(LayerDock, self).__init__(parent)
 
     def initGui(self, iface, location, menuAction):
-        super(ArkPlanDock, self).initGui(iface, location, menuAction)
-        self.setWindowTitle(u'ARK Project Layers')
-        self.setObjectName(u'ArkPlanDock')
+        super(LayerDock, self).initGui(iface, location, menuAction)
+        self.setWindowTitle(u'ARK Spatial Layers')
+        self.setObjectName(u'LayerDock')
 
         self.dockToolbar = QToolBar(self)
         self.dockToolbar.setObjectName(u'dockToolbar')
@@ -66,4 +68,4 @@ class ArkPlanDock(ArkDockWidget):
     def unloadGui(self):
         del self.projectLayerView
         self.projectLayerView = None
-        super(ArkPlanDock, self).unloadGui()
+        super(LayerDock, self).unloadGui()

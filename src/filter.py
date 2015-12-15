@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -64,8 +66,8 @@ class Filter(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = FilterDock(self.project.dock)
-        action = self.project.addDockAction(':/plugins/ArkPlan/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
+        self.dock = FilterDock(self.project.layerDock)
+        action = self.project.addDockAction(':/plugins/ark/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
         self.dock.toggled.connect(self.run)
 

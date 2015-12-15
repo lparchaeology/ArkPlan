@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                    ArkPlan
-                                 A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
-                             -------------------
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
+                              -------------------
         begin                : 2014-12-07
-        copyright            : (C) 2014 by John Layt
-        email                : john@layt.net
         git sha              : $Format:%H$
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
+        email                : john@layt.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,11 +29,11 @@ import os.path
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load Ark class from file Ark.
+    """Load ArkSpatial class from file arkspatial.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    from .src.arkplan import ArkPlan
-    return ArkPlan(iface, os.path.dirname(__file__))
+    from .src.arkspatial import ArkSpatial
+    return ArkSpatial(iface, os.path.dirname(__file__))

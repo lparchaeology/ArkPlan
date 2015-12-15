@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="/plugins/ArkPlan/grid">
+  <qresource prefix="/plugins/ark/grid">
     <file alias="translateFeature.png">resources/mActionMoveFeature.png</file>
     <file alias="panToSelected.svg">resources/mActionPanToSelected.svg</file>
     <file alias="addPoint.png">resources/mActionCapturePoint.png</file>

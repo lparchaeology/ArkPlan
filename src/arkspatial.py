@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Ark
-                                 A QGIS plugin
- Plugin to assist in digitising of Archaeological plans.
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
         begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -39,13 +42,13 @@ from filter import Filter
 from identify import MapToolIndentifyItems
 
 from config import Config
-from arkplan_dock import ArkPlanDock
+from layer_dock import LayerDock
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 
 import resources_rc
 
-class ArkPlan(Plugin):
+class ArkSpatial(Plugin):
     """QGIS Plugin Implementation."""
 
     # Signal when the project changes so modules can reload
@@ -69,16 +72,16 @@ class ArkPlan(Plugin):
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
-    dock = None # ArkPlanDock()
+    layerDock = None # LayerDock()
 
     # Private settings
     _initialised = False
 
     def __init__(self, iface, pluginPath):
-        super(ArkPlan, self).__init__(iface, u'ArkPlan', ':/plugins/ArkPlan/icon.png',
-                                       pluginPath, Plugin.PluginsMenu)
+        super(ArkSpatial, self).__init__(iface, u'ArkSpatial', ':/plugins/ark/icon.png',
+                                         pluginPath, Plugin.PluginsMenu)
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&ArkPlan'))
+        self.setDisplayName(self.tr(u'&ARK Spatial'))
 
         self.gridModule = GridModule(self)
         self.planModule = Plan(self)
@@ -86,27 +89,27 @@ class ArkPlan(Plugin):
 
     # Load the plugin gui
     def initGui(self):
-        super(ArkPlan, self).initGui()
+        super(ArkSpatial, self).initGui()
 
         # Init the main dock
-        self.dock = ArkPlanDock(self)
-        action = self.addAction(self.pluginIconPath, self.tr(u'Ark Plan'), checkable=True)
-        self.dock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
-        self.addDockAction(':/plugins/ArkPlan/settings.svg', self.tr(u'Ark Settings'), self._triggerSettingsDialog)
-        self.dock.toggled.connect(self.run)
+        self.layerDock = LayerDock(self)
+        action = self.addAction(self.pluginIconPath, self.tr(u'ARK Spatial'), checkable=True)
+        self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
+        self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
+        self.layerDock.toggled.connect(self.run)
 
         # Init the identify tool
-        self.dock.addSeparator()
-        self.identifyAction = self.addDockAction(':/plugins/ArkPlan/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
+        self.layerDock.addSeparator()
+        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
         self.identifyAction.triggered.connect(self.triggerIdentifyAction)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the modules
-        self.dock.addSeparator()
+        self.layerDock.addSeparator()
         self.gridModule.initGui()
         self.filterModule.initGui()
-        self.dock.addSeparator()
+        self.layerDock.addSeparator()
         self.planModule.initGui()
 
     # Load the project settings when project is loaded
@@ -131,7 +134,7 @@ class ArkPlan(Plugin):
     def unload(self):
 
         # Restore the original QGIS gui
-        self.dock.menuAction().setChecked(False)
+        self.layerDock.menuAction().setChecked(False)
 
         if self._initialised:
             # Close the project
@@ -151,11 +154,11 @@ class ArkPlan(Plugin):
                 self.base.unload()
 
             # Unload this dock and uninitialise
-            self.dock.unloadGui()
+            self.layerDock.unloadGui()
             self._initialised = False
 
         # Removes the plugin menu item and icon from QGIS GUI.
-        super(ArkPlan, self).unload()
+        super(ArkSpatial, self).unload()
 
     def run(self, checked):
         if checked:
@@ -200,7 +203,7 @@ class ArkPlan(Plugin):
                 self._setIsConfigured(True)
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
-            self.dock.menuAction().setChecked(False)
+            self.layerDock.menuAction().setChecked(False)
 
     def isConfigured(self):
         return self.readBoolEntry('configured', False)
@@ -218,7 +221,7 @@ class ArkPlan(Plugin):
         self.configure()
         if self.isConfigured():
             #Show a loading indicator
-            progressMessageBar = self.iface.messageBar().createMessage("Loading ArkPlan, please wait...")
+            progressMessageBar = self.iface.messageBar().createMessage("Loading ARK Spatial, please wait...")
             progress = QProgressBar()
             progress.setMinimum(0)
             progress.setMaximum(0)
@@ -240,8 +243,8 @@ class ArkPlan(Plugin):
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
             self.projectLayerModel.setAutoCollapseLegendNodes(-1)
-            self.dock.projectLayerView.setModel(self.projectLayerModel)
-            self.dock.projectLayerView.setCurrentLayer(self.iface.activeLayer())
+            self.layerDock.projectLayerView.setModel(self.projectLayerModel)
+            self.layerDock.projectLayerView.setCurrentLayer(self.iface.activeLayer())
 
             #Load the layer collections
             self.grid = self._createCollection('grid')
@@ -257,10 +260,10 @@ class ArkPlan(Plugin):
                 self.loadProject()
 
                 # If the project or layers or legend indexes change make sure we stay updated
-                self.dock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
-                self.dock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
-                self.dock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
-                self.iface.currentLayerChanged.connect(self.dock.projectLayerView.setCurrentLayer)
+                self.layerDock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
+                self.layerDock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+                self.layerDock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
+                self.iface.currentLayerChanged.connect(self.layerDock.projectLayerView.setCurrentLayer)
                 self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
                 self.iface.projectRead.connect(self.projectLoad)
                 self.iface.newProjectCreated.connect(self.projectLoad)
@@ -382,7 +385,7 @@ class ArkPlan(Plugin):
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         icon = QIcon(iconPath)
-        parent = self.dock
+        parent = self.layerDock
         action = QAction(icon, text, parent)
         if callback is not None:
             action.triggered.connect(callback)
@@ -392,7 +395,7 @@ class ArkPlan(Plugin):
             action.setStatusTip(tip)
         if whatsThis is not None:
             action.setWhatsThis(whatsThis)
-        self.dock.addAction(action)
+        self.layerDock.addAction(action)
         #self.actions.append(action)
         return action
 

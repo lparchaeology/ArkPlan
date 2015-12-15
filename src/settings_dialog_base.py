@@ -44,7 +44,7 @@ class Ui_SettingsDialogBase(object):
         self.projectFolderLayout.addWidget(self.projectFolderEdit)
         self.projectFolderButton = QtGui.QPushButton(self.projectTab)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/folder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/folder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.projectFolderButton.setIcon(icon)
         self.projectFolderButton.setObjectName(_fromUtf8("projectFolderButton"))
         self.projectFolderLayout.addWidget(self.projectFolderButton)

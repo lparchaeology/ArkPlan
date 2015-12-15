@@ -24,7 +24,7 @@
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/plugins/ArkPlan/filter/includeFilter.png</normaloff>:/plugins/ArkPlan/filter/includeFilter.png</iconset>
+       <normaloff>:/plugins/ark/filter/includeFilter.png</normaloff>:/plugins/ark/filter/includeFilter.png</iconset>
      </property>
      <property name="popupMode">
       <enum>QToolButton::InstantPopup</enum>
@@ -54,7 +54,7 @@
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/plugins/ArkPlan/filter/addFilter.svg</normaloff>:/plugins/ArkPlan/filter/addFilter.svg</iconset>
+       <normaloff>:/plugins/ark/filter/addFilter.svg</normaloff>:/plugins/ark/filter/addFilter.svg</iconset>
      </property>
     </widget>
    </item>

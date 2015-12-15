@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                      Ark
-                                 A QGIS plugin
-             QGIS Plugin for ARK, the Archaeological Recording Kit
+                                ARK Spatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
                               -------------------
-        begin                : 2015-03-02
+        begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : (C) 2015 by L - P: Heritage LLP
-        copyright            : (C) 2015 by John Layt
+        copyright            : 2014, 2015 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2014, 2015 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -236,7 +238,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.logText(text)
 
     def logText(self, text):
-        QgsMessageLog.logMessage(text, 'Ark', QgsMessageLog.INFO)
+        QgsMessageLog.logMessage(text, 'ARK', QgsMessageLog.INFO)
 
     def gdalPath(self):
         settings = QSettings()
@@ -276,7 +278,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self._setStatusLabel(self.cropStatusLabel, ProcessStatus.Failure)
             self.showStatus('ERROR: Cropping image failed!')
             self.enableUi(True)
-        elif image.save(self.rawFile.absoluteDir().absolutePath() + '/arkplan_crop.png', 'PNG', 100):
+        elif image.save(self.rawFile.absoluteDir().absolutePath() + '/ark_crop.png', 'PNG', 100):
             self._setStatusLabel(self.cropStatusLabel, ProcessStatus.Success)
             self.showStatus('Cropping finished')
             self.runTranslateStep()
@@ -294,8 +296,8 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalArgs.extend(['-gcp', str(self.gcpWidget2.rawPoint().x()), str(self.gcpWidget2.rawPoint().y()), str(self.gcpWidget2.mapPoint().x()), str(self.gcpWidget2.mapPoint().y())])
         self.gdalArgs.extend(['-gcp', str(self.gcpWidget3.rawPoint().x()), str(self.gcpWidget3.rawPoint().y()), str(self.gcpWidget3.mapPoint().x()), str(self.gcpWidget3.mapPoint().y())])
         self.gdalArgs.extend(['-gcp', str(self.gcpWidget4.rawPoint().x()), str(self.gcpWidget4.rawPoint().y()), str(self.gcpWidget4.mapPoint().x()), str(self.gcpWidget4.mapPoint().y())])
-        self.gdalArgs.append(self.rawFile.absoluteDir().absolutePath() + '/arkplan_crop.png')
-        self.gdalArgs.append(self.rawFile.absoluteDir().absolutePath() + '/arkplan_trans.tiff')
+        self.gdalArgs.append(self.rawFile.absoluteDir().absolutePath() + '/ark_crop.png')
+        self.gdalArgs.append(self.rawFile.absoluteDir().absolutePath() + '/ark_trans.tiff')
         self.gdalCommand = self.gdal_translate.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdal_translate.absoluteFilePath(), self.gdalArgs)
 
@@ -309,7 +311,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalArgs.extend(['-co', 'COMPRESS=LZW'])
         self.gdalArgs.append('-dstalpha')
         self.gdalArgs.append('-overwrite')
-        self.gdalArgs.append('\"' + self.rawFile.absoluteDir().absolutePath() + '/arkplan_trans.tiff' + '\"')
+        self.gdalArgs.append('\"' + self.rawFile.absoluteDir().absolutePath() + '/ark_trans.tiff' + '\"')
         self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
         self.gdalCommand = self.gdalwarp.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdalCommand)
@@ -428,10 +430,10 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def _setStatusLabel(self, label, status):
         if status == ProcessStatus.Success:
-            label.setPixmap(QPixmap(':/plugins/Ark/georef/success.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/georef/success.png'))
         elif status == ProcessStatus.Failure:
-            label.setPixmap(QPixmap(':/plugins/Ark/georef/failure.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/georef/failure.png'))
         elif status == ProcessStatus.Running:
-            label.setPixmap(QPixmap(':/plugins/Ark/georef/running.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/georef/running.png'))
         else:
-            label.setPixmap(QPixmap(':/plugins/Ark/georef/unknown.png'))
+            label.setPixmap(QPixmap(':/plugins/ark/georef/unknown.png'))

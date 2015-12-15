@@ -58,7 +58,7 @@ class Ui_SettingsWizard(object):
         self.projectFolderLayout.addWidget(self.projectFolderEdit)
         self.projectFolderButton = QtGui.QToolButton(self.folderPage)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ArkPlan/folder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/folder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.projectFolderButton.setIcon(icon)
         self.projectFolderButton.setObjectName(_fromUtf8("projectFolderButton"))
         self.projectFolderLayout.addWidget(self.projectFolderButton)
@@ -133,14 +133,14 @@ class Ui_SettingsWizard(object):
     def retranslateUi(self, SettingsWizard):
         SettingsWizard.setWindowTitle(_translate("SettingsWizard", "Wizard", None))
         self.welcomePage.setTitle(_translate("SettingsWizard", "New Project Wizard", None))
-        self.welcomePage.setSubTitle(_translate("SettingsWizard", "This wizard will walk you through setting up a new ArkPlan project.", None))
+        self.welcomePage.setSubTitle(_translate("SettingsWizard", "This wizard will walk you through setting up a new ARK Spatial project.", None))
         self.advancedButton.setText(_translate("SettingsWizard", "Advanced", None))
         self.advancedLabel.setText(_translate("SettingsWizard", "If you require advanced custom settings, please click on the Advanced button to use the Settings dialog instead.", None))
         self.folderPage.setTitle(_translate("SettingsWizard", "Project Folder", None))
         self.folderPage.setSubTitle(_translate("SettingsWizard", "Please choose the folder where the project files will be stored.", None))
         self.folderLabel.setText(_translate("SettingsWizard", "This folder is usually something like \"Projects/TST01/GIS/\" where TST01 is the Site Code. The folder will be created if it does not already exist.\n"
 "\n"
-"ArkPlan will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.\n"
+"ARK Spatial will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.\n"
 "", None))
         self.siteCodePage.setTitle(_translate("SettingsWizard", "Site Code", None))
         self.siteCodePage.setSubTitle(_translate("SettingsWizard", "Enter the Site Code for the project.", None))
@@ -149,7 +149,7 @@ class Ui_SettingsWizard(object):
         self.arkPage.setTitle(_translate("SettingsWizard", "ARK Database", None))
         self.arkPage.setSubTitle(_translate("SettingsWizard", "Configure working with an ARK Database. This is entirely optional.", None))
         self.arkUrlLabel.setText(_translate("SettingsWizard", "Please enter the root path to the ARK Database that you will be using, for example \"http://100minories.lparchaeology.com/data/\".", None))
-        self.useArkLabel.setText(_translate("SettingsWizard", "Please tick if you will be using ArkPlan with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ArkPlan data with the ARK Database. Note that this setting cannot be changed later.", None))
+        self.useArkLabel.setText(_translate("SettingsWizard", "Please tick if you will be using ARK Spatial with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ARK Spatial data with the ARK Database. Note that this setting cannot be changed later.", None))
         self.confirmPage.setTitle(_translate("SettingsWizard", "Create Project", None))
         self.confirmPage.setSubTitle(_translate("SettingsWizard", "Create your new project.", None))
         self.confirmLabel.setText(_translate("SettingsWizard", "Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.", None))

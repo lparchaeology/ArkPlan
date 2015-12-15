@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>ArkPlan</string>
+   <string>Draw Plans</string>
   </property>
   <widget class="QWidget" name="PlanDockContents">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -131,7 +131,7 @@
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
-                <normaloff>:/plugins/ArkPlan/plan/autoSchematic.png</normaloff>:/plugins/ArkPlan/plan/autoSchematic.png</iconset>
+                <normaloff>:/plugins/ark/plan/autoSchematic.png</normaloff>:/plugins/ark/plan/autoSchematic.png</iconset>
               </property>
              </widget>
             </item>
@@ -182,7 +182,7 @@
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
-                <normaloff>:/plugins/ArkPlan/plan/nodeTool.png</normaloff>:/plugins/ArkPlan/plan/nodeTool.png</iconset>
+                <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
             </item>
@@ -196,7 +196,7 @@
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
-                <normaloff>:/plugins/ArkPlan/plan/nodeTool.png</normaloff>:/plugins/ArkPlan/plan/nodeTool.png</iconset>
+                <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
             </item>
@@ -210,7 +210,7 @@
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
-                <normaloff>:/plugins/ArkPlan/plan/nodeTool.png</normaloff>:/plugins/ArkPlan/plan/nodeTool.png</iconset>
+                <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
             </item>

@@ -21,7 +21,7 @@
     <string>New Project Wizard</string>
    </property>
    <property name="subTitle">
-    <string>This wizard will walk you through setting up a new ArkPlan project.</string>
+    <string>This wizard will walk you through setting up a new ARK Spatial project.</string>
    </property>
    <attribute name="pageId">
     <string notr="true">welcomePage</string>
@@ -81,7 +81,7 @@
       <property name="text">
        <string>This folder is usually something like &quot;Projects/TST01/GIS/&quot; where TST01 is the Site Code. The folder will be created if it does not already exist.
 
-ArkPlan will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.
+ARK Spatial will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.
 </string>
       </property>
       <property name="alignment">
@@ -104,7 +104,7 @@ ArkPlan will automatically organise the data under this folder. If you wish to o
        <widget class="QToolButton" name="projectFolderButton">
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ArkPlan/folder.png</normaloff>:/plugins/ArkPlan/folder.png</iconset>
+          <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
         </property>
        </widget>
       </item>
@@ -204,7 +204,7 @@ ArkPlan will automatically organise the data under this folder. If you wish to o
     <item row="0" column="0">
      <widget class="QLabel" name="useArkLabel">
       <property name="text">
-       <string>Please tick if you will be using ArkPlan with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ArkPlan data with the ARK Database. Note that this setting cannot be changed later.</string>
+       <string>Please tick if you will be using ARK Spatial with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ARK Spatial data with the ARK Database. Note that this setting cannot be changed later.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>

@@ -52,7 +52,6 @@ class Filter(QObject):
     dock = None # FilterDock()
     _initialised = False
     _dataLoaded = False
-    contextList = []
     _useGroups = False
     _filterSetGroupIndex = -1
 
@@ -187,43 +186,11 @@ class Filter(QObject):
         self.applySelection(selectString)
 
 
-    def applyContextFilter(self, contextRange):
-        if not self._initialised:
-            return
-        del self.contextList[:]
-        self.contextList = self._rangeToList(contextRange)
-        self.project.plan.applyFieldFilterRange(self.project.fieldName('id'), contextRange)
-        self.dock.displayFilter(self.project.plan.filter)
-
-
-    def applySubGroupFilter(self, subRange):
-        if not self._initialised:
-            return
-        del self.contextList[:]
-        sublist = self._rangeToList(subRange)
-        for sub in subList:
-            self.contextList.extend(self.data._contextGroupingModel.getContextsForSubGroup(sub))
-        self.project.plan.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
-        self.dock.displayFilter(self.project.plan.filter)
-
-
-    def applyGroupFilter(self, groupRange):
-        if not self._initialised:
-            return
-        del self.contextList[:]
-        groupList = self._rangeToList(groupRange)
-        for group in groupList:
-            self.contextList.extend(self.data._contextGroupingModel.getContextsForGroup(group))
-        self.project.plan.applyFieldFilterList(self.project.fieldName('id'), self.contextList)
-        self.dock.displayFilter(self.project.plan.filter)
-
-
     def clearFilterSet(self):
         if not self._initialised:
             return
-        del self.contextList[:]
-        self.applyFilter('')
-        self.applySelection('')
+        self.project.plan.clearFilter()
+        self.project.plan.clearSelection()
 
 
     def applyFilter(self, expression):
@@ -266,7 +233,8 @@ class Filter(QObject):
 
 
     def showDataDialogFilter(self):
-        return self.showDataDialogList(self.contextList)
+        #TODO Create Context list from filter set
+        return self.showDataDialogList([])
 
 
     def showDataDialogList(self, contextList):

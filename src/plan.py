@@ -304,7 +304,7 @@ class Plan(QObject):
 
     def mergeBuffers(self):
         self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
-        if self.project.plan.okToMergeBuffers():
+        if self.project.plan.isEditable():
             self.project.plan.mergeBuffers('Merge plan data')
 
     def clearBuffers(self):
@@ -463,7 +463,7 @@ class Plan(QObject):
 
     def _editInBuffers(self, siteCode, classCode, itemId):
         request = self._itemRequest(siteCode, classCode, itemId)
-        self.project.plan.moveToBuffers(request)
+        self.project.plan.moveFeatureRequestToBuffers(request)
         if classCode == 'cxt':
             self.dock.setContextNumber(int(itemId))
             self.dock.setFeatureId(0)
@@ -480,7 +480,7 @@ class Plan(QObject):
     def deleteItem(self, siteCode, classCode, itemId):
         if self._confirmDelete(itemId, 'Confirm Delete Item'):
             request = self._itemRequest(siteCode, classCode, itemId)
-            self.project.plan.deleteRequest(request)
+            self.project.plan.deleteFeatureRequest(request)
 
     def panToItem(self, siteCode, classCode, itemId):
         extent = self.itemExtent(siteCode, classCode, itemId)

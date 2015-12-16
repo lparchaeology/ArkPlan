@@ -62,14 +62,15 @@ class EditDock(ArkDockWidget):
         self.editToolbar.addAction(iface.actionZoomNext())
         self.editToolbar.addSeparator()
         self._modeTool = SnappingModeTool(self)
-        self._modeTool.setToolButtonStyle(self.editToolbar.toolButtonStyle())
+        self._modeTool.setInterface(iface)
         self.editToolbar.addWidget(self._modeTool)
-        self.editToolbar.addAction(IntersectionSnappingAction(self))
-        self.editToolbar.addAction(TopologicalEditingAction(self))
+        self._interAction = IntersectionSnappingAction(self)
+        self.editToolbar.addAction(self._interAction)
+        self._topoAction = TopologicalEditingAction(self)
+        self.editToolbar.addAction(self._topoAction)
 
         self.editWidget = EditWidget()
         self.editWidget.setObjectName(u'editWidget')
-        self.editWidget.snapToleranceSpin.setIface(iface)
 
         self.editSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -134,9 +135,6 @@ class EditDock(ArkDockWidget):
 
     def _refresh(self):
         advanced = (Snapping.snappingMode() == Snapping.SelectedLayers)
-        self.editWidget.snapTypeCombo.setDisabled(advanced)
-        self.editWidget.snapUnitCombo.setDisabled(advanced)
-        self.editWidget.snapToleranceSpin.setDisabled(advanced)
         self.editWidget.snapBufferPointsTool.setEnabled(advanced)
         self.editWidget.snapBufferLinesTool.setEnabled(advanced)
         self.editWidget.snapBufferPolygonsTool.setEnabled(advanced)

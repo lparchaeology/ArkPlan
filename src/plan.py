@@ -177,6 +177,8 @@ class Plan(QObject):
         # Unload the docks
         self.schematicDock.unloadGui()
         self.editDock.unloadGui()
+        #FIXME Works around the reload issue
+        del self.editDock
         self.dock.unloadGui()
 
     def run(self, checked):

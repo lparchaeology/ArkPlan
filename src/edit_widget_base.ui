@@ -7,56 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>265</width>
-    <height>225</height>
+    <height>128</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="0">
-      <widget class="QLabel" name="snapToleranceLabel">
-       <property name="text">
-        <string>Snap Tolerance:</string>
-       </property>
-       <property name="buddy">
-        <cstring>snapToleranceSpin</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="SnappingUnitCombo" name="snapUnitCombo"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="snapUnitLabel">
-       <property name="text">
-        <string>Snap Units</string>
-       </property>
-       <property name="buddy">
-        <cstring>snapUnitCombo</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="SnappingTypeCombo" name="snapTypeCombo"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="snapTypeLabel">
-       <property name="text">
-        <string>Snap Type:</string>
-       </property>
-       <property name="buddy">
-        <cstring>snapTypeCombo</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="SnappingToleranceSpinBox" name="snapToleranceSpin"/>
-     </item>
-    </layout>
-   </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="2" column="1">
@@ -237,26 +194,8 @@
    <extends>QToolButton</extends>
    <header>..libarkqgis.snapping.h</header>
   </customwidget>
-  <customwidget>
-   <class>SnappingTypeCombo</class>
-   <extends>QComboBox</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SnappingToleranceSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SnappingUnitCombo</class>
-   <extends>QComboBox</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>snapTypeCombo</tabstop>
-  <tabstop>snapUnitCombo</tabstop>
-  <tabstop>snapToleranceSpin</tabstop>
   <tabstop>snapBufferPointsTool</tabstop>
   <tabstop>snapBufferLinesTool</tabstop>
   <tabstop>snapBufferPolygonsTool</tabstop>

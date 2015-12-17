@@ -77,7 +77,7 @@ class Plan(QObject):
     _schematicSourceHighlightFilter = -1
 
     def __init__(self, project):
-        super(Plan, self).__init__(self.project)
+        super(Plan, self).__init__(project)
         self.project = project
 
     # Create the gui when the plugin is first created
@@ -177,8 +177,6 @@ class Plan(QObject):
         # Unload the docks
         self.schematicDock.unloadGui()
         self.editDock.unloadGui()
-        #FIXME Works around the reload issue
-        del self.editDock
         self.dock.unloadGui()
 
     def run(self, checked):

@@ -51,7 +51,7 @@ class GridModule(QObject):
     gridWizard = None  # QWizard
 
     def __init__(self, project):
-        super(GridModule, self).__init__()
+        super(GridModule, self).__init__(project)
         self.project = project
 
     # Standard Dock methods

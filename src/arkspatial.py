@@ -78,7 +78,7 @@ class ArkSpatial(Plugin):
     _initialised = False
 
     def __init__(self, iface, pluginPath):
-        super(ArkSpatial, self).__init__(iface, u'ArkSpatial', ':/plugins/ark/icon.png',
+        super(ArkSpatial, self).__init__(iface, u'ArkPlan', ':/plugins/ark/icon.png',
                                          pluginPath, Plugin.PluginsMenu)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))

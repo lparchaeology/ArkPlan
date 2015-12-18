@@ -31,7 +31,7 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar, QSpacerItem, QSizePolicy
 from qgis.core import QgsProject
 
 from ..libarkqgis.dock import ArkDockWidget
-from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction, SnappingModeTool, Snapping
+from ..libarkqgis.snapping import TopologicalEditingAction, IntersectionSnappingAction, ProjectSnappingToolButton, Snapping
 
 import edit_widget_base
 
@@ -44,7 +44,7 @@ class EditWidget(QWidget, edit_widget_base.Ui_EditWidget):
 class EditDock(ArkDockWidget):
 
     _project = None # QgsProject()
-    _modeTool = None # SnappingModeTool()
+    _modeTool = None # ProjectSnappingToolButton()
 
     def __init__(self, iface, parent=None):
         super(EditDock, self).__init__(parent)
@@ -61,7 +61,7 @@ class EditDock(ArkDockWidget):
         self.editToolbar.addAction(iface.actionZoomLast())
         self.editToolbar.addAction(iface.actionZoomNext())
         self.editToolbar.addSeparator()
-        self._modeTool = SnappingModeTool(self)
+        self._modeTool = ProjectSnappingToolButton(self)
         self._modeTool.setInterface(iface)
         self.editToolbar.addWidget(self._modeTool)
         self._interAction = IntersectionSnappingAction(self)

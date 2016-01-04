@@ -306,8 +306,10 @@ class Plan(QObject):
 
     def mergeBuffers(self):
         self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
-        if self.project.plan.isEditable():
+        if self.project.plan.isWritable():
             self.project.plan.mergeBuffers('Merge plan data')
+        else:
+            self.project.showCriticalMessage('Plan layers are not writable! Please correct the permissions and log out.', 0)
 
     def clearBuffers(self):
         self.project.plan.clearBuffers('Clear plan buffer data')

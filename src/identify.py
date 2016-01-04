@@ -80,14 +80,19 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             itemId = feature.attribute(self._project.fieldName('id'))
             item = (siteCode, classCode, itemId)
             items.add(item)
-        self._menu.addAction('Plan Items:')
+        action = QAction('Plan Items:', self._menu)
+        action.setData('top')
+        self._menu.addAction(action)
         site = ''
         for item in sorted(items):
             if item[0] != site:
                 site = item[0]
                 self._menu.addSeparator()
-                self._menu.addAction(site + ':')
-            action = IdentifyItemAction(item[0], item[1], item[2], self._project)
+                action = QAction(site + ':', self._menu)
+                action.setData('top')
+                self._menu.addAction(action)
+            action = IdentifyItemAction(item[0], item[1], item[2], self._project, self._menu)
+            action.setData('top')
             action.zoomToItemSelected.connect(self._zoom)
             action.panToItemSelected.connect(self._pan)
             action.editItemSelected.connect(self._editInBuffers)
@@ -99,7 +104,9 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         mapPoint = self.toMapCoordinates(e.pos())
         self._vertexMarker.setCenter(mapPoint)
         localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
-        self._menu.addAction(mapPoint.toString(3))
+        action = QAction(mapPoint.toString(3), self._menu)
+        action.setData('top')
+        self._menu.addAction(action)
         self._menu.addAction(localPoint.toString(3))
         selected = self._menu.exec_(e.globalPos())
         self._reset()
@@ -116,7 +123,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._vertexMarker.setCenter(QgsPoint())
 
     def _highlight(self, item):
-        del self._highlights[:]
+        if item.data() == 'top':
+            del self._highlights[:]
+        else:
+            return
         if type(item) is not IdentifyItemAction:
             return
         request = QgsFeatureRequest()

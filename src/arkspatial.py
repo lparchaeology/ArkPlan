@@ -92,7 +92,7 @@ class ArkSpatial(Plugin):
         super(ArkSpatial, self).initGui()
 
         # Init the main dock
-        self.layerDock = LayerDock(self)
+        self.layerDock = LayerDock()
         action = self.addAction(self.pluginIconPath, self.tr(u'ARK Spatial'), checkable=True)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
@@ -155,6 +155,7 @@ class ArkSpatial(Plugin):
 
             # Unload this dock and uninitialise
             self.layerDock.unloadGui()
+            del self.layerDock
             self._initialised = False
 
         # Removes the plugin menu item and icon from QGIS GUI.

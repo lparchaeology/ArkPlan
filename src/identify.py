@@ -67,6 +67,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._reset()
         if e.button() != Qt.LeftButton:
             return
+        mapPoint = self.toMapCoordinates(e.pos())
+        self._vertexMarker.setCenter(mapPoint)
         layers = [self._project.plan.pointsLayer, self._project.plan.linesLayer, self._project.plan.polygonsLayer]
         results = self.identify(e.x(), e.y(), layers, QgsMapToolIdentify.TopDownAll)
         if (len(results) < 1):
@@ -101,26 +103,25 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
-        mapPoint = self.toMapCoordinates(e.pos())
-        self._vertexMarker.setCenter(mapPoint)
         localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
         action = QAction(mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
         self._menu.addAction(localPoint.toString(3))
         selected = self._menu.exec_(e.globalPos())
-        self._reset()
+        self._reset(resetVertex=False)
 
     def keyPressEvent(self, e):
         if (e.key() == Qt.Key_Escape):
             self._reset()
             self.canvas().unsetMapTool(self)
 
-    def _reset(self):
+    def _reset(self, resetVertex=True):
         self._menu.clear()
         del self._highlights[:]
         del self._actions[:]
-        self._vertexMarker.setCenter(QgsPoint())
+        if resetVertex:
+            self._vertexMarker.setCenter(QgsPoint())
 
     def _highlight(self, item):
         if item.data() == 'top':

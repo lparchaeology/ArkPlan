@@ -540,6 +540,9 @@ class Plan(QObject):
     def _eqClause(self, field, value):
         return _doublequote(self.project.fieldName(field)) + ' = ' + _quote(str(value))
 
+    def _neClause(self, field, value):
+        return _doublequote(self.project.fieldName(field)) + ' != ' + _quote(str(value))
+
     def _siteClause(self, siteCode):
         return self._eqClause('site', siteCode)
 
@@ -551,7 +554,9 @@ class Plan(QObject):
 
     def _categoryClause(self, category):
         return self._eqClause('category', category)
-        return _doublequote(self.project.fieldName('category')) + ' = ' + _quote(category)
+
+    def _notCategoryClause(self, category):
+        return self._neClause('category', category)
 
     def _itemExpr(self, siteCode, classCode, itemId):
         return self._siteClause(siteCode) + ' and ' + self._classClause(classCode) + ' and ' + self._idClause(itemId)
@@ -567,6 +572,9 @@ class Plan(QObject):
 
     def _categoryRequest(self, siteCode, classCode, itemId, category):
         return self._featureRequest(self._itemExpr(siteCode, classCode, itemId) + ' and ' + self._categoryClause(category))
+
+    def _notCategoryRequest(self, siteCode, classCode, itemId, category):
+        return self._featureRequest(self._itemExpr(siteCode, classCode, itemId) + ' and ' + self._notCategoryClause(category))
 
     # SchematicDock methods
 
@@ -626,6 +634,14 @@ class Plan(QObject):
             self._copyFeatureMetadata(feature)
         except StopIteration:
             haveFeature = SearchStatus.NotFound
+
+        if haveFeature == SearchStatus.NotFound:
+            polyRequest = self._notCategoryRequest(siteCode, 'cxt', self.schematicDock.context(), 'sch')
+            haveFeature = SearchStatus.Found
+            try:
+                self.project.plan.polygonsLayer.getFeatures(polyRequest).next()
+            except StopIteration:
+                haveFeature = SearchStatus.NotFound
 
         schRequest = self._categoryRequest(siteCode, 'cxt', self.schematicDock.context(), 'sch')
         haveSchematic = SearchStatus.Found

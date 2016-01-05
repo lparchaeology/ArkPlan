@@ -126,9 +126,8 @@ class Filter(QObject):
         self.dock.unloadGui()
 
     def run(self, checked):
-        if checked:
-            if not self._initialised:
-                self.loadProject()
+        if checked and not self._initialised:
+            self.dock.menuAction().setChecked(False)
 
     # Filter methods
 

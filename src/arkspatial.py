@@ -256,7 +256,7 @@ class ArkSpatial(Plugin):
             self._createCollectionLayers('base', self.base._settings)
 
             #TODO Maybe do module inti here too?
-            if self.grid.initialise() and self.plan.initialise() and self.base.initialise() and self.filterModule.loadProject():
+            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 # Load the Project
                 self.loadProject()
 

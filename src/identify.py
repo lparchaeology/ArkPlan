@@ -82,7 +82,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             itemId = feature.attribute(self._project.fieldName('id'))
             item = (siteCode, classCode, itemId)
             items.add(item)
-        action = QAction('Plan Items:', self._menu)
+        action = QAction('Plan Items', self._menu)
         action.setData('top')
         self._menu.addAction(action)
         site = ''
@@ -90,7 +90,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             if item[0] != site:
                 site = item[0]
                 self._menu.addSeparator()
-                action = QAction(site + ':', self._menu)
+                action = QAction('Site ' + site + ':', self._menu)
                 action.setData('top')
                 self._menu.addAction(action)
             action = IdentifyItemAction(item[0], item[1], item[2], self._project, self._menu)
@@ -104,10 +104,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             self._menu.addAction(action)
         self._menu.addSeparator()
         localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
-        action = QAction(mapPoint.toString(3), self._menu)
+        action = QAction('Map: ' + mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
-        self._menu.addAction(localPoint.toString(3))
+        self._menu.addAction('Local: ' + localPoint.toString(3))
         selected = self._menu.exec_(e.globalPos())
         self._reset(resetVertex=False)
 
@@ -188,8 +188,11 @@ class IdentifyItemAction(QAction):
 
     expr = ''
 
+    _iface = None
+
     def __init__(self, siteCode, classCode, itemId, project, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
+        self._iface = project.iface
         for source in Config.planSourceClasses:
             if source[1] == classCode:
                 self.setText(source[0] + ' ' + str(itemId))
@@ -247,8 +250,18 @@ class IdentifyItemAction(QAction):
                         menu.addAction(source[0] + ' ' + str(sourceId))
         if len(area) > 0:
             menu.addSeparator()
+            tot = 0
             for a in area:
-                menu.addAction('Area: ' + str(a))
+                tot += a
+            units = self._iface.mapCanvas().mapUnits()
+            suffix = ''
+            if units == QGis.Meters:
+                suffix = u' m²'
+            elif units == QGis.Feet:
+                suffix = u' ft²'
+            elif units == QGis.NauticalMiles:
+                suffix = u' NM²'
+            menu.addAction(u'Area: ' + u'%.3f' % tot + suffix)
         self.setMenu(menu)
 
     def _openArk(self):

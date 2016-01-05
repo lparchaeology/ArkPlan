@@ -486,19 +486,25 @@ class Plan(QObject):
             request = self._itemRequest(siteCode, classCode, itemId)
             self.project.plan.deleteFeatureRequest(request)
 
-    def panToItem(self, siteCode, classCode, itemId):
+    def panToItem(self, siteCode, classCode, itemId, highlight=False):
         extent = self.itemExtent(siteCode, classCode, itemId)
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         self.project.mapCanvas().setCenter(extent.center())
+        if highlight:
+            self.project.filterModule.removeHighlightFilters()
+            self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
-    def zoomToItem(self, siteCode, classCode, itemId):
+    def zoomToItem(self, siteCode, classCode, itemId, highlight=False):
         extent = self.itemExtent(siteCode, classCode, itemId)
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
+        if highlight:
+            self.project.filterModule.removeHighlightFilters()
+            self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def itemExtent(self, siteCode, classCode, itemId):

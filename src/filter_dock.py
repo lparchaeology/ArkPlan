@@ -31,7 +31,7 @@ from PyQt4.QtGui import QListWidgetItem, QLabel, QActionGroup, QMenu
 from ..libarkqgis.dock import ArkDockWidget
 
 import filter_dock_base
-from filter_widget import FilterWidget
+from filter_widget import FilterWidget, FilterType
 
 class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
 
@@ -141,6 +141,15 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self._filterIndex += 1
         self.filterChanged.emit()
         return idx
+
+    def removeHighlightFilters(self):
+        changed = False
+        for index in self._filters.keys():
+            if self._filters[index] is not None and self._filters[index].filterType() == FilterType.HighlightFilter:
+                self._removeFilter(index)
+                changed = True
+        if changed:
+            self.filterChanged.emit()
 
     def removeFilter(self, index):
         self._removeFilter(index)

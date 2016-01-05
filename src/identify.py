@@ -152,10 +152,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._highlights.append(hl)
 
     def _zoom(self, classCode, siteCode, itemId):
-        self._project.planModule.zoomToItem(siteCode, classCode, itemId)
+        self._project.planModule.zoomToItem(siteCode, classCode, itemId, highlight=True)
 
     def _pan(self, classCode, siteCode, itemId):
-        self._project.planModule.panToItem(siteCode, classCode, itemId)
+        self._project.planModule.panToItem(siteCode, classCode, itemId, highlight=True)
 
     def _openInArk(self, classCode, siteCode, itemId):
         mod_cd = classCode + '_cd'

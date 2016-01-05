@@ -97,6 +97,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             action.setData('top')
             action.zoomToItemSelected.connect(self._zoom)
             action.panToItemSelected.connect(self._pan)
+            action.filterItemSelected.connect(self._filterItem)
+            action.excludeFilterItemSelected.connect(self._excludeFilterItem)
+            action.highlightItemSelected.connect(self._highlightItem)
+            action.addHighlightItemSelected.connect(self._addHighlightItem)
             action.editItemSelected.connect(self._editInBuffers)
             action.deleteItemSelected.connect(self._delete)
             action.openInArkSelected.connect(self._openInArk)
@@ -158,6 +162,18 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     def _pan(self, classCode, siteCode, itemId):
         self._project.planModule.panToItem(siteCode, classCode, itemId, highlight=True)
 
+    def _filterItem(self, classCode, siteCode, itemId):
+        self._project.planModule.filterItem(siteCode, classCode, itemId)
+
+    def _excludeFilterItem(self, classCode, siteCode, itemId):
+        self._project.planModule.excludeFilterItem(siteCode, classCode, itemId)
+
+    def _highlightItem(self, classCode, siteCode, itemId):
+        self._project.planModule.highlightItem(siteCode, classCode, itemId)
+
+    def _addHighlightItem(self, classCode, siteCode, itemId):
+        self._project.planModule.addHighlightItem(siteCode, classCode, itemId)
+
     def _openInArk(self, classCode, siteCode, itemId):
         mod_cd = classCode + '_cd'
         item = siteCode + '_' + itemId
@@ -181,6 +197,10 @@ class IdentifyItemAction(QAction):
     deleteItemSelected = pyqtSignal(str, str, str)
     panToItemSelected = pyqtSignal(str, str, str)
     zoomToItemSelected = pyqtSignal(str, str, str)
+    filterItemSelected = pyqtSignal(str, str, str)
+    excludeFilterItemSelected = pyqtSignal(str, str, str)
+    highlightItemSelected = pyqtSignal(str, str, str)
+    addHighlightItemSelected = pyqtSignal(str, str, str)
 
     siteCode = ''
     classCode = ''
@@ -219,6 +239,18 @@ class IdentifyItemAction(QAction):
         self.panAction = QAction('Pan to Item', parent)
         self.panAction.triggered.connect(self._panToItem)
         menu.addAction(self.panAction)
+        self.filterAction = QAction('Filter Item', parent)
+        self.filterAction.triggered.connect(self._filterItem)
+        menu.addAction(self.filterAction)
+        self.excludeFilterAction = QAction('Exclude Item from Filter', parent)
+        self.excludeFilterAction.triggered.connect(self._excludeFilterItem)
+        menu.addAction(self.excludeFilterAction)
+        self.highlightAction = QAction('Select Item', parent)
+        self.highlightAction.triggered.connect(self._highlightItem)
+        menu.addAction(self.highlightAction)
+        self.addHighlightAction = QAction('Add Item to Selection', parent)
+        self.addHighlightAction.triggered.connect(self._addHighlightItem)
+        menu.addAction(self.addHighlightAction)
         if project.useArkDB() and project.arkUrl():
             self.linkAction = QAction('Open in ARK', parent)
             self.linkAction.triggered.connect(self._openArk)
@@ -278,3 +310,15 @@ class IdentifyItemAction(QAction):
 
     def _zoomToItem(self):
         self.zoomToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _filterItem(self):
+        self.filterItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _excludeFilterItem(self):
+        self.excludeFilterItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _highlightItem(self):
+        self.highlightItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _addHighlightItem(self):
+        self.addHighlightItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))

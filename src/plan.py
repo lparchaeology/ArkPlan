@@ -510,6 +510,24 @@ class Plan(QObject):
             self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
+    def filterItem(self, siteCode, classCode, itemId):
+        self.project.filterModule.removeFilters()
+        self.project.filterModule.addFilter(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
+        self.project.mapCanvas().refresh()
+
+    def excludeFilterItem(self, siteCode, classCode, itemId):
+        self.project.filterModule.addFilter(FilterType.ExcludeFilter, siteCode, classCode, str(itemId))
+        self.project.mapCanvas().refresh()
+
+    def highlightItem(self, siteCode, classCode, itemId):
+        self.project.filterModule.removeHighlightFilters()
+        self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+        self.project.mapCanvas().refresh()
+
+    def addHighlightItem(self, siteCode, classCode, itemId):
+        self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+        self.project.mapCanvas().refresh()
+
     def itemExtent(self, siteCode, classCode, itemId):
         request = self._itemRequest(siteCode, classCode, itemId)
         points = self._requestAsLayer(request, self.project.plan.pointsLayer, 'points')

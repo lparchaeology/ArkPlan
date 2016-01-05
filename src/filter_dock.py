@@ -142,6 +142,14 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.filterChanged.emit()
         return idx
 
+    def removeFilters(self):
+        changed = False
+        for index in self._filters.keys():
+            self._removeFilter(index)
+            changed = True
+        if changed:
+            self.filterChanged.emit()
+
     def removeHighlightFilters(self):
         changed = False
         for index in self._filters.keys():

@@ -141,6 +141,11 @@ class Filter(QObject):
             return
         self.dock.removeFilter(filterIndex)
 
+    def removeFilters(self):
+        if not self._initialised:
+            return
+        return self.dock.removeFilters()
+
     def removeHighlightFilters(self):
         if not self._initialised:
             return

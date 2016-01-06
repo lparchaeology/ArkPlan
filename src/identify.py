@@ -109,10 +109,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             self._menu.addAction(action)
         self._menu.addSeparator()
         localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
-        action = QAction('Map: ' + mapPoint.toString(3), self._menu)
+        action = ClipboardAction('Map: ', mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
-        self._menu.addAction('Local: ' + localPoint.toString(3))
+        self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
         selected = self._menu.exec_(e.globalPos())
         self._reset(resetVertex=False)
 
@@ -197,8 +197,15 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
 
 class ClipboardAction(QAction):
 
+    _text = ''
+
     def __init__(self, label, text, parent=None):
-        super(ClipboardAction, self).__init__(parent)
+        super(ClipboardAction, self).__init__(label + text, parent)
+        self.triggered.connect(self._copy)
+        self._text = text
+
+    def _copy(self):
+        QApplication.clipboard().setText(self._text)
 
 class IdentifyItemAction(QAction):
 
@@ -307,7 +314,7 @@ class IdentifyItemAction(QAction):
                 suffix = u' ft²'
             elif units == QGis.NauticalMiles:
                 suffix = u' NM²'
-            menu.addAction(u'Area: ' + u'%.3f' % tot + suffix)
+            menu.addAction(ClipboardAction(u'Area: ', u'%.3f' % tot + suffix, parent))
         self.setMenu(menu)
 
     def _openArk(self):

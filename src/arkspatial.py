@@ -78,8 +78,8 @@ class ArkSpatial(Plugin):
     _initialised = False
 
     def __init__(self, iface, pluginPath):
-        super(ArkSpatial, self).__init__(iface, u'ArkPlan', ':/plugins/ark/icon.png',
-                                         pluginPath, Plugin.PluginsMenu)
+        super(ArkSpatial, self).__init__(iface, u'ArkPlan', ':/plugins/ark/icon.png', pluginPath,
+                                         Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))
 
@@ -93,15 +93,12 @@ class ArkSpatial(Plugin):
 
         # Init the main dock
         self.layerDock = LayerDock()
-        action = self.addAction(self.pluginIconPath, self.tr(u'ARK Spatial'), checkable=True)
-        self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, action)
+        self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
-        self.layerDock.toggled.connect(self.run)
 
         # Init the identify tool
         self.layerDock.addSeparator()
-        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), checkable=True)
-        self.identifyAction.triggered.connect(self.triggerIdentifyAction)
+        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), callback=self.triggerIdentifyAction, checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
@@ -387,9 +384,7 @@ class ArkSpatial(Plugin):
         return fields
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
-        icon = QIcon(iconPath)
-        parent = self.layerDock
-        action = QAction(icon, text, parent)
+        action = QAction(QIcon(iconPath), text, self.layerDock)
         if callback is not None:
             action.triggered.connect(callback)
         action.setEnabled(enabled)

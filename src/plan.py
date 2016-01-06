@@ -83,9 +83,8 @@ class Plan(QObject):
     # Create the gui when the plugin is first created
     def initGui(self):
         self.dock = PlanDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.dock.toggled.connect(self.run)
 
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
@@ -103,9 +102,8 @@ class Plan(QObject):
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.schematicDock = SchematicDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), callback=self.runSchematic, checkable=True)
         self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.schematicDock.toggled.connect(self.runSchematic)
         self.schematicDock.findContextSelected.connect(self._findPanContext)
         self.schematicDock.zoomContextSelected.connect(self._findZoomContext)
         self.schematicDock.editContextSelected.connect(self._editSchematicContext)
@@ -123,9 +121,8 @@ class Plan(QObject):
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
         self.editDock = EditDock(self.project.iface, self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/editingTools.png', self.tr(u'Editing Tools'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/plan/editingTools.png', self.tr(u'Editing Tools'), callback=self.runEdit, checkable=True)
         self.editDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.editDock.toggled.connect(self.runEdit)
 
         self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
 
@@ -148,6 +145,10 @@ class Plan(QObject):
         self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
         self.schematicDock.addDrawingTool('sch', self.actions['sch'])
         self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
+
+        self.dock.menuAction().setChecked(False)
+        self.schematicDock.menuAction().setChecked(False)
+        self.editDock.menuAction().setChecked(False)
 
         self.initialised = True
 
@@ -176,8 +177,11 @@ class Plan(QObject):
 
         # Unload the docks
         self.schematicDock.unloadGui()
+        del self.schematicDock
         self.editDock.unloadGui()
+        del self.editDock
         self.dock.unloadGui()
+        del self.dock
 
     def run(self, checked):
         if checked and self.initialised:

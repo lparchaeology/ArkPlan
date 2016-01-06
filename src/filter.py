@@ -67,9 +67,8 @@ class Filter(QObject):
     # Create the gui when the plugin is first created
     def initGui(self):
         self.dock = FilterDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/filter/filter.png', self.tr(u'Filter contexts'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/filter/filter.png', self.tr(u'Filter contexts'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
-        self.dock.toggled.connect(self.run)
 
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
@@ -105,6 +104,7 @@ class Filter(QObject):
 
         self._initialised = True
         self.loadFilterSet('Default')
+        self.dock.menuAction().setChecked(False)
         return self._initialised
 
     # Save the project

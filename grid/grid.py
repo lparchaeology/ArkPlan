@@ -59,9 +59,8 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def initGui(self):
         self.dock = GridDock()
-        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Local Grid'), checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Local Grid'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
-        self.dock.toggled.connect(self.run)
         self.dock.createGridSelected.connect(self.showGridWizard)
         self.dock.identifyGridSelected.connect(self.enableMapTool)
         self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)

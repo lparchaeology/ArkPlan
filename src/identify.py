@@ -104,6 +104,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             action.editItemSelected.connect(self._editInBuffers)
             action.deleteItemSelected.connect(self._delete)
             action.openInArkSelected.connect(self._openInArk)
+            action.openDrawingsSelected.connect(self._openDrawings)
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
@@ -185,6 +186,9 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         except:
             self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
+    def _openDrawings(self, classCode, siteCode, itemId):
+        self._project.planModule.loadDrawing(classCode, siteCode, itemId)
+
     def _editInBuffers(self, classCode, siteCode, itemId):
         self._project.planModule.editInBuffers(siteCode, classCode, itemId)
 
@@ -207,6 +211,7 @@ class IdentifyItemAction(QAction):
     excludeFilterItemSelected = pyqtSignal(str, str, str)
     highlightItemSelected = pyqtSignal(str, str, str)
     addHighlightItemSelected = pyqtSignal(str, str, str)
+    openDrawingsSelected = pyqtSignal(str, str, str)
 
     siteCode = ''
     classCode = ''
@@ -261,6 +266,9 @@ class IdentifyItemAction(QAction):
             self.linkAction = QAction('Open in ARK', parent)
             self.linkAction.triggered.connect(self._openArk)
             menu.addAction(self.linkAction)
+        self.drawingAction = QAction('Open Drawings', parent)
+        self.drawingAction.triggered.connect(self._openDrawings)
+        menu.addAction(self.drawingAction)
         menu.addSeparator()
         self.editAction = QAction('Edit Item', parent)
         self.editAction.triggered.connect(self._editItem)
@@ -328,3 +336,6 @@ class IdentifyItemAction(QAction):
 
     def _addHighlightItem(self):
         self.addHighlightItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+
+    def _openDrawings(self):
+        self.openDrawingsSelected.emit(self.classCode, self.siteCode, str(self.itemId))

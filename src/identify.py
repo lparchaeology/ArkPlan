@@ -26,7 +26,7 @@
 import webbrowser
 
 from PyQt4.QtCore import Qt, pyqtSignal, QSettings
-from PyQt4.QtGui import QAction, QMenu, QColor
+from PyQt4.QtGui import QAction, QMenu, QColor, QApplication
 
 from qgis.core import *
 from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
@@ -177,18 +177,24 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     def _openInArk(self, classCode, siteCode, itemId):
         mod_cd = classCode + '_cd'
         item = siteCode + '_' + itemId
-        url = self._project.arkUrl() + 'micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
-        browser = webbrowser.get('firefox')
-        if browser is None:
-            browser = webbrowser.get()
-        if browser:
-            browser.open_new_tab(url)
+        url = self._project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
+        QApplication.clipboard().setText(url)
+        browser = None
+        try:
+            webbrowser.get().open_new_tab(url)
+        except:
+            self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
     def _editInBuffers(self, classCode, siteCode, itemId):
         self._project.planModule.editInBuffers(siteCode, classCode, itemId)
 
     def _delete(self, classCode, siteCode, itemId):
         self._project.planModule.deleteItem(siteCode, classCode, itemId)
+
+class ClipboardAction(QAction):
+
+    def __init__(self, label, text, parent=None):
+        super(ClipboardAction, self).__init__(parent)
 
 class IdentifyItemAction(QAction):
 

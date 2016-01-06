@@ -133,6 +133,8 @@ class ArkSpatial(Plugin):
     # Unload the plugin
     def unload(self):
 
+        self.identifyMapTool.deactivate()
+
         # Restore the original QGIS gui
         self.layerDock.menuAction().setChecked(False)
 

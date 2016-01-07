@@ -32,7 +32,7 @@ from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon
 
 from ..libarkqgis.utils import *
 
-import filter_widget_base
+import filter_clause_widget_base
 
 class FilterType():
     IncludeFilter = 0
@@ -44,7 +44,7 @@ class FilterAction():
     RemoveFilter = 1
     LockFilter = 2
 
-class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
+class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidget):
 
     filterAdded = pyqtSignal()
     filterRemoved = pyqtSignal(int)
@@ -56,7 +56,7 @@ class FilterWidget(QWidget, filter_widget_base.Ui_FilterWidget):
     _siteCode = ''
 
     def __init__(self, parent=None):
-        super(FilterWidget, self).__init__(parent)
+        super(FilterClauseWidget, self).__init__(parent)
         self.setupUi(self)
 
         self._addIcon = QIcon(':/plugins/ark/filter/addFilter.svg')

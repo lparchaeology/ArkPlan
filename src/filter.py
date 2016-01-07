@@ -38,7 +38,7 @@ from data_model import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
-from filter_widget import FilterWidget, FilterType, FilterAction
+from filter_clause_widget import FilterType, FilterAction
 from config import Config
 
 import resources_rc
@@ -131,15 +131,15 @@ class Filter(QObject):
 
     # Filter methods
 
-    def addFilter(self, filterType, siteCode, classCode, filterRange, filterAction=FilterAction.RemoveFilter):
+    def addFilterClause(self, filterType, siteCode, classCode, filterRange, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:
             return
-        return self.dock.addFilter(filterType, siteCode, classCode, filterRange, filterAction)
+        return self.dock.addFilterClause(filterType, siteCode, classCode, filterRange, filterAction)
 
-    def removeFilter(self, filterIndex):
+    def removeFilterClause(self, filterIndex):
         if not self._initialised:
             return
-        self.dock.removeFilter(filterIndex)
+        self.dock.removeFilterClause(filterIndex)
 
     def removeFilters(self):
         if not self._initialised:

@@ -500,7 +500,7 @@ class Plan(QObject):
         self.project.mapCanvas().setCenter(extent.center())
         if highlight:
             self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def zoomToItem(self, siteCode, classCode, itemId, highlight=False):
@@ -511,25 +511,25 @@ class Plan(QObject):
         self.project.mapCanvas().setExtent(extent)
         if highlight:
             self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def filterItem(self, siteCode, classCode, itemId):
         self.project.filterModule.removeFilters()
-        self.project.filterModule.addFilter(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def excludeFilterItem(self, siteCode, classCode, itemId):
-        self.project.filterModule.addFilter(FilterType.ExcludeFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.ExcludeFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def highlightItem(self, siteCode, classCode, itemId):
         self.project.filterModule.removeHighlightFilters()
-        self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def addHighlightItem(self, siteCode, classCode, itemId):
-        self.project.filterModule.addFilter(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
         self.project.mapCanvas().refresh()
 
     def itemExtent(self, siteCode, classCode, itemId):
@@ -613,17 +613,17 @@ class Plan(QObject):
         self._clearSchematicSourceFilters()
 
     def _clearSchematicContextIncludeFilter(self):
-        self.project.filterModule.removeFilter(self._schematicContextIncludeFilter)
+        self.project.filterModule.removeFilterClause(self._schematicContextIncludeFilter)
         self._schematicContextIncludeFilter = -1
 
     def _clearSchematicContextHighlightFilter(self):
-        self.project.filterModule.removeFilter(self._schematicContextHighlightFilter)
+        self.project.filterModule.removeFilterClause(self._schematicContextHighlightFilter)
         self._schematicContextHighlightFilter = -1
 
     def _clearSchematicSourceFilters(self):
-        self.project.filterModule.removeFilter(self._schematicSourceIncludeFilter)
+        self.project.filterModule.removeFilterClause(self._schematicSourceIncludeFilter)
         self._schematicSourceIncludeFilter = -1
-        self.project.filterModule.removeFilter(self._schematicSourceHighlightFilter)
+        self.project.filterModule.removeFilterClause(self._schematicSourceHighlightFilter)
         self._schematicSourceHighlightFilter = -1
 
     def _findPanContext(self):
@@ -649,8 +649,8 @@ class Plan(QObject):
         if siteCode == '':
             siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
-        self._schematicContextHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
+            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
+        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
 
         itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.context())
         haveFeature = SearchStatus.Found
@@ -701,9 +701,9 @@ class Plan(QObject):
         if siteCode == '':
             siteCode = self.project.siteCode()
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilter(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
+            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilter(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
+        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
 
         itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.sourceContext())
         haveFeature = SearchStatus.Found

@@ -17,7 +17,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="2" column="1">
-      <widget class="LayerSnappingToolButton" name="snapPlanPointsTool">
+      <widget class="QToolButton" name="snapPlanPointsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -47,7 +47,7 @@
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="LayerSnappingToolButton" name="snapPlanLinesTool">
+      <widget class="QToolButton" name="snapPlanLinesTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -60,7 +60,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="LayerSnappingToolButton" name="snapBufferLinesTool">
+      <widget class="QToolButton" name="snapBufferLinesTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -73,7 +73,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="LayerSnappingToolButton" name="snapBufferPointsTool">
+      <widget class="QToolButton" name="snapBufferPointsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -86,7 +86,7 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="LayerSnappingToolButton" name="snapBufferPolygonsTool">
+      <widget class="QToolButton" name="snapBufferPolygonsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -116,7 +116,7 @@
       </widget>
      </item>
      <item row="2" column="3">
-      <widget class="LayerSnappingToolButton" name="snapPlanPolygonsTool">
+      <widget class="QToolButton" name="snapPlanPolygonsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -129,7 +129,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="LayerSnappingToolButton" name="snapBasePointsTool">
+      <widget class="QToolButton" name="snapBasePointsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -152,7 +152,7 @@
       </widget>
      </item>
      <item row="3" column="2">
-      <widget class="LayerSnappingToolButton" name="snapBaseLinesTool">
+      <widget class="QToolButton" name="snapBaseLinesTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -165,7 +165,7 @@
       </widget>
      </item>
      <item row="3" column="3">
-      <widget class="LayerSnappingToolButton" name="snapBasePolygonsTool">
+      <widget class="QToolButton" name="snapBasePolygonsTool">
        <property name="text">
         <string>...</string>
        </property>
@@ -188,13 +188,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>LayerSnappingToolButton</class>
-   <extends>QToolButton</extends>
-   <header>..libarkqgis.snapping.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>snapBufferPointsTool</tabstop>
   <tabstop>snapBufferLinesTool</tabstop>

@@ -25,15 +25,35 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal, QSize
-from PyQt4.QtGui import QListWidgetItem, QLabel, QActionGroup, QMenu
+from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtGui import QWidget, QListWidgetItem, QIcon, QAction, QActionGroup, QMenu
 
-from ..libarkqgis.dock import ArkDockWidget
+from ..libarkqgis.dock import ToolDockWidget
 
-import filter_dock_base
-from filter_clause_widget import FilterClauseWidget, FilterType
+import filter_set_widget_base
+from filter_clause_widget import *
 
-class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
+class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
+
+    def __init__(self, parent=None):
+        super(FilterSetWidget, self).__init__(parent)
+        self.setupUi(self)
+        self._filterSetActionGroup = QActionGroup(self)
+        self._filterSetActionGroup.addAction(self.saveFilterSetAction)
+        self._filterSetActionGroup.addAction(self.deleteFilterSetAction)
+        self._filterSetActionGroup.addAction(self.exportFilterSetAction)
+        self._filterSetMenu = QMenu(self)
+        self._filterSetMenu.addActions(self._filterSetActionGroup.actions())
+        self.filterSetTool.setMenu(self._filterSetMenu)
+        self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
+
+    def currentFilterSetKey(self):
+        return self.widget.filterSetCombo.itemData(self.widget.filterSetCombo.currentIndex())
+
+    def currentFilterSetName(self):
+        return self.widget.filterSetCombo.currentText()
+
+class FilterDock(ToolDockWidget):
 
     filterChanged = pyqtSignal()
 
@@ -55,62 +75,51 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     _classCodes = {}
 
     def __init__(self, parent=None):
-        super(FilterDock, self).__init__(parent)
+        super(FilterDock, self).__init__(FilterSetWidget(), parent)
 
     def initGui(self, iface, location, menuAction):
         super(FilterDock, self).initGui(iface, location, menuAction)
-        self.setupUi(self)
 
-        self.zoomFilterAction.triggered.connect(self.zoomFilterSelected)
-        self.zoomFilterTool.setDefaultAction(self.zoomFilterAction)
+        self._zoomFilterAction = QAction(QIcon(':/plugins/ark/filter/zoomToFilterSet.svg'), "Zoom To Selection", self)
+        self._zoomFilterAction.triggered.connect(self.zoomFilterSelected)
+        self.toolbar.addAction(self._zoomFilterAction)
 
-        self.buildFilterAction.triggered.connect(self.buildFilterSelected)
-        self.buildFilterTool.setDefaultAction(self.buildFilterAction)
+        self._buildFilterAction = QAction(QIcon(':/plugins/ark/filter/buildFilter.svg'), "Build Filter", self)
+        self._buildFilterAction.triggered.connect(self.buildFilterSelected)
+        self.toolbar.addAction(self._buildFilterAction)
 
-        self.buildSelectionAction.triggered.connect(self.buildSelectionSelected)
-        self.buildSelectionTool.setDefaultAction(self.buildSelectionAction)
+        self._buildSelectionAction = QAction(QIcon(':/plugins/ark/filter/buildSelection.svg'), "Build Selection", self)
+        self._buildSelectionAction.triggered.connect(self.buildSelectionSelected)
+        self.toolbar.addAction(self._buildSelectionAction)
 
-        self.clearFilterAction.triggered.connect(self._clearFilterClicked)
-        self.clearFilterTool.setDefaultAction(self.clearFilterAction)
+        self._clearFilterAction = QAction(QIcon(':/plugins/ark/filter/removeFilter.svg'), "Clear Filter", self)
+        self._clearFilterAction.triggered.connect(self._clearFilterClicked)
+        self.toolbar.addAction(self._clearFilterAction)
 
-        self.loadDataAction.triggered.connect(self.loadDataSelected)
-        self.loadDataTool.setDefaultAction(self.loadDataAction)
-        self.loadDataTool.setHidden(True)
+        self._loadDataAction = QAction(QIcon(':/plugins/ark/filter/loadData.png'), "Load Data", self)
+        self._loadDataAction.triggered.connect(self.loadDataSelected)
+        #self.toolbar.addAction(self._loadDataAction)
 
-        self.showDataAction.triggered.connect(self.showDataSelected)
-        self.showDataTool.setDefaultAction(self.showDataAction)
-        self.showDataTool.setHidden(True)
+        self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
+        self._showDataAction.triggered.connect(self.showDataSelected)
+        #self.toolbar.addAction(self._showDataAction)
 
-        self.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
+        self.widget.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
 
-        self.saveFilterSetAction.triggered.connect(self._saveFilterSetSelected)
-        self.deleteFilterSetAction.triggered.connect(self._deleteFilterSetSelected)
-        self.exportFilterSetAction.triggered.connect(self._exportFilterSetSelected)
-        self._filterSetActionGroup = QActionGroup(self)
-        self._filterSetActionGroup.addAction(self.saveFilterSetAction)
-        self._filterSetActionGroup.addAction(self.deleteFilterSetAction)
-        self._filterSetActionGroup.addAction(self.exportFilterSetAction)
-        self._filterSetMenu = QMenu(self)
-        self._filterSetMenu.addActions(self._filterSetActionGroup.actions())
-        self.filterSetTool.setMenu(self._filterSetMenu)
-        self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
+        self.widget.saveFilterSetAction.triggered.connect(self._saveFilterSetSelected)
+        self.widget.deleteFilterSetAction.triggered.connect(self._deleteFilterSetSelected)
+        self.widget.exportFilterSetAction.triggered.connect(self._exportFilterSetSelected)
 
         self._createNewFilterClauseWidget()
 
-    def _currentFilterSetKey(self):
-        return self.filterSetCombo.itemData(self.filterSetCombo.currentIndex())
-
-    def _currentFilterSetName(self):
-        return self.filterSetCombo.currentText()
-
     def _saveFilterSetSelected(self):
-        self.saveFilterSetSelected.emit(self._currentFilterSetKey(), self._currentFilterSetName())
+        self.saveFilterSetSelected.emit(self.widget.currentFilterSetKey(), self.widget.currentFilterSetName())
 
     def _deleteFilterSetSelected(self):
-        self.deleteFilterSetSelected.emit(self._currentFilterSetKey())
+        self.deleteFilterSetSelected.emit(self.widget.currentFilterSetKey())
 
     def _exportFilterSetSelected(self):
-        self.exportFilterSetSelected.emit(self._currentFilterSetKey(), self._currentFilterSetName())
+        self.exportFilterSetSelected.emit(self.widget.currentFilterSetKey(), self.widget.currentFilterSetName())
 
     def addFilterClause(self, filterType, siteCode, classCode, filterRange, filterAction):
         filterClauseWidget = self._createFilterClauseWidget()
@@ -135,8 +144,8 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         newItem = QListWidgetItem()
         newItem.setData(Qt.UserRole, idx)
         newItem.setSizeHint(filterClauseWidget.minimumSizeHint())
-        self.filterListWidget.addItem(newItem);
-        self.filterListWidget.setItemWidget(newItem, filterClauseWidget)
+        self.widget.filterListWidget.addItem(newItem);
+        self.widget.filterListWidget.setItemWidget(newItem, filterClauseWidget)
         self._items[idx] = newItem
         self._filterIndex += 1
         self.filterChanged.emit()
@@ -166,7 +175,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def _removeFilterClause(self, index):
         if index not in self._filterClauses:
             return
-        self.filterListWidget.takeItem(self.filterListWidget.row(self._items[index]))
+        self.widget.filterListWidget.takeItem(self.widget.filterListWidget.row(self._items[index]))
         self._filterClauses.pop(index)
         self._items.pop(index)
 
@@ -177,7 +186,7 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
     def _createNewFilterClauseWidget(self):
         self.newFilterClauseWidget = self._createFilterClauseWidget()
         self.newFilterClauseWidget.filterAdded.connect(self._addNewFilterClause)
-        self.newFilterFrame.layout().addWidget(self.newFilterClauseWidget)
+        self.widget.newFilterFrame.layout().addWidget(self.newFilterClauseWidget)
 
     def _createFilterClauseWidget(self):
         widget = FilterClauseWidget(self)
@@ -198,27 +207,27 @@ class FilterDock(ArkDockWidget, filter_dock_base.Ui_FilterDock):
         self.clearFilterSelected.emit()
 
     def currentFilterSet(self):
-        return self.filterSetCombo.itemData(self.siteCodeCombo.currentIndex())
+        return self.widget.filterSetCombo.itemData(self.widget.siteCodeCombo.currentIndex())
 
     def addFilterClauseSet(self, key, name):
-        self.filterSetCombo.addItem(name, key)
+        self.widget.filterSetCombo.addItem(name, key)
 
     def setFilterSet(self, key):
-        self.filterSetCombo.setCurrentIndex(self.filterSetCombo.findData(key))
+        self.widget.filterSetCombo.setCurrentIndex(self.widget.filterSetCombo.findData(key))
 
     def removeFilterSet(self, key):
-        self.filterSetCombo.removeItem(self.filterSetCombo.findData(key))
+        self.widget.filterSetCombo.removeItem(self.widget.filterSetCombo.findData(key))
 
     def _filterSetChanged(self, idx):
-        self.filterSetChanged.emit(self.filterSetCombo.itemData(idx))
+        self.filterSetChanged.emit(self.widget.filterSetCombo.itemData(idx))
 
     def initSiteCodes(self, siteCodes):
-        self.siteCodeCombo.clear()
+        self.widget.siteCodeCombo.clear()
         for site in siteCodes:
-            self.siteCodeCombo.addItem(site)
+            self.widget.siteCodeCombo.addItem(site)
 
     def siteCode(self):
-        return self.siteCodeCombo.currentText()
+        return self.widget.siteCodeCombo.currentText()
 
     def initClassCodes(self, classCodes):
         self._classCodes = classCodes

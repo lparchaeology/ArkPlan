@@ -731,8 +731,6 @@ class Plan(QObject):
 
     def _copyFeatureMetadata(self, feature):
         self.schematicDock.metadata().setSiteCode(self._attribute(feature, 'site'))
-        #TODO FIXME WTF???
-        self.schematicDock.metadataWidget._setSiteCode(self.schematicDock.metadata().siteCode())
         self.schematicDock.metadata().setComment(self._attribute(feature, 'comment'))
         self.schematicDock.metadata().setSourceCode('cln')
         self.schematicDock.metadata().setSourceClass('cxt')

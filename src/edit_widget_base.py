@@ -25,8 +25,9 @@ except AttributeError:
 class Ui_EditWidget(object):
     def setupUi(self, EditWidget):
         EditWidget.setObjectName(_fromUtf8("EditWidget"))
-        EditWidget.resize(265, 128)
+        EditWidget.resize(241, 124)
         self.verticalLayout = QtGui.QVBoxLayout(EditWidget)
+        self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -94,6 +95,8 @@ class Ui_EditWidget(object):
         self.snapPointsLabel.setObjectName(_fromUtf8("snapPointsLabel"))
         self.gridLayout.addWidget(self.snapPointsLabel, 0, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
         self.snapPlanLabel.setBuddy(self.snapPlanPointsTool)
         self.snapBuffersLabel.setBuddy(self.snapBufferPointsTool)
         self.snapBaseLabel.setBuddy(self.snapBasePointsTool)

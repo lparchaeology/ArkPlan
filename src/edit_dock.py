@@ -25,12 +25,12 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal, QSize
-from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar, QSpacerItem, QSizePolicy
+from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtGui import QWidget
 
 from qgis.core import QgsProject
 
-from ..libarkqgis.dock import ArkDockWidget
+from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.snapping import *
 
 import edit_widget_base
@@ -41,124 +41,96 @@ class EditWidget(QWidget, edit_widget_base.Ui_EditWidget):
         super(EditWidget, self).__init__(parent)
         self.setupUi(self)
 
-class EditDock(ArkDockWidget):
+class EditDock(ToolDockWidget):
 
     _iface = None # QgsisInterface()
     _modeTool = None # ProjectSnappingToolButton()
 
     def __init__(self, iface, parent=None):
-        super(EditDock, self).__init__(parent)
+        super(EditDock, self).__init__(EditWidget(), parent)
         self._iface = iface
 
         self.setWindowTitle(u'Editing Tools')
         self.setObjectName(u'EditDock')
 
-        self.editToolbar = QToolBar()
-        self.editToolbar.setObjectName(u'editToolbar')
-        self.editToolbar.setIconSize(QSize(22, 22))
-        self.editToolbar.addAction(iface.actionPan())
-        self.editToolbar.addAction(iface.actionZoomIn())
-        self.editToolbar.addAction(iface.actionZoomOut())
-        self.editToolbar.addAction(iface.actionZoomLast())
-        self.editToolbar.addAction(iface.actionZoomNext())
-        self.editToolbar.addSeparator()
+    def initGui(self, iface, location, menuAction):
+        super(EditDock, self).initGui(iface, location, menuAction)
+
+        self.toolbar.addAction(iface.actionPan())
+        self.toolbar.addAction(iface.actionZoomIn())
+        self.toolbar.addAction(iface.actionZoomOut())
+        self.toolbar.addAction(iface.actionZoomLast())
+        self.toolbar.addAction(iface.actionZoomNext())
+        self.toolbar.addSeparator()
         self._snappingAction = ProjectSnappingAction(self)
         self._snappingAction.setInterface(iface)
-        self.editToolbar.addAction(self._snappingAction)
+        self.toolbar.addAction(self._snappingAction)
         self._interAction = IntersectionSnappingAction(self)
-        self.editToolbar.addAction(self._interAction)
+        self.toolbar.addAction(self._interAction)
         self._topoAction = TopologicalEditingAction(self)
-        self.editToolbar.addAction(self._topoAction)
-
-        self.editWidget = EditWidget()
-        self.editWidget.setObjectName(u'editWidget')
-
-        self.editSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u'verticalLayout')
-        self.verticalLayout.addWidget(self.editToolbar)
-        self.verticalLayout.addWidget(self.editWidget)
-        self.verticalLayout.addSpacerItem(self.editSpacer)
-
-        self.editDockContents = QWidget()
-        self.editDockContents.setObjectName(u'editDockContents')
-        self.editDockContents.setLayout(self.verticalLayout)
-        self.setWidget(self.editDockContents)
+        self.toolbar.addAction(self._topoAction)
 
         self._refresh()
         QgsProject.instance().snapSettingsChanged.connect(self._refresh)
 
     def unloadGui(self):
-        self.setBufferPoints(None)
-        self.setBufferLines(None)
-        self.setBufferPolygons(None)
-        self.setPlanPoints(None)
-        self.setPlanLines(None)
-        self.setPlanPolygons(None)
-        self.setBasePoints(None)
-        self.setBaseLines(None)
-        self.setBasePolygons(None)
         super(EditDock, self).unloadGui()
-
-    def addAction(self, action):
-        self.editToolbar.addAction(action)
 
     # Snapping Tools
 
     def setBufferPoints(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBufferPointsTool)
+        action = LayerSnappingAction(layer, self.widget.snapBufferPointsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBufferPointsTool.setDefaultAction(action)
+        self.widget.snapBufferPointsTool.setDefaultAction(action)
 
     def setBufferLines(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBufferLinesTool)
+        action = LayerSnappingAction(layer, self.widget.snapBufferLinesTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBufferLinesTool.setDefaultAction(action)
+        self.widget.snapBufferLinesTool.setDefaultAction(action)
 
     def setBufferPolygons(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBufferPolygonsTool)
+        action = LayerSnappingAction(layer, self.widget.snapBufferPolygonsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBufferPolygonsTool.setDefaultAction(action)
+        self.widget.snapBufferPolygonsTool.setDefaultAction(action)
 
     def setPlanPoints(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapPlanPointsTool)
+        action = LayerSnappingAction(layer, self.widget.snapPlanPointsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapPlanPointsTool.setDefaultAction(action)
+        self.widget.snapPlanPointsTool.setDefaultAction(action)
 
     def setPlanLines(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapPlanLinesTool)
+        action = LayerSnappingAction(layer, self.widget.snapPlanLinesTool)
         action.setInterface(self._iface)
-        self.editWidget.snapPlanLinesTool.setDefaultAction(action)
+        self.widget.snapPlanLinesTool.setDefaultAction(action)
 
     def setPlanPolygons(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapPlanPolygonsTool)
+        action = LayerSnappingAction(layer, self.widget.snapPlanPolygonsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapPlanPolygonsTool.setDefaultAction(action)
+        self.widget.snapPlanPolygonsTool.setDefaultAction(action)
 
     def setBasePoints(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBasePointsTool)
+        action = LayerSnappingAction(layer, self.widget.snapBasePointsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBasePointsTool.setDefaultAction(action)
+        self.widget.snapBasePointsTool.setDefaultAction(action)
 
     def setBaseLines(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBaseLinesTool)
+        action = LayerSnappingAction(layer, self.widget.snapBaseLinesTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBaseLinesTool.setDefaultAction(action)
+        self.widget.snapBaseLinesTool.setDefaultAction(action)
 
     def setBasePolygons(self, layer):
-        action = LayerSnappingAction(layer, self.editWidget.snapBasePolygonsTool)
+        action = LayerSnappingAction(layer, self.widget.snapBasePolygonsTool)
         action.setInterface(self._iface)
-        self.editWidget.snapBasePolygonsTool.setDefaultAction(action)
+        self.widget.snapBasePolygonsTool.setDefaultAction(action)
 
     def _refresh(self):
         advanced = (Snapping.snappingMode() == Snapping.SelectedLayers)
-        self.editWidget.snapBufferPointsTool.setEnabled(advanced)
-        self.editWidget.snapBufferLinesTool.setEnabled(advanced)
-        self.editWidget.snapBufferPolygonsTool.setEnabled(advanced)
-        self.editWidget.snapPlanPointsTool.setEnabled(advanced)
-        self.editWidget.snapPlanLinesTool.setEnabled(advanced)
-        self.editWidget.snapPlanPolygonsTool.setEnabled(advanced)
-        self.editWidget.snapBasePointsTool.setEnabled(advanced)
-        self.editWidget.snapBaseLinesTool.setEnabled(advanced)
-        self.editWidget.snapBasePolygonsTool.setEnabled(advanced)
+        self.widget.snapBufferPointsTool.setEnabled(advanced)
+        self.widget.snapBufferLinesTool.setEnabled(advanced)
+        self.widget.snapBufferPolygonsTool.setEnabled(advanced)
+        self.widget.snapPlanPointsTool.setEnabled(advanced)
+        self.widget.snapPlanLinesTool.setEnabled(advanced)
+        self.widget.snapPlanPolygonsTool.setEnabled(advanced)
+        self.widget.snapBasePointsTool.setEnabled(advanced)
+        self.widget.snapBaseLinesTool.setEnabled(advanced)
+        self.widget.snapBasePolygonsTool.setEnabled(advanced)

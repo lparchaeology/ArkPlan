@@ -29,11 +29,12 @@ from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSig
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
-from qgis.gui import QgsMessageBar
+from qgis.gui import QgsMessageBar, QgsLayerTreeView
 
 from ..libarkqgis.plugin import Plugin
 from ..libarkqgis.layercollection import *
 from ..libarkqgis import utils, layers
+from ..libarkqgis.dock import ToolDockWidget
 
 from ..grid.grid import GridModule
 
@@ -42,7 +43,6 @@ from filter import Filter
 from identify import MapToolIndentifyItems
 
 from config import Config
-from layer_dock import LayerDock
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 
@@ -72,7 +72,8 @@ class ArkSpatial(Plugin):
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
-    layerDock = None # LayerDock()
+    projectLayerView = None  # QgsLayerTreeView()
+    layerDock = None  # ToolDockWidget()
 
     # Private settings
     _initialised = False
@@ -92,21 +93,24 @@ class ArkSpatial(Plugin):
         super(ArkSpatial, self).initGui()
 
         # Init the main dock
-        self.layerDock = LayerDock()
+        self.projectLayerView = QgsLayerTreeView()
+        self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
+        self.layerDock.setWindowTitle(u'ARK Spatial Layers')
+        self.layerDock.setObjectName(u'LayerDock')
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
 
         # Init the identify tool
-        self.layerDock.addSeparator()
+        self.layerDock.toolbar.addSeparator()
         self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), callback=self.triggerIdentifyAction, checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the modules
-        self.layerDock.addSeparator()
+        self.layerDock.toolbar.addSeparator()
         self.gridModule.initGui()
         self.filterModule.initGui()
-        self.layerDock.addSeparator()
+        self.layerDock.toolbar.addSeparator()
         self.planModule.initGui()
 
     # Load the project settings when project is loaded
@@ -243,8 +247,8 @@ class ArkSpatial(Plugin):
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
             self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
             self.projectLayerModel.setAutoCollapseLegendNodes(-1)
-            self.layerDock.projectLayerView.setModel(self.projectLayerModel)
-            self.layerDock.projectLayerView.setCurrentLayer(self.iface.activeLayer())
+            self.projectLayerView.setModel(self.projectLayerModel)
+            self.projectLayerView.setCurrentLayer(self.iface.activeLayer())
 
             #Load the layer collections
             self.grid = self._createCollection('grid')
@@ -260,10 +264,10 @@ class ArkSpatial(Plugin):
                 self.loadProject()
 
                 # If the project or layers or legend indexes change make sure we stay updated
-                self.layerDock.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
-                self.layerDock.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
-                self.layerDock.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
-                self.iface.currentLayerChanged.connect(self.layerDock.projectLayerView.setCurrentLayer)
+                self.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
+                self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+                self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
+                self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
                 self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
                 self.iface.projectRead.connect(self.projectLoad)
                 self.iface.newProjectCreated.connect(self.projectLoad)
@@ -393,7 +397,7 @@ class ArkSpatial(Plugin):
             action.setStatusTip(tip)
         if whatsThis is not None:
             action.setWhatsThis(whatsThis)
-        self.layerDock.addAction(action)
+        self.layerDock.toolbar.addAction(action)
         #self.actions.append(action)
         return action
 

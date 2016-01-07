@@ -61,28 +61,32 @@ class GridModule(QObject):
         self.dock = GridDock()
         action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Local Grid'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
-        self.dock.createGridSelected.connect(self.showGridWizard)
-        self.dock.identifyGridSelected.connect(self.enableMapTool)
-        self.dock.updateLayerSelected.connect(self.showUpdateLayerDialog)
-        self.dock.translateFeaturesSelected.connect(self.showTranslateFeaturesDialog)
-        self.dock.panMapSelected.connect(self.panMapToPoint)
-        self.dock.copyMapPointSelected.connect(self.copyMapPointToClipboard)
-        self.dock.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
-        self.dock.pasteMapPointSelected.connect(self.pasteMapPointFromClipboard)
-        self.dock.addMapPointSelected.connect(self.addMapPointToLayer)
-        self.dock.gridSelectionChanged.connect(self.changeGrid)
-        self.dock.convertMapSelected.connect(self.convertMapPoint)
-        self.dock.convertLocalSelected.connect(self.convertLocalPoint)
-        self.dock.setReadOnly(True)
-        self.dock._createGridAction.setEnabled(False)
+
+        self._createGridAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)
+        self._identifyGridAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr(u'Identify Grid Coordinates'), self._triggerMapTool)
+        self._identifyGridAction.setCheckable(True)
+        self._panToAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr(u'Pan to map point'), self.panMapToPoint)
+        self._pasteMapPointAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr(u'Paste Map Point'), self.pasteMapPointFromClipboard)
+        self._addMapPointAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/addPoint.png'), self.tr(u'Add point to current layer'), self.addMapPointToLayer)
+        self._updateLayerAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr(u'Update Layer Coordinates'), self.showUpdateLayerDialog)
+        self._translateFeaturesAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr(u'Translate features'), self.showTranslateFeaturesDialog)
+
+        self.dock.widget.gridSelectionChanged.connect(self.changeGrid)
+        self.dock.widget.mapPointChanged.connect(self.convertMapPoint)
+        self.dock.widget.copyMapPointSelected.connect(self.copyMapPointToClipboard)
+        self.dock.widget.localPointChanged.connect(self.convertLocalPoint)
+        self.dock.widget.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
+
+        self._setReadOnly(True)
+        self._createGridAction.setEnabled(False)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
         self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
-        self.mapTool.setAction(self.dock._identifyGridAction)
+        self.mapTool.setAction(self._identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
     def loadProject(self):
-        self.dock._createGridAction.setEnabled(True)
+        self._createGridAction.setEnabled(True)
 
         # Check if files exist or need creating
         # Run create if needed
@@ -91,10 +95,10 @@ class GridModule(QObject):
             return
 
         self.loadGridNames()
-        if not self.initialiseGrid(self.dock.siteCode(), self.dock.gridName()):
+        if not self.initialiseGrid(self.siteCode(), self.gridName()):
             return
 
-        self.dock.setReadOnly(False)
+        self._setReadOnly(False)
         self.initialised = True
         return True
 
@@ -113,6 +117,16 @@ class GridModule(QObject):
         self.initialised = False
         self.dock.unloadGui()
 
+    def _setReadOnly(self, readOnly):
+        enabled = not readOnly
+        self._identifyGridAction.setEnabled(enabled)
+        self._updateLayerAction.setEnabled(enabled)
+        self._translateFeaturesAction.setEnabled(enabled)
+        self._panToAction.setEnabled(enabled)
+        self._pasteMapPointAction.setEnabled(enabled)
+        self._addMapPointAction.setEnabled(enabled)
+        self.dock.widget.setEnabled(enabled)
+
     def run(self, checked):
         if checked:
             if not self.initialised:
@@ -124,7 +138,7 @@ class GridModule(QObject):
             name = (feature.attribute(self.project.fieldName('site')),
                     feature.attribute(self.project.fieldName('name')))
             names.add(name)
-        self.dock.setGridNames(list(names))
+        self.setGridNames(list(names))
 
     def initialiseGrid(self, siteCode, gridName):
         features = []
@@ -142,8 +156,8 @@ class GridModule(QObject):
 
     def changeGrid(self, siteCode, gridName):
         self.initialiseGrid(siteCode, gridName)
-        self.dock.setMapPoint(QgsPoint(0, 0))
-        self.dock.setLocalPoint(QgsPoint(0, 0))
+        self.setMapPoint(QgsPoint(0, 0))
+        self.setLocalPoint(QgsPoint(0, 0))
 
     def transformPoints(self, feature):
         mapPoint = feature.geometry().asPoint()
@@ -151,6 +165,29 @@ class GridModule(QObject):
         localY = feature.attribute(self.project.fieldName('local_y'))
         localPoint = QgsPoint(localX, localY)
         return mapPoint, localPoint
+
+    # Widget settings methods
+
+    def siteCode(self):
+        return self.dock.widget.siteCode()
+
+    def gridName(self):
+        return self.dock.widget.gridName()
+
+    def setGridNames(self, names):
+        self.dock.widget.setGridNames(names)
+
+    def mapPoint(self):
+        return self.dock.widget.mapPoint()
+
+    def setMapPoint(self, point):
+        self.dock.widget.setMapPoint(point)
+
+    def localPoint(self):
+        return self.dock.widget.localPoint()
+
+    def setLocalPoint(self, point):
+        self.dock.widget.setLocalPoint(point)
 
     # Grid methods
 
@@ -194,7 +231,7 @@ class GridModule(QObject):
                            xInterval, yInterval):
             self.project.mapCanvas().refresh()
             self.loadGridNames()
-            self.dock.setReadOnly(False)
+            self._setReadOnly(False)
             self.project.showInfoMessage('Grid successfully created', 10)
 
     def createGrid(self, siteCode, gridName, mapPoint1, localPoint1, mapPoint2, localPoint2, localOrigin, localTerminus, xInterval, yInterval):
@@ -318,16 +355,16 @@ class GridModule(QObject):
                 features.append(feature)
         layer.dataProvider().addFeatures(features)
 
-    def enableMapTool(self, status):
+    def _triggerMapTool(self):
         if not self.initialised:
             self.initialise()
         if self.initialised:
-            if status:
+            if self._identifyGridAction.isChecked():
                 self.project.mapCanvas().setMapTool(self.mapTool)
             else:
-                self.project.iface.mapCanvas().unsetMapTool(self.mapTool)
-        elif status:
-            self.dock._identifyGridAction.setChecked(False)
+                self.project.mapCanvas().unsetMapTool(self.mapTool)
+        elif self._identifyGridAction.isChecked():
+            self._identifyGridAction.setChecked(False)
 
     def pointSelected(self, point, button):
         if not self.initialised:
@@ -335,20 +372,20 @@ class GridModule(QObject):
         if (button == Qt.LeftButton):
             if not self.dock.menuAction().isChecked():
                 self.dock.menuAction().toggle()
-            self.dock.setMapPoint(point)
+            self.setMapPoint(point)
             self.convertMapPoint()
 
     def convertMapPoint(self):
         if not self.initialised:
             return
-        localPoint = self.mapTransformer.map(self.dock.mapPoint())
-        self.dock.setLocalPoint(localPoint)
+        localPoint = self.mapTransformer.map(self.mapPoint())
+        self.setLocalPoint(localPoint)
 
     def convertLocalPoint(self):
         if not self.initialised:
             return
-        mapPoint = self.localTransformer.map(self.dock.localPoint())
-        self.dock.setMapPoint(mapPoint)
+        mapPoint = self.localTransformer.map(self.localPoint())
+        self.setMapPoint(mapPoint)
 
     def showUpdateLayerDialog(self):
         if not self.initialised:
@@ -450,19 +487,12 @@ class GridModule(QObject):
             layer.addFeature(self.mapPointAsFeature(layer.pendingFields()))
         self.project.mapCanvas().refresh()
 
-    def setMapPoint(self, mapPoint):
-        self.dock.setMapPoint(mapPoint)
-        self.convertMapPoint()
-
     def setMapPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
             self.setMapPoint(geom.asPoint())
 
     def setMapPointFromWkt(self, wkt):
         self.setMapPointFromGeometry(QgsGeometry.fromWkt(wkt))
-
-    def mapPoint(self):
-        return self.dock.mapPoint()
 
     def mapPointAsGeometry(self):
         return QgsGeometry.fromPoint(self.mapPoint())
@@ -484,19 +514,12 @@ class GridModule(QObject):
         # Return the text so we don't have insignificant double values
         return 'POINT(' + self.dock.widget.mapEastingSpin.text() + ' ' + self.dock.widget.mapNorthingSpin.text() + ')'
 
-    def setLocalPoint(self, localPoint):
-        self.dock.setLocalPoint(mapPoint)
-        self.convertLocalPoint()
-
     def setLocalPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
             self.setLocalPoint(geom.asPoint())
 
     def setLocalPointFromWkt(self, wkt):
         self.setLocalPointFromGeometry(QgsGeometry.fromWkt(wkt))
-
-    def localPoint(self):
-        return self.dock.localPoint()
 
     def localPointAsGeometry(self):
         return QgsGeometry.fromPoint(self.localPoint())

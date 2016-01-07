@@ -74,15 +74,15 @@ class GridModule(QObject):
         self.dock.convertMapSelected.connect(self.convertMapPoint)
         self.dock.convertLocalSelected.connect(self.convertLocalPoint)
         self.dock.setReadOnly(True)
-        self.dock.createGridTool.setEnabled(False)
+        self.dock._createGridAction.setEnabled(False)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
         self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
-        self.mapTool.setAction(self.dock.identifyGridAction)
+        self.mapTool.setAction(self.dock._identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
     def loadProject(self):
-        self.dock.createGridTool.setEnabled(True)
+        self.dock._createGridAction.setEnabled(True)
 
         # Check if files exist or need creating
         # Run create if needed
@@ -327,7 +327,7 @@ class GridModule(QObject):
             else:
                 self.project.iface.mapCanvas().unsetMapTool(self.mapTool)
         elif status:
-            self.dock.identifyGridAction.setChecked(False)
+            self.dock._identifyGridAction.setChecked(False)
 
     def pointSelected(self, point, button):
         if not self.initialised:
@@ -482,7 +482,7 @@ class GridModule(QObject):
 
     def mapPointAsWkt(self):
         # Return the text so we don't have insignificant double values
-        return 'POINT(' + self.dock.mapEastingSpin.text() + ' ' + self.dock.mapNorthingSpin.text() + ')'
+        return 'POINT(' + self.dock.widget.mapEastingSpin.text() + ' ' + self.dock.widget.mapNorthingSpin.text() + ')'
 
     def setLocalPoint(self, localPoint):
         self.dock.setLocalPoint(mapPoint)
@@ -503,4 +503,4 @@ class GridModule(QObject):
 
     def localPointAsWkt(self):
         # Return the text so we don't have insignificant double values
-        return 'POINT(' + self.dock.localEastingSpin.text() + ' ' + self.dock.localNorthingSpin.text() + ')'
+        return 'POINT(' + self.dock.widget.localEastingSpin.text() + ' ' + self.dock.widget.localNorthingSpin.text() + ')'

@@ -27,6 +27,7 @@ class Ui_FilterSetWidget(object):
         FilterSetWidget.setObjectName(_fromUtf8("FilterSetWidget"))
         FilterSetWidget.resize(236, 184)
         self.verticalLayout = QtGui.QVBoxLayout(FilterSetWidget)
+        self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))

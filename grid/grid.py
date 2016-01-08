@@ -49,6 +49,7 @@ class GridModule(QObject):
     mapTool = None  #ArkMapToolEmitPoint()
     initialised = False
     gridWizard = None  # QWizard
+    _vertexMarker = None  # QgsVertexMarker
 
     def __init__(self, project):
         super(GridModule, self).__init__(project)
@@ -81,9 +82,11 @@ class GridModule(QObject):
         self._createGridAction.setEnabled(False)
 
         self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
-        self.mapTool.setVertexIcon(QgsVertexMarker.ICON_CROSS)
         self.mapTool.setAction(self._identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
+
+        self._vertexMarker = QgsVertexMarker(self.project.mapCanvas())
+        self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
 
     def loadProject(self):
         self._createGridAction.setEnabled(True)
@@ -108,12 +111,16 @@ class GridModule(QObject):
 
     # Close the project
     def closeProject(self):
+        self._vertexMarker.setCenter(QgsPoint())
         self.writeProject()
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Reset the initialisation
+        self._vertexMarker.setCenter(QgsPoint())
+        del self._vertexMarker
+        self._vertexMarker = None
         self.initialised = False
         self.dock.unloadGui()
 
@@ -131,6 +138,9 @@ class GridModule(QObject):
         if checked:
             if not self.initialised:
                 self.loadProject()
+            self._vertexMarker.setCenter(self.mapPoint())
+        else:
+            self._vertexMarker.setCenter(QgsPoint())
 
     def loadGridNames(self):
         names = set()
@@ -156,8 +166,7 @@ class GridModule(QObject):
 
     def changeGrid(self, siteCode, gridName):
         self.initialiseGrid(siteCode, gridName)
-        self.setMapPoint(QgsPoint(0, 0))
-        self.setLocalPoint(QgsPoint(0, 0))
+        self.convertMapPoint()
 
     def transformPoints(self, feature):
         mapPoint = feature.geometry().asPoint()
@@ -182,6 +191,7 @@ class GridModule(QObject):
 
     def setMapPoint(self, point):
         self.dock.widget.setMapPoint(point)
+        self._vertexMarker.setCenter(self.mapPoint())
 
     def localPoint(self):
         return self.dock.widget.localPoint()

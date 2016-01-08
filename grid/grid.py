@@ -112,6 +112,7 @@ class GridModule(QObject):
     # Close the project
     def closeProject(self):
         self._vertexMarker.setCenter(QgsPoint())
+        self.project.grid.clearFilter()
         self.writeProject()
         self.initialised = False
 
@@ -121,6 +122,7 @@ class GridModule(QObject):
         self._vertexMarker.setCenter(QgsPoint())
         del self._vertexMarker
         self._vertexMarker = None
+        self.project.grid.clearFilter()
         self.initialised = False
         self.dock.unloadGui()
 
@@ -143,6 +145,7 @@ class GridModule(QObject):
             self._vertexMarker.setCenter(QgsPoint())
 
     def loadGridNames(self):
+        self.project.grid.clearFilter()
         names = set()
         for feature in self.project.grid.pointsLayer.getFeatures():
             name = (feature.attribute(self.project.fieldName('site')),
@@ -151,13 +154,17 @@ class GridModule(QObject):
         self.setGridNames(list(names))
 
     def initialiseGrid(self, siteCode, gridName):
+        prevFilter = self.project.grid.filter
+        expr = utils.eqClause(self.project.fieldName('site'), siteCode) + ' and ' + utils.eqClause(self.project.fieldName('name'), gridName)
+        self.project.grid.applyFilter(expr)
+        if self.project.grid.pointsLayer.featureCount() < 2:
+            self.project.grid.applyFilter(prevFilter)
+            return False
         features = []
         for feature in self.project.grid.pointsLayer.getFeatures():
-            if (feature.attribute(self.project.fieldName('site')) == siteCode
-                and feature.attribute(self.project.fieldName('name')) == gridName):
                 features.append(feature)
-        if len(features) < 2:
-            return False
+                if len(features) >= 2:
+                    break
         map1, local1 = self.transformPoints(features[0])
         map2, local2 = self.transformPoints(features[1])
         self.mapTransformer = LinearTransformer(map1, local1, map2, local2)

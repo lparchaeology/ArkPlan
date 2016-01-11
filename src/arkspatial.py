@@ -252,11 +252,11 @@ class ArkSpatial(Plugin):
 
             #Load the layer collections
             self.grid = self._createCollection('grid')
-            self._createCollectionLayers('grid', self.grid._settings)
+            self._createCollectionLayers('grid', self.grid.settings)
             self.plan = self._createCollection('plan')
-            self._createCollectionMultiLayers('plan', self.plan._settings)
+            self._createCollectionMultiLayers('plan', self.plan.settings)
             self.base = self._createCollection('base')
-            self._createCollectionLayers('base', self.base._settings)
+            self._createCollectionLayers('base', self.base.settings)
 
             #TODO Maybe do module inti here too?
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():

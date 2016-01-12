@@ -104,7 +104,6 @@ class Filter(QObject):
 
         self._initialised = True
         self.loadFilterSet('Default')
-        self.dock.menuAction().setChecked(False)
         return self._initialised
 
     # Save the project
@@ -114,7 +113,6 @@ class Filter(QObject):
 
     # Close the project
     def closeProject(self):
-        self.writeProject()
         #FIXME Doesn't clear on quit as layers already unloaded by main program!
         self.clearFilterSet()
         # Reset the initialisation

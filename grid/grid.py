@@ -113,16 +113,13 @@ class GridModule(QObject):
     def closeProject(self):
         self._vertexMarker.setCenter(QgsPoint())
         self.project.grid.clearFilter()
-        self.writeProject()
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Reset the initialisation
-        self._vertexMarker.setCenter(QgsPoint())
         del self._vertexMarker
         self._vertexMarker = None
-        self.project.grid.clearFilter()
         self.initialised = False
         self.dock.unloadGui()
 

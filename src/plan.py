@@ -146,10 +146,6 @@ class Plan(QObject):
         self.schematicDock.addDrawingTool('sch', self.actions['sch'])
         self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
 
-        self.dock.menuAction().setChecked(False)
-        self.schematicDock.menuAction().setChecked(False)
-        self.editDock.menuAction().setChecked(False)
-
         self.initialised = True
 
     # Save the project
@@ -159,12 +155,10 @@ class Plan(QObject):
     # Close the project
     def closeProject(self):
         self._clearSchematicFilters()
-        self.writeProject()
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
-
         self.closeProject()
 
         for action in self.actions.values():
@@ -177,11 +171,9 @@ class Plan(QObject):
 
         # Unload the docks
         self.schematicDock.unloadGui()
-        del self.schematicDock
         self.editDock.unloadGui()
         del self.editDock
         self.dock.unloadGui()
-        del self.dock
 
     def run(self, checked):
         if checked and self.initialised:

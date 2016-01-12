@@ -44,7 +44,9 @@ class EditWidget(QWidget, edit_widget_base.Ui_EditWidget):
 class EditDock(ToolDockWidget):
 
     _iface = None # QgsisInterface()
-    _modeTool = None # ProjectSnappingToolButton()
+    _snappingAction = None  # ProjectSnappingAction()
+    _interAction = None  # IntersectionSnappingAction()
+    _topoAction = None  # TopologicalEditingAction()
 
     def __init__(self, iface, parent=None):
         super(EditDock, self).__init__(EditWidget(), parent)

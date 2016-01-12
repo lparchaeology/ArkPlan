@@ -51,9 +51,6 @@ import resources_rc
 class ArkSpatial(Plugin):
     """QGIS Plugin Implementation."""
 
-    # Signal when the project changes so modules can reload
-    projectChanged = pyqtSignal()
-
     project = None # QgsProject()
 
     # Tools
@@ -77,6 +74,7 @@ class ArkSpatial(Plugin):
 
     # Private settings
     _initialised = False
+    _loaded = False
 
     def __init__(self, iface, pluginPath):
         super(ArkSpatial, self).__init__(iface, u'ArkPlan', ':/plugins/ark/icon.png', pluginPath,
@@ -84,20 +82,56 @@ class ArkSpatial(Plugin):
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))
 
-        self.gridModule = GridModule(self)
-        self.planModule = Plan(self)
-        self.filterModule = Filter(self)
+    def isInitialised(self):
+        return self._initialised
+
+    def isLoaded(self):
+        return self._loaded
+
+    def isConfigured(self):
+        return self.readBoolEntry('configured', False)
+
+    def _setIsConfigured(self, configured):
+        self.writeEntry('configured', configured)
+        if not configured:
+            self._initialised = False
 
     # Load the plugin gui
     def initGui(self):
         super(ArkSpatial, self).initGui()
 
-        # Init the main dock
+        # Init the main dock so we have somethign to show on first run
         self.projectLayerView = QgsLayerTreeView()
         self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.layerDock.setWindowTitle(u'ARK Spatial Layers')
         self.layerDock.setObjectName(u'LayerDock')
+
+
+    # Initialise plugin gui
+    def initialise(self):
+        if self._initialised:
+            return True
+
+        # Create the Layer Model and View
+        #TODO Should only show our subgroup but crashes!
+        #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(Config.projectGroupName), self);
+        self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, True)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeRename, False)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
+        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
+        self.projectLayerModel.setAutoCollapseLegendNodes(-1)
+        self.projectLayerView.setModel(self.projectLayerModel)
+        self.projectLayerView.setCurrentLayer(self.iface.activeLayer())
+        self.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
+        self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+        self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
+        self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
+
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
 
         # Init the identify tool
@@ -108,81 +142,114 @@ class ArkSpatial(Plugin):
 
         # Init the modules
         self.layerDock.toolbar.addSeparator()
+        self.gridModule = GridModule(self)
         self.gridModule.initGui()
+        self.filterModule = Filter(self)
         self.filterModule.initGui()
         self.layerDock.toolbar.addSeparator()
+        self.planModule = Plan(self)
         self.planModule.initGui()
+
+        # If the project or layers or legend indexes change make sure we stay updated
+        self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
+        self.iface.projectRead.connect(self.loadProject)
+        self.iface.newProjectCreated.connect(self.closeProject)
+
+        self._initialised = True
+        return self._initialised
 
     # Load the project settings when project is loaded
     def loadProject(self):
-        self.gridModule.loadProject()
-        self.planModule.loadProject()
-        self.filterModule.loadProject()
+        if self.isLoaded():
+            self.closeProject()
+        if self.isInitialised() and self.isConfigured():
+            self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
+            #Load the layer collections
+            self.grid = self._createCollection('grid')
+            self._createCollectionLayers('grid', self.grid.settings)
+            self.plan = self._createCollection('plan')
+            self._createCollectionMultiLayers('plan', self.plan.settings)
+            self.base = self._createCollection('base')
+            self._createCollectionLayers('base', self.base.settings)
+            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
+                self.gridModule.loadProject()
+                self.planModule.loadProject()
+                self.filterModule.loadProject()
+                self._loaded = True
 
     # Write the project for saving
     def writeProject(self):
-        self.gridModule.writeProject()
-        self.planModule.writeProject()
-        self.filterModule.writeProject()
+        if  self.isLoaded():
+            self.gridModule.writeProject()
+            self.planModule.writeProject()
+            self.filterModule.writeProject()
 
     # Close the project
     def closeProject(self):
-        self.gridModule.closeProject()
-        self.planModule.closeProject()
-        self.filterModule.closeProject()
+        if self.isLoaded():
+            self.writeProject()
+            self.gridModule.closeProject()
+            self.planModule.closeProject()
+            self.filterModule.closeProject()
+            # Unload the layers
+            if self.plan is not None:
+                self.plan.unload()
+                self.plan = None
+            if self.grid is not None:
+                self.grid.unload()
+                self.grid = None
+            if self.base is not None:
+                self.base.unload()
+                self.base = None
+            self._loaded = False
 
     # Unload the plugin
     def unload(self):
-
-        self.identifyMapTool.deactivate()
-
-        # Restore the original QGIS gui
-        self.layerDock.menuAction().setChecked(False)
-
-        if self._initialised:
-            # Close the project
+        if self.isInitialised():
             self.closeProject()
+
+            self.identifyMapTool.deactivate()
+
+            # Restore the original QGIS gui
+            self.layerDock.menuAction().setChecked(False)
 
             # Unload the modules in dependence order
             self.planModule.unloadGui()
             self.filterModule.unloadGui()
             self.gridModule.unloadGui()
 
-            # Unload the layers
-            if self.plan is not None:
-                self.plan.unload()
-            if self.grid is not None:
-                self.grid.unload()
-            if self.base is not None:
-                self.base.unload()
-
-            # Unload this dock and uninitialise
-            self.layerDock.unloadGui()
-            del self.layerDock
             self._initialised = False
+
+        # Unload this dock and uninitialise
+        del self.projectLayerView
+        self.projectLayerView = None
+        self.layerDock.unloadGui()
+        del self.layerDock
+        self.layerDock = None
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkSpatial, self).unload()
 
     def run(self, checked):
-        if checked:
-            if self.initialise():
-                self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
-                self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
+        if checked and self.initialise() and self.configure():
+            if not self._loaded:
+                self.loadProject()
+            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
+            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
         else:
             if self._initialised:
-                self.planModule.dock.menuAction().setChecked(False)
-                self.planModule.editDock.menuAction().setChecked(False)
-                self.planModule.schematicDock.menuAction().setChecked(False)
-                self.gridModule.dock.menuAction().setChecked(False)
-                self.filterModule.dock.menuAction().setChecked(False)
+                self.planModule.dock.setVisible(False)
+                self.planModule.editDock.setVisible(False)
+                self.planModule.schematicDock.setVisible(False)
+                self.gridModule.dock.setVisible(False)
+                self.filterModule.dock.setVisible(False)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(True)
             self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(True)
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
         if self.isConfigured():
-            return
+            return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
         if wizard.exec_() and (not wizard.advancedMode() or self.showSettingsDialog()):
@@ -208,83 +275,9 @@ class ArkSpatial(Plugin):
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
             self.layerDock.menuAction().setChecked(False)
-
-    def isConfigured(self):
-        return self.readBoolEntry('configured', False)
-
-    def _setIsConfigured(self, configured):
-        self.writeEntry('configured', configured)
-        if not configured:
-            self._initialised = False
-
-    # Initialise project the first time it is needed, i.e. load the configuration
-    def initialise(self):
-        if self._initialised:
+            return False
+        else:
             return True
-
-        self.configure()
-        if self.isConfigured():
-            #Show a loading indicator
-            progressMessageBar = self.iface.messageBar().createMessage("Loading ARK Spatial, please wait...")
-            progress = QProgressBar()
-            progress.setMinimum(0)
-            progress.setMaximum(0)
-            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
-            progressMessageBar.layout().addWidget(progress)
-            self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
-            QApplication.setOverrideCursor(Qt.WaitCursor)
-
-            # Create the Layer Model and View
-            self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
-            #TODO Should only show our subgroup but crashes!
-            #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(Config.projectGroupName), self);
-            self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, True)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeRename, False)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
-            self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
-            self.projectLayerModel.setAutoCollapseLegendNodes(-1)
-            self.projectLayerView.setModel(self.projectLayerModel)
-            self.projectLayerView.setCurrentLayer(self.iface.activeLayer())
-
-            #Load the layer collections
-            self.grid = self._createCollection('grid')
-            self._createCollectionLayers('grid', self.grid.settings)
-            self.plan = self._createCollection('plan')
-            self._createCollectionMultiLayers('plan', self.plan.settings)
-            self.base = self._createCollection('base')
-            self._createCollectionLayers('base', self.base.settings)
-
-            #TODO Maybe do module inti here too?
-            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
-                # Load the Project
-                self.loadProject()
-
-                # If the project or layers or legend indexes change make sure we stay updated
-                self.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
-                self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
-                self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
-                self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
-                self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
-                self.iface.projectRead.connect(self.projectLoad)
-                self.iface.newProjectCreated.connect(self.projectLoad)
-
-                self._initialised = True
-
-            #Remove the loading indicator
-            self.iface.messageBar().clearWidgets()
-            QApplication.restoreOverrideCursor()
-
-        return self._initialised
-
-    def isInitialised(self):
-        return self._initialised
-
-    def projectLoad(self):
-        self.projectChanged.emit()
 
     def _triggerSettingsDialog(self):
         if self.isConfigured():

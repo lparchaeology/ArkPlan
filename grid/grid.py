@@ -97,13 +97,11 @@ class GridModule(QObject):
         if self.project.grid.pointsLayer is None:
             return
 
-        self.loadGridNames()
-        if not self.initialiseGrid(self.siteCode(), self.gridName()):
-            return
-
-        self._setReadOnly(False)
-        self.initialised = True
-        return True
+        if self.loadGridNames():
+            self._setReadOnly(False)
+            self.initialised = True
+            return True
+        return False
 
     # Save the project
     def writeProject(self):
@@ -144,11 +142,18 @@ class GridModule(QObject):
     def loadGridNames(self):
         self.project.grid.clearFilter()
         names = set()
+        default = None
         for feature in self.project.grid.pointsLayer.getFeatures():
             name = (feature.attribute(self.project.fieldName('site')),
                     feature.attribute(self.project.fieldName('name')))
             names.add(name)
-        self.setGridNames(list(names))
+            if not default:
+                default = name
+        if default:
+            self.setGridNames(sorted(names))
+            self.setGrid(default[0], default[1])
+            return True
+        return False
 
     def initialiseGrid(self, siteCode, gridName):
         prevFilter = self.project.grid.filter
@@ -186,6 +191,9 @@ class GridModule(QObject):
 
     def gridName(self):
         return self.dock.widget.gridName()
+
+    def setGrid(self, siteCode, gridName):
+        self.dock.widget.setGrid(siteCode, gridName)
 
     def setGridNames(self, names):
         self.dock.widget.setGridNames(names)

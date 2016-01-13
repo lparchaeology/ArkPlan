@@ -72,6 +72,14 @@ class GridWidget(QWidget, grid_widget_base.Ui_GridWidget):
         else:
             return ''
 
+    def setGrid(self, siteCode, gridName):
+        for idx in range(0, self.gridCombo.count()):
+            data = self.gridCombo.itemData(idx)
+            if data[0] == siteCode and data[1] == gridName:
+                self.gridCombo.setCurrentIndex(idx)
+                self.gridSelectionChanged.emit(siteCode, gridName)
+                return
+
     def setGridNames(self, names):
         self.gridCombo.clear()
         for name in names:
@@ -93,7 +101,8 @@ class GridWidget(QWidget, grid_widget_base.Ui_GridWidget):
 
     def _gridComboChanged(self, i):
         data = self.gridCombo.itemData(i)
-        self.gridSelectionChanged.emit(data[0], data[1])
+        if data:
+            self.gridSelectionChanged.emit(data[0], data[1])
 
 class GridDock(ToolDockWidget):
 

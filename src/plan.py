@@ -70,6 +70,9 @@ class Plan(QObject):
     mapTools = {}
     currentMapTool = None
 
+    siteCodes = {}
+    classCodes = {}
+
     _definitiveCategories = set()
     _schematicContextIncludeFilter = -1
     _schematicContextHighlightFilter = -1
@@ -129,6 +132,12 @@ class Plan(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         self.initialiseBuffers()
+
+        # Assume layers are loaded and filters cleared
+        self.siteCodes = self.project.plan.uniqueValues(self.project.fieldName('site'))
+        self.siteCodes.add(self.project.siteCode())
+        self.classCodes = self.project.plan.uniqueValues(self.project.fieldName('class'))
+
         self.dock.initSourceCodes(Config.planSourceCodes)
         self.dock.initSourceClasses(Config.planSourceClasses)
         for category in Config.featureCategories:
@@ -301,14 +310,22 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
         if self.project.plan.isWritable():
+            self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
+            self._preMergeBufferUpdate(self.project.plan.pointsBuffer)
+            self._preMergeBufferUpdate(self.project.plan.linesBuffer)
+            self._preMergeBufferUpdate(self.project.plan.polygonsBuffer)
             if self.project.plan.mergeBuffers('Merge plan data'):
                 self.project.showInfoMessage('Plan data successfully merged.')
             else:
                 self.project.showCriticalMessage('Plan data merge failed! Some data has not been saved, please check your data.', 5)
         else:
             self.project.showCriticalMessage('Plan layers are not writable! Please correct the permissions and log out.', 0)
+
+    def _preMergeBufferUpdate(self, layer):
+        for feature in layer.getFeatures():
+            self.siteCodes.add(feature.attribute(self.project.fieldName('site')))
+            self.classCodes.add(feature.attribute(self.project.fieldName('class')))
 
     def clearBuffers(self):
         self.project.plan.clearBuffers('Clear plan buffer data')

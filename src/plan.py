@@ -119,8 +119,8 @@ class Plan(QObject):
         self.schematicDock.editLinesSelected.connect(self._editLinesLayer)
         self.schematicDock.editPolygonsSelected.connect(self._editPolygonsLayer)
         self.schematicDock.resetSelected.connect(self._resetSchematic)
-        self.schematicDock.clearSelected.connect(self.clearBuffers)
-        self.schematicDock.mergeSelected.connect(self.mergeBuffers)
+        self.schematicDock.clearSelected.connect(self._clearSchematic)
+        self.schematicDock.mergeSelected.connect(self._mergeSchematic)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
         self.editDock = EditDock(self.project.iface, self.project.layerDock)
@@ -673,6 +673,14 @@ class Plan(QObject):
         self._clearSchematicFilters()
         self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
+    def _clearSchematic(self):
+        self.clearBuffers()
+        self._findPanContext()
+
+    def _mergeSchematic(self):
+        self.mergeBuffers()
+        self._findPanContext()
+
     def _clearSchematicFilters(self):
         self._clearSchematicContextIncludeFilter()
         self._clearSchematicContextHighlightFilter()
@@ -693,14 +701,12 @@ class Plan(QObject):
         self._schematicSourceHighlightFilter = -1
 
     def _findPanContext(self):
-        if self.schematicDock.contextStatus() == SearchStatus.Unknown:
-            self._findContext()
+        self._findContext()
         if self.schematicDock.contextStatus() == SearchStatus.Found:
             self.panToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
 
     def _findZoomContext(self):
-        if self.schematicDock.contextStatus() == SearchStatus.Unknown:
-            self._findContext()
+        self._findContext()
         if self.schematicDock.contextStatus() == SearchStatus.Found:
             self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
 
@@ -833,4 +839,4 @@ class Plan(QObject):
     def _cloneSourceSchematic(self):
         self._clearSchematicSourceFilters()
         self._copySourceSchematic()
-        self.mergeBuffers()
+        self._mergeSchematic()

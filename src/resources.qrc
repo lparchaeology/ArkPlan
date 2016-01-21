@@ -19,6 +19,7 @@
   <qresource prefix="/plugins/ark/filter">
     <file alias="filter.png">../resources/view-filter.png</file>
     <file alias="identify.png">../resources/edit-node.png</file>
+    <file alias="showContext.png">../resources/semn.png</file>
     <file alias="buildFilter.svg">../resources/mIconExpressionEditorOpen.svg</file>
     <file alias="buildSelection.svg">../resources/mIconExpressionSelect.svg</file>
     <file alias="loadData.png">../resources/mIconDbSchema.png</file>

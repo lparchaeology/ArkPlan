@@ -26,7 +26,7 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
 from qgis.gui import QgsMessageBar, QgsLayerTreeView
@@ -139,6 +139,9 @@ class ArkSpatial(Plugin):
         self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), callback=self.triggerIdentifyAction, checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
+
+        # Init the Load Context tool
+        self.showContextAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show context'), callback=self._showContext)
 
         # Init the modules
         self.layerDock.toolbar.addSeparator()
@@ -403,10 +406,13 @@ class ArkSpatial(Plugin):
             return Config.fieldDefaults[fieldKey]
 
     def fieldName(self, fieldKey):
-        if self.useArkDB():
-            return Config.arkFieldDefaults[fieldKey].name()
-        else:
-            return Config.fieldDefaults[fieldKey].name()
+        try:
+            if self.useArkDB():
+                return Config.arkFieldDefaults[fieldKey].name()
+            else:
+                return Config.fieldDefaults[fieldKey].name()
+        except:
+            return ''
 
     # Project settings
 
@@ -608,3 +614,13 @@ class ArkSpatial(Plugin):
             self.mapCanvas().setMapTool(self.identifyMapTool)
         else:
             self.mapCanvas().unsetMapTool(self.identifyMapTool)
+
+    # Show Context Tool
+
+    def _showContext(self):
+        context, ok = QInputDialog.getInt(None, 'Show Context', 'Please enter the Context Number to show:', 1, 1, 99999)
+        if (ok and context > 0):
+            self.planModule.loadDrawing('cxt', self.siteCode(), context)
+            self.filterModule.filterItem(self.siteCode(), 'cxt', context)
+            self.filterModule.zoomFilter()
+            self.filterModule.showDock()

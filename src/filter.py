@@ -127,7 +127,15 @@ class Filter(QObject):
         if checked and not self._initialised:
             self.dock.menuAction().setChecked(False)
 
+    def showDock(self, show=True):
+        self.dock.menuAction().setChecked(show)
+
     # Filter methods
+
+    def filterItem(self, siteCode, classCode, itemId):
+        self.clearFilterSet()
+        self.addFilterClause(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
+        self.zoomFilter()
 
     def addFilterClause(self, filterType, siteCode, classCode, filterRange, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:

@@ -155,6 +155,8 @@ class Plan(QObject):
         self.schematicDock.addDrawingTool('sch', self.actions['sch'])
         self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
 
+        self.editDock.loadProject(self.project)
+
         self.initialised = True
 
     # Save the project
@@ -164,12 +166,11 @@ class Plan(QObject):
     # Close the project
     def closeProject(self):
         self._clearSchematicFilters()
+        self.editDock.closeProject()
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
-        self.closeProject()
-
         for action in self.actions.values():
             if action.isChecked():
                 action.setChecked(False)
@@ -213,15 +214,6 @@ class Plan(QObject):
         self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
         self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
         self._buffersInitialised = True
-        self.editDock.setBufferPoints(self.project.plan.pointsBuffer)
-        self.editDock.setBufferLines(self.project.plan.linesBuffer)
-        self.editDock.setBufferPolygons(self.project.plan.polygonsBuffer)
-        self.editDock.setPlanPoints(self.project.plan.pointsLayer)
-        self.editDock.setPlanLines(self.project.plan.linesLayer)
-        self.editDock.setPlanPolygons(self.project.plan.polygonsLayer)
-        self.editDock.setBasePoints(self.project.base.pointsLayer)
-        self.editDock.setBaseLines(self.project.base.linesLayer)
-        self.editDock.setBasePolygons(self.project.base.polygonsLayer)
 
     def metadata(self):
         if self.schematicDock.menuAction().isChecked():

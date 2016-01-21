@@ -214,8 +214,6 @@ class GridModule(QObject):
     # Grid methods
 
     def showGridWizard(self):
-        if not self.initialised:
-            return
         if self.gridWizard is None:
             self.gridWizard = GridWizard(self.project.iface, self.project, self.project.iface.mainWindow())
             self.gridWizard.accepted.connect(self.createGridDialogAccepted)

@@ -134,9 +134,9 @@ class Plan(QObject):
         self.initialiseBuffers()
 
         # Assume layers are loaded and filters cleared
-        self.siteCodes = self.project.plan.uniqueValues(self.project.fieldName('site'))
+        self.siteCodes = set(self.project.plan.uniqueValues(self.project.fieldName('site')))
         self.siteCodes.add(self.project.siteCode())
-        self.classCodes = self.project.plan.uniqueValues(self.project.fieldName('class'))
+        self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
 
         self.dock.initSourceCodes(Config.planSourceCodes)
         self.dock.initSourceClasses(Config.planSourceClasses)
@@ -310,22 +310,87 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
-        if self.project.plan.isWritable():
-            self.project.plan.updateBufferAttribute(self.project.fieldName('created_on'), utils.timestamp())
-            self._preMergeBufferUpdate(self.project.plan.pointsBuffer)
-            self._preMergeBufferUpdate(self.project.plan.linesBuffer)
-            self._preMergeBufferUpdate(self.project.plan.polygonsBuffer)
-            if self.project.plan.mergeBuffers('Merge plan data'):
-                self.project.showInfoMessage('Plan data successfully merged.')
-            else:
-                self.project.showCriticalMessage('Plan data merge failed! Some data has not been saved, please check your data.', 5)
-        else:
+        # Check the layers are writable
+        if not self.project.plan.isWritable():
             self.project.showCriticalMessage('Plan layers are not writable! Please correct the permissions and log out.', 0)
+            return
 
-    def _preMergeBufferUpdate(self, layer):
+        # Check the buffers contain valid data
+        if (not self._preMergeBufferCheck(self.project.plan.pointsBuffer)
+            or not self._preMergeBufferCheck(self.project.plan.linesBuffer)
+            or not self._preMergeBufferCheck(self.project.plan.polygonsBuffer)):
+            return
+
+        # Update the audit attributes
+        timestamp = utils.timestamp()
+        user = self.metadata().createdBy()
+        self._preMergeBufferUpdate(self.project.plan.pointsBuffer, timestamp, user)
+        self._preMergeBufferUpdate(self.project.plan.linesBuffer, timestamp, user)
+        self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
+
+        # Finally actually merge the data
+        if self.project.plan.mergeBuffers('Merge plan data'):
+            self.project.showInfoMessage('Plan data successfully merged.')
+        else:
+            self.project.showCriticalMessage('Plan data merge failed! Some data has not been saved, please check your data.', 5)
+
+    def _preMergeBufferCheck(self, layer):
+        siteField = self.project.fieldName('site')
+        classField = self.project.fieldName('class')
+        idField = self.project.fieldName('id')
+        categoryField = self.project.fieldName('category')
+        sourceCodeField = self.project.fieldName('source_cd')
+        sourceClassField = self.project.fieldName('source_cl')
+        sourceIdField = self.project.fieldName('source_id')
+        fileField = self.project.fieldName('file')
+        commentField = self.project.fieldName('comment')
         for feature in layer.getFeatures():
-            self.siteCodes.add(feature.attribute(self.project.fieldName('site')))
-            self.classCodes.add(feature.attribute(self.project.fieldName('class')))
+            valid = True
+            # Key attributes that must always be populated
+            if (self._isEmpty(feature.attribute(siteField))
+                or self._isEmpty(feature.attribute(classField))
+                or self._isEmpty(feature.attribute(idField))
+                or self._isEmpty(feature.attribute(categoryField))
+                or self._isEmpty(feature.attribute(sourceCodeField))):
+                valid = False
+            # Source attributes required depend on the source type
+            if feature.attribute(sourceCodeField) == 'cre' or feature.attribute(sourceCodeField) == 'oth':
+                if self._isEmpty(feature.attribute(commentField)):
+                    valid = False
+            elif feature.attribute(sourceCodeField) == 'svy':
+                if self._isEmpty(feature.attribute(fileField)):
+                    valid = False
+            elif (self._isEmpty(feature.attribute(sourceClassField)) or self._isEmpty(feature.attribute(sourceIdField))):
+                    valid = False
+            if not valid:
+                self.project.showCriticalMessage('Plan data merge failed! Some key attributes are not populated, please check the attribute table and complete the missing data.', 5)
+                return False
+        return True
+
+    def _isEmpty(self, val):
+        if val is None or val == NULL:
+            return True
+        if type(val) == str and (val == '' or val.strip() == ''):
+            return True
+        return False
+
+    def _preMergeBufferUpdate(self, layer, timestamp, user):
+        siteField = self.project.fieldName('site')
+        classField = self.project.fieldName('class')
+        createdOnField = self.project.fieldName('created_on')
+        createdOnIdx = layer.fieldNameIndex(createdOnField)
+        createdByIdx = layer.fieldNameIndex(self.project.fieldName('created_by'))
+        updatedOnIdx = layer.fieldNameIndex(self.project.fieldName('updated_on'))
+        updatedByIdx = layer.fieldNameIndex(self.project.fieldName('updated_by'))
+        for feature in layer.getFeatures():
+            if self._isEmpty(feature.attribute(createdOnField)):
+                layer.changeAttributeValue(feature.id(), createdOnIdx, timestamp)
+                layer.changeAttributeValue(feature.id(), createdByIdx, user)
+            else:
+                layer.changeAttributeValue(feature.id(), updatedOnIdx, timestamp)
+                layer.changeAttributeValue(feature.id(), updatedByIdx, user)
+            self.siteCodes.add(feature.attribute(siteField))
+            self.classCodes.add(feature.attribute(classField))
 
     def clearBuffers(self):
         self.project.plan.clearBuffers('Clear plan buffer data')

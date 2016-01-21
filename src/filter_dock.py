@@ -48,10 +48,10 @@ class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
         self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
 
     def currentFilterSetKey(self):
-        return self.widget.filterSetCombo.itemData(self.widget.filterSetCombo.currentIndex())
+        return self.filterSetCombo.itemData(self.filterSetCombo.currentIndex())
 
     def currentFilterSetName(self):
-        return self.widget.filterSetCombo.currentText()
+        return self.filterSetCombo.currentText()
 
 class FilterDock(ToolDockWidget):
 

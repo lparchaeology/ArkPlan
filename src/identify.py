@@ -108,11 +108,12 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             self._actions.append(action)
             self._menu.addAction(action)
         self._menu.addSeparator()
-        localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
         action = ClipboardAction('Map: ', mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
-        self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
+        if self._project.gridModule.mapTransformer is not None:
+            localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
+            self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
         selected = self._menu.exec_(e.globalPos())
         self._reset(resetVertex=False)
 

@@ -26,7 +26,7 @@
 
 import csv
 
-from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QDir
+from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QFile
 from PyQt4.QtGui import QSortFilterProxyModel
 
 class TableModel(QAbstractTableModel):
@@ -35,13 +35,16 @@ class TableModel(QAbstractTableModel):
     _fields = []
     _nullRecord = {}
 
-    def __init__(self, parent=None):
+    def __init__(self, fields=[], nullRecord={}, parent=None):
         super(QAbstractTableModel, self).__init__(parent)
+        self._fields = fields
+        self._nullRecord = nullRecord
+        self._table = []
 
-    def rowCount(self, parent):
+    def rowCount(self):
         return len(self._table)
 
-    def columnCount(self, parent):
+    def columnCount(self):
         return len(self._fields)
 
     def data(self, index, role):
@@ -94,218 +97,160 @@ class TableModel(QAbstractTableModel):
             if record[key] == value:
                 return record
 
+    def getRecords(self, key, value):
+        results = []
+        for record in self._table:
+            if record[key] == value:
+                results.append(record)
+        return results
+
+    def deleteRecords(self, key, value):
+        for record in self._table:
+            if record[key] == value:
+                self._table.remove(record)
+
     def clear(self):
         self._table = []
 
 
-class ContextGroupingModel(TableModel):
+class ParentChildModel(TableModel):
 
     def __init__(self, parent=None):
-        self._fields = ['context_no', 'sub_group_no', 'group_no']
-        self._nullRecord = {'context_no' : 0, 'sub_group_no' : 0, 'group_no' : 0}
         super(TableModel, self).__init__(parent)
+        self._fields = ['parent', 'child']
+        self._nullRecord = {'parent' : None, 'child' : None}
 
-    def addGrouping(self, context_no, sub_group_no, group_no):
-        record = {'context_no' : context_no, 'sub_group_no' : sub_group_no, 'group_no' : group_no}
+    def addChild(self, parent, child):
+        self.deleteRecords('child', child)
+        record = {'parent' : parent, 'child' : child}
         self._table.append(record)
 
-    def updateGrouping(self, context_no, sub_group_no, group_no, insertOnFail=False):
-        record = self.getRecord('context_no', context_no)
-        if record:
-            record['sub_group_no'] = sub_group_no
-        elif insertOnFail:
-            self.addGrouping({'context_no' : context_no, 'group_no' : group_no, 'sub_group_no' : sub_group_no})
-
-    def updateSubGroup(self, context_no, sub_group_no, insertOnFail=False):
-        record = self.getRecord('context_no', context_no)
-        if record:
-            record['sub_group_no'] = sub_group_no
-        elif insertOnFail:
-            self.addGrouping({'context_no' : context_no, 'sub_group_no' : sub_group_no, 'group_no' : 0})
-
-    def updateGroup(self, context_no, group_no, insertOnFail=False):
-        record = self.getRecord('context_no', context_no)
-        if record:
-            record['group_no'] = group_no
-        elif insertOnFail:
-            self.addGrouping({'context_no' : context_no, 'sub_group_no' : 0, 'group_no' : group_no})
-
-    def getContextsForSubGroup(self, sub_group_no):
-        contexts = []
+    def getChildren(self, parent):
+        children = []
         for record in self._table:
-            if record['sub_group_no'] == sub_group_no:
-                contexts.append(record['context_no'])
-        return contexts
+            if record['parent'] == parent:
+                children.append(record['child'])
+        return children
 
-    def getContextsForGroup(self, group_no):
-        contexts = []
+    def getParent(self, child):
         for record in self._table:
-            if record['group_no'] == group_no:
-                contexts.append(record['context_no'])
-        return contexts
+            if record['child'] == child:
+                return record['parent']
+        return None
 
+class ItemKey():
+    siteCode = ''
+    classCode = ''
+    itemId = ''
 
-    def subGroupForContext(self, context_no):
-        for record in self._table:
-            if record['context_no'] == context_no:
-                return record['sub_group_no']
-        return 0
+    def __init__(self, siteCode=None, classCode=None, itemId=None):
+        self.siteCode = siteCode
+        self.classCode = classCode
+        self.itemId = itemId
 
+    def __eq__(self, other):
+        return self.siteCode == self.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
 
-    def groupForContext(self, context_no):
-        for record in self._table:
-            if record['context_no'] == context_no:
-                return record['group_no']
-        return 0
+    def __ne__(self, other):
+        return self.siteCode != self.siteCode or self.classCode != other.classCode or self.itemId != other.itemId
 
+    def isValid(self):
+        return siteCode and  classCode and itemId
 
-    def groupForSubGroup(self, sub_group_no):
-        for record in self._table:
-            if record['sub_group_no'] == sub_group_no:
-                return record['group_no']
-        return 0
+class ItemModel(TableModel):
 
+    def __init__(self, filePath, keyFields, parent=None):
+        super(ItemModel, self).__init__(parent)
 
-class ContextModel(TableModel):
+        if QFile.exists(filePath):
+            with open(filePath) as csvFile:
+                reader = csv.DictReader(csvFile)
+                self._fields = reader.fieldnames
+                self._nullRecord = {}
+                for field in self._fields:
+                    self._nullRecord[field] = ''
+                for record in reader:
+                    key = ItemKey()
+                    key.siteCode = record[keyFields.siteCode]
+                    key.classCode = record[keyFields.classCode]
+                    key.itemId = record[keyFields.itemId]
+                    self._addItem(key, record)
 
-    def __init__(self, parent=None):
-        super(TableModel, self).__init__(parent)
-        self._fields = ['context_no', 'context', 'context_type', 'short_description', 'issued_to', 'issued_on']
-        self._nullRecord = {'context_no' : 0, 'context' : '', 'context_type' : '', 'short_description' : '', 'issued_to' : '', 'issued_on' : ''}
+    def getItem(self, itemKey):
+        return self.getRecord('key', itemKey)
 
-    def addContext(self, arkRecord):
-        context = arkRecord['context']
-        context_no = int(context.split('_')[-1])
+    def _addItem(self, key, itemRecord):
         record = {}
         record.update(self._nullRecord)
-        record.update(arkRecord)
-        record.update({'context_no' : context_no})
+        record.update({'key' : key})
+        record.update(itemRecord)
         self._table.append(record)
-
-
-class SubGroupModel(TableModel):
-
-    def __init__(self, parent=None):
-        super(TableModel, self).__init__(parent)
-        self._fields = ['sub_group_no', 'sub_group', 'basic_interp', 'short_description', 'context', 'subgroup_narrative', 'dating_narrative']
-        self._nullRecord = {'sub_group_no' : 0, 'sub_group' : '', 'basic_interp' : '', 'short_description' : '', 'context' : '', 'subgroup_narrative' : '', 'dating_narrative' : ''}
-
-    def addSubGroup(self, arkRecord):
-        subGroup = arkRecord['sub_group']
-        sub_group_no = int(subGroup.split('_')[-1])
-        # TODO Fix up contexts
-        record = {}
-        record.update(self._nullRecord)
-        record.update(arkRecord)
-        record.update({'sub_group_no' : sub_group_no})
-        self._table.append(record)
-
-
-class GroupModel(TableModel):
-
-    def __init__(self, parent=None):
-        super(TableModel, self).__init__(parent)
-        self._fields = ['strat_group_no', 'strat_group', 'short_description', 'sub_group']
-        self._nullRecord = {'strat_group_no' : 0, 'strat_group' : '', 'short_description' : '', 'sub_group' : ''}
-
-    def addGroup(self, arkRecord):
-        group = arkRecord['strat_group']
-        group_no = int(group.split('_')[-1])
-        # TODO Fix up contexts
-        record = {}
-        record.update(self._nullRecord)
-        record.update(arkRecord)
-        record.update({'strat_group_no' : group_no})
-        self._table.append(record)
-
 
 class DataManager(QObject):
 
+    _cxtModel = None  # ContextModel()
+    _cxtProxyModel = QSortFilterProxyModel()
+    _subModel = None  # SubGroupModel()
+    _subProxyModel = QSortFilterProxyModel()
+    _grpModel = None  # GroupModel()
+    _grpProxyModel = QSortFilterProxyModel()
+    _linkModel = None  # ParentChildModel()
 
-    _arkGroupDataFilename = 'PCO06_ark_groups.csv'
-    _arkSubGroupDataFilename = 'PCO06_ark_subgroups.csv'
-    _arkContextDataFilename = 'PCO06_ark_contexts.csv'
-
-    _contextGroupingModel = ContextGroupingModel()
-    _contextModel = ContextModel()
-    _contextProxyModel = QSortFilterProxyModel()
-    _subGroupModel = SubGroupModel()
-    _subGroupProxyModel = QSortFilterProxyModel()
-    _groupModel = GroupModel()
-    _groupProxyModel = QSortFilterProxyModel()
-
-
-    def __init__(self, project):
+    def __init__(self):
         super(DataManager, self).__init__()
-        self.project = project
-        self._contextProxyModel.setSourceModel(self._contextModel)
-        self._subGroupProxyModel.setSourceModel(self._subGroupModel)
-        self._groupProxyModel.setSourceModel(self._groupModel)
 
+    def hasData(self):
+        return self._cxtModel.rowCount() > 0 or self._subModel.rowCount() > 0 or self._grpModel.rowCount() > 0
 
-    def loadData(self):
-        self._contextGroupingModel.clear()
-        self._contextModel.clear()
-        self._subGroupModel.clear()
-        self._groupModel.clear()
-        subToGroup = {}
-        subToGroup[0] = 0
-        with open(self.project.modulePath('contexts') + '/' + self._arkGroupDataFilename) as csvFile:
-            reader = csv.DictReader(csvFile)
-            for record in reader:
-                pass
-                self._groupModel.addGroup(record)
-        with open(self.project.modulePath('contexts') + '/' + self._arkSubGroupDataFilename) as csvFile:
-            reader = csv.DictReader(csvFile)
-            for record in reader:
-                sub_group_string = record['sub_group']
-                sub_group_no = int(sub_group_string.split('_')[-1])
-                group_string = record['strat_group']
-                group_no = 0
-                if group_string:
-                    group_no = int(group_string.split('_')[-1])
-                subToGroup[sub_group_no] = group_no
-                self._subGroupModel.addSubGroup(record)
-        with open(self.project.modulePath('contexts') + '/' + self._arkContextDataFilename) as csvFile:
-            reader = csv.DictReader(csvFile)
-            for record in reader:
-                context_string = record['context']
-                context_no = int(context_string.split('_')[-1])
-                sub_group_string = record['sub_group']
-                sub_group_no = 0
-                if sub_group_string:
-                    sub_group_no = int(sub_group_string.split('_')[-1])
-                self._contextGroupingModel.addGrouping(context_no, sub_group_no, subToGroup[sub_group_no])
-                self._contextModel.addContext(record)
+    def hasClassData(self, classCode):
+        if classCode == 'cxt':
+            return self._cxtModel.rowCount() > 0
+        elif classCode == 'sub':
+            return self._subModel.rowCount() > 0
+        elif classCode == 'grp':
+            return self._grpModel.rowCount() > 0
+        return False
 
+    def loadProject(self, project):
+        keyFields = ItemKey(project.fieldName('site'), project.fieldName('class'), project.fieldName('id'))
+        path = project.projectPath() + '/data/' + project.siteCode() + '_'
+        if self._cxtModel:
+            self._cxtModel.clear()
+        self._cxtModel = ItemModel(path + 'cxt.csv', keyFields, self)
+        self._cxtProxyModel.setSourceModel(self._cxtModel)
+        if self._subModel:
+            self._subModel.clear()
+        self._subModel = ItemModel(path + 'sub.csv', keyFields, self)
+        self._subProxyModel.setSourceModel(self._subModel)
+        if self._grpModel:
+            self._grpModel.clear()
+        self._grpModel = ItemModel(path + 'grp.csv', keyFields, self)
+        self._grpProxyModel.setSourceModel(self._grpModel)
+        self._linkModel = ParentChildModel(self)
+        self._addLinks(self._subModel._table)
+        self._addLinks(self._grpModel._table)
 
-    def contextData(self, context_no):
-        return self._contextModel.getRecord('context_no', context_no)
+    def _addLinks(self, table):
+        for record in table:
+            parentItem = record['key']
+            siteCode = record['ste_cd']
+            childModule = record['child_module']
+            children = str(record['children']).split()
+            for child in children:
+                childItem = ItemKey(siteCode, childModule, str(child))
+                self._linkModel.addChild(parentItem, childItem)
 
+    def getItem(self, classCode, siteCode, itemId):
+        if classCode == 'cxt':
+            return self._cxtModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
+        elif classCode == 'sub':
+            return self._subModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
+        elif classCode == 'grp':
+            return self._grpModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
+        return {}
 
-    def subGroupData(self, sub_group_no):
-        return self._subGroupModel.getRecord('sub_group_no', sub_group_no)
+    def getChildren(self, classCode, siteCode, itemId):
+        return self._linkModel.getChildren(ItemKey(siteCode, classCode, str(itemId)))
 
-
-    def groupData(self, group_no):
-        return self._groupModel.getRecord('group_no', group_no)
-
-
-    def contextsForSubGroup(self, sub_group_no):
-        return self._contextGroupingModel.getContextsForSubGroup(sub_group_no)
-
-
-    def contextsForGroup(self, group_no):
-        return self._contextGroupingModel.getContextsForGroup(group_no)
-
-
-    def subGroupForContext(self, context_no):
-        return self._contextGroupingModel.subGroupForContext(context_no)
-
-
-    def groupForContext(self, context_no):
-        return self._contextGroupingModel.groupForContext(context_no)
-
-
-    def groupForSubGroup(self, sub_group_no):
-        return self._contextGroupingModel.groupForSubGroup(sub_group_no)
+    def getParent(self, classCode, siteCode, itemId):
+        return self._linkModel.getParent(ItemKey(siteCode, classCode, str(itemId)))

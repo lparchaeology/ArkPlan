@@ -132,6 +132,7 @@ class FilterDock(ToolDockWidget):
 
     def _addNewFilterClause(self):
         self.newFilterClauseWidget.filterAdded.disconnect(self._addNewFilterClause)
+        self.newFilterClauseWidget.setSiteCode(self.siteCode())
         self._addFilterClause(self.newFilterClauseWidget)
         self._createNewFilterClauseWidget()
 

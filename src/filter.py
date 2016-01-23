@@ -60,7 +60,7 @@ class Filter(QObject):
     def __init__(self, project):
         super(Filter, self).__init__(project)
         self.project = project
-        self.data = DataManager(project)
+        self.data = DataManager()
 
     # Standard Dock methods
 
@@ -89,10 +89,14 @@ class Filter(QObject):
         # Load the Site Codes
         self.dock.initSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
 
+        # Load the CSV data if available
+        self.data.loadProject(self.project)
+
         # Load the Class Codes
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
-        if 'cxt' in codeList and self._useGroups:
+        if self.data.hasClassData('sub'):
             codeList.append('sub')
+        if self.data.hasClassData('grp'):
             codeList.append('grp')
         codes = {}
         for code in codeList:
@@ -175,7 +179,17 @@ class Filter(QObject):
         for index in activeFilters:
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
-                clause = self._rangeToClause(self.dock.siteCode(), filter.classCode(), filter.filterRange())
+                clause = ''
+                if filter.classCode() == 'grp':
+                    subList = self._childIdList(filter.siteCode(), 'grp', self._rangeToList(filter.filterRange()))
+                    cxtList = self._childIdList(filter.siteCode(), 'sub', subList)
+                    clause = self._rangeToClause(filter.siteCode(), 'cxt', self._listToRange(cxtList))
+                elif filter.classCode() == 'sub':
+                    cxtList = self._childIdList(filter.siteCode(), 'sub', self._rangeToList(filter.filterRange()))
+                    cxtRange = self._listToRange(cxtList)
+                    clause = self._rangeToClause(filter.siteCode(), 'cxt', cxtRange)
+                else:
+                    clause = self._rangeToClause(filter.siteCode(), filter.classCode(), filter.filterRange())
                 if filter.filterType() == FilterType.HighlightFilter:
                     if firstSelect:
                         firstSelect = False
@@ -272,6 +286,13 @@ class Filter(QObject):
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
 
+    def _childIdList(self, siteCode, classCode, parentIdList):
+        childSet = set()
+        for parent in parentIdList:
+            children = self.data.getChildren(classCode, siteCode, parent)
+            for child in children:
+                childSet.add(child.itemId)
+        return sorted(childSet)
 
     def _rangeToList(self, valueRange):
         lst = []
@@ -284,6 +305,26 @@ class Filter(QObject):
                 lst.append(int(clause))
         return lst
 
+    def _listToRange(self, valueList):
+        inList = sorted(set(valueList))
+        valueRange = ''
+        if len(inList) == 0:
+            return valueRange
+        prev = inList[0]
+        start = prev
+        for this in inList[1:]:
+            if int(this) != int(prev) + 1:
+                if prev == start:
+                    valueRange = valueRange + ' ' + str(prev)
+                else:
+                    valueRange = valueRange + ' ' + str(start) + '-' + str(this)
+                start = this
+            prev = this
+        if prev == start:
+            valueRange = valueRange + ' ' + str(prev)
+        else:
+            valueRange = valueRange + ' ' + str(start) + '-' + str(this)
+        return valueRange
 
     def _listToRegExp(self, lst):
         if (len(lst) < 1):

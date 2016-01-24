@@ -103,7 +103,6 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             action.addHighlightItemSelected.connect(self._addHighlightItem)
             action.editItemSelected.connect(self._editInBuffers)
             action.deleteItemSelected.connect(self._delete)
-            action.openInArkSelected.connect(self._openInArk)
             action.openDrawingsSelected.connect(self._openDrawings)
             self._actions.append(action)
             self._menu.addAction(action)
@@ -176,17 +175,6 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     def _addHighlightItem(self, classCode, siteCode, itemId):
         self._project.planModule.addHighlightItem(siteCode, classCode, itemId)
 
-    def _openInArk(self, classCode, siteCode, itemId):
-        mod_cd = classCode + '_cd'
-        item = siteCode + '_' + itemId
-        url = self._project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
-        QApplication.clipboard().setText(url)
-        browser = None
-        try:
-            webbrowser.get().open_new_tab(url)
-        except:
-            self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
-
     def _openDrawings(self, classCode, siteCode, itemId):
         self._project.planModule.loadDrawing(classCode, siteCode, itemId)
 
@@ -207,6 +195,24 @@ class ClipboardAction(QAction):
 
     def _copy(self):
         QApplication.clipboard().setText(self._text)
+
+class OpenArkAction(QAction):
+
+    _url = ''
+
+    def __init__(self, arkUrl, siteCode, classCode, itemId, label, parent=None):
+        super(OpenArkAction, self).__init__(label, parent)
+        mod_cd = classCode + '_cd'
+        item = siteCode + '_' + str(itemId)
+        self._url = arkUrl + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
+        self.triggered.connect(self._open)
+
+    def _open(self):
+        QApplication.clipboard().setText(self._url)
+        try:
+            webbrowser.get().open_new_tab(self._url)
+        except:
+            self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
 class IdentifyItemAction(QAction):
 
@@ -271,8 +277,7 @@ class IdentifyItemAction(QAction):
         self.addHighlightAction.triggered.connect(self._addHighlightItem)
         menu.addAction(self.addHighlightAction)
         if project.useArkDB() and project.arkUrl():
-            self.linkAction = QAction('Open in ARK', parent)
-            self.linkAction.triggered.connect(self._openArk)
+            self.linkAction = OpenArkAction(project.arkUrl(), siteCode, classCode, itemId, 'Open in ARK', parent)
             menu.addAction(self.linkAction)
         self.drawingAction = QAction('Open Drawings', parent)
         self.drawingAction.triggered.connect(self._openDrawings)
@@ -301,7 +306,26 @@ class IdentifyItemAction(QAction):
             if sourceId is not None and sourceId != NULL and sourceId != '' and (sourceClass != classCode or sourceId != itemId):
                 for source in Config.planSourceClasses:
                     if source[1] == classCode:
-                        menu.addAction(source[0] + ' ' + str(sourceId))
+                        menu.addAction(source[0] + ' ' + sourceId)
+        if project.data.hasData():
+            project.logMessage('has data')
+            menu.addSeparator()
+            if classCode == 'cxt':
+                subItem = project.data.getParent(siteCode, classCode, str(itemId))
+                if subItem:
+                    grpItem = project.data.getParent(subItem.siteCode, subItem.classCode, subItem.itemId)
+                    if project.useArkDB() and project.arkUrl():
+                        self.subAction = OpenArkAction(project.arkUrl(), subItem.siteCode, subItem.classCode, subItem.itemId,
+                                                    'Sub-group: ' + str(subItem.itemId), parent)
+                        menu.addAction(self.subAction)
+                        if grpItem:
+                            self.grpAction = OpenArkAction(project.arkUrl(), grpItem.siteCode, grpItem.classCode, grpItem.itemId,
+                                                        'Group: ' + str(grpItem.itemId), parent)
+                            menu.addAction(self.grpAction)
+                    else:
+                        menu.addAction('Sub-group: ' + str(subItem.itemId))
+                        if grpItem:
+                            menu.addAction('Group: ' + str(grpItem.itemId))
         if len(area) > 0:
             menu.addSeparator()
             tot = 0
@@ -317,9 +341,6 @@ class IdentifyItemAction(QAction):
                 suffix = u' NM²'
             menu.addAction(ClipboardAction(u'Area: ', u'%.3f' % tot + suffix, parent))
         self.setMenu(menu)
-
-    def _openArk(self):
-        self.openInArkSelected.emit(self.classCode, self.siteCode, str(self.itemId))
 
     def _editItem(self):
         self.editItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))

@@ -171,9 +171,9 @@ class ItemModel(TableModel):
                     self._nullRecord[field] = ''
                 for record in reader:
                     key = ItemKey()
-                    key.siteCode = record[keyFields.siteCode]
-                    key.classCode = record[keyFields.classCode]
-                    key.itemId = record[keyFields.itemId]
+                    key.siteCode = str(record[keyFields.siteCode])
+                    key.classCode = str(record[keyFields.classCode])
+                    key.itemId = str(record[keyFields.itemId])
                     self._addItem(key, record)
 
     def getItem(self, itemKey):
@@ -205,7 +205,7 @@ class DataManager(QObject):
     def hasClassData(self, classCode):
         if classCode == 'cxt':
             return self._cxtModel.rowCount() > 0
-        elif classCode == 'sub':
+        elif classCode == 'sgr':
             return self._subModel.rowCount() > 0
         elif classCode == 'grp':
             return self._grpModel.rowCount() > 0
@@ -220,7 +220,7 @@ class DataManager(QObject):
         self._cxtProxyModel.setSourceModel(self._cxtModel)
         if self._subModel:
             self._subModel.clear()
-        self._subModel = ItemModel(path + 'sub.csv', keyFields, self)
+        self._subModel = ItemModel(path + 'sgr.csv', keyFields, self)
         self._subProxyModel.setSourceModel(self._subModel)
         if self._grpModel:
             self._grpModel.clear()
@@ -242,15 +242,15 @@ class DataManager(QObject):
 
     def getItem(self, classCode, siteCode, itemId):
         if classCode == 'cxt':
-            return self._cxtModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
-        elif classCode == 'sub':
-            return self._subModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
+            return self._cxtModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
+        elif classCode == 'sgr':
+            return self._subModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
         elif classCode == 'grp':
-            return self._grpModel.getItem(ItemKey(siteCode, classCode, str(itemId)))
+            return self._grpModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
         return {}
 
-    def getChildren(self, classCode, siteCode, itemId):
-        return self._linkModel.getChildren(ItemKey(siteCode, classCode, str(itemId)))
+    def getChildren(self, siteCode, classCode, itemId):
+        return self._linkModel.getChildren(ItemKey(str(siteCode), str(classCode), str(itemId)))
 
-    def getParent(self, classCode, siteCode, itemId):
-        return self._linkModel.getParent(ItemKey(siteCode, classCode, str(itemId)))
+    def getParent(self, siteCode, classCode, itemId):
+        return self._linkModel.getParent(ItemKey(str(siteCode), str(classCode), str(itemId)))

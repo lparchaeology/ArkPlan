@@ -34,7 +34,6 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 from ..libarkqgis import layers
 
-from data_model import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
@@ -48,7 +47,6 @@ class Filter(QObject):
     filterSetCleared = pyqtSignal()
 
     project = None # Project()
-    data = None  # DataManager()
 
     # Internal variables
     dock = None # FilterDock()
@@ -60,7 +58,6 @@ class Filter(QObject):
     def __init__(self, project):
         super(Filter, self).__init__(project)
         self.project = project
-        self.data = DataManager()
 
     # Standard Dock methods
 
@@ -89,14 +86,11 @@ class Filter(QObject):
         # Load the Site Codes
         self.dock.initSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
 
-        # Load the CSV data if available
-        self.data.loadProject(self.project)
-
         # Load the Class Codes
         codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
-        if self.data.hasClassData('sub'):
-            codeList.append('sub')
-        if self.data.hasClassData('grp'):
+        if self.project.data.hasClassData('sgr'):
+            codeList.append('sgr')
+        if self.project.data.hasClassData('grp'):
             codeList.append('grp')
         codes = {}
         for code in codeList:
@@ -182,10 +176,10 @@ class Filter(QObject):
                 clause = ''
                 if filter.classCode() == 'grp':
                     subList = self._childIdList(filter.siteCode(), 'grp', self._rangeToList(filter.filterRange()))
-                    cxtList = self._childIdList(filter.siteCode(), 'sub', subList)
+                    cxtList = self._childIdList(filter.siteCode(), 'sgr', subList)
                     clause = self._rangeToClause(filter.siteCode(), 'cxt', self._listToRange(cxtList))
-                elif filter.classCode() == 'sub':
-                    cxtList = self._childIdList(filter.siteCode(), 'sub', self._rangeToList(filter.filterRange()))
+                elif filter.classCode() == 'sgr':
+                    cxtList = self._childIdList(filter.siteCode(), 'sgr', self._rangeToList(filter.filterRange()))
                     cxtRange = self._listToRange(cxtList)
                     clause = self._rangeToClause(filter.siteCode(), 'cxt', cxtRange)
                 else:
@@ -289,7 +283,7 @@ class Filter(QObject):
     def _childIdList(self, siteCode, classCode, parentIdList):
         childSet = set()
         for parent in parentIdList:
-            children = self.data.getChildren(classCode, siteCode, parent)
+            children = self.project.data.getChildren(siteCode, classCode, parent)
             for child in children:
                 childSet.add(child.itemId)
         return sorted(childSet)

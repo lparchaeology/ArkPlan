@@ -45,6 +45,7 @@ from identify import MapToolIndentifyItems
 from config import Config
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
+from data_model import *
 
 import resources_rc
 
@@ -68,6 +69,8 @@ class ArkSpatial(Plugin):
     plan = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
+
+    data = None  # DataManager()
 
     projectLayerView = None  # QgsLayerTreeView()
     layerDock = None  # ToolDockWidget()
@@ -152,6 +155,7 @@ class ArkSpatial(Plugin):
         self.layerDock.toolbar.addSeparator()
         self.planModule = Plan(self)
         self.planModule.initGui()
+        self.data = DataManager()
 
         # If the project or layers or legend indexes change make sure we stay updated
         self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
@@ -177,6 +181,7 @@ class ArkSpatial(Plugin):
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
+                self.data.loadProject(self)
                 self.filterModule.loadProject()
                 self._loaded = True
 

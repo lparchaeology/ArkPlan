@@ -30,7 +30,7 @@ from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
 from qgis.core import *
 from qgis.gui import QgsVertexMarker
 
-from ..libarkqgis.maths import LinearTransformer
+from ..libarkqgis.geometry import LinearTransformer
 from ..libarkqgis import utils
 from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 

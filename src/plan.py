@@ -29,7 +29,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 from qgis.core import *
 
 from ..libarkqgis.map_tools import *
-from ..libarkqgis import utils, layers, processing
+from ..libarkqgis import utils, layers, geometry
 
 from ..georef.georef_dialog import GeorefDialog
 

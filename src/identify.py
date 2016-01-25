@@ -306,7 +306,7 @@ class IdentifyItemAction(QAction):
             if sourceId is not None and sourceId != NULL and sourceId != '' and (sourceClass != classCode or sourceId != itemId):
                 for source in Config.planSourceClasses:
                     if source[1] == classCode:
-                        menu.addAction(source[0] + ' ' + sourceId)
+                        menu.addAction(str(source[0]) + ' ' + str(sourceId))
         if project.data.hasData():
             project.logMessage('has data')
             menu.addSeparator()

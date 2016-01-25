@@ -29,6 +29,8 @@ import csv
 from PyQt4.QtCore import Qt, QObject, QAbstractTableModel, QVariant, QModelIndex, QFile
 from PyQt4.QtGui import QSortFilterProxyModel
 
+from config import ItemKey
+
 class TableModel(QAbstractTableModel):
 
     _table = []
@@ -137,25 +139,6 @@ class ParentChildModel(TableModel):
             if record['child'] == child:
                 return record['parent']
         return None
-
-class ItemKey():
-    siteCode = ''
-    classCode = ''
-    itemId = ''
-
-    def __init__(self, siteCode=None, classCode=None, itemId=None):
-        self.siteCode = siteCode
-        self.classCode = classCode
-        self.itemId = itemId
-
-    def __eq__(self, other):
-        return self.siteCode == self.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
-
-    def __ne__(self, other):
-        return self.siteCode != self.siteCode or self.classCode != other.classCode or self.itemId != other.itemId
-
-    def isValid(self):
-        return siteCode and  classCode and itemId
 
 class ItemModel(TableModel):
 

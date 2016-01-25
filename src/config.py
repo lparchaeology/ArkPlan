@@ -30,6 +30,36 @@ from qgis.core import QgsField
 
 from ..libarkqgis.map_tools import FeatureType
 
+class ItemKey():
+    siteCode = ''
+    classCode = ''
+    itemId = ''
+
+    def __init__(self, siteCode=None, classCode=None, itemId=None):
+        self.setKey(siteCode, classCode, itemId)
+
+    def setKey(self, siteCode, classCode, itemId):
+        if siteCode and classCode and itemId:
+            self.siteCode = str(siteCode)
+            self.classCode = str(classCode)
+            self.itemId = str(itemId)
+        else:
+            self.siteCode = ''
+            self.classCode = ''
+            self.itemId = ''
+
+    def __eq__(self, other):
+        return self.siteCode == self.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
+
+    def __ne__(self, other):
+        return self.siteCode != self.siteCode or self.classCode != other.classCode or self.itemId != other.itemId
+
+    def isValid(self):
+        return siteCode and classCode and itemId
+
+    def isValid(self):
+        return siteCode == '' and classCode == '' and itemId == ''
+
 class Config():
 
     projectGroupName = 'Ark Spatial'

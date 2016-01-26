@@ -534,72 +534,72 @@ class Plan(QObject):
         confirm, ok = QInputDialog.getText(None, title, label, text='')
         return ok and confirm == str(itemId)
 
-    def editInBuffers(self, siteCode, classCode, itemId):
-        if self._confirmDelete(itemId, 'Confirm Move Item'):
-            self._editInBuffers(siteCode, classCode, itemId)
+    def editInBuffers(self, itemKey):
+        if self._confirmDelete(itemKey.itemId, 'Confirm Move Item'):
+            self._editInBuffers(itemKey)
 
-    def _editInBuffers(self, siteCode, classCode, itemId):
-        request = self._itemRequest(siteCode, classCode, itemId)
+    def _editInBuffers(self, itemKey):
+        request = itemKey.featureRequest()
         self.project.plan.moveFeatureRequestToBuffers(request)
         if classCode == 'cxt':
-            self.dock.setContextNumber(int(itemId))
+            self.dock.setContextNumber(itemKey.itemId)
             self.dock.setFeatureId(0)
         else:
             self.dock.setContextNumber(0)
-            self.dock.setFeatureId(itemId)
-        self.metadata().setSiteCode(siteCode)
+            self.dock.setFeatureId(itemKey.itemId)
+        self.metadata().setSiteCode(itemKey.siteCode)
         self.metadata().setComment('')
         self.metadata().setSourceCode('drw')
-        self.metadata().setSourceClass(classCode)
-        self.metadata().setSourceId(itemId)
+        self.metadata().setSourceClass(itemKey.classCode)
+        self.metadata().setSourceId(itemKey.itemId)
         self.metadata().setSourceFile('')
 
-    def deleteItem(self, siteCode, classCode, itemId):
-        if self._confirmDelete(itemId, 'Confirm Delete Item'):
-            request = self._itemRequest(siteCode, classCode, itemId)
+    def deleteItem(self, itemKey):
+        if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
+            request = itemKey.featureRequest()
             self.project.plan.deleteFeatureRequest(request)
 
-    def panToItem(self, siteCode, classCode, itemId, highlight=False):
-        extent = self.itemExtent(siteCode, classCode, itemId)
+    def panToItem(self, itemKey, highlight=False):
+        extent = self.itemExtent(itemKey)
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         self.project.mapCanvas().setCenter(extent.center())
         if highlight:
             self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def zoomToItem(self, siteCode, classCode, itemId, highlight=False):
-        extent = self.itemExtent(siteCode, classCode, itemId)
+    def zoomToItem(self, itemKey, highlight=False):
+        extent = self.itemExtent(itemKey)
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
         if highlight:
             self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def filterItem(self, siteCode, classCode, itemId):
+    def filterItem(self, itemKey):
         self.project.filterModule.removeFilters()
-        self.project.filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def excludeFilterItem(self, siteCode, classCode, itemId):
-        self.project.filterModule.addFilterClause(FilterType.ExcludeFilter, siteCode, classCode, str(itemId))
+    def excludeFilterItem(self, itemKey):
+        self.project.filterModule.addFilterClause(FilterType.ExcludeFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def highlightItem(self, siteCode, classCode, itemId):
+    def highlightItem(self, itemKey):
         self.project.filterModule.removeHighlightFilters()
-        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def addHighlightItem(self, siteCode, classCode, itemId):
-        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, classCode, str(itemId))
+    def addHighlightItem(self, itemKey):
+        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
         self.project.mapCanvas().refresh()
 
-    def itemExtent(self, siteCode, classCode, itemId):
-        request = self._itemRequest(siteCode, classCode, itemId)
+    def itemExtent(self, itemKey):
+        request = itemKey.featureRequest()
         points = self._requestAsLayer(request, self.project.plan.pointsLayer, 'points')
         lines = self._requestAsLayer(request, self.project.plan.linesLayer, 'lines')
         polygons = self._requestAsLayer(request, self.project.plan.polygonsLayer, 'polygons')
@@ -634,38 +634,22 @@ class Plan(QObject):
     def _neClause(self, field, value):
         return _doublequote(self.project.fieldName(field)) + ' != ' + _quote(str(value))
 
-    def _siteClause(self, siteCode):
-        return self._eqClause('site', siteCode)
-
-    def _classClause(self, classCode):
-        return self._eqClause('class', classCode)
-
-    def _idClause(self, itemId):
-        return self._eqClause('id', itemId)
-
     def _categoryClause(self, category):
         return self._eqClause('category', category)
 
     def _notCategoryClause(self, category):
         return self._neClause('category', category)
 
-    def _itemExpr(self, siteCode, classCode, itemId):
-        return self._siteClause(siteCode) + ' and ' + self._classClause(classCode) + ' and ' + self._idClause(itemId)
-
     def _featureRequest(self, expr):
         request = QgsFeatureRequest()
         request.setFilterExpression(expr)
         return request
 
-    def _itemRequest(self, siteCode, classCode, itemId):
-        expr = self._itemExpr(siteCode, classCode, itemId)
-        return self._featureRequest(expr)
+    def _categoryRequest(self, itemKey, category):
+        return self._featureRequest(itemKey.filterClause() + ' and ' + self._categoryClause(category))
 
-    def _categoryRequest(self, siteCode, classCode, itemId, category):
-        return self._featureRequest(self._itemExpr(siteCode, classCode, itemId) + ' and ' + self._categoryClause(category))
-
-    def _notCategoryRequest(self, siteCode, classCode, itemId, category):
-        return self._featureRequest(self._itemExpr(siteCode, classCode, itemId) + ' and ' + self._notCategoryClause(category))
+    def _notCategoryRequest(self, itemKey, category):
+        return self._featureRequest(itemKey.filterClause() + ' and ' + self._notCategoryClause(category))
 
     # SchematicDock methods
 
@@ -703,28 +687,27 @@ class Plan(QObject):
     def _findPanContext(self):
         self._findContext()
         if self.schematicDock.contextStatus() == SearchStatus.Found:
-            self.panToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+            self.panToItem(self.schematicDock.contextItemKey())
 
     def _findZoomContext(self):
         self._findContext()
         if self.schematicDock.contextStatus() == SearchStatus.Found:
-            self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+            self.zoomToItem(self.schematicDock.contextItemKey())
 
     def _editSchematicContext(self):
-        self.editInBuffers(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.context())
+        self.editInBuffers(self.schematicDock.contextItemKey())
 
     def _findContext(self):
         self._clearSchematicFilters()
 
         filterModule = self.project.filterModule
-        siteCode = self.schematicDock.metadata().siteCode()
-        if siteCode == '':
-            siteCode = self.project.siteCode()
+        if self.schematicDock.metadata().siteCode() == '':
+            self.schematicDock.metadata().setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
-        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.context()), FilterAction.LockFilter)
+            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
+        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
 
-        itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.context())
+        itemRequest = self.schematicDock.contextItemKey().featureRequest()
         haveFeature = SearchStatus.Found
         try:
             feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
@@ -733,14 +716,14 @@ class Plan(QObject):
             haveFeature = SearchStatus.NotFound
 
         if haveFeature == SearchStatus.NotFound:
-            polyRequest = self._notCategoryRequest(siteCode, 'cxt', self.schematicDock.context(), 'sch')
+            polyRequest = self._notCategoryRequest(self.schematicDock.contextItemKey(), 'sch')
             haveFeature = SearchStatus.Found
             try:
                 self.project.plan.polygonsLayer.getFeatures(polyRequest).next()
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(siteCode, 'cxt', self.schematicDock.context(), 'sch')
+        schRequest = self._categoryRequest(self.schematicDock.contextItemKey(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
             self.project.plan.polygonsLayer.getFeatures(schRequest).next()
@@ -754,37 +737,36 @@ class Plan(QObject):
         if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
         if self.schematicDock.sourceStatus() == SearchStatus.Found:
-            self.panToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
+            self.panToItem(self.schematicDock.sourceItemKey())
 
     def _findZoomSource(self):
         if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
         if self.schematicDock.sourceStatus() == SearchStatus.Found:
-            self.zoomToItem(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
+            self.zoomToItem(self.schematicDock.sourceItemKey())
 
     def _editSource(self):
-        self.editInBuffers(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext())
+        self.editInBuffers(self.schematicDock.sourceItemKey())
 
     def _findSource(self):
         self._clearSchematicSourceFilters()
 
         filterModule = self.project.filterModule
-        siteCode = self.schematicDock.metadata().siteCode()
-        if siteCode == '':
-            siteCode = self.project.siteCode()
+        if self.schematicDock.metadata().siteCode() == '':
+            self.schematicDock.metadata().setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
+            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, siteCode, 'cxt', str(self.schematicDock.sourceContext()), FilterAction.LockFilter)
+        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
 
-        itemRequest = self._itemRequest(siteCode, 'cxt', self.schematicDock.sourceContext())
+        itemRequest = self.schematicDock.sourceItemKey().featureRequest()
         haveFeature = SearchStatus.Found
         try:
             self.project.plan.linesLayer.getFeatures(itemRequest).next()
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(siteCode, 'cxt', self.schematicDock.sourceContext(), 'sch')
+        schRequest = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
             feature = self.project.plan.polygonsLayer.getFeatures(schRequest).next()
@@ -810,7 +792,7 @@ class Plan(QObject):
         self.schematicDock.metadata().setSourceFile('')
 
     def _copySourceSchematic(self):
-        request = self._categoryRequest(self.schematicDock.metadata().siteCode(), 'cxt', self.schematicDock.sourceContext(), 'sch')
+        request = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
             md = self.schematicDock.metadata()

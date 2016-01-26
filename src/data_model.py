@@ -31,7 +31,7 @@ from PyQt4.QtGui import QSortFilterProxyModel
 
 from ..libarkqgis.models import TableModel, ParentChildModel
 
-from config import ItemKey
+from plan_item import ItemKey
 
 class ItemModel(TableModel):
 
@@ -113,20 +113,20 @@ class DataManager(QObject):
             childModule = record['child_module']
             children = str(record['children']).split()
             for child in children:
-                childItem = ItemKey(siteCode, childModule, str(child))
+                childItem = ItemKey(siteCode, childModule, child)
                 self._linkModel.addChild(parentItem, childItem)
 
-    def getItem(self, classCode, siteCode, itemId):
+    def getItem(self, itemKey):
         if classCode == 'cxt':
-            return self._cxtModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
+            return self._cxtModel.getItem(itemKey)
         elif classCode == 'sgr':
-            return self._subModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
+            return self._subModel.getItem(itemKey)
         elif classCode == 'grp':
-            return self._grpModel.getItem(ItemKey(str(siteCode), str(classCode), str(itemId)))
+            return self._grpModel.getItem(itemKey)
         return {}
 
-    def getChildren(self, siteCode, classCode, itemId):
-        return self._linkModel.getChildren(ItemKey(str(siteCode), str(classCode), str(itemId)))
+    def getChildren(self, itemKey):
+        return self._linkModel.getChildren(itemKey)
 
     def getParent(self, siteCode, classCode, itemId):
-        return self._linkModel.getParent(ItemKey(str(siteCode), str(classCode), str(itemId)))
+        return self._linkModel.getParent(itemKey)

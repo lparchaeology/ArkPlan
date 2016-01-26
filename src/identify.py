@@ -32,6 +32,7 @@ from qgis.core import *
 from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from config import Config
+from plan_item import ItemKey
 
 def _quote(string):
     return "'" + string + "'"
@@ -80,20 +81,19 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             siteCode = feature.attribute(self._project.fieldName('site'))
             classCode = feature.attribute(self._project.fieldName('class'))
             itemId = feature.attribute(self._project.fieldName('id'))
-            item = (siteCode, classCode, itemId)
-            items.add(item)
+            items.add(ItemKey(siteCode, classCode, itemId))
         action = QAction('Plan Items', self._menu)
         action.setData('top')
         self._menu.addAction(action)
         site = ''
         for item in sorted(items):
-            if item[0] != site:
-                site = item[0]
+            if item.siteCode != site:
+                site = item.siteCode
                 self._menu.addSeparator()
                 action = QAction('Site ' + site + ':', self._menu)
                 action.setData('top')
                 self._menu.addAction(action)
-            action = IdentifyItemAction(item[0], item[1], item[2], self._project, self._menu)
+            action = IdentifyItemAction(item, self._project, self._menu)
             action.setData('top')
             action.zoomToItemSelected.connect(self._zoom)
             action.panToItemSelected.connect(self._pan)
@@ -157,32 +157,33 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         hl.setMinWidth(minWidth)
         self._highlights.append(hl)
 
-    def _zoom(self, classCode, siteCode, itemId):
-        self._project.planModule.zoomToItem(siteCode, classCode, itemId, highlight=True)
+    def _zoom(self, itemKey):
+        self._project.logMessage('_zoom ' + itemKey.siteCode + ' ' + itemKey.classCode + ' ' + itemKey.itemId)
+        self._project.planModule.zoomToItem(itemKey, highlight=True)
 
-    def _pan(self, classCode, siteCode, itemId):
-        self._project.planModule.panToItem(siteCode, classCode, itemId, highlight=True)
+    def _pan(self, itemKey):
+        self._project.planModule.panToItem(itemKey, highlight=True)
 
-    def _filterItem(self, classCode, siteCode, itemId):
-        self._project.planModule.filterItem(siteCode, classCode, itemId)
+    def _filterItem(self, itemKey):
+        self._project.planModule.filterItem(itemKey)
 
-    def _excludeFilterItem(self, classCode, siteCode, itemId):
-        self._project.planModule.excludeFilterItem(siteCode, classCode, itemId)
+    def _excludeFilterItem(self, itemKey):
+        self._project.planModule.excludeFilterItem(itemKey)
 
-    def _highlightItem(self, classCode, siteCode, itemId):
-        self._project.planModule.highlightItem(siteCode, classCode, itemId)
+    def _highlightItem(self, itemKey):
+        self._project.planModule.highlightItem(itemKey)
 
-    def _addHighlightItem(self, classCode, siteCode, itemId):
-        self._project.planModule.addHighlightItem(siteCode, classCode, itemId)
+    def _addHighlightItem(self, itemKey):
+        self._project.planModule.addHighlightItem(itemKey)
 
-    def _openDrawings(self, classCode, siteCode, itemId):
-        self._project.planModule.loadDrawing(classCode, siteCode, itemId)
+    def _openDrawings(self, itemKey):
+        self._project.planModule.loadDrawing(itemKey)
 
-    def _editInBuffers(self, classCode, siteCode, itemId):
-        self._project.planModule.editInBuffers(siteCode, classCode, itemId)
+    def _editInBuffers(self, itemKey):
+        self._project.planModule.editInBuffers(itemKey)
 
-    def _delete(self, classCode, siteCode, itemId):
-        self._project.planModule.deleteItem(siteCode, classCode, itemId)
+    def _delete(self, itemKey):
+        self._project.planModule.deleteItem(itemKey)
 
 class ClipboardAction(QAction):
 
@@ -200,10 +201,10 @@ class OpenArkAction(QAction):
 
     _url = ''
 
-    def __init__(self, arkUrl, siteCode, classCode, itemId, label, parent=None):
+    def __init__(self, arkUrl, itemKey, label, parent=None):
         super(OpenArkAction, self).__init__(label, parent)
-        mod_cd = classCode + '_cd'
-        item = siteCode + '_' + str(itemId)
+        mod_cd = itemKey.classCode + '_cd'
+        item = itemKey.siteCode + '_' + itemKey.itemId
         self._url = arkUrl + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
         self.triggered.connect(self._open)
 
@@ -216,37 +217,33 @@ class OpenArkAction(QAction):
 
 class IdentifyItemAction(QAction):
 
-    openInArkSelected = pyqtSignal(str, str, str)
-    editItemSelected = pyqtSignal(str, str, str)
-    deleteItemSelected = pyqtSignal(str, str, str)
-    panToItemSelected = pyqtSignal(str, str, str)
-    zoomToItemSelected = pyqtSignal(str, str, str)
-    filterItemSelected = pyqtSignal(str, str, str)
-    excludeFilterItemSelected = pyqtSignal(str, str, str)
-    highlightItemSelected = pyqtSignal(str, str, str)
-    addHighlightItemSelected = pyqtSignal(str, str, str)
-    openDrawingsSelected = pyqtSignal(str, str, str)
+    openInArkSelected = pyqtSignal(object)
+    editItemSelected = pyqtSignal(object)
+    deleteItemSelected = pyqtSignal(object)
+    panToItemSelected = pyqtSignal(object)
+    zoomToItemSelected = pyqtSignal(object)
+    filterItemSelected = pyqtSignal(object)
+    excludeFilterItemSelected = pyqtSignal(object)
+    highlightItemSelected = pyqtSignal(object)
+    addHighlightItemSelected = pyqtSignal(object)
+    openDrawingsSelected = pyqtSignal(object)
 
-    siteCode = ''
-    classCode = ''
-    itemId = 0
+    itemKey = ItemKey()
 
     expr = ''
 
     _iface = None
 
-    def __init__(self, siteCode, classCode, itemId, project, parent=None):
+    def __init__(self, itemKey, project, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
         self._iface = project.iface
         for source in Config.planSourceClasses:
-            if source[1] == classCode:
-                self.setText(source[0] + ' ' + str(itemId))
-        self.siteCode = siteCode
-        self.classCode = classCode
-        self.itemId = itemId
-        self.expr = _doublequote(project.fieldName('site')) + ' = ' + _quote(siteCode) + ' and ' + \
-                    _doublequote(project.fieldName('class')) + ' = ' + _quote(classCode) + ' and ' + \
-                    _doublequote(project.fieldName('id')) + ' = ' + str(itemId)
+            if source[1] == itemKey.classCode:
+                self.setText(source[0] + ' ' + itemKey.itemId)
+        self.itemKey = itemKey
+        self.expr = _doublequote(project.fieldName('site')) + ' = ' + _quote(itemKey.siteCode) + ' and ' + \
+                    _doublequote(project.fieldName('class')) + ' = ' + _quote(itemKey.classCode) + ' and ' + \
+                    _doublequote(project.fieldName('id')) + ' = ' + str(itemKey.itemId)
         menu = QMenu()
         request = QgsFeatureRequest()
         request.setFilterExpression(self.expr)
@@ -277,7 +274,7 @@ class IdentifyItemAction(QAction):
         self.addHighlightAction.triggered.connect(self._addHighlightItem)
         menu.addAction(self.addHighlightAction)
         if project.useArkDB() and project.arkUrl():
-            self.linkAction = OpenArkAction(project.arkUrl(), siteCode, classCode, itemId, 'Open in ARK', parent)
+            self.linkAction = OpenArkAction(project.arkUrl(), itemKey, 'Open in ARK', parent)
             menu.addAction(self.linkAction)
         self.drawingAction = QAction('Open Drawings', parent)
         self.drawingAction.triggered.connect(self._openDrawings)
@@ -303,24 +300,22 @@ class IdentifyItemAction(QAction):
                     if source[1] == sourceCode:
                         sourceText = source[0]
             menu.addAction(sourceText)
-            if sourceId is not None and sourceId != NULL and sourceId != '' and (sourceClass != classCode or sourceId != itemId):
+            if sourceId is not None and sourceId != NULL and sourceId != '' and (sourceClass != itemKey.classCode or sourceId != itemKey.itemId):
                 for source in Config.planSourceClasses:
-                    if source[1] == classCode:
+                    if source[1] == itemKey.classCode:
                         menu.addAction(str(source[0]) + ' ' + str(sourceId))
         if project.data.hasData():
             project.logMessage('has data')
             menu.addSeparator()
-            if classCode == 'cxt':
-                subItem = project.data.getParent(siteCode, classCode, str(itemId))
+            if itemKey.classCode == 'cxt':
+                subItem = project.data.getParent(itemKey)
                 if subItem:
-                    grpItem = project.data.getParent(subItem.siteCode, subItem.classCode, subItem.itemId)
+                    grpItem = project.data.getParent(subItem)
                     if project.useArkDB() and project.arkUrl():
-                        self.subAction = OpenArkAction(project.arkUrl(), subItem.siteCode, subItem.classCode, subItem.itemId,
-                                                    'Sub-group: ' + str(subItem.itemId), parent)
+                        self.subAction = OpenArkAction(project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId), parent)
                         menu.addAction(self.subAction)
                         if grpItem:
-                            self.grpAction = OpenArkAction(project.arkUrl(), grpItem.siteCode, grpItem.classCode, grpItem.itemId,
-                                                        'Group: ' + str(grpItem.itemId), parent)
+                            self.grpAction = OpenArkAction(project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId), parent)
                             menu.addAction(self.grpAction)
                     else:
                         menu.addAction('Sub-group: ' + str(subItem.itemId))
@@ -343,28 +338,28 @@ class IdentifyItemAction(QAction):
         self.setMenu(menu)
 
     def _editItem(self):
-        self.editItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.editItemSelected.emit(self.itemKey)
 
     def _deleteItem(self):
-        self.deleteItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.deleteItemSelected.emit(self.itemKey)
 
     def _panToItem(self):
-        self.panToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.panToItemSelected.emit(self.itemKey)
 
     def _zoomToItem(self):
-        self.zoomToItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.zoomToItemSelected.emit(self.itemKey)
 
     def _filterItem(self):
-        self.filterItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.filterItemSelected.emit(self.itemKey)
 
     def _excludeFilterItem(self):
-        self.excludeFilterItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.excludeFilterItemSelected.emit(self.itemKey)
 
     def _highlightItem(self):
-        self.highlightItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.highlightItemSelected.emit(self.itemKey)
 
     def _addHighlightItem(self):
-        self.addHighlightItemSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.addHighlightItemSelected.emit(self.itemKey)
 
     def _openDrawings(self):
-        self.openDrawingsSelected.emit(self.classCode, self.siteCode, str(self.itemId))
+        self.openDrawingsSelected.emit(self.itemKey)

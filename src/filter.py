@@ -39,6 +39,7 @@ from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_clause_widget import FilterType, FilterAction
 from config import Config
+from plan_item import ItemKey
 
 import resources_rc
 
@@ -130,15 +131,15 @@ class Filter(QObject):
 
     # Filter methods
 
-    def filterItem(self, siteCode, classCode, itemId):
+    def filterItem(self, itemKey):
         self.clearFilterSet()
-        self.addFilterClause(FilterType.IncludeFilter, siteCode, classCode, str(itemId))
+        self.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.zoomFilter()
 
-    def addFilterClause(self, filterType, siteCode, classCode, filterRange, filterAction=FilterAction.RemoveFilter):
+    def addFilterClause(self, filterType, itemKey, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:
             return
-        return self.dock.addFilterClause(filterType, siteCode, classCode, filterRange, filterAction)
+        return self.dock.addFilterClause(filterType, itemKey, filterAction)
 
     def removeFilterClause(self, filterIndex):
         if not self._initialised:
@@ -173,35 +174,30 @@ class Filter(QObject):
         for index in activeFilters:
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
-                clause = ''
-                if filter.classCode() == 'grp':
-                    subList = self._childIdList(filter.siteCode(), 'grp', self._rangeToList(filter.filterRange()))
-                    cxtList = self._childIdList(filter.siteCode(), 'sgr', subList)
-                    clause = self._rangeToClause(filter.siteCode(), 'cxt', self._listToRange(cxtList))
+                filterItemKey = filter.itemKey()
+                if filter.classCode == 'grp':
+                    subItemKey = self._childrenItemKey(filterItemKey)
+                    filterItemKey = self._childrenItemKey(subItemKey)
                 elif filter.classCode() == 'sgr':
-                    cxtList = self._childIdList(filter.siteCode(), 'sgr', self._rangeToList(filter.filterRange()))
-                    cxtRange = self._listToRange(cxtList)
-                    clause = self._rangeToClause(filter.siteCode(), 'cxt', cxtRange)
-                else:
-                    clause = self._rangeToClause(filter.siteCode(), filter.classCode(), filter.filterRange())
+                    filterItemKey = self._childrenItemKey(filterItemKey)
                 if filter.filterType() == FilterType.HighlightFilter:
                     if firstSelect:
                         firstSelect = False
                     else:
                         selectString += ' or '
-                    selectString += clause
+                    selectString += filterItemKey.filterClause()
                 elif filter.filterType() == FilterType.ExcludeFilter:
                     if firstExclude:
                         firstExclude = False
                     else:
                         excludeString += ' or '
-                    excludeString += clause
+                    excludeString += filterItemKey.filterClause()
                 else:
                     if firstInclude:
                         firstInclude = False
                     else:
                         includeString += ' or '
-                    includeString += clause
+                    includeString += filterItemKey.filterClause()
         if includeString and excludeString:
             self.applyFilter('(' + includeString + ') and NOT (' + excludeString + ')')
         elif excludeString:
@@ -270,90 +266,29 @@ class Filter(QObject):
             groupList.append(self.data.groupForContext(context))
         dataDialog = DataDialog(self.project.iface.mainWindow())
         dataDialog.contextTableView.setModel(self.data._contextProxyModel)
-        self.data._contextProxyModel.setFilterRegExp(self._listToRegExp(contextList))
+        self.data._contextProxyModel.setFilterRegExp(utils._listToRegExp(contextList))
         dataDialog.contextTableView.resizeColumnsToContents()
         dataDialog.subGroupTableView.setModel(self.data._subGroupProxyModel)
-        self.data._subGroupProxyModel.setFilterRegExp(self._listToRegExp(subList))
+        self.data._subGroupProxyModel.setFilterRegExp(utils._listToRegExp(subList))
         dataDialog.subGroupTableView.resizeColumnsToContents()
         dataDialog.groupTableView.setModel(self.data._groupProxyModel)
-        self.data._groupProxyModel.setFilterRegExp(self._listToRegExp(groupList))
+        self.data._groupProxyModel.setFilterRegExp(utils._listToRegExp(groupList))
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
 
-    def _childIdList(self, siteCode, classCode, parentIdList):
-        childSet = set()
-        for parent in parentIdList:
-            children = self.project.data.getChildren(siteCode, classCode, parent)
+    def _childrenItemKey(self, parentItemKey):
+        childSiteCode = ''
+        childClassCode = ''
+        childIdSet = set()
+        lookupItemKey = parentItemKey.deepcopy()
+        for parent in parentItemKey.itemIdList():
+            lookupItemKey.itemId = parent
+            children = self.project.data.getChildren(lookupItemKey)
             for child in children:
-                childSet.add(child.itemId)
-        return sorted(childSet)
-
-    def _rangeToList(self, valueRange):
-        lst = []
-        for clause in valueRange.split():
-            if clause.find('-') >= 0:
-                valueList = clause.split('-')
-                for i in range(int(valueList[0]), int(valueList[1])):
-                    lst.append(i)
-            else:
-                lst.append(int(clause))
-        return lst
-
-    def _listToRange(self, valueList):
-        inList = sorted(set(valueList))
-        valueRange = ''
-        if len(inList) == 0:
-            return valueRange
-        prev = inList[0]
-        start = prev
-        for this in inList[1:]:
-            if int(this) != int(prev) + 1:
-                if prev == start:
-                    valueRange = valueRange + ' ' + str(prev)
-                else:
-                    valueRange = valueRange + ' ' + str(start) + '-' + str(this)
-                start = this
-            prev = this
-        if prev == start:
-            valueRange = valueRange + ' ' + str(prev)
-        else:
-            valueRange = valueRange + ' ' + str(start) + '-' + str(this)
-        return valueRange
-
-    def _listToRegExp(self, lst):
-        if (len(lst) < 1):
-            return QRegExp()
-        exp = str(lst[0])
-        if (len(lst) > 1):
-            for element in lst[1:]:
-                exp = exp + '|' + str(element)
-        return QRegExp('\\b(' + exp + ')\\b')
-
-
-    def _rangeToClause(self, siteCode, filterClass, filterRange):
-        if siteCode is None or filterClass is None or filterRange is None:
-            return ''
-        clause = '("' + self.project.fieldName('site') + '" = \'' + siteCode + '\''
-        clause = clause + ' and "' + self.project.fieldName('class') + '" = \'' + filterClass + '\''
-        subs = filterRange.split()
-        if len(subs) == 0:
-            clause += ')'
-            return clause
-        clause += ' and ('
-        first = True
-        for sub in subs:
-            if first:
-                first = False
-            else:
-                clause = clause + ' or '
-            field = self.project.fieldName('id')
-            if sub.find('-') >= 0:
-                vals = sub.split('-')
-                clause = clause + ' ("' + field + '" >= ' + vals[0] + ' and "' + field + '" <= ' + vals[1] + ')'
-            else:
-                clause = clause + '"' + field + '" = ' + sub
-        clause += '))'
-        return clause
+                childSiteCode = child.siteCode
+                childClassCode = child.classCode
+                childIdSet.add(child.itemId)
+        return ItemKey(childSiteCode, childClassCode, childIdSet)
 
     def _filterSetGroup(self, key):
         return 'filterset/' + key

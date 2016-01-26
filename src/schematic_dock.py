@@ -35,6 +35,8 @@ from qgis.core import QgsMessageLog
 from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.event_filters import ReturnPressedFilter
 
+from plan_item import ItemKey
+
 import schematic_widget_base
 
 import resources_rc
@@ -152,6 +154,9 @@ class SchematicDock(ToolDockWidget):
 
     # Context Tools
 
+    def contextItemKey(self):
+        return ItemKey(self.metadata().siteCode(), 'cxt', self.context())
+
     def context(self):
         return self.widget.contextSpin.value()
 
@@ -176,6 +181,9 @@ class SchematicDock(ToolDockWidget):
         self._enableSource(foundSchematic == SearchStatus.NotFound)
         self._enableDraw(foundSchematic == SearchStatus.NotFound)
         self._enableAuto()
+
+    def sourceItemKey(self):
+        return ItemKey(self.metadata().siteCode(), 'cxt', self.sourceContext())
 
     def sourceContext(self):
         return self.widget.sourceContextSpin.value()

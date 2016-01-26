@@ -32,6 +32,8 @@ from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon
 
 from ..libarkqgis.utils import *
 
+from plan_item import ItemKey
+
 import filter_clause_widget_base
 
 class FilterType():
@@ -132,6 +134,14 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
 
     def filterType(self):
         return self._filterType
+
+    def setItemKey(self, itemKey):
+        self.setSiteCode(itemKey.siteCode)
+        self.setClassCode(itemKey.classCode)
+        self.filterRange(itemKey.itemId)
+
+    def itemKey(self):
+        return ItemKey(self.siteCode(), self.classCode(), self.filterRange())
 
     def setSiteCode(self, siteCode):
         self._siteCode = siteCode

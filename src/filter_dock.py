@@ -121,12 +121,12 @@ class FilterDock(ToolDockWidget):
     def _exportFilterSetSelected(self):
         self.exportFilterSetSelected.emit(self.widget.currentFilterSetKey(), self.widget.currentFilterSetName())
 
-    def addFilterClause(self, filterType, siteCode, classCode, filterRange, filterAction):
+    def addFilterClause(self, filterType, itemKey, filterAction):
         filterClauseWidget = self._createFilterClauseWidget()
         filterClauseWidget.setFilterType(filterType)
-        filterClauseWidget.setSiteCode(siteCode)
-        filterClauseWidget.setClassCode(classCode)
-        filterClauseWidget.setFilterRange(filterRange)
+        filterClauseWidget.setSiteCode(itemKey.siteCode)
+        filterClauseWidget.setClassCode(itemKey.classCode)
+        filterClauseWidget.setFilterRange(itemKey.itemId)
         filterClauseWidget.setFilterAction(filterAction)
         return self._addFilterClause(filterClauseWidget)
 

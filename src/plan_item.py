@@ -8,9 +8,9 @@
                               -------------------
         begin                : 2014-12-07
         git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2016 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2016 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -26,7 +26,7 @@
 
 from PyQt4.QtCore import QVariant
 
-from qgis.core import QgsField, QgsFeatureRequest
+from qgis.core import QgsFeature, QgsFeatureRequest
 
 from ..libarkqgis import utils
 
@@ -38,7 +38,32 @@ class ItemKey():
     itemId = ''
 
     def __init__(self, siteCode=None, classCode=None, itemId=None):
-        self.setKey(siteCode, classCode, itemId)
+        if type(siteCode) == QgsFeature:
+            self.setFeature(siteCode)
+        else:
+            self.setKey(siteCode, classCode, itemId)
+
+    def __eq__(self, other):
+        return self.siteCode == other.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
+
+    def __lt__(self, other):
+        if self.siteCode == other.siteCode and self.classCode == other.classCode:
+            return self._lt(self.itemId, other.itemId)
+        elif self.siteCode == other.siteCode:
+            return self.classCode < other.classCode and self._lt(self.itemId, other.itemId)
+        return self.siteCode < other.siteCode and self.classCode < other.classCode and self._lt(self.itemId, other.itemId)
+
+    def _lt(self, id1, id2):
+        if type(id1) == str and id1.isdigit() and type(id2) == str and id2.isdigit():
+            return int(id1) < int(id2)
+        else:
+            return id1 < id2
+
+    def __hash__(self):
+        return hash((self.siteCode, self.classCode, self.itemId))
+
+    def __str__(self):
+        return 'ItemKey(' + str(self.siteCode) + ', ' +  str(self.classCode) + ', ' +  str(self.itemId) + ')'
 
     def isValid(self):
         return self.siteCode and self.classCode and self.itemId
@@ -54,19 +79,25 @@ class ItemKey():
 
     def setKey(self, siteCode, classCode, itemId):
         if siteCode and classCode and itemId:
-            self.siteCode = str(siteCode).strip()
-            self.classCode = str(classCode).strip()
+            self.siteCode = utils.string(siteCode)
+            self.classCode = utils.string(classCode)
             self.setItemId(itemId)
         else:
             self.siteCode = ''
             self.classCode = ''
             self.itemId = ''
 
+    def setFeature(self, feature):
+        siteCode = feature.attribute(Config.fieldName('site'))
+        classCode = feature.attribute(Config.fieldName('class'))
+        itemId = feature.attribute(Config.fieldName('id'))
+        self.setKey(siteCode, classCode, itemId)
+
     def setItemId(self, itemId):
         if type(itemId) == list or type(itemId) == set:
             self.itemId = utils.listToRange(itemId)
         else:
-            self.itemId = str(itemId).strip()
+            self.itemId = utils.string(itemId)
 
     def addItemId(self, itemId):
         if self.itemId == '':
@@ -76,7 +107,7 @@ class ItemKey():
             if type(itemId) == list or type(itemId) == set:
                 lst.extend(itemId)
             else:
-                lst.append(str(itemId).strip())
+                lst.append(utils.string(itemId))
             self.setItemId(lst)
 
     def itemIdList(self):
@@ -111,3 +142,106 @@ class ItemKey():
         request = QgsFeatureRequest()
         request.setFilterExpression(self.filterClause())
         return request
+
+
+class ItemSource():
+    sourceCode = ''
+    key = ItemKey()
+    filename = ''
+
+    def __init__(self, sourceCode=None, sourceKey=None, filename=None):
+        if type(sourceCode) == QgsFeature:
+            self.setFeature(sourceCode)
+        else:
+            self.setSource(sourceCode, sourceKey, filename)
+
+    def __eq__(self, other):
+        return self.sourceCode == other.sourceCode and self.key == other.key and self.filename == other.filename
+
+    def __hash__(self):
+        return hash((self.sourceCode, self.key, self.filename))
+
+    def __str__(self):
+        return 'ItemSource(' + str(self.sourceCode) + ', ' + str(self.key.siteCode) + ', ' +  str(self.key.classCode) + ', ' +  str(self.key.itemId) + ')'
+
+    def isValid(self):
+        return self.sourceCode and self.key.isValid()
+
+    def isInvalid(self):
+        return not self.isValid()
+
+    def isNull(self):
+        return self.sourceCode == '' and self.key.isNull() and filename == ''
+
+    def setSource(self, sourceCode, sourceKey, filename):
+        if sourceCode:
+            self.sourceCode = utils.string(sourceCode)
+            self.key = sourceKey
+            self.filename = utils.string(filename)
+        else:
+            self.sourceCode = ''
+            self.key = ItemKey()
+            self.filename = ''
+
+    def setFeature(self, feature):
+        sourceCode = feature.attribute(Config.fieldName('source_cd'))
+        siteCode = feature.attribute(Config.fieldName('site'))
+        classCode = feature.attribute(Config.fieldName('source_cl'))
+        itemId = feature.attribute(Config.fieldName('source_id'))
+        sourceKey = ItemKey(siteCode, classCode, itemId)
+        filename = feature.attribute(Config.fieldName('file'))
+        self.setSource(sourceCode, sourceKey, filename)
+
+class Item():
+    key = ItemKey()
+    name = ''
+    source = ItemSource()
+    comment = ''
+
+    def __init__(self, key=None, name=None, source=None, comment=None):
+        if type(key) == QgsFeature:
+            self.setFeature(key)
+        else:
+            self.setItem(key, name, source, comment)
+
+    def __eq__(self, other):
+        return self.key == other.key and self.name == other.name and self.source == other.source and self.comment == other.comment
+
+    def __lt__(self, other):
+        if self.key == other.key:
+            return self.name < other.name
+        return self.key < other.key
+
+    def __hash__(self):
+        return hash((self.key, self.name, self.source, self.comment))
+
+    def __str__(self):
+        return 'Item(' + str(self.key.siteCode) + ', ' +  str(self.key.classCode) + ', ' +  str(self.key.itemId) + ')'
+
+    def isValid(self):
+        return self.key.isValid()
+
+    def isInvalid(self):
+        return self.key.isInvalid()
+
+    def isNull(self):
+        return self.key.isNull()
+
+    def setItem(self, key, name, source, comment):
+        if key.isValid():
+            self.key = key
+            self.name = utils.string(name)
+            self.source = source
+            self.comment = utils.string(comment)
+        else:
+            self.key = ItemKey()
+            self.name = ''
+            self.source = ItemSource()
+            self.comment = ''
+
+    def setFeature(self, feature):
+        key = ItemKey(feature)
+        name = feature.attribute(Config.fieldName('name'))
+        source = ItemSource(feature)
+        comment = feature.attribute(Config.fieldName('comment'))
+        self.setItem(key, name, source, comment)

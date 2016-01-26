@@ -80,6 +80,8 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
         self.editPointsTool.clicked.connect(self.editPointsSelected)
         self.editLinesTool.clicked.connect(self.editLinesSelected)
         self.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
+        self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
+        self.sectionContextSpin.valueChanged.connect(self.contextNumberChanged)
 
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
@@ -151,3 +153,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def _autoSchematicSelected(self):
         self.autoSchematicSelected.emit(self.contextNumber())
+
+    def _sectionChanged(self, idx):
+        self.emit.sectionChanged

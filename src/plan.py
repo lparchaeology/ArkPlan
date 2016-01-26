@@ -40,6 +40,8 @@ from select_drawing_dialog import SelectDrawingDialog
 
 from filter import FilterType, FilterAction
 from plan_util import *
+from plan_item import *
+from plan_map_tools import *
 from config import Config
 from metadata import Metadata, FeatureData
 
@@ -100,12 +102,14 @@ class Plan(QObject):
         self.dock.editPointsSelected.connect(self._editPointsLayer)
         self.dock.editLinesSelected.connect(self._editLinesLayer)
         self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
+        self.dock.sectionChanged.connect(self._sectionChanged)
 
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.schematicDock = SchematicDock(self.project.layerDock)
         action = self.project.addDockAction(':/plugins/ark/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), callback=self.runSchematic, checkable=True)
+
         self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
         self.schematicDock.findContextSelected.connect(self._findPanContext)
         self.schematicDock.zoomContextSelected.connect(self._findZoomContext)
@@ -140,12 +144,16 @@ class Plan(QObject):
 
         self.dock.initSourceCodes(Config.planSourceCodes)
         self.dock.initSourceClasses(Config.planSourceClasses)
+        self.dock.initSections(self._sectionItemList(self.project.siteCode()))
+
         for category in Config.featureCategories:
             #TODO Select by map tool type enum
             if category[2] == 'lvl' or category[2] == 'llv':
-                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]))
+                self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[7])
+            elif category[2] == 'scs':
+                self.addSectionSchematicTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5], category[7])
             else:
-                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5])
+                self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5], category[7])
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
 
@@ -166,6 +174,7 @@ class Plan(QObject):
     # Close the project
     def closeProject(self):
         self._clearSchematicFilters()
+        # TODO Unload the drawing tools!
         self.editDock.closeProject()
         self.initialised = False
 
@@ -409,13 +418,13 @@ class Plan(QObject):
         mapTool.activated.connect(self.mapToolActivated)
         return mapTool
 
-    def _addMapTool(self, classCode, category, mapTool, action):
+    def _addMapTool(self, dockTab, category, mapTool, action):
         action.triggered.connect(self.validateFeature)
-        self.dock.addDrawingTool(classCode, action)
+        self.dock.addDrawingTool(dockTab, action)
         self.actions[category] = action
         self.mapTools[category] = mapTool
 
-    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType):
+    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType, dockTab):
         action = self._newMapToolAction(classCode, category, toolName, icon)
         layer = None
         if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
@@ -425,20 +434,30 @@ class Plan(QObject):
         else:
             layer = self.project.collection(collection).pointsBuffer
         mapTool = self._newMapTool(toolName, featureType, layer, action)
-        self._addMapTool(classCode, category, mapTool, action)
+        self._addMapTool(dockTab, category, mapTool, action)
 
-    def addLevelTool(self, collection, classCode, category, toolName, icon):
+    def addSectionSchematicTool(self, collection, classCode, category, toolName, icon, featureType, dockTab):
+        action = self._newMapToolAction(classCode, category, toolName, icon)
+        geom = self._sectionLineGeometry(self.dock.sectionKey())
+        mapTool = ArkMapToolSectionSchematic(self.project.iface, geom, self.project.collection(collection).polygonsBuffer, toolName)
+        mapTool.setAction(action)
+        mapTool.setPanningEnabled(True)
+        mapTool.setZoomingEnabled(True)
+        mapTool.activated.connect(self.mapToolActivated)
+        self._addMapTool(dockTab, category, mapTool, action)
+
+    def addLevelTool(self, collection, classCode, category, toolName, icon, dockTab):
         action = self._newMapToolAction(classCode, category, toolName, icon)
         mapTool = self._newMapTool(toolName, FeatureType.Point, self.project.collection(collection).pointsBuffer, action)
         mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the elevation in meters (m):', -1000, 1000, 2)
-        self._addMapTool(classCode, category, mapTool, action)
+        self._addMapTool(dockTab, category, mapTool, action)
 
-    def addSectionTool(self, collection, classCode, category, toolName, icon):
+    def addSectionTool(self, collection, classCode, category, toolName, icon, dockTab):
         action = self._newMapToolAction(classCode, category, toolName, icon)
         mapTool = ArkMapToolAddBaseline(self.project.iface, self.project.collection(collection).linesBuffer, FeatureType.Line, self.tr('Add section'))
         mapTool.setAttributeQuery('id', QVariant.String, '', 'Section ID', 'Please enter the Section ID (e.g. S45):')
         mapTool.setPointQuery('elevation', QVariant.Double, 0.0, 'Add Level', 'Please enter the pin or string height in meters (m):', -100, 100, 2)
-        self._addMapTool(classCode, category, mapTool, action)
+        self._addMapTool(dockTab, category, mapTool, action)
 
     def mapToolActivated(self):
         for mapTool in self.mapTools.values():
@@ -541,7 +560,7 @@ class Plan(QObject):
     def _editInBuffers(self, itemKey):
         request = itemKey.featureRequest()
         self.project.plan.moveFeatureRequestToBuffers(request)
-        if classCode == 'cxt':
+        if itemKey.classCode == 'cxt':
             self.dock.setContextNumber(itemKey.itemId)
             self.dock.setFeatureId(0)
         else:
@@ -626,6 +645,30 @@ class Plan(QObject):
                 extent.combineExtentWith(layerExtent)
         return extent
 
+    def _sectionItemList(self, siteCode):
+        # TODO in 2.14 use addOrderBy()
+        request = self._classItemsRequest(siteCode, 'sec')
+        utils.logMessage(utils.printable(request))
+        fi = self.project.plan.linesLayer.getFeatures(request)
+        lst = []
+        for feature in fi:
+            lst.append(Item(feature))
+        lst.sort()
+        return lst
+
+    def _sectionLineGeometry(self, itemKey):
+        request = self._categoryRequest(itemKey, 'sln')
+        fi = self.project.plan.linesLayer.getFeatures(request)
+        for feature in fi:
+            return QgsGeometry(feature.geometry())
+        return QgsGeometry()
+
+    def _sectionChanged(self, itemKey):
+        try:
+            self.mapTools['scs'].setSectionGeometry(self._sectionLineGeometry(itemKey))
+        except:
+            pass
+
     # Feature Request Methods
 
     def _eqClause(self, field, value):
@@ -650,6 +693,9 @@ class Plan(QObject):
 
     def _notCategoryRequest(self, itemKey, category):
         return self._featureRequest(itemKey.filterClause() + ' and ' + self._notCategoryClause(category))
+
+    def _classItemsRequest(self, siteCode, classCode):
+        return self._featureRequest(self._eqClause('site', siteCode)+ ' and ' + self._eqClause('class', classCode))
 
     # SchematicDock methods
 

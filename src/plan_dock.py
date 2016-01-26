@@ -48,6 +48,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
+    sectionChanged = pyqtSignal(object)
 
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
@@ -58,6 +59,9 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     _fgColMax = 3
     _fgCol = 0
     _fgRow = 0
+    _sgColMax = 3
+    _sgCol = 0
+    _sgRow = 0
 
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(parent)
@@ -94,6 +98,14 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def initSourceClasses(self, sourceClasses):
         self.metadataWidget.initSourceClasses(sourceClasses)
 
+    def initSections(self, itemList):
+        self.sectionCombo.clear()
+        for section in sorted(itemList):
+            if section.name:
+                self.sectionCombo.addItem(section.name, section.key)
+            else:
+                self.sectionCombo.addItem('S' + section.key.itemId, section.key)
+
     def metadata(self):
         return self.metadataWidget.metadata()
 
@@ -108,6 +120,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
             self.contextNumberSpin.setValue(0)
         else:
             self.contextNumberSpin.setValue(context)
+            self.sectionContextSpin.setValue(context)
 
     def featureId(self):
         return self.featureIdSpin.value()
@@ -124,35 +137,39 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     def setFeatureName(self, name):
         self.featureNameEdit.setText(name)
 
+    def sectionKey(self):
+        return self.sectionCombo.itemData(self.sectionCombo.currentIndex())
+
     # Drawing Tools
 
-    def addDrawingTool(self, classCode, action):
+    def addDrawingTool(self, dockTab, action):
         toolButton = QToolButton(self)
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
-        if classCode == 'cxt':
+        if dockTab == 'cxt':
             self.contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
             if self._cgCol == self._cgColMax:
-                self.newDrawingToolRow(classCode)
+                self._cgRow += 1
+                self._cgCol = 0
+            else:
+                self._cgCol += 1
+        elif dockTab == 'sec':
+            self.sectionToolsLayout.addWidget(toolButton, self._sgRow, self._sgCol, Qt.AlignCenter)
+            if self._sgCol == self._sgColMax:
+                self._sgRow += 1
+                self._sgCol = 0
             else:
                 self._cgCol += 1
         else:
             self.featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
             if self._fgCol == self._fgColMax:
-                self.newDrawingToolRow(classCode)
+                self._fgRow += 1
+                self._fgCol = 0
             else:
                 self._fgCol += 1
-
-    def newDrawingToolRow(self, classCode):
-        if classCode == 'cxt':
-            self._cgRow += 1
-            self._cgCol = 0
-        else:
-            self._fgRow += 1
-            self._fgCol = 0
 
     def _autoSchematicSelected(self):
         self.autoSchematicSelected.emit(self.contextNumber())
 
     def _sectionChanged(self, idx):
-        self.emit.sectionChanged
+        self.sectionChanged.emit(self.sectionCombo.itemData(idx))

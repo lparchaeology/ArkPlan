@@ -23,7 +23,11 @@
  *                                                                         *
  ***************************************************************************/
 """
+from qgis.core import QGis, QgsGeometry
+
 from ..libarkqgis.map_tools import ArkMapToolAddFeature, FeatureType
+from ..libarkqgis import geometry
+from ..libarkqgis import utils
 
 # Tool to take a line segment and 'snap' it to a section line then save as a buffer polygon
 class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
@@ -31,25 +35,30 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
     _sectionGeometry = None  # QgsGeometry
 
     def __init__(self, iface, sectionGeometry,  polygonLayer, toolName=''):
-        super(ArkMapToolAddFeature, self).__init__(iface, lineLayer, toolName)
+        super(ArkMapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
         self._sectionGeometry = sectionGeometry
 
     def setSectionGeometry(self, sectionGeometry):
-        self._sectionGeomtry = sectionGeometry
+        utils.logMessage('setSectionGeometry = ' + utils.printable(sectionGeometry))
+        self._sectionGeometry = QgsGeometry(sectionGeometry)
 
     def addAnyFeature(self, featureType, mapPointList, attributes, layer):
         if featureType == FeatureType.Segment:
-            if len(mapPointList) != 2 or self._sectionGeomtry is None:
+            if len(mapPointList) != 2 or self._sectionGeometry is None:
                 return False
             sectionPointList = []
             for point in mapPointList:
                 sectionPointList.append(geometry.perpendicularPoint(self._sectionGeometry, point))
+            utils.logMessage('sectionPointList = ' + str(sectionPointList))
             lineGeom = QgsGeometry()
             lineGeom.addPart(sectionPointList, QGis.Line)
-            polyGeom = lineGeom.buffer(0.02, 0, 2, 0.0)
-            mapPointList = polyGeom.toPolygon()[0]
+            utils.logMessage('lineGeom = ' + utils.printable(lineGeom))
+            polyGeom = lineGeom.buffer(0.02, 0, 2, 2, 0.0)
+            utils.logMessage('polyGeom = ' + utils.printable(polyGeom))
+            mapPointList = polyGeom.asPolygon()[0]
+            utils.logMessage('mapPointList = ' + utils.printable(mapPointList))
             featureType = FeatureType.Polygon
-        super(ArkMapToolAddFeature, self).addAnyFeature(featureType, mapPointList, attributes, layer)
+        super(ArkMapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)
 
 class ArkMapToolAddBaseline(ArkMapToolAddFeature):
 
@@ -67,7 +76,7 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
     _pointQueryValues = []
 
     def __init__(self, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
-        super(ArkMapToolAddFeature, self).__init__(iface, lineLayer, toolName)
+        super(ArkMapToolAddBaseline, self).__init__(iface, lineLayer, toolName)
         self._pointLayer = pointLayer
 
     def pointLayer(self):

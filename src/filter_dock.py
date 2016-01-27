@@ -210,7 +210,7 @@ class FilterDock(ToolDockWidget):
     def currentFilterSet(self):
         return self.widget.filterSetCombo.itemData(self.widget.siteCodeCombo.currentIndex())
 
-    def addFilterClauseSet(self, key, name):
+    def addFilterSet(self, key, name):
         self.widget.filterSetCombo.addItem(name, key)
 
     def setFilterSet(self, key):
@@ -235,10 +235,10 @@ class FilterDock(ToolDockWidget):
         self.newFilterClauseWidget.setClassCodes(classCodes)
 
     def initFilterSets(self, filterSets):
-        self.addFilterClauseSet('Default', 'Default')
+        self.addFilterSet('Default', 'Default')
         for filterSet in filterSets:
             if filterSet[0] != 'Default':
-                self.addFilterClauseSet(filterSet[0], filterSet[1])
+                self.addFilterSet(filterSet[0], filterSet[1])
 
     def activeFilters(self):
         return self._filterClauses

@@ -53,7 +53,7 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
             lineGeom = QgsGeometry()
             lineGeom.addPart(sectionPointList, QGis.Line)
             utils.logMessage('lineGeom = ' + utils.printable(lineGeom))
-            polyGeom = lineGeom.buffer(0.02, 0, 2, 2, 0.0)
+            polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 0.0)
             utils.logMessage('polyGeom = ' + utils.printable(polyGeom))
             mapPointList = polyGeom.asPolygon()[0]
             utils.logMessage('mapPointList = ' + utils.printable(mapPointList))

@@ -439,6 +439,7 @@ class Plan(QObject):
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
+        mapTool.setAttributeQuery(Config.fieldName('id'), QVariant.Int, 0, 'Context Number', 'Please enter the Context Number:', 0, 99999)
         mapTool.activated.connect(self.mapToolActivated)
         self._addMapTool(dockTab, category, mapTool, action)
 

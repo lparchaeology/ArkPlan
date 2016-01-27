@@ -45,8 +45,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         self._project = project
         self._georef = georef
 
-        for drawType in Config.drawingTypes:
-            self.drawingTypeCombo.addItem(Config.groupDefaults[drawType]['label'], drawType)
+        for classCode in Config.classCode:
+            if classCode['drawing']:
+                self.drawingTypeCombo.addItem(classCode['label'], classCode['code'])
         self.drawingTypeCombo.setCurrentIndex(self.drawingTypeCombo.findData(drawingType))
         self.drawingTypeCombo.currentIndexChanged.connect(self._findFiles)
         self.findFilter = ReturnPressedFilter(self)

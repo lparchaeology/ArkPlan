@@ -142,8 +142,6 @@ class Plan(QObject):
         self.siteCodes.add(self.project.siteCode())
         self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
 
-        self.dock.initSourceCodes(Config.planSourceCodes)
-        self.dock.initSourceClasses(Config.planSourceClasses)
         self.dock.initSections(self._sectionItemList(self.project.siteCode()))
 
         for category in Config.featureCategories:
@@ -157,8 +155,6 @@ class Plan(QObject):
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
 
-        self.schematicDock.initSourceCodes(Config.planSourceCodes)
-        self.schematicDock.initSourceClasses(Config.planSourceClasses)
         self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
         self.schematicDock.addDrawingTool('sch', self.actions['sch'])
         self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])

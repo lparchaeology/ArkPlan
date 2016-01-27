@@ -237,23 +237,15 @@ class IdentifyItemAction(QAction):
     def __init__(self, itemKey, project, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
         self._iface = project.iface
-        for source in Config.planSourceClasses:
-            if source[1] == itemKey.classCode:
-                self.setText(source[0] + ' ' + itemKey.itemId)
         self.itemKey = itemKey
-        self.expr = _doublequote(project.fieldName('site')) + ' = ' + _quote(itemKey.siteCode) + ' and ' + \
-                    _doublequote(project.fieldName('class')) + ' = ' + _quote(itemKey.classCode) + ' and ' + \
-                    _doublequote(project.fieldName('id')) + ' = ' + str(itemKey.itemId)
         menu = QMenu()
-        request = QgsFeatureRequest()
-        request.setFilterExpression(self.expr)
-        source = None
+        source = ItemSource()
         area = []
-        for feature in project.plan.polygonsLayer.getFeatures(request):
+        haveSchematic = False
+        for feature in project.plan.polygonsLayer.getFeatures(itemKey.featureRequest()):
             if feature.attribute(project.fieldName('category')) == 'sch':
-                source = (str(feature.attribute(project.fieldName('source_cd'))),
-                          str(feature.attribute(project.fieldName('source_cl'))),
-                          str(feature.attribute(project.fieldName('source_id'))))
+                haveSchematic = True
+                source.setFeature(feature)
                 area.append(feature.geometry().area())
         self.zoomAction = QAction('Zoom to Item', parent)
         self.zoomAction.triggered.connect(self._zoomToItem)
@@ -287,23 +279,16 @@ class IdentifyItemAction(QAction):
         self.deleteAction.triggered.connect(self._deleteItem)
         menu.addAction(self.deleteAction)
         menu.addSeparator()
-        if source is None:
-            menu.addAction('No Schematic')
+        if source.isValid():
+            menu.addAction(source.sourceCodeLabel())
+            if source.key.isValid():
+                menu.addAction(source.key.itemLabel())
+            if source.filename:
+                menu.addAction(ClipboardAction(source.filename, parent))
+        elif haveSchematic:
+            menu.addAction('Unknown Source')
         else:
-            sourceCode = feature.attribute(project.fieldName('source_cd'))
-            sourceClass = feature.attribute(project.fieldName('source_cl'))
-            sourceId = feature.attribute(project.fieldName('source_id'))
-            sourceFile = feature.attribute(project.fieldName('file'))
-            sourceText = 'Unknown Source'
-            if sourceCode is not None and sourceCode != NULL and sourceCode != '':
-                for source in Config.planSourceCodes:
-                    if source[1] == sourceCode:
-                        sourceText = source[0]
-            menu.addAction(sourceText)
-            if sourceId is not None and sourceId != NULL and sourceId != '' and (sourceClass != itemKey.classCode or sourceId != itemKey.itemId):
-                for source in Config.planSourceClasses:
-                    if source[1] == itemKey.classCode:
-                        menu.addAction(str(source[0]) + ' ' + str(sourceId))
+            menu.addAction('No Schematic')
         if project.data.hasData():
             project.logMessage('has data')
             menu.addSeparator()

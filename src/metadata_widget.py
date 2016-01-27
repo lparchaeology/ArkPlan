@@ -41,6 +41,18 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
     def initGui(self):
 
+        for classCode in Config.classCodes:
+            if classCode['plan']:
+                self.classCombo.addItem(classCode['label'], classCode['code'])
+            if classCode['source']:
+                self.sourceClassCombo.addItem(classCode['label'], classCode['code'])
+        self._md.setClass(self.sourceClassCombo.itemData(0))
+        self._md.setSourceClass(self.sourceClassCombo.itemData(0))
+
+        for sourceCode in Config.sourceCodes:
+            self.sourceCodeCombo.addItem(sourceCode['label'], sourceCode['code'])
+        self._md.setSourceCode(self.sourceCodeCombo.itemData(0))
+
         self._md.siteCodeChanged.connect(self._setSiteCode)
         self._md.sourceCodeChanged.connect(self._setSourceCode)
         self._md.sourceClassChanged.connect(self._setSourceClass)
@@ -59,18 +71,6 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
     def metadata(self):
         return self._md
-
-    def initSourceCodes(self, sourceCodes):
-        self.sourceCodeCombo.clear()
-        for sourceCode in sourceCodes:
-            self.sourceCodeCombo.addItem(sourceCode[0], sourceCode[1])
-        self._md.setSourceCode(self.sourceCodeCombo.itemData(0))
-
-    def initSourceClasses(self, sourceClasses):
-        self.sourceClassCombo.clear()
-        for sourceClass in sourceClasses:
-            self.sourceClassCombo.addItem(sourceClass[0], sourceClass[1])
-        self._md.setSourceClass(self.sourceClassCombo.itemData(0))
 
     def _setSiteCode(self, siteCode):
         self.siteEdit.setText(siteCode)

@@ -161,58 +161,141 @@ class Config():
             'polygonsFields'   : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
         },
         'cxt' : {
-            'class'            : 'cxt',
-            'label'            : 'Context',
             'path'             : '',
             'pathSuffix'       : 'raster/context',
             'layersGroupName'  : 'Drawings'
         },
         'pln' : {
-            'class'            : 'pln',
-            'label'            : 'Plan',
             'path'             : '',
             'pathSuffix'       : 'raster/plan',
             'layersGroupName'  : 'Drawings'
         },
         'sec' : {
-            'class'            : 'sec',
-            'label'            : 'Section',
             'path'             : '',
             'pathSuffix'       : 'raster/section',
             'layersGroupName'  : 'Drawings'
         },
     }
 
-    planSourceCodes = [
-        ['Checked Drawing', 'drw'],
-        ['Unchecked Drawing', 'unc'],
-        ['Survey Data', 'svy'],
-        ['Sketch', 'skt'],
-        ['Cloned from Source', 'cln'],
-        ['Modified from Source', 'mod'],
-        ['Inferred from Source', 'inf'],
-        ['Creator', 'cre'],
-        ['Other', 'oth']
-    ]
-
-    classCodes = {
-        'cxt': 'Context',
-        'pln': 'Plan',
-        'rgf': 'Find',
-        'sec': 'Section',
-        'smp': 'Sample',
-        'sph': 'Photo',
-        'tmb': 'Timber'
+    sourceCodesOrder = ['drw', 'unc', 'svy', 'skt', 'cln', 'mod', 'inf', 'cre', 'oth']
+    sourceCodes = {
+        'drw' : {
+            'code'             : 'drw',
+            'label'            : 'Checked Drawing',
+            'sourceItem'       : True,
+        },
+        'unc' : {
+            'code'             : 'unc',
+            'label'            : 'Unchecked Drawing',
+            'sourceItem'       : True,
+        },
+        'svy' : {
+            'code'             : 'svy',
+            'label'            : 'Survey Data',
+            'sourceItem'       : False,
+        },
+        'skt' : {
+            'code'             : 'skt',
+            'label'            : 'Sketch',
+            'sourceItem'       : True,
+        },
+        'cln' : {
+            'code'             : 'cln',
+            'label'            : 'Cloned from Source',
+            'sourceItem'       : True,
+        },
+        'mod' : {
+            'code'             : 'mod',
+            'label'            : 'Modified from Source',
+            'sourceItem'       : True,
+        },
+        'inf' : {
+            'code'             : 'inf',
+            'label'            : 'Inferred from Source',
+            'sourceItem'       : True,
+        },
+        'cre' : {
+            'code'             : 'cre',
+            'label'            : 'Creator',
+            'sourceItem'       : False,
+        },
+        'oth' : {
+            'code'             : 'oth',
+            'label'            : 'Other',
+            'sourceItem'       : False,
+        },
     }
 
-    planSourceClasses = [
-        ['Context', 'cxt'],
-        ['Plan',    'pln'],
-        ['Section', 'sec'],
-        ['Find',    'rgf']
-    ]
-
-    drawingTypes = ['cxt', 'pln']
+    # 'code'  = Class Code
+    # 'label' = Name label
+    # 'plan' = If can be drawn in the plan data
+    # 'source' = If can be used as a source in the plan data
+    # 'drawing' = If is a drawing in own right
+    classCodes = {
+        'cxt' : {
+            'code'             : 'cxt',
+            'label'            : 'Context',
+            'plan'             : True,
+            'source'           : True,
+            'drawing'          : True,
+        },
+        'sgr' : {
+            'code'             : 'sgr',
+            'label'            : 'Sub-group',
+            'plan'             : False,
+            'source'           : False,
+            'drawing'          : False,
+        },
+        'grp' : {
+            'code'             : 'grp',
+            'label'            : 'Group',
+            'plan'             : False,
+            'source'           : False,
+            'drawing'          : False,
+        },
+        'pln' : {
+            'code'             : 'pln',
+            'label'            : 'Plan',
+            'plan'             : False,
+            'source'           : True,
+            'drawing'          : True,
+        },
+        'rgf' : {
+            'code'             : 'rgf',
+            'label'            : 'Find',
+            'plan'             : True,
+            'source'           : True,
+            'drawing'          : False,
+        },
+        'sec' : {
+            'code'             : 'sec',
+            'label'            : 'Section',
+            'plan'             : True,
+            'source'           : True,
+            'drawing'          : True,
+        },
+        'smp' : {
+            'code'             : 'smp',
+            'label'            : 'Sample',
+            'plan'             : True,
+            'source'           : False,
+            'drawing'          : False,
+        },
+        'sph' : {
+            'code'             : 'sph',
+            'label'            : 'Photo',
+            'plan'             : False,
+            'source'           : False,
+            'drawing'          : False,
+        },
+        'tmb' : {
+            'code'             : 'tmb',
+            'label'            : 'Timber',
+            'plan'             : True,
+            'source'           : False,
+            'drawing'          : False,
+        },
+    }
 
     featureCategories = [
         # collection, classCode, category, toolName, icon, featureType, definitiveFeature, dockTab

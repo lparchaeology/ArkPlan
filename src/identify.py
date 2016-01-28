@@ -158,7 +158,6 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._highlights.append(hl)
 
     def _zoom(self, itemKey):
-        self._project.logMessage('_zoom ' + itemKey.siteCode + ' ' + itemKey.classCode + ' ' + itemKey.itemId)
         self._project.planModule.zoomToItem(itemKey, highlight=True)
 
     def _pan(self, itemKey):
@@ -290,7 +289,6 @@ class IdentifyItemAction(QAction):
         else:
             menu.addAction('No Schematic')
         if project.data.hasData():
-            project.logMessage('has data')
             menu.addSeparator()
             if itemKey.classCode == 'cxt':
                 subItem = project.data.getParent(itemKey)

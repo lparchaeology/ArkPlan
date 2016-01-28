@@ -300,7 +300,6 @@ class GridModule(QObject):
         return attributes
 
     def _setAttributes(self, feature, attributes):
-        self.project.logMessage(str(attributes))
         for key in attributes.keys():
             feature.setAttribute(key, attributes[key])
 

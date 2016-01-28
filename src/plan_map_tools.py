@@ -39,7 +39,6 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
         self._sectionGeometry = sectionGeometry
 
     def setSectionGeometry(self, sectionGeometry):
-        utils.logMessage('setSectionGeometry = ' + utils.printable(sectionGeometry))
         self._sectionGeometry = QgsGeometry(sectionGeometry)
 
     def addAnyFeature(self, featureType, mapPointList, attributes, layer):
@@ -49,14 +48,10 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
             sectionPointList = []
             for point in mapPointList:
                 sectionPointList.append(geometry.perpendicularPoint(self._sectionGeometry, point))
-            utils.logMessage('sectionPointList = ' + str(sectionPointList))
             lineGeom = QgsGeometry()
             lineGeom.addPart(sectionPointList, QGis.Line)
-            utils.logMessage('lineGeom = ' + utils.printable(lineGeom))
             polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 0.0)
-            utils.logMessage('polyGeom = ' + utils.printable(polyGeom))
             mapPointList = polyGeom.asPolygon()[0]
-            utils.logMessage('mapPointList = ' + utils.printable(mapPointList))
             featureType = FeatureType.Polygon
         super(ArkMapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)
 

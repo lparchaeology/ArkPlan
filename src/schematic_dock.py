@@ -121,20 +121,6 @@ class SchematicDock(ToolDockWidget):
     def unloadGui(self):
         super(SchematicDock, self).unloadGui()
 
-    # Metadata Tools
-
-    def initSourceCodes(self, sourceCodes):
-        self.widget.metadataWidget.initSourceCodes(sourceCodes)
-
-    def initSourceClasses(self, sourceClasses):
-        self.widget.metadataWidget.initSourceClasses(sourceClasses)
-
-    def metadata(self):
-        return self.widget.metadataWidget.metadata()
-
-    def setMetadata(self, md):
-        self.widget.metadataWidget.setMetadata(md)
-
     # Drawing Tools
 
     def addDrawingTool(self, classCode, action):
@@ -155,7 +141,7 @@ class SchematicDock(ToolDockWidget):
     # Context Tools
 
     def contextItemKey(self):
-        return ItemKey(self.metadata().siteCode(), 'cxt', self.context())
+        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.context())
 
     def context(self):
         return self.widget.contextSpin.value()
@@ -183,7 +169,7 @@ class SchematicDock(ToolDockWidget):
         self._enableAuto()
 
     def sourceItemKey(self):
-        return ItemKey(self.metadata().siteCode(), 'cxt', self.sourceContext())
+        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.sourceContext())
 
     def sourceContext(self):
         return self.widget.sourceContextSpin.value()
@@ -247,8 +233,8 @@ class SchematicDock(ToolDockWidget):
 
     def _autoSchematicSelected(self):
         if self._sourceDataStatus == SearchStatus.Found:
-            self.metadata().validate()
+            self.metadataWidget.validate()
             self.autoSchematicSelected.emit(self.sourceContext())
         elif self._contextDataStatus == SearchStatus.Found:
-            self.metadata().validate()
+            self.metadataWidget.validate()
             self.autoSchematicSelected.emit(self.context())

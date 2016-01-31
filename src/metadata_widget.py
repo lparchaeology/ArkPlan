@@ -28,12 +28,23 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QWidget
 
+from qgis.core import NULL
+
 import metadata_widget_base
-from metadata import Metadata
+from config import Config
 
 class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
-    _md = Metadata()
+    siteCodeChanged = pyqtSignal(str)
+    classCodeChanged = pyqtSignal(str)
+    itemIdChanged = pyqtSignal(str)
+    sourceCodeChanged = pyqtSignal(str)
+    sourceClassChanged = pyqtSignal(str)
+    sourceIdChanged = pyqtSignal(str)
+    sourceFileChanged = pyqtSignal(str)
+    commentChanged = pyqtSignal(str)
+    createdByChanged = pyqtSignal(str)
+    validateMetadata = pyqtSignal()
 
     def __init__(self, parent=None):
         super(MetadataWidget, self).__init__(parent)
@@ -41,63 +52,123 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
 
     def initGui(self):
 
-        for classCode in Config.classCodes:
+        for key in sorted(Config.classCodes.keys()):
+            classCode = Config.classCodes[key]
             if classCode['plan']:
                 self.classCombo.addItem(classCode['label'], classCode['code'])
             if classCode['source']:
                 self.sourceClassCombo.addItem(classCode['label'], classCode['code'])
-        self._md.setClass(self.sourceClassCombo.itemData(0))
-        self._md.setSourceClass(self.sourceClassCombo.itemData(0))
 
-        for sourceCode in Config.sourceCodes:
+        for key in Config.sourceCodesOrder:
+            sourceCode = Config.sourceCodes[key]
             self.sourceCodeCombo.addItem(sourceCode['label'], sourceCode['code'])
-        self._md.setSourceCode(self.sourceCodeCombo.itemData(0))
 
-        self._md.siteCodeChanged.connect(self._setSiteCode)
-        self._md.sourceCodeChanged.connect(self._setSourceCode)
-        self._md.sourceClassChanged.connect(self._setSourceClass)
-        self._md.sourceIdChanged.connect(self._setSourceId)
-        self._md.sourceFileChanged.connect(self._setSourceFile)
-        self._md.commentChanged.connect(self._setComment)
-        self._md.createdByChanged.connect(self._setCreatedBy)
+        self.siteEdit.editingFinished.connect(self._siteCodeChanged)
+        self.classCombo.currentIndexChanged.connect(self._classCodeChanged)
+        self.idSpin.valueChanged.connect(self._itemIdChanged)
+        self.sourceCodeCombo.currentIndexChanged.connect(self._sourceCodeChanged)
+        self.sourceClassCombo.currentIndexChanged.connect(self._sourceClassChanged)
+        self.sourceIdSpin.valueChanged.connect(self._sourceIdChanged)
+        self.sourceFileEdit.editingFinished.connect(self._sourceFileChanged)
+        self.commentEdit.editingFinished.connect(self._commentChanged)
+        self.createdByEdit.editingFinished.connect(self._createdByChanged)
 
-        self.siteEdit.textChanged.connect(self._md.setSiteCode)
-        self.sourceCodeCombo.currentIndexChanged.connect(self._sourceCodeIndexChanged)
-        self.sourceClassCombo.currentIndexChanged.connect(self._sourceClassIndexChanged)
-        self.sourceIdSpin.valueChanged.connect(self._md.setSourceId)
-        self.sourceFileEdit.textChanged.connect(self._md.setSourceFile)
-        self.commentEdit.textChanged.connect(self._md.setComment)
-        self.createdByEdit.textChanged.connect(self._md.setCreatedBy)
-
-    def metadata(self):
-        return self._md
-
-    def _setSiteCode(self, siteCode):
+    def setSiteCode(self, siteCode):
         self.siteEdit.setText(siteCode)
 
-    def _setComment(self, comment):
-        self.commentEdit.setText(comment)
+    def siteCode(self):
+        return self.siteEdit.text()
 
-    def _sourceCodeIndexChanged(self, idx):
-        self._md.setSourceCode(self.sourceCodeCombo.itemData(idx))
+    def _siteCodeChanged(self):
+        self.siteCodeChanged.emit(self.siteCode())
 
-    def _setSourceCode(self, sourceCode):
+    def setClassCode(self, classCode):
+        self.classCombo.setCurrentIndex(self.classCombo.findData(classCode))
+
+    def classCode(self):
+        self.classCombo.itemData(self.classCombo.currentIndex())
+
+    def _classCodeChanged(self, idx):
+        self.classCodeChanged.emit(self.classCombo.itemData(idx))
+
+    def setItemId(self, itemId):
+        self.blockSignals(True)
+        if itemId is None or itemId ==  NULL or itemId == '':
+            self.idSpin.setValue(0)
+        else:
+            self.idSpin.setValue(int(itemId))
+        self.blockSignals(False)
+
+    def itemId(self):
+        if self.idSpin.value() > 0:
+            return str(self.idSpin.value())
+        else:
+            return ''
+
+    def _itemIdChanged(self, itemId):
+        self.itemIdChanged.emit(self.itemId())
+
+    def setSourceCode(self, sourceCode):
         self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(sourceCode))
 
-    def _sourceClassIndexChanged(self, idx):
-        self._md.setSourceClass(self.sourceClassCombo.itemData(idx))
+    def sourceCode(self):
+        return self.sourceCodeCombo.itemData(self.sourceCodeCombo.currentIndex())
 
-    def _setSourceClass(self, sourceClass):
+    def _sourceCodeChanged(self, idx):
+        self.sourceCodeChanged.emit(self.sourceCodeCombo.itemData(idx))
+
+    def setSourceClass(self, sourceClass):
         self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(sourceClass))
 
-    def _setSourceId(self, sourceId):
-        if sourceId is None:
+    def sourceClass(self):
+        return self.sourceClassCombo.itemData(self.sourceClassCombo.currentIndex())
+
+    def _sourceClassChanged(self, idx):
+        self.sourceClassChanged.emit(self.sourceClassCombo.itemData(idx))
+
+    def setSourceId(self, sourceId):
+        self.blockSignals(True)
+        if sourceId is None or sourceId ==  NULL or sourceId == '':
             self.sourceIdSpin.setValue(0)
         else:
-            self.sourceIdSpin.setValue(sourceId)
+            self.sourceIdSpin.setValue(int(sourceId))
+        self.blockSignals(False)
 
-    def _setSourceFile(self, sourceFile):
+    def sourceId(self):
+        if self.sourceIdSpin.value() > 0:
+            return str(self.sourceIdSpin.value())
+        else:
+            return ''
+
+    def _sourceIdChanged(self, sourceId):
+        self.sourceIdChanged.emit(self.sourceId())
+
+    def setSourceFile(self, sourceFile):
         self.sourceFileEdit.setText(sourceFile)
 
-    def _setCreatedBy(self, createdBy):
+    def sourceFile(self):
+        return self.sourceFileEdit.text()
+
+    def _sourceFileChanged(self):
+        self.sourceFileChanged.emit(self.sourceFile())
+
+    def setComment(self, comment):
+        self.commentEdit.setText(comment)
+
+    def comment(self):
+        return self.commentEdit.text()
+
+    def _commentChanged(self):
+        self.commentChanged.emit(self.comment())
+
+    def setCreatedBy(self, createdBy):
         self.createdByEdit.setText(createdBy)
+
+    def createdBy(self):
+        return self.createdByEdit.text()
+
+    def _createdByChanged(self):
+        self.createdByChanged.emit(self.createdBy())
+
+    def validate(self):
+        self.validateMetadata().emit()

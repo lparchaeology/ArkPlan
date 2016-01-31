@@ -41,8 +41,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadContextSelected = pyqtSignal()
     loadPlanSelected = pyqtSignal()
 
-    contextNumberChanged = pyqtSignal(int)
-    featureIdChanged = pyqtSignal(int)
     featureNameChanged = pyqtSignal(str)
     autoSchematicSelected = pyqtSignal(int)
     editPointsSelected = pyqtSignal()
@@ -77,26 +75,17 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
         self.metadataWidget.initGui()
 
-        self.contextNumberSpin.valueChanged.connect(self.contextNumberChanged)
-        self.featureIdSpin.valueChanged.connect(self.featureIdChanged)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)
         self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
         self.editPointsTool.clicked.connect(self.editPointsSelected)
         self.editLinesTool.clicked.connect(self.editLinesSelected)
         self.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
         self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
-        self.sectionContextSpin.valueChanged.connect(self.contextNumberChanged)
 
         self.clearButton.clicked.connect(self.clearSelected)
         self.mergeButton.clicked.connect(self.mergeSelected)
 
     # Metadata Tools
-
-    def initSourceCodes(self, sourceCodes):
-        self.metadataWidget.initSourceCodes(sourceCodes)
-
-    def initSourceClasses(self, sourceClasses):
-        self.metadataWidget.initSourceClasses(sourceClasses)
 
     def initSections(self, itemList):
         self.sectionCombo.clear()
@@ -106,31 +95,6 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
             else:
                 self.sectionCombo.addItem('S' + section.key.itemId, section.key)
 
-    def metadata(self):
-        return self.metadataWidget.metadata()
-
-    def setMetadata(self, md):
-        self.metadataWidget.setMetadata(md)
-
-    def contextNumber(self):
-        return self.contextNumberSpin.value()
-
-    def setContextNumber(self, context):
-        if context is None:
-            self.contextNumberSpin.setValue(0)
-        else:
-            self.contextNumberSpin.setValue(context)
-            self.sectionContextSpin.setValue(context)
-
-    def featureId(self):
-        return self.featureIdSpin.value()
-
-    def setFeatureId(self, featureId):
-        if featureId is None:
-            self.featureIdSpin.setValue(0)
-        else:
-            self.featureIdSpin.setValue(featureId)
-
     def featureName(self):
         return self.featureNameEdit.text()
 
@@ -139,6 +103,14 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
 
     def sectionKey(self):
         return self.sectionCombo.itemData(self.sectionCombo.currentIndex())
+
+    def setSection(self, itemKey):
+        #TODO Doesn't work when it should...
+        #idx = self.sectionCombo.findData(itemKey)
+        for i in range(0, self.sectionCombo.count()):
+            if self.sectionCombo.itemData(i) == itemKey:
+                self.sectionCombo.setCurrentIndex(i)
+                return
 
     # Drawing Tools
 
@@ -169,7 +141,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
                 self._fgCol += 1
 
     def _autoSchematicSelected(self):
-        self.autoSchematicSelected.emit(self.contextNumber())
+        self.autoSchematicSelected.emit(self.metadataWidget.itemId())
 
     def _sectionChanged(self, idx):
         self.sectionChanged.emit(self.sectionCombo.itemData(idx))

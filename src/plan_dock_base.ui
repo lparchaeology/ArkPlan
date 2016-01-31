@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>337</width>
-    <height>468</height>
+    <height>434</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>313</width>
-         <height>376</height>
+         <height>342</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -107,21 +107,21 @@
             <string>Contexts</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="5" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="editPolygonsLabel">
               <property name="text">
                <string>Edit Polygon Features:</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="editLinesLabel">
               <property name="text">
                <string>Edit Line Features:</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
+            <item row="1" column="1">
              <widget class="QToolButton" name="autoSchematicTool">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto Schematic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -135,44 +135,24 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="1" column="0">
              <widget class="QLabel" name="autoSchematiclLabel">
               <property name="text">
                <string>Auto Schematic:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1" colspan="2">
-             <widget class="QSpinBox" name="contextNumberSpin">
-              <property name="toolTip">
-               <string>Context Number</string>
-              </property>
-              <property name="maximum">
-               <number>9999</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="3">
+            <item row="0" column="0" colspan="2">
              <layout class="QGridLayout" name="contextToolsLayout"/>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="contextNumberLabel">
-              <property name="text">
-               <string>Context:</string>
-              </property>
-              <property name="buddy">
-               <cstring>contextNumberSpin</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
+            <item row="2" column="0">
              <widget class="QLabel" name="editPointsLabel">
               <property name="text">
                <string>Edit Point Features:</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
+            <item row="2" column="1">
              <widget class="QToolButton" name="editPointsTool">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit Point Features&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -186,7 +166,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="2">
+            <item row="3" column="1">
              <widget class="QToolButton" name="editLinesTool">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit Line Features&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -200,7 +180,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
+            <item row="4" column="1">
              <widget class="QToolButton" name="editPolygonsTool">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit Polygon Features&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -221,23 +201,13 @@
             <string>Features</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="1" column="1">
+            <item row="0" column="1">
              <widget class="QLineEdit" name="featureNameEdit"/>
             </item>
-            <item row="2" column="0" colspan="2">
+            <item row="1" column="0" colspan="2">
              <layout class="QGridLayout" name="featureToolsLayout"/>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="featureIdLabel">
-              <property name="text">
-               <string>ID:</string>
-              </property>
-              <property name="buddy">
-               <cstring>featureIdSpin</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="QLabel" name="featureNameLabel">
               <property name="text">
                <string>Name:</string>
@@ -247,14 +217,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="featureIdSpin">
-              <property name="maximum">
-               <number>99999</number>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
+            <item row="2" column="1">
              <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -281,10 +244,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="4">
+            <item row="1" column="0" colspan="4">
              <layout class="QGridLayout" name="sectionToolsLayout"/>
             </item>
-            <item row="3" column="1">
+            <item row="2" column="1">
              <spacer name="verticalSpacer_3">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -296,26 +259,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QLabel" name="sectionContextLabel">
-              <property name="text">
-               <string>Context:</string>
-              </property>
-              <property name="buddy">
-               <cstring>contextNumberSpin</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2" colspan="2">
-             <widget class="QSpinBox" name="sectionContextSpin">
-              <property name="toolTip">
-               <string>Context Number</string>
-              </property>
-              <property name="maximum">
-               <number>9999</number>
-              </property>
-             </widget>
             </item>
             <item row="0" column="2" colspan="2">
              <widget class="QComboBox" name="sectionCombo"/>
@@ -388,10 +331,8 @@
   <tabstop>loadGeoButton</tabstop>
   <tabstop>loadContextButton</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>contextNumberSpin</tabstop>
   <tabstop>clearButton</tabstop>
   <tabstop>mergeButton</tabstop>
-  <tabstop>featureIdSpin</tabstop>
   <tabstop>featureNameEdit</tabstop>
  </tabstops>
  <resources>

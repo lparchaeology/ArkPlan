@@ -45,7 +45,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         self._project = project
         self._georef = georef
 
-        for classCode in Config.classCode:
+        keys = sorted(Config.classCodes.keys())
+        for key in keys:
+            classCode = Config.classCodes[key]
             if classCode['drawing']:
                 self.drawingTypeCombo.addItem(classCode['label'], classCode['code'])
         self.drawingTypeCombo.setCurrentIndex(self.drawingTypeCombo.findData(drawingType))

@@ -43,7 +43,7 @@ from plan_util import *
 from plan_item import *
 from plan_map_tools import *
 from config import Config
-from metadata import Metadata, FeatureData
+from metadata import Metadata
 
 import resources_rc
 
@@ -66,14 +66,13 @@ class Plan(QObject):
     initialised = False
     _buffersInitialised = False
 
-    _featureData = FeatureData()
-
     actions = {}
     mapTools = {}
     currentMapTool = None
 
     siteCodes = {}
     classCodes = {}
+    metadata = None  # Metadata()
 
     _definitiveCategories = set()
     _schematicContextIncludeFilter = -1
@@ -95,8 +94,6 @@ class Plan(QObject):
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
         self.dock.loadContextSelected.connect(self._loadContextPlans)
         self.dock.loadPlanSelected.connect(self._loadPlans)
-        self.dock.contextNumberChanged.connect(self._featureIdChanged)
-        self.dock.featureIdChanged.connect(self._featureIdChanged)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
         self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
         self.dock.editPointsSelected.connect(self._editPointsLayer)
@@ -131,7 +128,8 @@ class Plan(QObject):
         action = self.project.addDockAction(':/plugins/ark/plan/editingTools.png', self.tr(u'Editing Tools'), callback=self.runEdit, checkable=True)
         self.editDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
 
-        self.metadata().metadataChanged.connect(self.updateMapToolAttributes)
+        self.metadata = Metadata(self.dock.metadataWidget, self.schematicDock.widget.metadataWidget)
+        self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
     # Load the project settings when project is loaded
     def loadProject(self):
@@ -220,25 +218,19 @@ class Plan(QObject):
         self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
         self._buffersInitialised = True
 
-    def metadata(self):
-        if self.schematicDock.menuAction().isChecked():
-            return self.schematicDock.metadata()
-        return self.dock.metadata()
-
     # Plan Tools
 
     def _setPlanMetadata(self, pmd):
-        self.metadata().setSiteCode(pmd.siteCode)
-        self.metadata().setSourceCode('drw')
-        self.metadata().setSourceClass(pmd.sourceClass)
-        self.metadata().setSourceId(pmd.sourceId)
-        self.metadata().setSourceFile(pmd.filename)
-        if pmd.sourceClass == 'cxt':
-            self.dock.setContextNumber(pmd.sourceId)
-            self.dock.setFeatureId(0)
-        else:
-            self.dock.setContextNumber(0)
-            self.dock.setFeatureId(pmd.sourceId)
+        self.metadata.setSiteCode(pmd.siteCode)
+        self.metadata.setClassCode(pmd.sourceClass)
+        if pmd.sourceId > 0:
+            self.metadata.setItemId(pmd.sourceId)
+            self.metadata.setSourceId(pmd.sourceId)
+        self.metadata.setSourceCode('drw')
+        self.metadata.setSourceClass(pmd.sourceClass)
+        self.metadata.setSourceFile(pmd.filename)
+        if self.metadata.classCode() == 'sec':
+            self.dock.setSection(self.metadata.itemFeature.key)
 
     def _loadRawPlan(self):
         dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode())
@@ -257,17 +249,17 @@ class Plan(QObject):
     def _loadContextPlans(self):
         context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)
         if (ok and context > 0):
-            self.loadDrawing('cxt', self.project.siteCode(), context)
+            self.loadDrawing(ItemKey(self.project.siteCode(), 'cxt', context))
 
     def _loadPlans(self):
         plan, ok = QInputDialog.getInt(None, 'Load Plans', 'Please enter the Plan number to load all drawings for:', 1, 1, 99999)
         if (ok and plan > 0):
-            self.loadDrawing('pln', self.project.siteCode(), plan)
+            self.loadDrawing(ItemKey(self.project.siteCode(), 'pln', plan))
 
-    def loadDrawing(self, drawingType, siteCode, drawingId):
-        drawingDir = self.project.georefDrawingDir(drawingType)
+    def loadDrawing(self, itemKey):
+        drawingDir = self.project.georefDrawingDir(itemKey.classCode)
         drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        name = drawingType + '_' + siteCode + '_' + str(drawingId)
+        name = itemKey.classCode + '_' + itemKey.siteCode + '_' + itemKey.itemId
         nameList = []
         nameList.append(name + '.png')
         nameList.append(name + '.tif')
@@ -281,15 +273,8 @@ class Plan(QObject):
             self._setPlanMetadata(PlanMetadata(drawing))
             self.project.loadGeoLayer(drawing)
 
-    def _featureIdChanged(self, featureId):
-        self._featureData.setFeatureId(featureId)
-        self.updateMapToolAttributes()
-
     def _featureNameChanged(self, featureName):
-        if featureName is None or featureName.strip() == '':
-            self._featureData.setFeatureName('')
-        else:
-            self._featureData.setFeatureName(featureName)
+        self.metadata.setName(featureName)
         self.updateMapToolAttributes()
 
     # Georeference Tools
@@ -320,7 +305,7 @@ class Plan(QObject):
 
         # Update the audit attributes
         timestamp = utils.timestamp()
-        user = self.metadata().createdBy()
+        user = self.metadata.createdBy()
         self._preMergeBufferUpdate(self.project.plan.pointsBuffer, timestamp, user)
         self._preMergeBufferUpdate(self.project.plan.linesBuffer, timestamp, user)
         self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
@@ -472,47 +457,25 @@ class Plan(QObject):
         if mapTool is None:
             return
         toolData = mapTool.action().data()
-        self._featureData.setClassCode(toolData['class'])
-        self._featureData.setCategory(toolData['category'])
-        attrs = self.featureAttributes(self.metadata(), self._featureData, mapTool.layer())
-        mapTool.setDefaultAttributes(attrs)
-
-    def featureAttributes(self, md, fd, layer):
-        if (layer is None or not layer.isValid()):
-            return
-        defaults = {}
-        defaults[layer.fieldNameIndex(self.project.fieldName('site'))] = md.siteCode(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('class'))] = fd.classCode(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('id'))] = fd.featureId(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('name'))] = fd.name(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('source_cd'))] = md.sourceCode(True)
-        if md.sourceCode() != 'svy':
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_cl'))] = md.sourceClass(True)
-            defaults[layer.fieldNameIndex(self.project.fieldName('source_id'))] = md.sourceId(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('file'))] = md.sourceFile(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('category'))] = fd.category(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('comment'))] = md.comment(True)
-        defaults[layer.fieldNameIndex(self.project.fieldName('created_by'))] = md.createdBy(True)
-        return defaults
+        if toolData['class'] != self.metadata.classCode():
+            self.metadata.setItemId('')
+        self.metadata.setClassCode(toolData['class'])
+        self.metadata.setCategory(toolData['category'])
+        mapTool.setDefaultAttributes(self.metadata.itemFeature.toAttributes())
 
     def validateFeature(self):
-        self._featureData.validate()
-        if self._featureData.classCode() == 'cxt':
-            self.dock.setContextNumber(self._featureData.featureId())
-            self.dock.setFeatureId(0)
-        else:
-            self.dock.setContextNumber(0)
-            self.dock.setFeatureId(self._featureData.featureId())
-        self.dock.setFeatureName(self._featureData.name())
-        if self.metadata().sourceClass() == self._featureData.classCode() and self.metadata().sourceId() <= 0:
-            self.metadata().setSourceId(self._featureData.featureId())
-        self.metadata().validate()
+        if self.metadata.sourceClass() == self.metadata.classCode() and int(self.metadata.sourceId()) <= 0:
+            self.metadata.setSourceId(self.metadata.itemId())
+        self.metadata.validate()
+        if self.metadata.sourceClass() == self.metadata.classCode() and int(self.metadata.sourceId()) <= 0:
+            self.metadata.setSourceId(self.metadata.itemId())
+        self.dock.setFeatureName(self.metadata.name())
 
     def _autoSchematicSelected(self, sourceId):
         self.actions['sch'].trigger()
-        self._autoSchematic(sourceId, self._featureData, self.metadata(), self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
+        self._autoSchematic(sourceId, self.metadata, self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
 
-    def _autoSchematic(self, sourceId, fd, md, inLayer, outLayer):
+    def _autoSchematic(self, sourceId, md, inLayer, outLayer):
         definitiveFeatures = []
         if inLayer.selectedFeatureCount() > 0:
             definitiveFeatures = inLayer.selectedFeatures()
@@ -521,11 +484,11 @@ class Plan(QObject):
             for feature in featureIter:
                 if feature.attribute(self.project.fieldName('id')) == sourceId and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
-        schematicFeatures = processing.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
+        schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
             return
-        schematic = processing.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
-        attrs = self.featureAttributes(md, fd, outLayer)
+        schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
+        attrs = md.itemFeature.toAttributes()
         for attr in attrs.keys():
             schematic.setAttribute(attr, attrs[attr])
         outLayer.beginEditCommand("Add Auto Schematic")
@@ -557,18 +520,14 @@ class Plan(QObject):
     def _editInBuffers(self, itemKey):
         request = itemKey.featureRequest()
         self.project.plan.moveFeatureRequestToBuffers(request)
-        if itemKey.classCode == 'cxt':
-            self.dock.setContextNumber(itemKey.itemId)
-            self.dock.setFeatureId(0)
-        else:
-            self.dock.setContextNumber(0)
-            self.dock.setFeatureId(itemKey.itemId)
-        self.metadata().setSiteCode(itemKey.siteCode)
-        self.metadata().setComment('')
-        self.metadata().setSourceCode('drw')
-        self.metadata().setSourceClass(itemKey.classCode)
-        self.metadata().setSourceId(itemKey.itemId)
-        self.metadata().setSourceFile('')
+        self.metadata.setSiteCode(itemKey.siteCode)
+        self.metadata.setClassCode(itemKey.classCode)
+        self.metadata.setItmeId(itemKey.itemId)
+        self.metadata.setComment('')
+        self.metadata.setSourceCode('drw')
+        self.metadata.setSourceClass(itemKey.classCode)
+        self.metadata.setSourceId(itemKey.itemId)
+        self.metadata.setSourceFile('')
 
     def deleteItem(self, itemKey):
         if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
@@ -645,11 +604,10 @@ class Plan(QObject):
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
         request = self._classItemsRequest(siteCode, 'sec')
-        utils.logMessage(utils.printable(request))
         fi = self.project.plan.linesLayer.getFeatures(request)
         lst = []
         for feature in fi:
-            lst.append(Item(feature))
+            lst.append(ItemFeature(feature))
         lst.sort()
         return lst
 
@@ -744,8 +702,8 @@ class Plan(QObject):
         self._clearSchematicFilters()
 
         filterModule = self.project.filterModule
-        if self.schematicDock.metadata().siteCode() == '':
-            self.schematicDock.metadata().setSiteCode(self.project.siteCode())
+        if self.schematicDock.metadata.siteCode() == '':
+            self.schematicDock.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
             self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
         self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
@@ -774,7 +732,7 @@ class Plan(QObject):
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
-        self._featureIdChanged(self.schematicDock.context())
+        self._itemIdChanged(self.schematicDock.context())
 
     def _findPanSource(self):
         if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
@@ -795,8 +753,8 @@ class Plan(QObject):
         self._clearSchematicSourceFilters()
 
         filterModule = self.project.filterModule
-        if self.schematicDock.metadata().siteCode() == '':
-            self.schematicDock.metadata().setSiteCode(self.project.siteCode())
+        if self.schematicDock.metadata.siteCode() == '':
+            self.schematicDock.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
             self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
@@ -827,29 +785,28 @@ class Plan(QObject):
             return val
 
     def _copyFeatureMetadata(self, feature):
-        self.schematicDock.metadata().setSiteCode(self._attribute(feature, 'site'))
-        self.schematicDock.metadata().setComment(self._attribute(feature, 'comment'))
-        self.schematicDock.metadata().setSourceCode('cln')
-        self.schematicDock.metadata().setSourceClass('cxt')
-        self.schematicDock.metadata().setSourceId(self.schematicDock.sourceContext())
-        self.schematicDock.metadata().setSourceFile('')
+        self.metadata.setSiteCode(self._attribute(feature, 'site'))
+        self.metadata.setComment(self._attribute(feature, 'comment'))
+        self.metadata.setSourceCode('cln')
+        self.metadata.setSourceClass('cxt')
+        self.metadata.setSourceId(self.schematicDock.sourceContext())
+        self.metadata.setSourceFile('')
 
     def _copySourceSchematic(self):
         request = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
-            md = self.schematicDock.metadata()
-            feature.setAttribute(self.project.fieldName('site'), md.siteCode(True))
+            feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode(True))
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
             feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context())
             feature.setAttribute(self.project.fieldName('name'), None)
             feature.setAttribute(self.project.fieldName('category'), 'sch')
-            feature.setAttribute(self.project.fieldName('source_cd'), md.sourceCode(True))
-            feature.setAttribute(self.project.fieldName('source_cl'), md.sourceClass(True))
-            feature.setAttribute(self.project.fieldName('source_id'), md.sourceId(True))
-            feature.setAttribute(self.project.fieldName('file'), md.sourceFile(True))
-            feature.setAttribute(self.project.fieldName('comment'), md.comment(True))
-            feature.setAttribute(self.project.fieldName('created_by'), md.createdBy(True))
+            feature.setAttribute(self.project.fieldName('source_cd'), self.metadata.sourceCode(True))
+            feature.setAttribute(self.project.fieldName('source_cl'), self.metadata.sourceClass(True))
+            feature.setAttribute(self.project.fieldName('source_id'), self.metadata.sourceId(True))
+            feature.setAttribute(self.project.fieldName('file'), self.metadata.sourceFile(True))
+            feature.setAttribute(self.project.fieldName('comment'), self.metadata.comment(True))
+            feature.setAttribute(self.project.fieldName('created_by'), self.metadata.createdBy(True))
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 

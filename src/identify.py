@@ -32,7 +32,7 @@ from qgis.core import *
 from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from config import Config
-from plan_item import ItemKey
+from plan_item import ItemKey, ItemSource
 
 def _quote(string):
     return "'" + string + "'"
@@ -237,6 +237,7 @@ class IdentifyItemAction(QAction):
         super(IdentifyItemAction, self).__init__(parent)
         self._iface = project.iface
         self.itemKey = itemKey
+        self.setText(itemKey.itemLabel())
         menu = QMenu()
         source = ItemSource()
         area = []
@@ -244,8 +245,11 @@ class IdentifyItemAction(QAction):
         for feature in project.plan.polygonsLayer.getFeatures(itemKey.featureRequest()):
             if feature.attribute(project.fieldName('category')) == 'sch':
                 haveSchematic = True
-                source.setFeature(feature)
+                source.fromFeature(feature)
                 area.append(feature.geometry().area())
+            if not haveSchematic and feature.attribute(project.fieldName('category')) == 'scs':
+                haveSchematic = True
+                source.fromFeature(feature)
         self.zoomAction = QAction('Zoom to Item', parent)
         self.zoomAction.triggered.connect(self._zoomToItem)
         menu.addAction(self.zoomAction)
@@ -283,7 +287,7 @@ class IdentifyItemAction(QAction):
             if source.key.isValid():
                 menu.addAction(source.key.itemLabel())
             if source.filename:
-                menu.addAction(ClipboardAction(source.filename, parent))
+                menu.addAction(ClipboardAction('', source.filename, parent))
         elif haveSchematic:
             menu.addAction('Unknown Source')
         else:

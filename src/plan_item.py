@@ -107,7 +107,7 @@ class ItemKey():
         return self.itemId.contains('-') or self.itemId.contains(' ')
 
     def itemLabel(self):
-        return Config.classCodes[self.classCode][label] + ' ' + self.itemId
+        return Config.classCodes[self.classCode]['label'] + ' ' + self.itemId
 
     def setKey(self, siteCode, classCode, itemId):
         if siteCode and classCode and itemId:

@@ -48,8 +48,7 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
             sectionPointList = []
             for point in mapPointList:
                 sectionPointList.append(geometry.perpendicularPoint(self._sectionGeometry, point))
-            lineGeom = QgsGeometry()
-            lineGeom.addPart(sectionPointList, QGis.Line)
+            lineGeom = geometry.clipLine(sectionGeometry, sectionPointList[0], sectionPointList[1])
             polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 0.0)
             mapPointList = polyGeom.asPolygon()[0]
             featureType = FeatureType.Polygon

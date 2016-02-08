@@ -49,7 +49,7 @@ class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
             for point in mapPointList:
                 sectionPointList.append(geometry.perpendicularPoint(self._sectionGeometry, point))
             lineGeom = geometry.clipLine(self._sectionGeometry, sectionPointList[0], sectionPointList[1])
-            polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 0.0)
+            polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 5.0)
             if polyGeom and polyGeom.isGeosValid():
                 mapPointList = polyGeom.asPolygon()[0]
             else:

@@ -135,8 +135,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         if type(item) is not IdentifyItemAction:
             return
-        request = QgsFeatureRequest()
-        request.setFilterExpression(item.expr)
+        request = item.itemKey.featureRequest()
         for feature in self._project.plan.polygonsLayer.getFeatures(request):
             self._addHighlight(self._project.mapCanvas(), feature.geometry(), self._project.plan.polygonsLayer)
         for feature in self._project.plan.linesLayer.getFeatures(request):
@@ -228,8 +227,6 @@ class IdentifyItemAction(QAction):
     openDrawingsSelected = pyqtSignal(object)
 
     itemKey = ItemKey()
-
-    expr = ''
 
     _iface = None
 

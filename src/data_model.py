@@ -64,11 +64,11 @@ class ItemModel(TableModel):
 
 class DataManager(QObject):
 
-    _cxtModel = None  # ContextModel()
+    _cxtModel = None  # ItemModel()
     _cxtProxyModel = QSortFilterProxyModel()
-    _subModel = None  # SubGroupModel()
+    _subModel = None  # ItemModel()
     _subProxyModel = QSortFilterProxyModel()
-    _grpModel = None  # GroupModel()
+    _grpModel = None  # ItemModel()
     _grpProxyModel = QSortFilterProxyModel()
     _linkModel = None  # ParentChildModel()
 
@@ -76,15 +76,15 @@ class DataManager(QObject):
         super(DataManager, self).__init__()
 
     def hasData(self):
-        return self._cxtModel.rowCount() > 0 or self._subModel.rowCount() > 0 or self._grpModel.rowCount() > 0
+        return self.hasClassData('cxt') or self.hasClassData('sgr') or self.hasClassData('grp')
 
     def hasClassData(self, classCode):
         if classCode == 'cxt':
-            return self._cxtModel.rowCount() > 0
+            return (self._cxtModel is not None and self._cxtModel.rowCount() > 0)
         elif classCode == 'sgr':
-            return self._subModel.rowCount() > 0
+            return (self._subModel is not None and self._subModel.rowCount() > 0)
         elif classCode == 'grp':
-            return self._grpModel.rowCount() > 0
+            return (self._grpModel is not None and self._grpModel.rowCount() > 0)
         return False
 
     def loadProject(self, project):
@@ -117,12 +117,13 @@ class DataManager(QObject):
                 self._linkModel.addChild(parentItem, childItem)
 
     def getItem(self, itemKey):
-        if classCode == 'cxt':
-            return self._cxtModel.getItem(itemKey)
-        elif classCode == 'sgr':
-            return self._subModel.getItem(itemKey)
-        elif classCode == 'grp':
-            return self._grpModel.getItem(itemKey)
+        if itemKey is not None and itemKey.isValid() and self.hasClassData(itemKey.classCode):
+            if itemKey.classCode == 'cxt':
+                return self._cxtModel.getItem(itemKey)
+            elif itemKey.classCode == 'sgr':
+                return self._subModel.getItem(itemKey)
+            elif itemKey.classCode == 'grp':
+                return self._grpModel.getItem(itemKey)
         return {}
 
     def getChildren(self, itemKey):

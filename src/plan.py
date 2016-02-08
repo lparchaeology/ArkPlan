@@ -612,10 +612,11 @@ class Plan(QObject):
         return lst
 
     def _sectionLineGeometry(self, itemKey):
-        request = self._categoryRequest(itemKey, 'sln')
-        fi = self.project.plan.linesLayer.getFeatures(request)
-        for feature in fi:
-            return QgsGeometry(feature.geometry())
+        if itemKey and itemKey.isValid():
+            request = self._categoryRequest(itemKey, 'sln')
+            fi = self.project.plan.linesLayer.getFeatures(request)
+            for feature in fi:
+                return QgsGeometry(feature.geometry())
         return QgsGeometry()
 
     def _sectionChanged(self, itemKey):
@@ -702,8 +703,8 @@ class Plan(QObject):
         self._clearSchematicFilters()
 
         filterModule = self.project.filterModule
-        if self.schematicDock.metadata.siteCode() == '':
-            self.schematicDock.metadata.setSiteCode(self.project.siteCode())
+        if self.metadata.siteCode() == '':
+            self.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
             self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
         self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
@@ -732,7 +733,7 @@ class Plan(QObject):
             haveSchematic = SearchStatus.NotFound
 
         self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
-        self._itemIdChanged(self.schematicDock.context())
+        self.metadata.setItemId(self.schematicDock.context())
 
     def _findPanSource(self):
         if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
@@ -753,8 +754,8 @@ class Plan(QObject):
         self._clearSchematicSourceFilters()
 
         filterModule = self.project.filterModule
-        if self.schematicDock.metadata.siteCode() == '':
-            self.schematicDock.metadata.setSiteCode(self.project.siteCode())
+        if self.metadata.siteCode() == '':
+            self.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
             self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
@@ -796,17 +797,17 @@ class Plan(QObject):
         request = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
-            feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode(True))
+            feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode())
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
             feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context())
             feature.setAttribute(self.project.fieldName('name'), None)
             feature.setAttribute(self.project.fieldName('category'), 'sch')
-            feature.setAttribute(self.project.fieldName('source_cd'), self.metadata.sourceCode(True))
-            feature.setAttribute(self.project.fieldName('source_cl'), self.metadata.sourceClass(True))
-            feature.setAttribute(self.project.fieldName('source_id'), self.metadata.sourceId(True))
-            feature.setAttribute(self.project.fieldName('file'), self.metadata.sourceFile(True))
-            feature.setAttribute(self.project.fieldName('comment'), self.metadata.comment(True))
-            feature.setAttribute(self.project.fieldName('created_by'), self.metadata.createdBy(True))
+            feature.setAttribute(self.project.fieldName('source_cd'), self.metadata.sourceCode())
+            feature.setAttribute(self.project.fieldName('source_cl'), self.metadata.sourceClass())
+            feature.setAttribute(self.project.fieldName('source_id'), self.metadata.sourceId())
+            feature.setAttribute(self.project.fieldName('file'), self.metadata.sourceFile())
+            feature.setAttribute(self.project.fieldName('comment'), self.metadata.comment())
+            feature.setAttribute(self.project.fieldName('created_by'), self.metadata.createdBy())
             feature.setAttribute(self.project.fieldName('created_on'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 

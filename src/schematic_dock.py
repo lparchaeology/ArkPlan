@@ -141,7 +141,7 @@ class SchematicDock(ToolDockWidget):
     # Context Tools
 
     def contextItemKey(self):
-        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.context())
+        return ItemKey(self.widget.metadataWidget.siteCode(), 'cxt', self.context())
 
     def context(self):
         return self.widget.contextSpin.value()
@@ -169,7 +169,7 @@ class SchematicDock(ToolDockWidget):
         self._enableAuto()
 
     def sourceItemKey(self):
-        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.sourceContext())
+        return ItemKey(self.widget.metadataWidget.siteCode(), 'cxt', self.sourceContext())
 
     def sourceContext(self):
         return self.widget.sourceContextSpin.value()
@@ -233,8 +233,8 @@ class SchematicDock(ToolDockWidget):
 
     def _autoSchematicSelected(self):
         if self._sourceDataStatus == SearchStatus.Found:
-            self.metadataWidget.validate()
+            self.widget.metadataWidget.validate()
             self.autoSchematicSelected.emit(self.sourceContext())
         elif self._contextDataStatus == SearchStatus.Found:
-            self.metadataWidget.validate()
+            self.widget.metadataWidget.validate()
             self.autoSchematicSelected.emit(self.context())

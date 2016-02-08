@@ -126,7 +126,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._menu.clear()
         del self._highlights[:]
         del self._actions[:]
-        if resetVertex:
+        if resetVertex and self._vertexMarker:
             self._vertexMarker.setCenter(QgsPoint())
 
     def _highlight(self, item):

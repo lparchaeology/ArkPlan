@@ -25,7 +25,7 @@
 """
 import webbrowser
 
-from PyQt4.QtCore import Qt, pyqtSignal, QSettings
+from PyQt4.QtCore import Qt, pyqtSignal, QSettings, QPoint
 from PyQt4.QtGui import QAction, QMenu, QColor, QApplication
 
 from qgis.core import *
@@ -113,7 +113,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         if self._project.gridModule.mapTransformer is not None:
             localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
             self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
-        selected = self._menu.exec_(e.globalPos())
+        menuPos = QPoint(e.globalX() + 100, e.globalY() - 50)
+        selected = self._menu.exec_(menuPos)
         self._reset(resetVertex=False)
 
     def keyPressEvent(self, e):

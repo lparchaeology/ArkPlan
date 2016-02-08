@@ -237,17 +237,25 @@ class IdentifyItemAction(QAction):
         self.itemKey = itemKey
         self.setText(itemKey.itemLabel())
         menu = QMenu()
-        source = ItemSource()
+        sourceSet = set()
         area = []
         haveSchematic = False
+        sectionSchematics = []
         for feature in project.plan.polygonsLayer.getFeatures(itemKey.featureRequest()):
-            if feature.attribute(project.fieldName('category')) == 'sch':
+            category = feature.attribute(project.fieldName('category'))
+            if category == 'sch' or category == 'scs':
                 haveSchematic = True
+                source = ItemSource()
                 source.fromFeature(feature)
-                area.append(feature.geometry().area())
-            if not haveSchematic and feature.attribute(project.fieldName('category')) == 'scs':
-                haveSchematic = True
-                source.fromFeature(feature)
+                if source.isValid():
+                    sourceSet.add(source)
+                if category == 'sch':
+                    area.append(feature.geometry().area())
+        sourceDict = {}
+        for source in sourceSet:
+            if source.sourceCode not in sourceDict:
+                sourceDict[source.sourceCode] = set()
+            sourceDict[source.sourceCode].add(source.key)
         self.zoomAction = QAction('Zoom to Item', parent)
         self.zoomAction.triggered.connect(self._zoomToItem)
         menu.addAction(self.zoomAction)
@@ -280,12 +288,13 @@ class IdentifyItemAction(QAction):
         self.deleteAction.triggered.connect(self._deleteItem)
         menu.addAction(self.deleteAction)
         menu.addSeparator()
-        if source.isValid():
-            menu.addAction(source.sourceCodeLabel())
-            if source.key.isValid():
-                menu.addAction(source.key.itemLabel())
-            if source.filename:
-                menu.addAction(ClipboardAction('', source.filename, parent))
+        if len(sourceDict) > 0:
+            for sourceCode in sourceDict.keys():
+                menu.addAction(Config.sourceCodes[sourceCode]['label'] + ':')
+                sources = sorted(sourceDict[sourceCode])
+                for itemKey in sources:
+                    if itemKey.isValid():
+                        menu.addAction(itemKey.itemLabel())
         elif haveSchematic:
             menu.addAction('Unknown Source')
         else:

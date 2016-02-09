@@ -146,9 +146,9 @@ class SchematicDock(ToolDockWidget):
     def context(self):
         return self.widget.contextSpin.value()
 
-    def setContext(self, context, foundData, foundSchematic):
+    def setContext(self, context, foundData, foundSchematic, foundSectionSchematic):
         self.widget.contextSpin.setValue(context)
-        self._setContextStatus(foundData, foundSchematic)
+        self._setContextStatus(foundData, foundSchematic, foundSectionSchematic)
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def contextStatus(self):
@@ -158,11 +158,12 @@ class SchematicDock(ToolDockWidget):
             return SearchStatus.Found
         return SearchStatus.NotFound
 
-    def _setContextStatus(self, foundData, foundSchematic):
+    def _setContextStatus(self, foundData, foundSchematic, foundSectionSchematic):
         self._contextDataStatus = foundData
         self._contextSchematicStatus = foundSchematic
         self._setStatusLabel(self.widget.contextDataStatusLabel, foundData)
         self._setStatusLabel(self.widget.contextSchematicStatusLabel, foundSchematic)
+        self._setStatusLabel(self.widget.sectionSchematicStatusLabel, foundSectionSchematic)
         self.widget.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
         self._enableDraw(foundSchematic == SearchStatus.NotFound)
@@ -225,7 +226,7 @@ class SchematicDock(ToolDockWidget):
         self.widget.autoSchematicTool.setEnabled(auto)
 
     def _contextChanged(self):
-        self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown)
+        self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _sourceContextChanged(self):

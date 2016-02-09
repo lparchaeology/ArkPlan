@@ -153,7 +153,7 @@ class Plan(QObject):
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
 
-        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
         self.schematicDock.addDrawingTool('sch', self.actions['sch'])
         self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
 
@@ -206,6 +206,7 @@ class Plan(QObject):
         if checked and self.initialised:
             self.dock.menuAction().setChecked(False)
             self.editDock.menuAction().setChecked(False)
+            self.project.filterModule.dock.setVisible(True)
         else:
             self.schematicDock.menuAction().setChecked(False)
 
@@ -657,7 +658,7 @@ class Plan(QObject):
 
     def _resetSchematic(self):
         self._clearSchematicFilters()
-        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _clearSchematic(self):
         self.clearBuffers()
@@ -732,7 +733,14 @@ class Plan(QObject):
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
-        self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic)
+        scsRequest = self._categoryRequest(self.schematicDock.contextItemKey(), 'scs')
+        haveSectionSchematic = SearchStatus.Found
+        try:
+            self.project.plan.polygonsLayer.getFeatures(scsRequest).next()
+        except StopIteration:
+            haveSectionSchematic = SearchStatus.NotFound
+
+        self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic, haveSectionSchematic)
         self.metadata.setItemId(self.schematicDock.context())
 
     def _findPanSource(self):

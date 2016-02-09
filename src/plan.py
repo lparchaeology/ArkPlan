@@ -522,7 +522,7 @@ class Plan(QObject):
         self.project.plan.moveFeatureRequestToBuffers(request)
         self.metadata.setSiteCode(itemKey.siteCode)
         self.metadata.setClassCode(itemKey.classCode)
-        self.metadata.setItmeId(itemKey.itemId)
+        self.metadata.setItemId(itemKey.itemId)
         self.metadata.setComment('')
         self.metadata.setSourceCode('drw')
         self.metadata.setSourceClass(itemKey.classCode)

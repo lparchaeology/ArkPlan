@@ -25,6 +25,8 @@
 """
 
 import csv
+import json
+import urllib2
 
 from PyQt4.QtCore import QObject, QFile
 from PyQt4.QtGui import QSortFilterProxyModel
@@ -105,6 +107,31 @@ class DataManager(QObject):
         self._linkModel = ParentChildModel(self)
         self._addLinks(self._subModel._table)
         self._addLinks(self._grpModel._table)
+
+    def loadItems(self, project, classCode):
+        project.logMessage('loadItems: ' + classCode)
+        if not project.arkUrl():
+            return
+        user = 'user'
+        password = 'password'
+        url = project.arkUrl() + '/api.php?req=getItems&itemkey=' + classCode + '_cd&handle=' + user + '&passwd=' + password
+        project.logMessage('Calling: ' + url)
+        try:
+            response = urllib2.urlopen(url)
+            project.logMessage(str(response.geturl()))
+            project.logMessage(str(response.getcode()))
+            project.logMessage(str(response.info()))
+            if response.getcode() == 200:
+                project.logMessage(str(response.read()))
+                data = json.load(response)
+            else:
+                project.logMessage('Not 200!')
+        except urllib2.HTTPError as e:
+            project.logMessage('HTTPError! ' + str(e.code) + ' ' + str(e.reason))
+        except urllib2.URLError as e:
+            project.logMessage('URLError! ' + str(e.reason))
+        except ValueError:
+            project.logMessage('ValueError!')
 
     def _addLinks(self, table):
         for record in table:

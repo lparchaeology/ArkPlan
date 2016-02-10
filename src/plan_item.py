@@ -111,6 +111,9 @@ class ItemKey():
             return Config.classCodes[self.classCode]['label'] + ' ' + self.itemId
         return ''
 
+    def name(self):
+        return self.classCode + '_' + self.siteCode + '_' + self.itemId
+
     def setKey(self, siteCode, classCode, itemId):
         if siteCode and classCode and itemId:
             self.siteCode = utils.string(siteCode)

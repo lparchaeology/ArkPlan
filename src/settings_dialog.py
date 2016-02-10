@@ -29,7 +29,6 @@ from PyQt4.QtGui import QDialog, QFileDialog
 
 from settings_dialog_base import *
 
-
 class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
     _project = None # Project()

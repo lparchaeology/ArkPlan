@@ -206,7 +206,7 @@ class Plan(QObject):
         if checked and self.initialised:
             self.dock.menuAction().setChecked(False)
             self.editDock.menuAction().setChecked(False)
-            self.project.filterModule.dock.setVisible(True)
+            self.project.filterModule.showDock()
         else:
             self.schematicDock.menuAction().setChecked(False)
 
@@ -260,7 +260,7 @@ class Plan(QObject):
     def loadDrawing(self, itemKey):
         drawingDir = self.project.georefDrawingDir(itemKey.classCode)
         drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        name = itemKey.classCode + '_' + itemKey.siteCode + '_' + itemKey.itemId
+        name = itemKey.name()
         nameList = []
         nameList.append(name + '.png')
         nameList.append(name + '.tif')

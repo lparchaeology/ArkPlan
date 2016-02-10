@@ -28,13 +28,17 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QWidget
 
-import select_item_widget_base
+from config import Config
+from plan_item import ItemKey
 
-class SelectItemWidget(QWidget, metadata_widget_base.Ui_SelectItemWidget):
+from select_item_widget_base import *
+
+class SelectItemWidget(QWidget, Ui_SelectItemWidget):
 
     siteCodeChanged = pyqtSignal(str)
     classCodeChanged = pyqtSignal(str)
     itemIdChanged = pyqtSignal(str)
+    itemIdEntered = pyqtSignal()
 
     def __init__(self, parent=None):
         super(SelectItemWidget, self).__init__(parent)
@@ -45,18 +49,47 @@ class SelectItemWidget(QWidget, metadata_widget_base.Ui_SelectItemWidget):
         self.siteCodeCombo.currentIndexChanged.connect(self._siteCodeIndexChanged)
         self.classCodeCombo.currentIndexChanged.connect(self._classCodeIndexChanged)
         self.itemIdEdit.editingFinished.connect(self.itemIdChanged)
+        self.itemIdEdit.returnPressed.connect(self.itemIdEntered)
 
     def siteCode(self):
         return self.siteCodeCombo.itemData(self.siteCodeCombo.currentIndex())
 
+    def setSiteCodes(self, siteCodes, default=None):
+        self.siteCodeCombo.clear()
+        for siteCode in sorted(set(siteCodes)):
+            self.siteCodeCombo.addItem(siteCode, siteCode)
+        if default:
+            idx = self.siteCodeCombo.findData(default)
+            if idx >= 0:
+                self.siteCodeCombo.setCurrentIndex(idx)
+
     def classCode(self):
-        return self.classCodeChanged.itemData(self.classCodeChanged.currentIndex())
+        return self.classCodeCombo.itemData(self.classCodeCombo.currentIndex())
+
+    def setClassCodes(self, classCodes, default=None):
+        self.classCodeCombo.clear()
+        for key in classCodes:
+            classCode = Config.classCodes[key]
+            self.classCodeCombo.addItem(classCode['label'], key)
+        if default:
+            idx = self.classCodeCombo.findData(default)
+            if idx >= 0:
+                self.classCodeCombo.setCurrentIndex(idx)
 
     def itemId(self):
         return self.itemIdEdit.text()
 
+    def item(self):
+        return ItemKey(self.siteCode(), self.classCode(), self.itemId())
+
+    def setItem(self, itemKey):
+        if type(itemKey) == ItemKey and itemKey.isValid():
+            self.siteCodeCombo.setCurrentIndex(self.siteCodeCombo.findData(itemKey.siteCode))
+            self.classCodeCombo.setCurrentIndex(self.classCodeCombo.findData(itemKey.classCode))
+            self.itemIdEdit.setText(itemKey.itemId)
+
     def _siteCodeIndexChanged(self, idx):
-        emit self.siteCodeChanged(self.siteCodeCombo.itemData(idx))
+        self.siteCodeChanged.emit(self.siteCodeCombo.itemData(idx))
 
     def _classCodeIndexChanged(self, idx):
-        emit self.classCodeChanged(self.classCodeCombo.itemData(idx))
+        self.classCodeChanged.emit(self.classCodeCombo.itemData(idx))

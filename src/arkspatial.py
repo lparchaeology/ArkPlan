@@ -45,6 +45,7 @@ from identify import MapToolIndentifyItems
 from config import Config
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
+from select_item_dialog import SelectItemDialog
 from data_model import *
 
 import resources_rc
@@ -144,7 +145,7 @@ class ArkSpatial(Plugin):
         self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the Load Context tool
-        self.showContextAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show context'), callback=self._showContext)
+        self.showItemAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
 
         # Init the modules
         self.layerDock.toolbar.addSeparator()
@@ -451,6 +452,10 @@ class ArkSpatial(Plugin):
     def siteCode(self):
         return self.readEntry('siteCode', '')
 
+    def siteCodes(self):
+        # TODO Make a stored list, updated via settings
+        return sorted(set(self.plan.uniqueValues(self.fieldName('site'))))
+
     def setSiteCode(self, siteCode):
         self.writeEntry('siteCode', siteCode)
 
@@ -622,10 +627,15 @@ class ArkSpatial(Plugin):
 
     # Show Context Tool
 
-    def _showContext(self):
-        context, ok = QInputDialog.getInt(None, 'Show Context', 'Please enter the Context Number to show:', 1, 1, 99999)
-        if (ok and context > 0):
-            self.planModule.loadDrawing('cxt', self.siteCode(), context)
-            self.filterModule.filterItem(self.siteCode(), 'cxt', context)
-            self.filterModule.zoomFilter()
+    def _showItem(self):
+        classCodes = sorted(set(self.plan.uniqueValues(self.fieldName('class'))))
+        dialog = SelectItemDialog(self.siteCodes(), self.siteCode(), classCodes, self.iface.mainWindow())
+        if dialog.exec_():
+            item = dialog.item()
+            self.showMessage('Loading ' + item.itemLabel())
+            if dialog.loadDrawings():
+                self.planModule.loadDrawing(item)
+            self.filterModule.filterItem(item)
+            if dialog.zoomToItem():
+                self.filterModule.zoomFilter()
             self.filterModule.showDock()

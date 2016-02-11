@@ -304,7 +304,7 @@ class ArkSpatial(Plugin):
             return self.siteCode() + '_' + baseName
         return 'ark_' + baseName
 
-    def loadGeoLayer(self, geoFile):
+    def loadGeoLayer(self, geoFile, zoomToLayer=True):
         #TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
         self.geoLayer.renderer().setOpacity(self.drawingTransparency()/100.0)
@@ -312,7 +312,8 @@ class ArkSpatial(Plugin):
         if (self.planGroupIndex < 0):
             self.planGroupIndex = layers.createLayerGroup(self.iface, self.layersGroupName('cxt'), Config.projectGroupName)
         self.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
-        self.mapCanvas().setExtent(self.geoLayer.extent())
+        if zoomToLayer:
+            self.mapCanvas().setExtent(self.geoLayer.extent())
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
@@ -634,9 +635,9 @@ class ArkSpatial(Plugin):
         if dialog.exec_():
             item = dialog.item()
             self.showMessage('Loading ' + item.itemLabel())
-            if dialog.loadDrawings():
-                self.planModule.loadDrawing(item)
             self.filterModule.filterItem(item)
+            self.filterModule.showDock()
+            if dialog.loadDrawings():
+                self.planModule.loadSourceDrawings(item)
             if dialog.zoomToItem():
                 self.filterModule.zoomFilter()
-            self.filterModule.showDock()

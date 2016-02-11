@@ -257,7 +257,7 @@ class Plan(QObject):
         if (ok and plan > 0):
             self.loadDrawing(ItemKey(self.project.siteCode(), 'pln', plan))
 
-    def loadDrawing(self, itemKey):
+    def loadDrawing(self, itemKey, zoomToDrawing=True):
         drawingDir = self.project.georefDrawingDir(itemKey.classCode)
         drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         name = itemKey.name()
@@ -272,7 +272,25 @@ class Plan(QObject):
         drawings = drawingDir.entryInfoList()
         for drawing in drawings:
             self._setPlanMetadata(PlanMetadata(drawing))
-            self.project.loadGeoLayer(drawing)
+            self.project.loadGeoLayer(drawing, zoomToDrawing)
+
+    def loadSourceDrawings(self, itemKey):
+        sourceKeys = set()
+        itemRequest = itemKey.featureRequest()
+        for feature in self.project.plan.polygonsLayer.getFeatures(itemRequest):
+            itemSource = ItemSource(feature)
+            if itemSource.key.isValid():
+                sourceKeys.add(itemSource.key)
+        for feature in self.project.plan.linesLayer.getFeatures(itemRequest):
+            itemSource = ItemSource(feature)
+            if itemSource.key.isValid():
+                sourceKeys.add(itemSource.key)
+        for feature in self.project.plan.pointsLayer.getFeatures(itemRequest):
+            itemSource = ItemSource(feature)
+            if itemSource.key.isValid():
+                sourceKeys.add(itemSource.key)
+        for sourceKey in sorted(sourceKeys):
+            self.loadDrawing(sourceKey)
 
     def _featureNameChanged(self, featureName):
         self.metadata.setName(featureName)

@@ -28,120 +28,144 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QMenu, QAction, QIcon, QToolButton
+from PyQt4.QtGui import QDockWidget, QWidget, QMenu, QAction, QIcon, QToolButton
 
-from ..libarkqgis.dock import ArkDockWidget
+from qgis.core import QgsProject
 
-import plan_dock_base
+from ..libarkqgis.dock import ToolDockWidget
+from ..libarkqgis.snapping import *
 
-class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
+import plan_widget_base
 
+class PlanWidget(QWidget, plan_widget_base.Ui_PlanWidget):
+
+    def __init__(self, parent=None):
+        super(PlanWidget, self).__init__(parent)
+        self.setupUi(self)
+
+
+class PlanDock(ToolDockWidget):
+
+    # Toolbar Signals
     loadRawFileSelected = pyqtSignal()
     loadGeoFileSelected = pyqtSignal()
-    loadContextSelected = pyqtSignal()
-    loadPlanSelected = pyqtSignal()
 
-    featureNameChanged = pyqtSignal(str)
+    # Drawing Signals
     autoSchematicSelected = pyqtSignal(str)
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
+    featureNameChanged = pyqtSignal(str)
     sectionChanged = pyqtSignal(object)
-
     clearSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
-    _cgColMax = 3
-    _cgCol = 0
-    _cgRow = 0
-    _fgColMax = 3
-    _fgCol = 0
-    _fgRow = 0
-    _sgColMax = 3
-    _sgCol = 0
-    _sgRow = 0
+    # Schematic Signals
+    findContextSelected = pyqtSignal()
+    zoomContextSelected = pyqtSignal()
+    editContextSelected = pyqtSignal()
+    findSourceSelected = pyqtSignal()
+    zoomSourceSelected = pyqtSignal()
+    copySourceSelected = pyqtSignal()
+    cloneSourceSelected = pyqtSignal()
+    editSourceSelected = pyqtSignal()
+    resetSelected = pyqtSignal()
+
+    _iface = None # QgsisInterface()
+    _snappingAction = None  # ProjectSnappingAction()
+    _interAction = None  # IntersectionSnappingAction()
+    _topoAction = None  # TopologicalEditingAction()
 
     def __init__(self, parent=None):
-        super(PlanDock, self).__init__(parent)
+        super(PlanDock, self).__init__(PlanWidget(), parent)
+
+        self.setWindowTitle(u'Plan')
+        self.setObjectName(u'PlanDock')
 
     def initGui(self, iface, location, menuAction):
         super(PlanDock, self).initGui(iface, location, menuAction)
-        self.setupUi(self)
 
-        self.loadRawButton.clicked.connect(self.loadRawFileSelected)
-        self.loadGeoButton.clicked.connect(self.loadGeoFileSelected)
-        self.loadContextButton.clicked.connect(self.loadContextSelected)
-        self.loadPlanButton.clicked.connect(self.loadPlanSelected)
+        # Init the toolbar
+        self.toolbar.addAction(iface.actionPan())
+        self.toolbar.addAction(iface.actionZoomIn())
+        self.toolbar.addAction(iface.actionZoomOut())
+        self.toolbar.addAction(iface.actionZoomLast())
+        self.toolbar.addAction(iface.actionZoomNext())
+        self.toolbar.addSeparator()
+        self._loadRawAction = QAction(self, 'Raw')
+        self._loadRawAction.trigger.connect(self.loadRawFileSelected)
+        self.toolbar.addAction(self._loadRawAction)
+        self._loadGeoAction = QAction(self, 'Geo')
+        self._loadGeoAction.trigger.connect(self.loadGeoFileSelected)
+        self.toolbar.addAction(self._loadGeoAction)
+        self.toolbar.addSeparator()
+        self._snappingAction = ProjectSnappingAction(self)
+        self._snappingAction.setInterface(iface)
+        self.toolbar.addAction(self._snappingAction)
+        self._interAction = IntersectionSnappingAction(self)
+        self.toolbar.addAction(self._interAction)
+        self._topoAction = TopologicalEditingAction(self)
+        self.toolbar.addAction(self._topoAction)
 
-        self.metadataWidget.initGui()
+        # Init the child widgets
+        self.widget.metadataWidget.initGui()
+        self.widget.drawingWidget.initGui()
+        self.widget.schematicWidget.initGui()
+        self.widget.snappingWidget.initGui()
 
-        self.featureNameEdit.textChanged.connect(self.featureNameChanged)
-        self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
-        self.editPointsTool.clicked.connect(self.editPointsSelected)
-        self.editLinesTool.clicked.connect(self.editLinesSelected)
-        self.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
-        self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
+        # Cascade the child widget signals
+        self.widget.drawingWidget.autoSchematicSelected.connect(self.autoSchematicSelected)
+        self.widget.drawingWidget.editPointsSelected.connect(self.editPointsSelected)
+        self.widget.drawingWidget.editLinesSelected.connect(self.editLinesSelected)
+        self.widget.drawingWidget.editPolygonsSelected.connect(self.editPolygonsSelected)
+        self.widget.drawingWidget.featureNameChanged.connect(self.featureNameChanged)
+        self.widget.drawingWidget.sectionChanged.connect(self.sectionChanged)
+        self.widget.drawingWidget.clearSelected.connect(self.clearSelected)
+        self.widget.drawingWidget.mergeSelected.connect(self.mergeSelected)
 
-        self.clearButton.clicked.connect(self.clearSelected)
-        self.mergeButton.clicked.connect(self.mergeSelected)
+        self.widget.schematicWidget.findContextSelected.connect(self.findContextSelected)
+        self.widget.schematicWidget.zoomContextSelected.connect(self.zoomContextSelected)
+        self.widget.schematicWidget.editContextSelected.connect(self.editContextSelected)
+        self.widget.schematicWidget.findSourceSelected.connect(self.findSourceSelected)
+        self.widget.schematicWidget.zoomSourceSelected.connect(self.zoomSourceSelected)
+        self.widget.schematicWidget.copySourceSelected.connect(self.copySourceSelected)
+        self.widget.schematicWidget.cloneSourceSelected.connect(self.cloneSourceSelected)
+        self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
+        self.widget.schematicWidget.resetSelected.connect(self.resetSelected)
 
-    # Metadata Tools
+    def unloadGui(self):
+        self.widget.metadataWidget.unloadGui()
+        self.widget.drawingWidget.unloadGui()
+        self.widget.schematicWidget.unloadGui()
+        self.widget.snappingWidget.unloadGui()
+        del self.widget.snappingWidget
+        super(PlanDock, self).unloadGui()
 
-    def initSections(self, itemList):
-        self.sectionCombo.clear()
-        for section in sorted(itemList):
-            if section.name:
-                self.sectionCombo.addItem(section.name, section.key)
-            else:
-                self.sectionCombo.addItem('S' + section.key.itemId, section.key)
+    # Load the project settings when project is loaded
+    def loadProject(self, project):
+        self.widget.metadataWidget.loadProject(project)
+        self.widget.drawingWidget.loadProject(project)
+        self.widget.schematicWidget.loadProject(project)
+        self.widget.snappingWidget.loadProject(project)
 
-    def featureName(self):
-        return self.featureNameEdit.text()
+    # Close the project
+    def closeProject(self):
+        self.widget.metadataWidget.closeProject()
+        self.widget.drawingWidget.closeProject()
+        self.widget.schematicWidget.closeProject()
+        self.widget.snappingWidget.closeProject()
 
     def setFeatureName(self, name):
-        self.featureNameEdit.setText(name)
+        self.widget.drawingWidget.setFeatureName(name)
+
+    def initSections(self, itemList):
+        self.widget.drawingWidget.initSections(itemList)
 
     def sectionKey(self):
-        return self.sectionCombo.itemData(self.sectionCombo.currentIndex())
+        return self.widget.drawingWidget.sectionKey()
 
     def setSection(self, itemKey):
-        #TODO Doesn't work when it should...
-        #idx = self.sectionCombo.findData(itemKey)
-        for i in range(0, self.sectionCombo.count()):
-            if self.sectionCombo.itemData(i) == itemKey:
-                self.sectionCombo.setCurrentIndex(i)
-                return
-
-    # Drawing Tools
+        self.widget.drawingWidget.setSection(itemList)
 
     def addDrawingTool(self, dockTab, action):
-        toolButton = QToolButton(self)
-        toolButton.setFixedWidth(40)
-        toolButton.setDefaultAction(action)
-        if dockTab == 'cxt':
-            self.contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
-            if self._cgCol == self._cgColMax:
-                self._cgRow += 1
-                self._cgCol = 0
-            else:
-                self._cgCol += 1
-        elif dockTab == 'sec':
-            self.sectionToolsLayout.addWidget(toolButton, self._sgRow, self._sgCol, Qt.AlignCenter)
-            if self._sgCol == self._sgColMax:
-                self._sgRow += 1
-                self._sgCol = 0
-            else:
-                self._cgCol += 1
-        else:
-            self.featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
-            if self._fgCol == self._fgColMax:
-                self._fgRow += 1
-                self._fgCol = 0
-            else:
-                self._fgCol += 1
-
-    def _autoSchematicSelected(self):
-        self.autoSchematicSelected.emit(self.metadataWidget.itemId())
-
-    def _sectionChanged(self, idx):
-        self.sectionChanged.emit(self.sectionCombo.itemData(idx))
+        self.widget.drawingWidget.addDrawingTool(dockTab, action)

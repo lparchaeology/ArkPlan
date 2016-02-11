@@ -1,164 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MetadataWidget</class>
- <widget class="QWidget" name="MetadataWidget">
+ <widget class="QGroupBox" name="MetadataWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>289</width>
-    <height>271</height>
+    <width>328</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
+   <string>GroupBox</string>
+  </property>
+  <property name="title">
    <string>Metadata</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <property name="margin">
-    <number>0</number>
-   </property>
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="metadataGroup">
-     <property name="title">
-      <string>Metadata</string>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="sourceFileEdit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Item ID:</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="siteEdit">
-        <property name="readOnly">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="sourceCodeLabel">
-        <property name="text">
-         <string>Source:</string>
-        </property>
-        <property name="buddy">
-         <cstring>sourceCodeCombo</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="sourceIdLabel">
-        <property name="text">
-         <string>Source ID:</string>
-        </property>
-        <property name="buddy">
-         <cstring>sourceClassCombo</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="siteLabel">
-        <property name="text">
-         <string>Site Code:</string>
-        </property>
-        <property name="buddy">
-         <cstring>siteEdit</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="sourceFileLabel">
-        <property name="text">
-         <string>Source File:</string>
-        </property>
-        <property name="buddy">
-         <cstring>sourceFileEdit</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="sourceFileEdit"/>
-      </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="sourceCodeCombo"/>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="commentLabel">
-        <property name="text">
-         <string>Comment:</string>
-        </property>
-        <property name="buddy">
-         <cstring>commentEdit</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QComboBox" name="classCombo"/>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="idSpin">
-          <property name="toolTip">
-           <string>Source ID</string>
-          </property>
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QComboBox" name="sourceClassCombo"/>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="sourceIdSpin">
-          <property name="toolTip">
-           <string>Source ID</string>
-          </property>
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Item ID:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QLineEdit" name="commentEdit">
-        <property name="readOnly">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="createdByLabel">
-        <property name="text">
-         <string>Digitised By:</string>
-        </property>
-        <property name="buddy">
-         <cstring>createdByEdit</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QLineEdit" name="createdByEdit"/>
-      </item>
-     </layout>
     </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="siteEdit">
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="commentEdit">
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="createdByLabel">
+     <property name="text">
+      <string>Digitised By:</string>
+     </property>
+     <property name="buddy">
+      <cstring>createdByEdit</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="siteLabel">
+     <property name="text">
+      <string>Site Code:</string>
+     </property>
+     <property name="buddy">
+      <cstring>siteEdit</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="createdByEdit"/>
+   </item>
+   <item row="1" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QComboBox" name="classCombo"/>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="idSpin">
+       <property name="toolTip">
+        <string>Source ID</string>
+       </property>
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QComboBox" name="sourceClassCombo"/>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="sourceIdSpin">
+       <property name="toolTip">
+        <string>Source ID</string>
+       </property>
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="sourceCodeCombo"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="sourceFileLabel">
+     <property name="text">
+      <string>Source File:</string>
+     </property>
+     <property name="buddy">
+      <cstring>sourceFileEdit</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="sourceIdLabel">
+     <property name="text">
+      <string>Source ID:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="sourceCodeLabel">
+     <property name="text">
+      <string>Source:</string>
+     </property>
+     <property name="buddy">
+      <cstring>sourceCodeCombo</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="commentLabel">
+     <property name="text">
+      <string>Comment:</string>
+     </property>
+     <property name="buddy">
+      <cstring>commentEdit</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>siteEdit</tabstop>
-  <tabstop>sourceCodeCombo</tabstop>
-  <tabstop>sourceClassCombo</tabstop>
-  <tabstop>sourceIdSpin</tabstop>
-  <tabstop>sourceFileEdit</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

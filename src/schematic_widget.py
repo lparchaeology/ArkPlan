@@ -49,12 +49,6 @@ class SearchStatus():
 
 class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
-    def __init__(self, parent=None):
-        super(SchematicWidget, self).__init__(parent)
-        self.setupUi(self)
-
-class SchematicDock(ToolDockWidget):
-
     findContextSelected = pyqtSignal()
     zoomContextSelected = pyqtSignal()
     editContextSelected = pyqtSignal()
@@ -63,91 +57,55 @@ class SchematicDock(ToolDockWidget):
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     editSourceSelected = pyqtSignal()
-    autoSchematicSelected = pyqtSignal(str)
-    editLinesSelected = pyqtSignal()
-    editPolygonsSelected = pyqtSignal()
     resetSelected = pyqtSignal()
-    clearSelected = pyqtSignal()
-    mergeSelected = pyqtSignal()
 
     _contextDataStatus = SearchStatus.Unknown
     _contextSchematicStatus = SearchStatus.Unknown
     _sourceDataStatus = SearchStatus.Unknown
     _sourceSchematicStatus = SearchStatus.Unknown
 
-    _drawColMax = 3
-    _drawCol = 0
-    _drawRow = 0
-
-    _tools = []
-
     def __init__(self, parent=None):
-        super(SchematicDock, self).__init__(SchematicWidget(), parent)
+        super(SchematicWidget, self).__init__(parent)
+        self.setupUi(self)
 
-    def initGui(self, iface, location, menuAction):
-        super(SchematicDock, self).initGui(iface, location, menuAction)
-
-        self.toolbar.addAction(iface.actionPan())
-        self.toolbar.addAction(iface.actionZoomIn())
-        self.toolbar.addAction(iface.actionZoomOut())
-        self.toolbar.addAction(iface.actionZoomFullExtent())
-        self.toolbar.addAction(iface.actionZoomLast())
-        self.toolbar.addAction(iface.actionZoomNext())
-
-        self.widget.contextSpin.valueChanged.connect(self._contextChanged)
+    def initGui(self):
+        self.contextSpin.valueChanged.connect(self._contextChanged)
         self._contextSpinFilter = ReturnPressedFilter(self)
-        self.widget.contextSpin.installEventFilter(self._contextSpinFilter)
+        self.contextSpin.installEventFilter(self._contextSpinFilter)
         self._contextSpinFilter.returnPressed.connect(self.findContextSelected)
-        self.widget.findContextTool.clicked.connect(self.findContextSelected)
-        self.widget.zoomContextTool.clicked.connect(self.zoomContextSelected)
-        self.widget.editContextButton.clicked.connect(self.editContextSelected)
-        self.widget.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
+        self.findContextTool.clicked.connect(self.findContextSelected)
+        self.zoomContextTool.clicked.connect(self.zoomContextSelected)
+        self.editContextButton.clicked.connect(self.editContextSelected)
+        self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
         self._sourceSpinFilter = ReturnPressedFilter(self)
-        self.widget.sourceContextSpin.installEventFilter(self._sourceSpinFilter)
+        self.sourceContextSpin.installEventFilter(self._sourceSpinFilter)
         self._sourceSpinFilter.returnPressed.connect(self.findSourceSelected)
-        self.widget.findSourceTool.clicked.connect(self.findSourceSelected)
-        self.widget.zoomSourceTool.clicked.connect(self.zoomSourceSelected)
-        self.widget.copySourceButton.clicked.connect(self.copySourceSelected)
-        self.widget.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
-        self.widget.editSourceButton.clicked.connect(self.editSourceSelected)
-        self.widget.metadataWidget.initGui()
-        self.widget.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
-        self.widget.editLinesTool.clicked.connect(self.editLinesSelected)
-        self.widget.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
-        self.widget.resetButton.clicked.connect(self.resetSelected)
-        self.widget.clearButton.clicked.connect(self.clearSelected)
-        self.widget.mergeButton.clicked.connect(self.mergeSelected)
+        self.findSourceTool.clicked.connect(self.findSourceSelected)
+        self.zoomSourceTool.clicked.connect(self.zoomSourceSelected)
+        self.copySourceButton.clicked.connect(self.copySourceSelected)
+        self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
+        self.editSourceButton.clicked.connect(self.editSourceSelected)
+        self.resetButton.clicked.connect(self.resetSelected)
 
     def unloadGui(self):
-        super(SchematicDock, self).unloadGui()
+        pass
 
-    # Drawing Tools
+    def loadProject(self, project):
+        self.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
 
-    def addDrawingTool(self, classCode, action):
-        toolButton = QToolButton(self)
-        toolButton.setFixedWidth(40)
-        toolButton.setDefaultAction(action)
-        self.widget.contextToolsLayout.addWidget(toolButton, self._drawRow, self._drawCol, Qt.AlignCenter)
-        self._tools.append(toolButton)
-        if self._drawCol == self._drawColMax:
-            self.newDrawingToolRow()
-        else:
-            self._drawCol += 1
-
-    def newDrawingToolRow(self):
-        self._drawRow += 1
-        self._drawCol = 0
+    def closeProject(self):
+        pass
 
     # Context Tools
 
     def contextItemKey(self):
-        return ItemKey(self.widget.metadataWidget.siteCode(), 'cxt', self.context())
+        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.context())
 
     def context(self):
-        return self.widget.contextSpin.value()
+        return self.contextSpin.value()
 
     def setContext(self, context, foundData, foundSchematic, foundSectionSchematic):
-        self.widget.contextSpin.setValue(context)
+        self.contextSpin.setValue(context)
         self._setContextStatus(foundData, foundSchematic, foundSectionSchematic)
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
 
@@ -161,22 +119,20 @@ class SchematicDock(ToolDockWidget):
     def _setContextStatus(self, foundData, foundSchematic, foundSectionSchematic):
         self._contextDataStatus = foundData
         self._contextSchematicStatus = foundSchematic
-        self._setStatusLabel(self.widget.contextDataStatusLabel, foundData)
-        self._setStatusLabel(self.widget.contextSchematicStatusLabel, foundSchematic)
-        self._setStatusLabel(self.widget.sectionSchematicStatusLabel, foundSectionSchematic)
-        self.widget.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
+        self._setStatusLabel(self.contextDataStatusLabel, foundData)
+        self._setStatusLabel(self.contextSchematicStatusLabel, foundSchematic)
+        self._setStatusLabel(self.sectionSchematicStatusLabel, foundSectionSchematic)
+        self.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
-        self._enableDraw(foundSchematic == SearchStatus.NotFound)
-        self._enableAuto()
 
     def sourceItemKey(self):
-        return ItemKey(self.widget.metadataWidget.siteCode(), 'cxt', self.sourceContext())
+        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.sourceContext())
 
     def sourceContext(self):
-        return self.widget.sourceContextSpin.value()
+        return self.sourceContextSpin.value()
 
     def setSourceContext(self, context, foundData, foundSchematic):
-        self.widget.sourceContextSpin.setValue(context)
+        self.sourceContextSpin.setValue(context)
         self._setSourceStatus(foundData, foundSchematic)
 
     def sourceStatus(self):
@@ -189,11 +145,10 @@ class SchematicDock(ToolDockWidget):
     def _setSourceStatus(self, foundData, foundSchematic):
         self._sourceDataStatus = foundData
         self._sourceSchematicStatus = foundSchematic
-        self._setStatusLabel(self.widget.sourceDataStatusLabel, foundData)
-        self._setStatusLabel(self.widget.sourceSchematicStatusLabel, foundSchematic)
+        self._setStatusLabel(self.sourceDataStatusLabel, foundData)
+        self._setStatusLabel(self.sourceSchematicStatusLabel, foundSchematic)
         self._enableClone(foundSchematic == SearchStatus.Found)
-        self.widget.editSourceButton.setEnabled(self.sourceStatus() == SearchStatus.Found)
-        self._enableAuto()
+        self.editSourceButton.setEnabled(self.sourceStatus() == SearchStatus.Found)
 
     def _setStatusLabel(self, label, status):
         if status == SearchStatus.Found:
@@ -204,26 +159,15 @@ class SchematicDock(ToolDockWidget):
             label.setPixmap(QPixmap(':/plugins/ark/plan/statusUnknown.png'))
 
     def _enableSource(self, enable):
-        self.widget.sourceContextSpin.setEnabled(enable)
-        self.widget.findSourceTool.setEnabled(enable)
-        self.widget.zoomSourceTool.setEnabled(enable)
+        self.sourceContextSpin.setEnabled(enable)
+        self.findSourceTool.setEnabled(enable)
+        self.zoomSourceTool.setEnabled(enable)
         if not enable:
             self._enableClone(enable)
 
     def _enableClone(self, enable):
-        self.widget.copySourceButton.setEnabled(enable)
-        self.widget.cloneSourceButton.setEnabled(enable)
-
-    def _enableDraw(self, enable):
-        self.widget.metadataWidget.setEnabled(enable)
-        for tool in self._tools:
-            tool.setEnabled(enable)
-
-    def _enableAuto(self):
-        auto = (self._contextDataStatus == SearchStatus.Found and self._contextSchematicStatus == SearchStatus.NotFound) or self._sourceDataStatus == SearchStatus.Found
-        if auto:
-            self.widget.metadataWidget.setEnabled(True)
-        self.widget.autoSchematicTool.setEnabled(auto)
+        self.copySourceButton.setEnabled(enable)
+        self.cloneSourceButton.setEnabled(enable)
 
     def _contextChanged(self):
         self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
@@ -231,11 +175,3 @@ class SchematicDock(ToolDockWidget):
 
     def _sourceContextChanged(self):
         self._setSourceStatus(SearchStatus.Unknown, SearchStatus.Unknown)
-
-    def _autoSchematicSelected(self):
-        if self._sourceDataStatus == SearchStatus.Found:
-            self.widget.metadataWidget.validate()
-            self.autoSchematicSelected.emit(str(self.sourceContext()))
-        elif self._contextDataStatus == SearchStatus.Found:
-            self.widget.metadataWidget.validate()
-            self.autoSchematicSelected.emit(str(self.context()))

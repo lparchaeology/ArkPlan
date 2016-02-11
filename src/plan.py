@@ -34,8 +34,6 @@ from ..libarkqgis import utils, layers, geometry
 from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
-from edit_dock import EditDock
-from schematic_dock import SchematicDock, SearchStatus
 from select_drawing_dialog import SelectDrawingDialog
 
 from filter import FilterType, FilterAction
@@ -59,8 +57,6 @@ class Plan(QObject):
     project = None # Project()
 
     dock = None # PlanDock()
-    editDock = None # EditDock()
-    schematicDock = None # SchematicDock()
 
     # Internal variables
     initialised = False
@@ -92,43 +88,33 @@ class Plan(QObject):
 
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
-        self.dock.loadContextSelected.connect(self._loadContextPlans)
-        self.dock.loadPlanSelected.connect(self._loadPlans)
-        self.dock.featureNameChanged.connect(self._featureNameChanged)
+
         self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
         self.dock.editPointsSelected.connect(self._editPointsLayer)
         self.dock.editLinesSelected.connect(self._editLinesLayer)
         self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
+        self.dock.featureNameChanged.connect(self._featureNameChanged)
         self.dock.sectionChanged.connect(self._sectionChanged)
-
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.schematicDock = SchematicDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/checkSchematic.png', self.tr(u'Check Context Schematics'), callback=self.runSchematic, checkable=True)
+        self.dock.findContextSelected.connect(self._findPanContext)
+        self.dock.zoomContextSelected.connect(self._findZoomContext)
+        self.dock.editContextSelected.connect(self._editSchematicContext)
+        self.dock.findSourceSelected.connect(self._findPanSource)
+        self.dock.zoomSourceSelected.connect(self._findZoomSource)
+        self.dock.copySourceSelected.connect(self._editSourceSchematic)
+        self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
+        self.dock.editSourceSelected.connect(self._editSource)
+        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
+        self.dock.editLinesSelected.connect(self._editLinesLayer)
+        self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
+        self.dock.resetSelected.connect(self._resetSchematic)
 
-        self.schematicDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-        self.schematicDock.findContextSelected.connect(self._findPanContext)
-        self.schematicDock.zoomContextSelected.connect(self._findZoomContext)
-        self.schematicDock.editContextSelected.connect(self._editSchematicContext)
-        self.schematicDock.findSourceSelected.connect(self._findPanSource)
-        self.schematicDock.zoomSourceSelected.connect(self._findZoomSource)
-        self.schematicDock.copySourceSelected.connect(self._editSourceSchematic)
-        self.schematicDock.cloneSourceSelected.connect(self._cloneSourceSchematic)
-        self.schematicDock.editSourceSelected.connect(self._editSource)
-        self.schematicDock.autoSchematicSelected.connect(self._autoSchematicSelected)
-        self.schematicDock.editLinesSelected.connect(self._editLinesLayer)
-        self.schematicDock.editPolygonsSelected.connect(self._editPolygonsLayer)
-        self.schematicDock.resetSelected.connect(self._resetSchematic)
-        self.schematicDock.clearSelected.connect(self._clearSchematic)
-        self.schematicDock.mergeSelected.connect(self._mergeSchematic)
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
 
-        self.editDock = EditDock(self.project.iface, self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/editingTools.png', self.tr(u'Editing Tools'), callback=self.runEdit, checkable=True)
-        self.editDock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
-
-        self.metadata = Metadata(self.dock.metadataWidget, self.schematicDock.widget.metadataWidget)
+        # TODO Think of a better way...
+        self.metadata = Metadata(self.dock.widget.metadataWidget)
         self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
     # Load the project settings when project is loaded
@@ -140,8 +126,9 @@ class Plan(QObject):
         self.siteCodes.add(self.project.siteCode())
         self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
 
+        self.dock.loadProject(self.project)
+        # TODO Move these into widgets???
         self.dock.initSections(self._sectionItemList(self.project.siteCode()))
-
         for category in Config.featureCategories:
             #TODO Select by map tool type enum
             if category[2] == 'lvl' or category[2] == 'llv':
@@ -153,12 +140,6 @@ class Plan(QObject):
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
 
-        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
-        self.schematicDock.addDrawingTool('sch', self.actions['sch'])
-        self.schematicDock.addDrawingTool('lvl', self.actions['lvl'])
-
-        self.editDock.loadProject(self.project)
-
         self.initialised = True
 
     # Save the project
@@ -169,7 +150,7 @@ class Plan(QObject):
     def closeProject(self):
         self._clearSchematicFilters()
         # TODO Unload the drawing tools!
-        self.editDock.closeProject()
+        self.dock.closeProject()
         self.initialised = False
 
     # Unload the module when plugin is unloaded
@@ -182,33 +163,14 @@ class Plan(QObject):
         self.initialised = False
         self._buffersInitialised = False
 
-        # Unload the docks
-        self.schematicDock.unloadGui()
-        self.editDock.unloadGui()
-        del self.editDock
+        # Unload the dock
         self.dock.unloadGui()
 
     def run(self, checked):
         if checked and self.initialised:
-            self.schematicDock.menuAction().setChecked(False)
-            self.editDock.menuAction().setChecked(False)
-        else:
-            self.dock.menuAction().setChecked(False)
-
-    def runEdit(self, checked):
-        if checked and self.initialised:
-            self.schematicDock.menuAction().setChecked(False)
-            self.dock.menuAction().setChecked(False)
-        else:
-            self.editDock.menuAction().setChecked(False)
-
-    def runSchematic(self, checked):
-        if checked and self.initialised:
-            self.dock.menuAction().setChecked(False)
-            self.editDock.menuAction().setChecked(False)
             self.project.filterModule.showDock()
         else:
-            self.schematicDock.menuAction().setChecked(False)
+            self.dock.menuAction().setChecked(False)
 
     def initialiseBuffers(self):
         if self._buffersInitialised:
@@ -246,16 +208,6 @@ class Plan(QObject):
                 geoFile = QFileInfo(filePath)
                 self._setPlanMetadata(PlanMetadata(geoFile))
                 self.project.loadGeoLayer(geoFile)
-
-    def _loadContextPlans(self):
-        context, ok = QInputDialog.getInt(None, 'Load Context Plans', 'Please enter the Context number to load all drawings for:', 1, 1, 99999)
-        if (ok and context > 0):
-            self.loadDrawing(ItemKey(self.project.siteCode(), 'cxt', context))
-
-    def _loadPlans(self):
-        plan, ok = QInputDialog.getInt(None, 'Load Plans', 'Please enter the Plan number to load all drawings for:', 1, 1, 99999)
-        if (ok and plan > 0):
-            self.loadDrawing(ItemKey(self.project.siteCode(), 'pln', plan))
 
     def loadDrawing(self, itemKey, zoomToDrawing=True):
         drawingDir = self.project.georefDrawingDir(itemKey.classCode)

@@ -51,7 +51,6 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         self.setupUi(self)
 
     def initGui(self):
-
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
             if classCode['plan']:
@@ -72,6 +71,15 @@ class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
         self.sourceFileEdit.editingFinished.connect(self._sourceFileChanged)
         self.commentEdit.editingFinished.connect(self._commentChanged)
         self.createdByEdit.editingFinished.connect(self._createdByChanged)
+
+    def unloadGui(self):
+        pass
+
+    def loadProject(self, project):
+        pass
+
+    def closeProject(self):
+        pass
 
     def setSiteCode(self, siteCode):
         self.siteEdit.setText(siteCode)

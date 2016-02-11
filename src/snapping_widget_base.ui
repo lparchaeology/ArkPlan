@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SnappingWidget</class>
+ <widget class="QGroupBox" name="SnappingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>324</width>
+    <height>169</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>GroupBox</string>
+  </property>
+  <property name="title">
+   <string>Snapping Layers</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="1">
+    <widget class="QLabel" name="snapPointsLabel">
+     <property name="text">
+      <string>Points</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="snapLinesLabel">
+     <property name="text">
+      <string>Lines</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="snapPolygonsLabel">
+     <property name="text">
+      <string>Polys</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="snapBuffersLabel">
+     <property name="text">
+      <string>Snap Buffers:</string>
+     </property>
+     <property name="buddy">
+      <cstring>snapBufferPointsTool</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QToolButton" name="snapBufferPointsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QToolButton" name="snapBufferLinesTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QToolButton" name="snapBufferPolygonsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="snapPlanLabel">
+     <property name="text">
+      <string>Snap Plan Data:</string>
+     </property>
+     <property name="buddy">
+      <cstring>snapPlanPointsTool</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QToolButton" name="snapPlanPointsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QToolButton" name="snapPlanLinesTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QToolButton" name="snapPlanPolygonsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="snapBaseLabel">
+     <property name="text">
+      <string>Snap Base Data:</string>
+     </property>
+     <property name="buddy">
+      <cstring>snapBasePointsTool</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QToolButton" name="snapBasePointsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QToolButton" name="snapBaseLinesTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QToolButton" name="snapBasePolygonsTool">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="4">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>238</width>
+       <height>7</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

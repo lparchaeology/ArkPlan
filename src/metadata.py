@@ -37,14 +37,11 @@ class Metadata(QObject):
 
     itemFeature = ItemFeature()
     _planWidget = None  # MetadataWidget
-    _schematicWidget = None  # MetadataWidget
 
     def __init__(self, planWidget, schematicWidget, parent=None):
         super(Metadata, self).__init__(parent)
         self._planWidget = planWidget
         self._connectWidget(self._planWidget)
-        self._schematicWidget = schematicWidget
-        self._connectWidget(self._schematicWidget)
 
     def _connectWidget(self, widget):
         widget.siteCodeChanged.connect(self._setSiteCode)
@@ -65,7 +62,6 @@ class Metadata(QObject):
         self.itemFeature.key.setSiteCode(siteCode)
         self.itemFeature.source.key.setSiteCode(siteCode)
         self._planWidget.setSiteCode(self.siteCode())
-        self._schematicWidget.setSiteCode(self.siteCode())
 
     def _setSiteCode(self, siteCode):
         self.setSiteCode(siteCode)
@@ -77,7 +73,6 @@ class Metadata(QObject):
     def setClassCode(self, classCode):
         self.itemFeature.key.setClassCode(classCode)
         self._planWidget.setClassCode(self.classCode())
-        self._schematicWidget.setClassCode(self.classCode())
 
     def _setClassCode(self, classCode):
         self.setClassCode(classCode)
@@ -89,7 +84,6 @@ class Metadata(QObject):
     def setItemId(self, itemId):
         self.itemFeature.key.setItemId(itemId)
         self._planWidget.setItemId(self.itemId())
-        self._schematicWidget.setItemId(self.itemId())
 
     def _setItemId(self, itemId):
         self.setItemId(itemId)
@@ -113,7 +107,6 @@ class Metadata(QObject):
     def setSourceCode(self, sourceCode):
         self.itemFeature.source.setSourceCode(sourceCode)
         self._planWidget.setSourceCode(self.sourceCode())
-        self._schematicWidget.setSourceCode(self.sourceCode())
 
     def _setSourceCode(self, sourceCode):
         self.setSourceCode(sourceCode)
@@ -125,7 +118,6 @@ class Metadata(QObject):
     def setSourceClass(self, sourceClass):
         self.itemFeature.source.setSourceClass(sourceClass)
         self._planWidget.setSourceClass(self.sourceClass())
-        self._schematicWidget.setSourceClass(self.sourceClass())
 
     def _setSourceClass(self, sourceClass):
         self.setSourceClass(sourceClass)
@@ -137,7 +129,6 @@ class Metadata(QObject):
     def setSourceId(self, sourceId):
         self.itemFeature.source.setSourceId(sourceId)
         self._planWidget.setSourceId(self.sourceId())
-        self._schematicWidget.setSourceId(self.sourceId())
 
     def _setSourceId(self, sourceId):
         self.setSourceId(sourceId)
@@ -149,7 +140,6 @@ class Metadata(QObject):
     def setSourceFile(self, sourceFile):
         self.itemFeature.source.setFilename(sourceFile)
         self._planWidget.setSourceFile(self.sourceFile())
-        self._schematicWidget.setSourceFile(self.sourceFile())
 
     def _setSourceFile(self, sourceFile):
         self.setSourceFile(sourceFile)
@@ -161,7 +151,6 @@ class Metadata(QObject):
     def setComment(self, comment):
         self.itemFeature.setComment(comment)
         self._planWidget.setComment(self.comment())
-        self._schematicWidget.setComment(self.comment())
 
     def _setComment(self, comment):
         self.setComment(comment)
@@ -173,7 +162,6 @@ class Metadata(QObject):
     def setCreatedBy(self, createdBy):
         self.itemFeature.setCreatedBy(createdBy)
         self._planWidget.setCreatedBy(self.createdBy())
-        self._schematicWidget.setCreatedBy(self.createdBy())
 
     def _setCreatedBy(self, createdBy):
         self.setCreatedBy(createdBy)

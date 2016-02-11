@@ -626,7 +626,7 @@ class ArkSpatial(Plugin):
         else:
             self.mapCanvas().unsetMapTool(self.identifyMapTool)
 
-    # Show Context Tool
+    # Show Items Tool
 
     def _showItem(self):
         classCodes = sorted(set(self.plan.uniqueValues(self.fieldName('class'))))

@@ -42,7 +42,7 @@ class PlanDock(ArkDockWidget, plan_dock_base.Ui_PlanDockWidget):
     loadPlanSelected = pyqtSignal()
 
     featureNameChanged = pyqtSignal(str)
-    autoSchematicSelected = pyqtSignal(int)
+    autoSchematicSelected = pyqtSignal(str)
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()

@@ -63,7 +63,7 @@ class SchematicDock(ToolDockWidget):
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     editSourceSelected = pyqtSignal()
-    autoSchematicSelected = pyqtSignal(int)
+    autoSchematicSelected = pyqtSignal(str)
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
     resetSelected = pyqtSignal()
@@ -235,7 +235,7 @@ class SchematicDock(ToolDockWidget):
     def _autoSchematicSelected(self):
         if self._sourceDataStatus == SearchStatus.Found:
             self.widget.metadataWidget.validate()
-            self.autoSchematicSelected.emit(self.sourceContext())
+            self.autoSchematicSelected.emit(str(self.sourceContext()))
         elif self._contextDataStatus == SearchStatus.Found:
             self.widget.metadataWidget.validate()
-            self.autoSchematicSelected.emit(self.context())
+            self.autoSchematicSelected.emit(str(self.context()))

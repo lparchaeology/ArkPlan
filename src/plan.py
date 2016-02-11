@@ -483,8 +483,10 @@ class Plan(QObject):
         else:
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
-                if feature.attribute(self.project.fieldName('id')) == sourceId and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                if str(feature.attribute(self.project.fieldName('id'))) == str(sourceId) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
+        if len(definitiveFeatures) <= 0:
+            return
         schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
             return

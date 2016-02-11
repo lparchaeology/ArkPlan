@@ -276,6 +276,7 @@ class Plan(QObject):
 
     def loadSourceDrawings(self, itemKey):
         sourceKeys = set()
+        sourceKeys.add(itemKey)
         itemRequest = itemKey.featureRequest()
         for feature in self.project.plan.polygonsLayer.getFeatures(itemRequest):
             itemSource = ItemSource(feature)

@@ -25,15 +25,16 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import QGroupBox
 
 from qgis.core import NULL
 
-import metadata_widget_base
 from config import Config
 
-class MetadataWidget(QWidget, metadata_widget_base.Ui_MetadataWidget):
+import metadata_widget_base
+
+class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
 
     siteCodeChanged = pyqtSignal(str)
     classCodeChanged = pyqtSignal(str)

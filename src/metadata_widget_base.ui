@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>328</width>
-    <height>291</height>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string>Metadata</string>
   </property>
   <property name="title">
    <string>Metadata</string>
@@ -24,6 +24,9 @@
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Item ID:</string>
+     </property>
+     <property name="buddy">
+      <cstring>classCombo</cstring>
      </property>
     </widget>
    </item>
@@ -116,6 +119,9 @@
      <property name="text">
       <string>Source ID:</string>
      </property>
+     <property name="buddy">
+      <cstring>sourceClassCombo</cstring>
+     </property>
     </widget>
    </item>
    <item row="2" column="0">
@@ -153,6 +159,7 @@
    </item>
   </layout>
  </widget>
+ <tabstops/>
  <resources/>
  <connections/>
 </ui>

@@ -30,8 +30,9 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, QDir
 from PyQt4.QtGui import QDialog, QDialogButtonBox, QAbstractItemView
 
+from ..libarkqgis.event_filters import ReturnPressedFilter
+
 from select_drawing_dialog_base import *
-from schematic_dock import ReturnPressedFilter
 from config import Config
 
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):

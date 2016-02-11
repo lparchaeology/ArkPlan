@@ -106,9 +106,6 @@ class Plan(QObject):
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.dock.editSourceSelected.connect(self._editSource)
-        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
-        self.dock.editLinesSelected.connect(self._editLinesLayer)
-        self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
         self.dock.resetSelected.connect(self._resetSchematic)
 
         self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
@@ -443,18 +440,18 @@ class Plan(QObject):
             self.metadata.setSourceId(self.metadata.itemId())
         self.dock.setFeatureName(self.metadata.name())
 
-    def _autoSchematicSelected(self, sourceId):
+    def _autoSchematicSelected(self):
         self.actions['sch'].trigger()
-        self._autoSchematic(sourceId, self.metadata, self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
+        self._autoSchematic(self.metadata, self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
 
-    def _autoSchematic(self, sourceId, md, inLayer, outLayer):
+    def _autoSchematic(self, md, inLayer, outLayer):
         definitiveFeatures = []
         if inLayer.selectedFeatureCount() > 0:
             definitiveFeatures = inLayer.selectedFeatures()
         else:
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
-                if str(feature.attribute(self.project.fieldName('id'))) == str(sourceId) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                if str(feature.attribute(self.project.fieldName('id'))) == str(md.sourceId()) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
         if len(definitiveFeatures) <= 0:
             return

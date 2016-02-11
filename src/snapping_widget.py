@@ -25,7 +25,7 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QGroupBox
 
 from qgis.core import QgsProject
 
@@ -33,7 +33,7 @@ from ..libarkqgis.snapping import *
 
 import snapping_widget_base
 
-class SnappingWidget(QWidget, snapping_widget_base.Ui_SnappingWidget):
+class SnappingWidget(QGroupBox, snapping_widget_base.Ui_SnappingWidget):
 
     def __init__(self, parent=None):
         super(SnappingWidget, self).__init__(parent)

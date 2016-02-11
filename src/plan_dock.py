@@ -28,7 +28,7 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QWidget, QMenu, QAction, QIcon, QToolButton
+from PyQt4.QtGui import QDockWidget, QTabWidget, QMenu, QAction, QIcon, QToolButton
 
 from qgis.core import QgsProject
 
@@ -37,7 +37,7 @@ from ..libarkqgis.snapping import *
 
 import plan_widget_base
 
-class PlanWidget(QWidget, plan_widget_base.Ui_PlanWidget):
+class PlanWidget(QTabWidget, plan_widget_base.Ui_PlanWidget):
 
     def __init__(self, parent=None):
         super(PlanWidget, self).__init__(parent)
@@ -51,7 +51,7 @@ class PlanDock(ToolDockWidget):
     loadGeoFileSelected = pyqtSignal()
 
     # Drawing Signals
-    autoSchematicSelected = pyqtSignal(str)
+    autoSchematicSelected = pyqtSignal()
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
@@ -92,11 +92,11 @@ class PlanDock(ToolDockWidget):
         self.toolbar.addAction(iface.actionZoomLast())
         self.toolbar.addAction(iface.actionZoomNext())
         self.toolbar.addSeparator()
-        self._loadRawAction = QAction(self, 'Raw')
-        self._loadRawAction.trigger.connect(self.loadRawFileSelected)
+        self._loadRawAction = QAction('Raw', self)
+        self._loadRawAction.triggered.connect(self.loadRawFileSelected)
         self.toolbar.addAction(self._loadRawAction)
-        self._loadGeoAction = QAction(self, 'Geo')
-        self._loadGeoAction.trigger.connect(self.loadGeoFileSelected)
+        self._loadGeoAction = QAction('Geo', self)
+        self._loadGeoAction.triggered.connect(self.loadGeoFileSelected)
         self.toolbar.addAction(self._loadGeoAction)
         self.toolbar.addSeparator()
         self._snappingAction = ProjectSnappingAction(self)
@@ -120,8 +120,9 @@ class PlanDock(ToolDockWidget):
         self.widget.drawingWidget.editPolygonsSelected.connect(self.editPolygonsSelected)
         self.widget.drawingWidget.featureNameChanged.connect(self.featureNameChanged)
         self.widget.drawingWidget.sectionChanged.connect(self.sectionChanged)
-        self.widget.drawingWidget.clearSelected.connect(self.clearSelected)
-        self.widget.drawingWidget.mergeSelected.connect(self.mergeSelected)
+
+        self.widget.clearButton.clicked.connect(self.clearSelected)
+        self.widget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.findContextSelected.connect(self.findContextSelected)
         self.widget.schematicWidget.zoomContextSelected.connect(self.zoomContextSelected)
@@ -131,7 +132,8 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.copySourceSelected.connect(self.copySourceSelected)
         self.widget.schematicWidget.cloneSourceSelected.connect(self.cloneSourceSelected)
         self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
-        self.widget.schematicWidget.resetSelected.connect(self.resetSelected)
+
+        self.widget.schematicWidget.resetButton.clicked.connect(self.resetSelected)
 
     def unloadGui(self):
         self.widget.metadataWidget.unloadGui()

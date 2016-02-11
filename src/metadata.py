@@ -38,7 +38,7 @@ class Metadata(QObject):
     itemFeature = ItemFeature()
     _planWidget = None  # MetadataWidget
 
-    def __init__(self, planWidget, schematicWidget, parent=None):
+    def __init__(self, planWidget, parent=None):
         super(Metadata, self).__init__(parent)
         self._planWidget = planWidget
         self._connectWidget(self._planWidget)

@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MetadataWidget(object):
     def setupUi(self, MetadataWidget):
         MetadataWidget.setObjectName(_fromUtf8("MetadataWidget"))
-        MetadataWidget.resize(328, 291)
+        MetadataWidget.resize(328, 312)
         self.gridLayout = QtGui.QGridLayout(MetadataWidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.sourceFileEdit = QtGui.QLineEdit(MetadataWidget)
@@ -88,9 +88,11 @@ class Ui_MetadataWidget(object):
         self.gridLayout.addWidget(self.commentLabel, 5, 0, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 7, 1, 1, 1)
+        self.label.setBuddy(self.classCombo)
         self.createdByLabel.setBuddy(self.createdByEdit)
         self.siteLabel.setBuddy(self.siteEdit)
         self.sourceFileLabel.setBuddy(self.sourceFileEdit)
+        self.sourceIdLabel.setBuddy(self.sourceClassCombo)
         self.sourceCodeLabel.setBuddy(self.sourceCodeCombo)
         self.commentLabel.setBuddy(self.commentEdit)
 
@@ -98,7 +100,7 @@ class Ui_MetadataWidget(object):
         QtCore.QMetaObject.connectSlotsByName(MetadataWidget)
 
     def retranslateUi(self, MetadataWidget):
-        MetadataWidget.setWindowTitle(_translate("MetadataWidget", "GroupBox", None))
+        MetadataWidget.setWindowTitle(_translate("MetadataWidget", "Metadata", None))
         MetadataWidget.setTitle(_translate("MetadataWidget", "Metadata", None))
         self.label.setText(_translate("MetadataWidget", "Item ID:", None))
         self.createdByLabel.setText(_translate("MetadataWidget", "Digitised By:", None))

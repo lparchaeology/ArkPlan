@@ -28,21 +28,18 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QToolButton
+from PyQt4.QtGui import QTabWidget, QToolButton
 
 import drawing_widget_base
 
-class DrawingWidget(QWidget, plan_widget_base.Ui_PlanWidget):
+class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
 
-    autoSchematicSelected = pyqtSignal(str)
+    autoSchematicSelected = pyqtSignal()
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
     featureNameChanged = pyqtSignal(str)
     sectionChanged = pyqtSignal(object)
-
-    clearSelected = pyqtSignal()
-    mergeSelected = pyqtSignal()
 
     _cgColMax = 3
     _cgCol = 0
@@ -59,15 +56,12 @@ class DrawingWidget(QWidget, plan_widget_base.Ui_PlanWidget):
         self.setupUi(self)
 
     def initGui(self):
-        self.autoSchematicTool.clicked.connect(self._autoSchematicSelected)
+        self.autoSchematicTool.clicked.connect(self.autoSchematicSelected)
         self.editPointsTool.clicked.connect(self.editPointsSelected)
         self.editLinesTool.clicked.connect(self.editLinesSelected)
         self.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)
         self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
-
-        self.clearButton.clicked.connect(self.clearSelected)
-        self.mergeButton.clicked.connect(self.mergeSelected)
 
     def unloadGui(self):
         pass
@@ -130,9 +124,6 @@ class DrawingWidget(QWidget, plan_widget_base.Ui_PlanWidget):
                 self._fgCol = 0
             else:
                 self._fgCol += 1
-
-    def _autoSchematicSelected(self):
-        self.autoSchematicSelected.emit(self.metadataWidget.itemId())
 
     def _sectionChanged(self, idx):
         self.sectionChanged.emit(self.sectionCombo.itemData(idx))

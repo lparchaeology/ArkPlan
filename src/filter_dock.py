@@ -202,9 +202,7 @@ class FilterDock(ToolDockWidget):
         return False
 
     def _clearFilterClicked(self):
-        for index in self._filterClauses.keys():
-            self._removeFilterClause(index)
-        self.filterChanged.emit()
+        self.removeFilters()
         self.clearFilterSelected.emit()
 
     def currentFilterSet(self):

@@ -71,7 +71,7 @@ class Filter(QObject):
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.buildSelectionSelected.connect(self.buildSelection)
-        self.dock.clearFilterSelected.connect(self.clearFilterSet)
+        self.dock.clearFilterSelected.connect(self._clearFilterSet)
         self.dock.clearFilterSelected.connect(self.filterSetCleared)
         self.dock.loadDataSelected.connect(self.loadData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
@@ -113,7 +113,7 @@ class Filter(QObject):
     # Close the project
     def closeProject(self):
         #FIXME Doesn't clear on quit as layers already unloaded by main program!
-        self.clearFilterSet()
+        self.removeFilters()
         # Reset the initialisation
         self._initialised = False
         self._dataLoaded = False
@@ -132,7 +132,7 @@ class Filter(QObject):
     # Filter methods
 
     def filterItem(self, itemKey):
-        self.clearFilterSet()
+        self.removeFilters()
         self.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.zoomFilter()
 
@@ -207,7 +207,7 @@ class Filter(QObject):
         self.applySelection(selectString)
 
 
-    def clearFilterSet(self):
+    def _clearFilterSet(self):
         if not self._initialised:
             return
         self.project.plan.clearFilter()

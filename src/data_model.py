@@ -33,6 +33,8 @@ from PyQt4.QtGui import QSortFilterProxyModel
 
 from ..libarkqgis.models import TableModel, ParentChildModel
 
+from ..pyARK.ark import Ark
+
 from plan_item import ItemKey
 
 class ItemModel(TableModel):
@@ -112,26 +114,18 @@ class DataManager(QObject):
         project.logMessage('loadItems: ' + classCode)
         if not project.arkUrl():
             return
-        user = 'user'
-        password = 'password'
-        url = project.arkUrl() + '/api.php?req=getItems&itemkey=' + classCode + '_cd&handle=' + user + '&passwd=' + password
-        project.logMessage('Calling: ' + url)
-        try:
-            response = urllib2.urlopen(url)
-            project.logMessage(str(response.geturl()))
-            project.logMessage(str(response.getcode()))
-            project.logMessage(str(response.info()))
-            if response.getcode() == 200:
-                project.logMessage(str(response.read()))
-                data = json.load(response)
-            else:
-                project.logMessage('Not 200!')
-        except urllib2.HTTPError as e:
-            project.logMessage('HTTPError! ' + str(e.code) + ' ' + str(e.reason))
-        except urllib2.URLError as e:
-            project.logMessage('URLError! ' + str(e.reason))
-        except ValueError:
-            project.logMessage('ValueError!')
+        _user = 'user'
+        _password = 'password'
+        ark = Ark(project.arkUrl(), _user, _password)
+        response = ark.getItems(classCode + '_cd')
+        if response.error:
+            project.logMessage(response.url)
+            project.logMessage(response.message)
+            project.logMessage(response.raw)
+        else:
+            project.logMessage(response.url)
+            project.logMessage(response.raw)
+            project.logMessage(str(response.data))
 
     def _addLinks(self, table):
         for record in table:

@@ -27,6 +27,16 @@
 import json
 import urllib2
 
+class ArkResponse():
+    url = ''
+    response = None
+    data = ''
+    raw = ''
+    message = ''
+    error = True
+    code = -1
+    reason = ''
+
 class Ark():
 
     # ViewType
@@ -151,38 +161,50 @@ class Ark():
         return Ark.AllClasses
 
     def _getJson(self, req, args):
-        url = self._buildUrl(req, args)
-        print 'Making ARK call: ' + url
+        ret = ArkResponse()
+        ret.url = self._buildUrl(req, args)
+        ret.data = json.loads('{}')
         try:
-            response = urllib2.urlopen(url)
+            ret.response = urllib2.urlopen(ret.url)
         except urllib2.HTTPError as e:
-            print 'ARK server could not complete the request: ', e.code
-            return json.loads('{}')
+            ret.message = 'ARK server could not complete the request: ' + str(e.code)
+            ret.code = e.code
+            ret.reason = e.reason
         except urllib2.URLError as e:
-            print 'Could not reach the ARK server: ', e.reason
-            return json.loads('{}')
+            ret.message = 'Could not reach the ARK server: ' + str(e.reason)
+            ret.reason = e.reason
         else:
+            ret.code = ret.response.getcode()
+            ret.raw = ret.response.read()
             try:
-                return json.load(response)
+                ret.data = json.load(ret.response)
+                ret.error = False
             except:
-                return json.loads('{}')
+                ret.message = 'Invalid JSON'
+                ret.reason = 'Invalid JSON'
+        return ret
 
     def _getHtml(self, req, args):
-        url = self._buildUrl(req, args)
-        print 'Making ARK call: ' + url
+        ret = ArkResponse()
+        ret.url = self._buildUrl(req, args)
         try:
-            response = urllib2.urlopen(url)
+            ret.response = urllib2.urlopen(ret.url)
         except urllib2.HTTPError as e:
-            print 'ARK server could not complete the request: ', e.code
-            return ''
+            ret.message = 'ARK server could not complete the request: ' + str(e.code)
+            ret.code = e.code
+            ret.reason = e.reason
         except urllib2.URLError as e:
-            print 'Could not reach the ARK server: ', e.reason
-            return ''
+            ret.message = 'Could not reach the ARK server: ' + str(e.reason)
+            ret.reason = e.reason
         else:
-            return response.read()
+            ret.code = ret.response.getcode()
+            ret.data = ret.response.read()
+            ret.raw = ret.data
+            ret.error = False
+        return ret
 
     def _buildUrl(self, req, args):
-        url = u'http://' + self.url + u'/api.php?req=' + unicode(req)
+        url = self.url + u'/api.php?req=' + unicode(req)
         for key in args.keys():
             url += self._arg(key, args[key])
         if self.handle and self.passwd:

@@ -172,7 +172,7 @@ class Ui_SchematicWidget(object):
 
     def retranslateUi(self, SchematicWidget):
         SchematicWidget.setWindowTitle(_translate("SchematicWidget", "Form", None))
-        self.checkGroup.setTitle(_translate("SchematicWidget", "Check", None))
+        self.checkGroup.setTitle(_translate("SchematicWidget", "Check Schematic", None))
         self.contextLabel.setText(_translate("SchematicWidget", "Context:", None))
         self.editContextButton.setText(_translate("SchematicWidget", "Edit", None))
         self.sectionSchematicLabel.setText(_translate("SchematicWidget", "Has Section Schematic:", None))
@@ -186,7 +186,7 @@ class Ui_SchematicWidget(object):
         self.findContextTool.setText(_translate("SchematicWidget", "...", None))
         self.siteCodeLabel.setText(_translate("SchematicWidget", "Site Code:", None))
         self.contextSpin.setToolTip(_translate("SchematicWidget", "<html><head/><body><p>Enter Context to find</p></body></html>", None))
-        self.cloneGroup.setTitle(_translate("SchematicWidget", "Clone", None))
+        self.cloneGroup.setTitle(_translate("SchematicWidget", "Clone Schematic", None))
         self.copySourceLabel.setText(_translate("SchematicWidget", "Copy and Edit Schematic:", None))
         self.sourceContextLabel.setText(_translate("SchematicWidget", "Source Context:", None))
         self.copySourceButton.setText(_translate("SchematicWidget", "Copy", None))

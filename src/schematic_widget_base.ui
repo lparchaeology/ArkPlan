@@ -33,7 +33,7 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="checkGroup">
      <property name="title">
-      <string>Check</string>
+      <string>Check Schematic</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="1" column="0">
@@ -178,7 +178,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="cloneGroup">
      <property name="title">
-      <string>Clone</string>
+      <string>Clone Schematic</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="5" column="0" colspan="3">

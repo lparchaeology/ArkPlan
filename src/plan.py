@@ -680,6 +680,7 @@ class Plan(QObject):
             self.zoomToItem(self.dock.contextItemKey())
 
     def _editSchematicContext(self):
+        self._editSchematic = True
         self.editInBuffers(self.dock.contextItemKey())
         self.dock.widget.setCurrentIndex(0)
 

@@ -63,7 +63,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
             sourceCode = Config.sourceCodes[key]
             self.sourceCodeCombo.addItem(sourceCode['label'], sourceCode['code'])
 
-        self.siteEdit.editingFinished.connect(self._siteCodeChanged)
+        self.siteCodeCombo.currentIndexChanged.connect(self._classCodeChanged)
         self.classCombo.currentIndexChanged.connect(self._classCodeChanged)
         self.idSpin.valueChanged.connect(self._itemIdChanged)
         self.sourceCodeCombo.currentIndexChanged.connect(self._sourceCodeChanged)
@@ -77,25 +77,30 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
         pass
 
     def loadProject(self, project):
-        pass
+        self.siteCodeCombo.clear()
+        for siteCode in sorted(set(project.siteCodes())):
+            self.siteCodeCombo.addItem(siteCode, siteCode)
+        self.setSiteCode(project.siteCode())
 
     def closeProject(self):
         pass
 
     def setSiteCode(self, siteCode):
-        self.siteEdit.setText(siteCode)
+        idx = self.siteCodeCombo.findData(siteCode)
+        if idx >= 0:
+            self.siteCodeCombo.setCurrentIndex(idx)
 
     def siteCode(self):
-        return self.siteEdit.text()
+        return self.classCombo.itemData(self.classCombo.currentIndex())
 
-    def _siteCodeChanged(self):
-        self.siteCodeChanged.emit(self.siteCode())
+    def _siteCodeChanged(self, idx):
+        self.siteCodeChanged.emit(self.siteCodeCombo.itemData(idx))
 
     def setClassCode(self, classCode):
         self.classCombo.setCurrentIndex(self.classCombo.findData(classCode))
 
     def classCode(self):
-        self.classCombo.itemData(self.classCombo.currentIndex())
+        return self.classCombo.itemData(self.classCombo.currentIndex())
 
     def _classCodeChanged(self, idx):
         self.classCodeChanged.emit(self.classCombo.itemData(idx))

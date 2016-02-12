@@ -44,7 +44,22 @@ class SnappingWidget(QGroupBox, snapping_widget_base.Ui_SnappingWidget):
         pass
 
     def unloadGui(self):
-        pass
+        #self.snapBufferPointsTool.defaultAction().unload()
+        del self.snapBufferPointsTool
+        #self.snapBufferLinesTool.defaultAction().unload()
+        del self.snapBufferLinesTool
+        #self.snapBufferPolygonsTool.defaultAction().unload()
+        del self.snapBufferPolygonsTool
+        #self.snapPlanPointsTool.defaultAction().unload()
+        del self.snapPlanPointsTool
+        #self.snapPlanLinesTool.defaultAction().unload()
+        del self.snapPlanPolygonsTool
+        #self.snapPlanPolygonsTool.defaultAction().unload()
+        del self.snapBasePointsTool
+        #self.snapBaseLinesTool.defaultAction().unload()
+        del self.snapBaseLinesTool
+        #self.snapBasePolygonsTool.defaultAction().unload()
+        del self.snapBasePolygonsTool
 
     # Load the project settings when project is loaded
     def loadProject(self, project):

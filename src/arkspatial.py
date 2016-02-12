@@ -249,8 +249,6 @@ class ArkSpatial(Plugin):
         else:
             if self._initialised:
                 self.planModule.dock.setVisible(False)
-                self.planModule.editDock.setVisible(False)
-                self.planModule.schematicDock.setVisible(False)
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(True)

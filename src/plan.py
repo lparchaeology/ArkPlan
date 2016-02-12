@@ -42,6 +42,7 @@ from plan_item import *
 from plan_map_tools import *
 from config import Config
 from metadata import Metadata
+from schematic_widget import SearchStatus
 
 import resources_rc
 
@@ -76,6 +77,8 @@ class Plan(QObject):
     _schematicSourceIncludeFilter = -1
     _schematicSourceHighlightFilter = -1
 
+    _editSchematic = False
+
     def __init__(self, project):
         super(Plan, self).__init__(project)
         self.project = project
@@ -108,7 +111,7 @@ class Plan(QObject):
         self.dock.editSourceSelected.connect(self._editSource)
         self.dock.resetSelected.connect(self._resetSchematic)
 
-        self.project.filterModule.filterSetCleared.connect(self._resetSchematic)
+        self.project.filterModule.filterSetCleared.connect(self._clearSchematic)
 
         # TODO Think of a better way...
         self.metadata = Metadata(self.dock.widget.metadataWidget)
@@ -162,6 +165,7 @@ class Plan(QObject):
 
         # Unload the dock
         self.dock.unloadGui()
+        del self.dock
 
     def run(self, checked):
         if checked and self.initialised:
@@ -282,6 +286,10 @@ class Plan(QObject):
         # Finally actually merge the data
         if self.project.plan.mergeBuffers('Merge plan data'):
             self.project.showInfoMessage('Plan data successfully merged.')
+            if self._editSchematic:
+                self._editSchematic = False
+                self.dock.activateSchematicCheck()
+                self._findContext()
         else:
             self.project.showCriticalMessage('Plan data merge failed! Some data has not been saved, please check your data.', 5)
 
@@ -345,6 +353,9 @@ class Plan(QObject):
 
     def clearBuffers(self):
         self.project.plan.clearBuffers('Clear plan buffer data')
+        if self._editSchematic:
+            self._editSchematic = False
+            self.dock.activateSchematicCheck()
 
     # Drawing tools
 
@@ -628,11 +639,12 @@ class Plan(QObject):
 
     def _resetSchematic(self):
         self._clearSchematicFilters()
-        self.schematicDock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.dock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.dock.activateSchematicCheck()
 
     def _clearSchematic(self):
-        self.clearBuffers()
-        self._findPanContext()
+        self._clearSchematicFilters()
+        self.dock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def _mergeSchematic(self):
         self.mergeBuffers()
@@ -659,16 +671,17 @@ class Plan(QObject):
 
     def _findPanContext(self):
         self._findContext()
-        if self.schematicDock.contextStatus() == SearchStatus.Found:
-            self.panToItem(self.schematicDock.contextItemKey())
+        if self.dock.contextStatus() == SearchStatus.Found:
+            self.panToItem(self.dock.contextItemKey())
 
     def _findZoomContext(self):
         self._findContext()
-        if self.schematicDock.contextStatus() == SearchStatus.Found:
-            self.zoomToItem(self.schematicDock.contextItemKey())
+        if self.dock.contextStatus() == SearchStatus.Found:
+            self.zoomToItem(self.dock.contextItemKey())
 
     def _editSchematicContext(self):
-        self.editInBuffers(self.schematicDock.contextItemKey())
+        self.editInBuffers(self.dock.contextItemKey())
+        self.dock.widget.setCurrentIndex(0)
 
     def _findContext(self):
         self._clearSchematicFilters()
@@ -677,10 +690,10 @@ class Plan(QObject):
         if self.metadata.siteCode() == '':
             self.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
-        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.contextItemKey(), FilterAction.LockFilter)
+            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
+        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
 
-        itemRequest = self.schematicDock.contextItemKey().featureRequest()
+        itemRequest = self.dock.contextItemKey().featureRequest()
         haveFeature = SearchStatus.Found
         try:
             feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
@@ -689,44 +702,45 @@ class Plan(QObject):
             haveFeature = SearchStatus.NotFound
 
         if haveFeature == SearchStatus.NotFound:
-            polyRequest = self._notCategoryRequest(self.schematicDock.contextItemKey(), 'sch')
+            polyRequest = self._notCategoryRequest(self.dock.contextItemKey(), 'sch')
             haveFeature = SearchStatus.Found
             try:
                 self.project.plan.polygonsLayer.getFeatures(polyRequest).next()
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(self.schematicDock.contextItemKey(), 'sch')
+        schRequest = self._categoryRequest(self.dock.contextItemKey(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
             self.project.plan.polygonsLayer.getFeatures(schRequest).next()
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
-        scsRequest = self._categoryRequest(self.schematicDock.contextItemKey(), 'scs')
+        scsRequest = self._categoryRequest(self.dock.contextItemKey(), 'scs')
         haveSectionSchematic = SearchStatus.Found
         try:
             self.project.plan.polygonsLayer.getFeatures(scsRequest).next()
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 
-        self.schematicDock.setContext(self.schematicDock.context(), haveFeature, haveSchematic, haveSectionSchematic)
-        self.metadata.setItemId(self.schematicDock.context())
+        self.dock.setContext(self.dock.context(), haveFeature, haveSchematic, haveSectionSchematic)
+        self.metadata.setItemId(self.dock.context())
 
     def _findPanSource(self):
-        if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
+        if self.dock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
-        if self.schematicDock.sourceStatus() == SearchStatus.Found:
-            self.panToItem(self.schematicDock.sourceItemKey())
+        if self.dock.sourceStatus() == SearchStatus.Found:
+            self.panToItem(self.dock.sourceItemKey())
 
     def _findZoomSource(self):
-        if self.schematicDock.sourceStatus() == SearchStatus.Unknown:
+        if self.dock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
-        if self.schematicDock.sourceStatus() == SearchStatus.Found:
-            self.zoomToItem(self.schematicDock.sourceItemKey())
+        if self.dock.sourceStatus() == SearchStatus.Found:
+            self.zoomToItem(self.dock.sourceItemKey())
 
     def _editSource(self):
-        self.editInBuffers(self.schematicDock.sourceItemKey())
+        self.editInBuffers(self.dock.sourceItemKey())
+        self.dock.widget.setCurrentIndex(0)
 
     def _findSource(self):
         self._clearSchematicSourceFilters()
@@ -735,18 +749,18 @@ class Plan(QObject):
         if self.metadata.siteCode() == '':
             self.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
+            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.sourceItemKey(), FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.schematicDock.sourceItemKey(), FilterAction.LockFilter)
+        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.dock.sourceItemKey(), FilterAction.LockFilter)
 
-        itemRequest = self.schematicDock.sourceItemKey().featureRequest()
+        itemRequest = self.dock.sourceItemKey().featureRequest()
         haveFeature = SearchStatus.Found
         try:
             self.project.plan.linesLayer.getFeatures(itemRequest).next()
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
+        schRequest = self._categoryRequest(self.dock.sourceItemKey(), 'sch')
         haveSchematic = SearchStatus.Found
         try:
             feature = self.project.plan.polygonsLayer.getFeatures(schRequest).next()
@@ -754,7 +768,7 @@ class Plan(QObject):
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
-        self.schematicDock.setSourceContext(self.schematicDock.sourceContext(), haveFeature, haveSchematic)
+        self.dock.setSourceContext(self.dock.sourceContext(), haveFeature, haveSchematic)
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))
@@ -766,18 +780,21 @@ class Plan(QObject):
     def _copyFeatureMetadata(self, feature):
         self.metadata.setSiteCode(self._attribute(feature, 'site'))
         self.metadata.setComment(self._attribute(feature, 'comment'))
+        self.metadata.setClassCode('cxt')
+        self.metadata.setItemId(self.dock.context())
         self.metadata.setSourceCode('cln')
         self.metadata.setSourceClass('cxt')
-        self.metadata.setSourceId(self.schematicDock.sourceContext())
+        self.metadata.setSourceId(self.dock.sourceContext())
         self.metadata.setSourceFile('')
 
     def _copySourceSchematic(self):
-        request = self._categoryRequest(self.schematicDock.sourceItemKey(), 'sch')
+        self.metadata.validate()
+        request = self._categoryRequest(self.dock.sourceItemKey(), 'sch')
         fi = self.project.plan.polygonsLayer.getFeatures(request)
         for feature in fi:
             feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode())
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
-            feature.setAttribute(self.project.fieldName('id'), self.schematicDock.context())
+            feature.setAttribute(self.project.fieldName('id'), self.dock.context())
             feature.setAttribute(self.project.fieldName('name'), None)
             feature.setAttribute(self.project.fieldName('category'), 'sch')
             feature.setAttribute(self.project.fieldName('source_cd'), self.metadata.sourceCode())
@@ -792,6 +809,8 @@ class Plan(QObject):
     def _editSourceSchematic(self):
         self._clearSchematicSourceFilters()
         self._copySourceSchematic()
+        self._editSchematic = True
+        self.dock.widget.setCurrentIndex(0)
         self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
         self.project.iface.actionZoomToLayer().trigger()
         self.project.plan.polygonsBuffer.selectAll()

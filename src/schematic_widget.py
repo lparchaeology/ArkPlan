@@ -91,6 +91,12 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         pass
 
     def loadProject(self, project):
+        self.siteCodeCombo.clear()
+        for siteCode in sorted(set(project.siteCodes())):
+            self.siteCodeCombo.addItem(siteCode, siteCode)
+        idx = self.siteCodeCombo.findData(project.siteCode())
+        if idx >= 0:
+            self.siteCodeCombo.setCurrentIndex(idx)
         self.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
 
     def closeProject(self):
@@ -98,8 +104,11 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     # Context Tools
 
+    def siteCode(self):
+        return self.siteCodeCombo.itemData(self.siteCodeCombo.currentIndex())
+
     def contextItemKey(self):
-        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.context())
+        return ItemKey(self.siteCode(), 'cxt', self.context())
 
     def context(self):
         return self.contextSpin.value()
@@ -126,7 +135,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self._enableSource(foundSchematic == SearchStatus.NotFound)
 
     def sourceItemKey(self):
-        return ItemKey(self.metadataWidget.siteCode(), 'cxt', self.sourceContext())
+        return ItemKey(self.siteCode(), 'cxt', self.sourceContext())
 
     def sourceContext(self):
         return self.sourceContextSpin.value()
@@ -160,6 +169,8 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)
+        if enable:
+            self.sourceContextSpin.setFocus()
         self.findSourceTool.setEnabled(enable)
         self.zoomSourceTool.setEnabled(enable)
         if not enable:

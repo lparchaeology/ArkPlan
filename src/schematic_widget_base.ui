@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>303</width>
-    <height>495</height>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,17 +36,17 @@
       <string>Check</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="contextLabel">
         <property name="text">
-         <string>Check Context:</string>
+         <string>Context:</string>
         </property>
         <property name="buddy">
          <cstring>contextSpin</cstring>
         </property>
        </widget>
       </item>
-      <item row="2" column="6" colspan="2" alignment="Qt::AlignHCenter">
+      <item row="3" column="6" colspan="2" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="contextDataStatusLabel">
         <property name="text">
          <string/>
@@ -56,21 +56,28 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="6" column="6" colspan="2">
+       <widget class="QPushButton" name="editContextButton">
+        <property name="text">
+         <string>Edit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
        <widget class="QLabel" name="sectionSchematicLabel">
         <property name="text">
          <string>Has Section Schematic:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="4">
+      <item row="3" column="0" colspan="4">
        <widget class="QLabel" name="contextDataLabel">
         <property name="text">
          <string>Has Features:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="6" colspan="2" alignment="Qt::AlignHCenter">
+      <item row="5" column="6" colspan="2" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="sectionSchematicStatusLabel">
         <property name="text">
          <string/>
@@ -80,21 +87,24 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="4">
+      <item row="6" column="0" colspan="4">
        <widget class="QLabel" name="editContexLabel">
         <property name="text">
          <string>Edit Context:</string>
         </property>
+        <property name="buddy">
+         <cstring>editContextButton</cstring>
+        </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="4">
+      <item row="4" column="0" colspan="4">
        <widget class="QLabel" name="contextSchematicLabel">
         <property name="text">
          <string>Has Schematic:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="7">
+      <item row="1" column="7">
        <widget class="QToolButton" name="zoomContextTool">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -108,17 +118,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QSpinBox" name="contextSpin">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="maximum">
-         <number>99999</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="6" colspan="2" alignment="Qt::AlignHCenter">
+      <item row="4" column="6" colspan="2" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="contextSchematicStatusLabel">
         <property name="text">
          <string/>
@@ -128,7 +128,14 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="6">
+      <item row="7" column="6" colspan="2">
+       <widget class="QPushButton" name="resetButton">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
        <widget class="QToolButton" name="findContextTool">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -142,17 +149,26 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="6" colspan="2">
-       <widget class="QPushButton" name="editContextButton">
+      <item row="0" column="0">
+       <widget class="QLabel" name="siteCodeLabel">
         <property name="text">
-         <string>Edit</string>
+         <string>Site Code:</string>
+        </property>
+        <property name="buddy">
+         <cstring>siteCodeCombo</cstring>
         </property>
        </widget>
       </item>
-      <item row="6" column="6" colspan="2">
-       <widget class="QPushButton" name="resetButton">
-        <property name="text">
-         <string>Reset</string>
+      <item row="0" column="1" colspan="7">
+       <widget class="QComboBox" name="siteCodeCombo"/>
+      </item>
+      <item row="1" column="1" colspan="5">
+       <widget class="QSpinBox" name="contextSpin">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="maximum">
+         <number>99999</number>
         </property>
        </widget>
       </item>
@@ -169,6 +185,9 @@
        <widget class="QLabel" name="copySourceLabel">
         <property name="text">
          <string>Copy and Edit Schematic:</string>
+        </property>
+        <property name="buddy">
+         <cstring>copySourceButton</cstring>
         </property>
        </widget>
       </item>
@@ -201,12 +220,18 @@
         <property name="text">
          <string>Clone and Save Schematic:</string>
         </property>
+        <property name="buddy">
+         <cstring>cloneSourceButton</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="0" colspan="3">
        <widget class="QLabel" name="editSourceLabel">
         <property name="text">
          <string>Edit Source Context:</string>
+        </property>
+        <property name="buddy">
+         <cstring>editSourceButton</cstring>
         </property>
        </widget>
       </item>
@@ -294,6 +319,20 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>contextSpin</tabstop>
+  <tabstop>findContextTool</tabstop>
+  <tabstop>zoomContextTool</tabstop>
+  <tabstop>editContextButton</tabstop>
+  <tabstop>resetButton</tabstop>
+  <tabstop>sourceContextSpin</tabstop>
+  <tabstop>findSourceTool</tabstop>
+  <tabstop>zoomSourceTool</tabstop>
+  <tabstop>cloneSourceButton</tabstop>
+  <tabstop>copySourceButton</tabstop>
+  <tabstop>editSourceButton</tabstop>
+  <tabstop>siteCodeCombo</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
   <include location="resources.qrc"/>

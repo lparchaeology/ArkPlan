@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_SnappingWidget(object):
     def setupUi(self, SnappingWidget):
         SnappingWidget.setObjectName(_fromUtf8("SnappingWidget"))
-        SnappingWidget.resize(324, 169)
+        SnappingWidget.resize(292, 203)
         self.gridLayout = QtGui.QGridLayout(SnappingWidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.snapPointsLabel = QtGui.QLabel(SnappingWidget)

@@ -141,6 +141,12 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.unloadGui()
         self.widget.snappingWidget.unloadGui()
         del self.widget.snappingWidget
+        self._snappingAction.unload()
+        del self._snappingAction
+        self._interAction.unload()
+        del self._interAction
+        self._topoAction.unload()
+        del self._topoAction
         super(PlanDock, self).unloadGui()
 
     # Load the project settings when project is loaded
@@ -157,6 +163,7 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.closeProject()
         self.widget.snappingWidget.closeProject()
 
+    # Drawing methods pass-through
     def setFeatureName(self, name):
         self.widget.drawingWidget.setFeatureName(name)
 
@@ -171,3 +178,33 @@ class PlanDock(ToolDockWidget):
 
     def addDrawingTool(self, dockTab, action):
         self.widget.drawingWidget.addDrawingTool(dockTab, action)
+
+    # Schematic methods pass-through
+
+    def activateSchematicCheck(self):
+        self.widget.setCurrentIndex(1)
+        self.widget.schematicWidget.contextSpin.setFocus()
+
+    def contextItemKey(self):
+        return self.widget.schematicWidget.contextItemKey()
+
+    def context(self):
+        return self.widget.schematicWidget.context()
+
+    def setContext(self, context, foundData, foundSchematic, foundSectionSchematic):
+        self.widget.schematicWidget.setContext(context, foundData, foundSchematic, foundSectionSchematic)
+
+    def contextStatus(self):
+        return self.widget.schematicWidget.contextStatus()
+
+    def sourceItemKey(self):
+        return self.widget.schematicWidget.sourceItemKey()
+
+    def sourceContext(self):
+        return self.widget.schematicWidget.sourceContext()
+
+    def setSourceContext(self, context, foundData, foundSchematic):
+        self.widget.schematicWidget.setSourceContext(context, foundData, foundSchematic)
+
+    def sourceStatus(self):
+        return self.widget.schematicWidget.sourceStatus()

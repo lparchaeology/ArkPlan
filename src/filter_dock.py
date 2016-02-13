@@ -59,6 +59,7 @@ class FilterDock(ToolDockWidget):
 
     buildFilterSelected = pyqtSignal()
     buildSelectionSelected = pyqtSignal()
+    buildHighlightSelected = pyqtSignal()
     clearFilterSelected = pyqtSignal()
     zoomFilterSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
@@ -92,16 +93,20 @@ class FilterDock(ToolDockWidget):
         self._buildSelectionAction.triggered.connect(self.buildSelectionSelected)
         self.toolbar.addAction(self._buildSelectionAction)
 
+        self._buildHighlightAction = QAction(QIcon(':/plugins/ark/filter/buildHighlight.svg'), "Build Highlight", self)
+        self._buildHighlightAction.triggered.connect(self.buildHighlightSelected)
+        self.toolbar.addAction(self._buildHighlightAction)
+
         self._clearFilterAction = QAction(QIcon(':/plugins/ark/filter/removeFilter.svg'), "Clear Filter", self)
         self._clearFilterAction.triggered.connect(self._clearFilterClicked)
         self.toolbar.addAction(self._clearFilterAction)
 
-        self._loadDataAction = QAction(QIcon(':/plugins/ark/filter/loadData.png'), "Load Data", self)
-        self._loadDataAction.triggered.connect(self.loadDataSelected)
+        #self._loadDataAction = QAction(QIcon(':/plugins/ark/filter/loadData.png'), "Load Data", self)
+        #self._loadDataAction.triggered.connect(self.loadDataSelected)
         #self.toolbar.addAction(self._loadDataAction)
 
-        self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
-        self._showDataAction.triggered.connect(self.showDataSelected)
+        #self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
+        #self._showDataAction.triggered.connect(self.showDataSelected)
         #self.toolbar.addAction(self._showDataAction)
 
         self.widget.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
@@ -160,10 +165,10 @@ class FilterDock(ToolDockWidget):
         if changed:
             self.filterChanged.emit()
 
-    def removeHighlightFilters(self):
+    def removeSelectFilters(self):
         changed = False
         for index in self._filterClauses.keys():
-            if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.HighlightFilter:
+            if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.SelectFilter:
                 self._removeFilterClause(index)
                 changed = True
         if changed:

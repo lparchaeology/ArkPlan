@@ -39,7 +39,8 @@ import filter_clause_widget_base
 class FilterType():
     IncludeFilter = 0
     ExcludeFilter = 1
-    HighlightFilter = 2
+    SelectFilter = 2
+    HighlightFilter = 3
 
 class FilterAction():
     AddFilter = 0
@@ -85,6 +86,12 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self._excludeAction.setCheckable(True)
         self._excludeAction.triggered.connect(self._excludeFilterChecked)
 
+        self._selectIcon = QIcon(':/plugins/ark/filter/selectFilter.svg')
+        self._selectAction = QAction(self._selectIcon, 'Select', self)
+        self._selectAction.setStatusTip('Select items')
+        self._selectAction.setCheckable(True)
+        self._selectAction.triggered.connect(self._selectFilterChecked)
+
         self._highlightIcon = QIcon(':/plugins/ark/filter/highlightFilter.svg')
         self._highlightAction = QAction(self._highlightIcon, 'Highlight', self)
         self._highlightAction.setStatusTip('Highlight items')
@@ -94,6 +101,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self._typeActionGroup = QActionGroup(self)
         self._typeActionGroup.addAction(self._includeAction)
         self._typeActionGroup.addAction(self._excludeAction)
+        self._typeActionGroup.addAction(self._selectAction)
         self._typeActionGroup.addAction(self._highlightAction)
 
         self._typeMenu = QMenu(self)
@@ -125,6 +133,9 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         if filterType == FilterType.ExcludeFilter:
             self._excludeAction.setChecked(True)
             self.filterTypeTool.setDefaultAction(self._excludeAction)
+        elif filterType == FilterType.SelectFilter:
+            self._selectAction.setChecked(True)
+            self.filterTypeTool.setDefaultAction(self._selectAction)
         elif filterType == FilterType.HighlightFilter:
             self._highlightAction.setChecked(True)
             self.filterTypeTool.setDefaultAction(self._highlightAction)
@@ -212,6 +223,10 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
 
     def _highlightFilterChecked(self):
         self.setFilterType(FilterType.HighlightFilter)
+        self.filterChanged.emit(self._filterIndex)
+
+    def _selectFilterChecked(self):
+        self.setFilterType(FilterType.SelectFilter)
         self.filterChanged.emit(self._filterIndex)
 
     def _filterRangeChanged(self):

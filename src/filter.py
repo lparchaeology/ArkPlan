@@ -71,6 +71,7 @@ class Filter(QObject):
         self.dock.filterChanged.connect(self.applyFilters)
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.buildSelectionSelected.connect(self.buildSelection)
+        self.dock.buildHighlightSelected.connect(self.buildHighlight)
         self.dock.clearFilterSelected.connect(self._clearFilterSet)
         self.dock.clearFilterSelected.connect(self.filterSetCleared)
         self.dock.loadDataSelected.connect(self.loadData)
@@ -151,6 +152,11 @@ class Filter(QObject):
             return
         return self.dock.removeFilters()
 
+    def removeSelectFilters(self):
+        if not self._initialised:
+            return
+        return self.dock.removeSelectFilters()
+
     def removeHighlightFilters(self):
         if not self._initialised:
             return
@@ -170,6 +176,8 @@ class Filter(QObject):
         firstExclude = True
         selectString = ''
         firstSelect = True
+        highlightString = ''
+        firstHighlight = True
         activeFilters = self.dock.activeFilters()
         for index in activeFilters:
             if activeFilters[index] is not None:
@@ -180,12 +188,18 @@ class Filter(QObject):
                     filterItemKey = self._childrenItemKey(subItemKey)
                 elif filter.classCode() == 'sgr':
                     filterItemKey = self._childrenItemKey(filterItemKey)
-                if filter.filterType() == FilterType.HighlightFilter:
+                if filter.filterType() == FilterType.SelectFilter:
                     if firstSelect:
                         firstSelect = False
                     else:
                         selectString += ' or '
                     selectString += filterItemKey.filterClause()
+                elif filter.filterType() == FilterType.HighlightFilter:
+                    if firstHighlight:
+                        firstHighlight = False
+                    else:
+                        highlightString += ' or '
+                    highlightString += filterItemKey.filterClause()
                 elif filter.filterType() == FilterType.ExcludeFilter:
                     if firstExclude:
                         firstExclude = False
@@ -205,6 +219,7 @@ class Filter(QObject):
         else:
             self.applyFilter(includeString)
         self.applySelection(selectString)
+        self.applyHighlight(highlightString)
 
 
     def _clearFilterSet(self):
@@ -212,6 +227,7 @@ class Filter(QObject):
             return
         self.project.plan.clearFilter()
         self.project.plan.clearSelection()
+        self.project.plan.clearHighlight()
 
 
     def applyFilter(self, expression):
@@ -222,6 +238,10 @@ class Filter(QObject):
 
     def applySelection(self, expression):
         self.project.plan.applySelection(expression)
+
+
+    def applyHighlight(self, expression):
+        self.project.plan.applyHighlight(expression)
 
 
     def buildFilter(self):
@@ -236,6 +256,13 @@ class Filter(QObject):
         dialog.setExpressionText(self.project.plan.selection)
         if (dialog.exec_()):
             self.applySelection(dialog.expressionText())
+
+
+    def buildHighlight(self):
+        dialog = QgsExpressionBuilderDialog(self.project.plan.linesLayer)
+        dialog.setExpressionText(self.project.plan.highlight)
+        if (dialog.exec_()):
+            self.applyHighlight(dialog.expressionText())
 
 
     def loadData(self):

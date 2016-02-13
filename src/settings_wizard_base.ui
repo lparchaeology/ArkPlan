@@ -183,6 +183,9 @@ ARK Spatial will automatically organise the data under this folder. If you wish 
       <property name="text">
        <string/>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">

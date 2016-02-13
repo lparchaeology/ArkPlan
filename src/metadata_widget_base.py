@@ -25,7 +25,12 @@ except AttributeError:
 class Ui_MetadataWidget(object):
     def setupUi(self, MetadataWidget):
         MetadataWidget.setObjectName(_fromUtf8("MetadataWidget"))
-        MetadataWidget.resize(289, 296)
+        MetadataWidget.resize(281, 312)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MetadataWidget.sizePolicy().hasHeightForWidth())
+        MetadataWidget.setSizePolicy(sizePolicy)
         self.gridLayout = QtGui.QGridLayout(MetadataWidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.createdByLabel = QtGui.QLabel(MetadataWidget)

@@ -109,6 +109,9 @@ class GridDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(GridDock, self).__init__(GridWidget(), parent)
 
+        self.setWindowTitle(self.tr(u'ARK Grid'))
+        self.setObjectName(u'GridDock')
+
     def initGui(self, iface, location, menuAction):
         super(GridDock, self).initGui(iface, location, menuAction)
         self.widget.initGui()

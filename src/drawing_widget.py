@@ -35,19 +35,16 @@ import drawing_widget_base
 class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
 
     autoSchematicSelected = pyqtSignal()
-    editPointsSelected = pyqtSignal()
-    editLinesSelected = pyqtSignal()
-    editPolygonsSelected = pyqtSignal()
     featureNameChanged = pyqtSignal(str)
     sectionChanged = pyqtSignal(object)
 
-    _cgColMax = 3
+    _cgColMax = 4
     _cgCol = 0
     _cgRow = 0
-    _fgColMax = 3
+    _fgColMax = 4
     _fgCol = 0
     _fgRow = 0
-    _sgColMax = 3
+    _sgColMax = 4
     _sgCol = 0
     _sgRow = 0
 
@@ -57,9 +54,6 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
 
     def initGui(self):
         self.autoSchematicTool.clicked.connect(self.autoSchematicSelected)
-        self.editPointsTool.clicked.connect(self.editPointsSelected)
-        self.editLinesTool.clicked.connect(self.editLinesSelected)
-        self.editPolygonsTool.clicked.connect(self.editPolygonsSelected)
         self.featureNameEdit.textChanged.connect(self.featureNameChanged)
         self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
 

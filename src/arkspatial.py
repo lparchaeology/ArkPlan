@@ -108,7 +108,7 @@ class ArkSpatial(Plugin):
         self.projectLayerView = QgsLayerTreeView()
         self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
-        self.layerDock.setWindowTitle(u'ARK Spatial Layers')
+        self.layerDock.setWindowTitle(self.tr(u'ARK Spatial'))
         self.layerDock.setObjectName(u'LayerDock')
 
 
@@ -136,27 +136,27 @@ class ArkSpatial(Plugin):
         self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
         self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
 
-        self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
-
-        # Init the identify tool
-        self.layerDock.toolbar.addSeparator()
-        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify contexts'), callback=self.triggerIdentifyAction, checkable=True)
+        # Init the identify tool and add to the toolbar
+        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify Items'), callback=self.triggerIdentifyAction, checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
-        # Init the Load Context tool
+        # Init the Load Item tool and add to the toolbar
         self.showItemAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
 
-        # Init the modules
+        # Init the modules and add to the toolbar
         self.layerDock.toolbar.addSeparator()
         self.gridModule = GridModule(self)
         self.gridModule.initGui()
         self.filterModule = Filter(self)
         self.filterModule.initGui()
-        self.layerDock.toolbar.addSeparator()
         self.planModule = Plan(self)
         self.planModule.initGui()
         self.data = DataManager()
+
+        # Add Settings to the toolbar
+        self.layerDock.toolbar.addSeparator()
+        self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
 
         # If the project or layers or legend indexes change make sure we stay updated
         self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)

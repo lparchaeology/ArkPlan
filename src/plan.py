@@ -86,7 +86,7 @@ class Plan(QObject):
     # Create the gui when the plugin is first created
     def initGui(self):
         self.dock = PlanDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Draw Archaeological Plans'), callback=self.run, checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Drawing Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
 
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)

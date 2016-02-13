@@ -92,6 +92,7 @@ class Ui_SettingsWizard(object):
         self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
         self.useArkCheck = QtGui.QCheckBox(self.arkPage)
         self.useArkCheck.setText(_fromUtf8(""))
+        self.useArkCheck.setChecked(True)
         self.useArkCheck.setObjectName(_fromUtf8("useArkCheck"))
         self.gridLayout_5.addWidget(self.useArkCheck, 1, 0, 1, 1)
         self.arkUrlLabel = QtGui.QLabel(self.arkPage)

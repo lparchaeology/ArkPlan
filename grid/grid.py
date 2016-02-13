@@ -60,7 +60,7 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def initGui(self):
         self.dock = GridDock()
-        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Local Grid'), callback=self.run, checkable=True)
+        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
 
         self._createGridAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)

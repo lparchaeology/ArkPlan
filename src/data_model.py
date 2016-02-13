@@ -111,7 +111,6 @@ class DataManager(QObject):
         self._addLinks(self._grpModel._table)
 
     def loadItems(self, project, classCode):
-        project.logMessage('loadItems: ' + classCode)
         if not project.arkUrl():
             return
         _user = 'user'

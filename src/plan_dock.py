@@ -79,7 +79,7 @@ class PlanDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(PlanWidget(), parent)
 
-        self.setWindowTitle(u'Plan')
+        self.setWindowTitle(u'ARK Drawing')
         self.setObjectName(u'PlanDock')
 
     def initGui(self, iface, location, menuAction):
@@ -91,13 +91,7 @@ class PlanDock(ToolDockWidget):
         self.toolbar.addAction(iface.actionZoomOut())
         self.toolbar.addAction(iface.actionZoomLast())
         self.toolbar.addAction(iface.actionZoomNext())
-        self.toolbar.addSeparator()
-        self._loadRawAction = QAction('Raw', self)
-        self._loadRawAction.triggered.connect(self.loadRawFileSelected)
-        self.toolbar.addAction(self._loadRawAction)
-        self._loadGeoAction = QAction('Geo', self)
-        self._loadGeoAction.triggered.connect(self.loadGeoFileSelected)
-        self.toolbar.addAction(self._loadGeoAction)
+
         self.toolbar.addSeparator()
         self._snappingAction = ProjectSnappingAction(self)
         self._snappingAction.setInterface(iface)
@@ -107,6 +101,14 @@ class PlanDock(ToolDockWidget):
         self._topoAction = TopologicalEditingAction(self)
         self.toolbar.addAction(self._topoAction)
 
+        self.toolbar2.setVisible(True)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
+        self.toolbar2.addSeparator()
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPoints.svg'), self.tr(u'Edit Points in Buffer'), self.editPointsSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editLines.svg'), self.tr(u'Edit Lines in Buffer'), self.editLinesSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPolygons.svg'), self.tr(u'Edit Polygons in Buffer'), self.editPolygonsSelected)
+
         # Init the child widgets
         self.widget.metadataWidget.initGui()
         self.widget.drawingWidget.initGui()
@@ -115,9 +117,6 @@ class PlanDock(ToolDockWidget):
 
         # Cascade the child widget signals
         self.widget.drawingWidget.autoSchematicSelected.connect(self.autoSchematicSelected)
-        self.widget.drawingWidget.editPointsSelected.connect(self.editPointsSelected)
-        self.widget.drawingWidget.editLinesSelected.connect(self.editLinesSelected)
-        self.widget.drawingWidget.editPolygonsSelected.connect(self.editPolygonsSelected)
         self.widget.drawingWidget.featureNameChanged.connect(self.featureNameChanged)
         self.widget.drawingWidget.sectionChanged.connect(self.sectionChanged)
 

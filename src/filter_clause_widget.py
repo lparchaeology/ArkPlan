@@ -28,8 +28,11 @@ import resources_rc
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon
+from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon, QWidgetAction, QPixmap, QColor
 
+from qgis.gui import QgsColorButtonV2
+
+from ..libarkqgis.project import Project
 from ..libarkqgis.utils import *
 
 from plan_item import ItemKey
@@ -104,8 +107,20 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self._typeActionGroup.addAction(self._selectAction)
         self._typeActionGroup.addAction(self._highlightAction)
 
+        self._highlightColorTool = QgsColorButtonV2(self)
+        self._highlightColorTool.setAllowAlpha(True)
+        self._highlightColorTool.setColorDialogTitle('Choose Highlight Color')
+        self._highlightColorTool.setContext('Choose Highlight Color')
+        self._highlightColorTool.setDefaultColor(Project.highlightFillColor())
+        self._highlightColorTool.setToDefaultColor()
+        self._highlightColorTool.colorChanged.connect(self._colorChanged)
+        self._highlightColorAction = QWidgetAction(self)
+        self._highlightColorAction.setDefaultWidget(self._highlightColorTool)
+
         self._typeMenu = QMenu(self)
         self._typeMenu.addActions(self._typeActionGroup.actions())
+        self._typeMenu.addSeparator()
+        self._typeMenu.addAction(self._highlightColorAction)
         self.filterTypeTool.setMenu(self._typeMenu)
 
         self.setFilterType(FilterType.IncludeFilter)
@@ -115,12 +130,16 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         settings.setValue('siteCode', self.siteCode())
         settings.setValue('classCode', self.classCode())
         settings.setValue('filterRange', self.filterRange())
+        if self.filterType() == FilterType.HighlightFilter:
+            settings.setValue('highlightColor', self.highlightColor())
 
     def fromSettings(self, settings):
         self.setFilterType(int(settings.value('filterType')))
         self.setSiteCode(settings.value('siteCode'))
         self.setClassCode(settings.value('classCode'))
         self.setFilterRange(settings.value('filterRange'))
+        if self.filterType() == FilterType.HighlightFilter:
+            self.setHighlightColor(settings.value('highlightColor', QColor))
 
     def index(self):
         return self._filterIndex
@@ -203,6 +222,12 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
             self.filterRangeCombo.lineEdit().returnPressed.connect(self._addFilterClicked)
             self.setEnabled(True)
 
+    def setHighlightColor(self, color):
+        return self._highlightColorTool.setColor(color)
+
+    def highlightColor(self):
+        return self._highlightColorTool.color()
+
     def _normaliseRange(self, text):
         return text.replace(' - ', '-').replace(',', ' ').strip()
 
@@ -230,4 +255,12 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.filterChanged.emit(self._filterIndex)
 
     def _filterRangeChanged(self):
+        self.filterChanged.emit(self._filterIndex)
+
+    def _colorChanged(self, color):
+        pix = QPixmap(22, 22)
+        pix.fill(color)
+        self._highlightIcon = QIcon(pix)
+        self._highlightAction.setIcon(self._highlightIcon)
+        self.setFilterType(FilterType.HighlightFilter)
         self.filterChanged.emit(self._filterIndex)

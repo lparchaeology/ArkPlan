@@ -176,8 +176,6 @@ class Filter(QObject):
         firstExclude = True
         selectString = ''
         firstSelect = True
-        highlightString = ''
-        firstHighlight = True
         activeFilters = self.dock.activeFilters()
         for index in activeFilters:
             if activeFilters[index] is not None:
@@ -194,19 +192,13 @@ class Filter(QObject):
                     else:
                         selectString += ' or '
                     selectString += filterItemKey.filterClause()
-                elif filter.filterType() == FilterType.HighlightFilter:
-                    if firstHighlight:
-                        firstHighlight = False
-                    else:
-                        highlightString += ' or '
-                    highlightString += filterItemKey.filterClause()
                 elif filter.filterType() == FilterType.ExcludeFilter:
                     if firstExclude:
                         firstExclude = False
                     else:
                         excludeString += ' or '
                     excludeString += filterItemKey.filterClause()
-                else:
+                elif filter.filterType() == FilterType.IncludeFilter:
                     if firstInclude:
                         firstInclude = False
                     else:
@@ -219,7 +211,27 @@ class Filter(QObject):
         else:
             self.applyFilter(includeString)
         self.applySelection(selectString)
-        self.applyHighlight(highlightString)
+        self.applyHighlightFilters()
+
+
+    def applyHighlightFilters(self):
+        if not self._initialised:
+            return
+        highlightString = ''
+        firstHighlight = True
+        activeFilters = self.dock.activeFilters()
+        self.project.plan.clearHighlight()
+        for index in activeFilters:
+            if activeFilters[index] is not None:
+                filter = activeFilters[index]
+                filterItemKey = filter.itemKey()
+                if filter.classCode == 'grp':
+                    subItemKey = self._childrenItemKey(filterItemKey)
+                    filterItemKey = self._childrenItemKey(subItemKey)
+                elif filter.classCode() == 'sgr':
+                    filterItemKey = self._childrenItemKey(filterItemKey)
+                if filter.filterType() == FilterType.HighlightFilter:
+                    self.addHighlight(filterItemKey.filterClause(), filter.highlightColor())
 
 
     def _clearFilterSet(self):
@@ -240,8 +252,12 @@ class Filter(QObject):
         self.project.plan.applySelection(expression)
 
 
-    def applyHighlight(self, expression):
-        self.project.plan.applyHighlight(expression)
+    def applyHighlight(self, expression, color=None):
+        self.project.plan.applyHighlight(expression, color)
+
+
+    def addHighlight(self, expression, color=None):
+        self.project.plan.addHighlight(expression, color)
 
 
     def buildFilter(self):

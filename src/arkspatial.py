@@ -341,25 +341,22 @@ class ArkSpatial(Plugin):
         lcs = LayerCollectionSettings()
         lcs.collectionGroupName = self.layersGroupName(collection)
         lcs.parentGroupName = Config.projectGroupName
-        lcs.buffersGroupName = self.buffersGroupName(collection)
+        lcs.bufferGroupName = self.bufferGroupName(collection)
         lcs.bufferSuffix = self._groupDefault(collection, 'bufferSuffix')
         layerName = self.pointsLayerName(collection)
         if layerName:
-            lcs.pointsLayerProvider = 'ogr'
             lcs.pointsLayerLabel = self._groupDefault(collection, 'pointsLabel')
             lcs.pointsLayerName = layerName
             lcs.pointsLayerPath = self._shapeFile(path, layerName)
             lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(collection), self.pointsBaseNameDefault(collection))
         layerName = self.linesLayerName(collection)
         if layerName:
-            lcs.linesLayerProvider = 'ogr'
             lcs.linesLayerLabel = self._groupDefault(collection, 'linesLabel')
             lcs.linesLayerName = layerName
             lcs.linesLayerPath = self._shapeFile(path, layerName)
             lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(collection), self.linesBaseNameDefault(collection))
         layerName = self.polygonsLayerName(collection)
         if layerName:
-            lcs.polygonsLayerProvider = 'ogr'
             lcs.poolygonsLayerLabel = self._groupDefault(collection, 'polygonsLabel')
             lcs.polygonsLayerName = layerName
             lcs.polygonsLayerPath = self._shapeFile(path, layerName)
@@ -535,11 +532,11 @@ class ArkSpatial(Plugin):
 
     # Vector Collection settings
 
-    def buffersGroupName(self, collection):
-        return self._groupEntry(collection, 'buffersGroupName')
+    def bufferGroupName(self, collection):
+        return self._groupEntry(collection, 'bufferGroupName')
 
-    def setBuffersGroupName(self, collection, buffersGroupName):
-        self._setGroupEntry(collection, 'buffersGroupName', buffersGroupName)
+    def setBuffersGroupName(self, collection, bufferGroupName):
+        self._setGroupEntry(collection, 'bufferGroupName', bufferGroupName)
 
     def pointsBaseNameDefault(self, collection):
         return self._groupDefault(collection, 'pointsBaseName')

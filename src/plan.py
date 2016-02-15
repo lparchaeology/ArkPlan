@@ -61,7 +61,6 @@ class Plan(QObject):
 
     # Internal variables
     initialised = False
-    _buffersInitialised = False
 
     actions = {}
     mapTools = {}
@@ -120,8 +119,6 @@ class Plan(QObject):
 
     # Load the project settings when project is loaded
     def loadProject(self):
-        self.initialiseBuffers()
-
         # Assume layers are loaded and filters cleared
         self.siteCodes = set(self.project.plan.uniqueValues(self.project.fieldName('site')))
         self.siteCodes.add(self.project.siteCode())
@@ -140,6 +137,10 @@ class Plan(QObject):
                 self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5], category[7])
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
+
+        self.project.plan.pointsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+        self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+        self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
 
         self.initialised = True
 
@@ -162,7 +163,6 @@ class Plan(QObject):
 
         # Reset the initialisation
         self.initialised = False
-        self._buffersInitialised = False
 
         # Unload the dock
         self.dock.unloadGui()
@@ -173,15 +173,6 @@ class Plan(QObject):
             self.project.filterModule.showDock()
         else:
             self.dock.menuAction().setChecked(False)
-
-    def initialiseBuffers(self):
-        if self._buffersInitialised:
-            return
-        self.project.plan.createBuffers()
-        self.project.plan.pointsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
-        self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
-        self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
-        self._buffersInitialised = True
 
     # Plan Tools
 
@@ -285,7 +276,7 @@ class Plan(QObject):
         self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
 
         # Finally actually merge the data
-        if self.project.plan.mergeBuffers('Merge plan data'):
+        if self.project.plan.mergeBuffers('Merge plan data', timestamp):
             self.project.showInfoMessage('Plan data successfully merged.')
             if self._editSchematic:
                 self._editSchematic = False
@@ -353,7 +344,7 @@ class Plan(QObject):
             self.classCodes.add(feature.attribute(classField))
 
     def clearBuffers(self):
-        self.project.plan.clearBuffers('Clear plan buffer data')
+        self.project.plan.clearBuffers('Clear Buffers')
         if self._editSchematic:
             self._editSchematic = False
             self.dock.activateSchematicCheck()
@@ -502,7 +493,7 @@ class Plan(QObject):
 
     def _editInBuffers(self, itemKey):
         request = itemKey.featureRequest()
-        self.project.plan.moveFeatureRequestToBuffers(request)
+        self.project.plan.moveFeatureRequestToBuffers(request, 'Edit Item', utils.timestamp())
         self.metadata.setSiteCode(itemKey.siteCode)
         self.metadata.setClassCode(itemKey.classCode)
         self.metadata.setItemId(itemKey.itemId)
@@ -515,7 +506,7 @@ class Plan(QObject):
     def deleteItem(self, itemKey):
         if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
             request = itemKey.featureRequest()
-            self.project.plan.deleteFeatureRequest(request)
+            self.project.plan.deleteFeatureRequest(request, 'Delete Item', utils.timestamp())
 
     def panToItem(self, itemKey, highlight=False):
         extent = self.itemExtent(itemKey)

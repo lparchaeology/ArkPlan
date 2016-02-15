@@ -368,19 +368,19 @@ class ArkSpatial(Plugin):
 
     def _createCollectionLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBPoint,        self.projectCrs(), self._layerFields(collection, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint,      self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBLineString,   self.projectCrs(), self._layerFields(collection, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString, self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBPolygon,      self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon,    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   QGis.WKBMultiPoint,        self.projectCrs(), self._layerFields(collection, 'pointsFields'))
+            layers.createShapefile(settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint,      self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    QGis.WKBMultiLineString,   self.projectCrs(), self._layerFields(collection, 'linesFields'))
+            layers.createShapefile(settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString, self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, QGis.WKBMultiPolygon,      self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+            layers.createShapefile(settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon,    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):
         fieldKeys = self._groupDefault(collection, fieldsKey)

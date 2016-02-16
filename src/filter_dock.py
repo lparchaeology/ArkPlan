@@ -177,6 +177,15 @@ class FilterDock(ToolDockWidget):
         if changed:
             self.filterChanged.emit()
 
+    def removeHighlightFilters(self):
+        changed = False
+        for index in self._filterClauses.keys():
+            if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.HighlightFilter:
+                self._removeFilterClause(index)
+                changed = True
+        if changed:
+            self.filterChanged.emit()
+
     def removeFilterClause(self, index):
         self._removeFilterClause(index)
         self.filterChanged.emit()

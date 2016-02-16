@@ -177,7 +177,7 @@ class Ark():
             ret.code = ret.response.getcode()
             ret.raw = ret.response.read()
             try:
-                ret.data = json.load(ret.response)
+                ret.data = json.loads(ret.raw)
                 ret.error = False
             except:
                 ret.message = 'Invalid JSON'

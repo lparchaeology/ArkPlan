@@ -183,7 +183,7 @@ class ArkSpatial(Plugin):
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
                 self.data.loadProject(self)
-                self.data.loadItems(self, 'sec')
+                self.data.loadAllItems(self)
                 self.filterModule.loadProject()
                 self._loaded = True
 

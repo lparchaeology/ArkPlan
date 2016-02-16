@@ -31,6 +31,8 @@ import urllib2
 from PyQt4.QtCore import QObject, QFile
 from PyQt4.QtGui import QSortFilterProxyModel
 
+from qgis.core import NULL
+
 from ..libarkqgis.models import TableModel, ParentChildModel
 
 from ..pyARK.ark import Ark
@@ -76,6 +78,8 @@ class DataManager(QObject):
     _grpProxyModel = QSortFilterProxyModel()
     _linkModel = None  # ParentChildModel()
 
+    itemKeys = {} # {classCode: [ItemKey]
+
     def __init__(self):
         super(DataManager, self).__init__()
 
@@ -110,21 +114,33 @@ class DataManager(QObject):
         self._addLinks(self._subModel._table)
         self._addLinks(self._grpModel._table)
 
-    def loadItems(self, project, classCode):
+    def loadAllItems(self, project):
+        self.itemKeys = {}
+        for classCode in project.plan.uniqueValues(project.fieldName('class')):
+            if classCode is not None and classCode != NULL:
+                self.loadClassItems(project, classCode)
+
+    def loadClassItems(self, project, classCode):
         if not project.arkUrl():
             return
-        _user = 'user'
-        _password = 'password'
+        _user = 'test_user'
+        _password = 'arkpass'
         ark = Ark(project.arkUrl(), _user, _password)
         response = ark.getItems(classCode + '_cd')
         if response.error:
             project.logMessage(response.url)
             project.logMessage(response.message)
             project.logMessage(response.raw)
+            self.itemKeys[classCode] = []
         else:
-            project.logMessage(response.url)
-            project.logMessage(response.raw)
-            project.logMessage(str(response.data))
+            project.logMessage(classCode + ' = ' + response.url)
+            lst = response.data[classCode]
+            keys = set()
+            for record in lst:
+                key = ItemKey(record['ste_cd'], classCode, record[classCode + '_no'])
+                keys.add(key)
+            self.itemKeys[classCode] = sorted(keys)
+            project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
 
     def _addLinks(self, table):
         for record in table:

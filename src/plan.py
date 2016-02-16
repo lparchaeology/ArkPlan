@@ -271,10 +271,10 @@ class Plan(QObject):
             return
 
         # Check the buffers contain valid data
-        if (not self._preMergeBufferCheck(self.project.plan.pointsBuffer)
-            or not self._preMergeBufferCheck(self.project.plan.linesBuffer)
-            or not self._preMergeBufferCheck(self.project.plan.polygonsBuffer)):
-            return
+        #if (not self._preMergeBufferCheck(self.project.plan.pointsBuffer)
+        #    or not self._preMergeBufferCheck(self.project.plan.linesBuffer)
+        #or not self._preMergeBufferCheck(self.project.plan.polygonsBuffer)):
+        #return
 
         # Update the audit attributes
         timestamp = utils.timestamp()

@@ -69,6 +69,7 @@ class PlanDock(ToolDockWidget):
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     editSourceSelected = pyqtSignal()
+    contextChanged = pyqtSignal()
     resetSelected = pyqtSignal()
 
     _iface = None # QgsisInterface()
@@ -132,6 +133,7 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.cloneSourceSelected.connect(self.cloneSourceSelected)
         self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
 
+        self.widget.schematicWidget.contextChanged.connect(self.contextChanged)
         self.widget.schematicWidget.resetButton.clicked.connect(self.resetSelected)
 
     def unloadGui(self):

@@ -109,6 +109,7 @@ class Plan(QObject):
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.dock.editSourceSelected.connect(self._editSource)
+        self.dock.contextChanged.connect(self._clearSchematicFilters)
         self.dock.resetSelected.connect(self._resetSchematic)
 
         self.project.filterModule.filterSetCleared.connect(self._clearSchematic)
@@ -656,18 +657,22 @@ class Plan(QObject):
         self._clearSchematicSourceFilters()
 
     def _clearSchematicContextIncludeFilter(self):
-        self.project.filterModule.removeFilterClause(self._schematicContextIncludeFilter)
-        self._schematicContextIncludeFilter = -1
+        if self._schematicContextIncludeFilter >= 0:
+            self.project.filterModule.removeFilterClause(self._schematicContextIncludeFilter)
+            self._schematicContextIncludeFilter = -1
 
     def _clearSchematicContextHighlightFilter(self):
-        self.project.filterModule.removeFilterClause(self._schematicContextHighlightFilter)
-        self._schematicContextHighlightFilter = -1
+        if self._schematicContextHighlightFilter >= 0:
+            self.project.filterModule.removeFilterClause(self._schematicContextHighlightFilter)
+            self._schematicContextHighlightFilter = -1
 
     def _clearSchematicSourceFilters(self):
-        self.project.filterModule.removeFilterClause(self._schematicSourceIncludeFilter)
-        self._schematicSourceIncludeFilter = -1
-        self.project.filterModule.removeFilterClause(self._schematicSourceHighlightFilter)
-        self._schematicSourceHighlightFilter = -1
+        if self._schematicSourceIncludeFilter >= 0:
+            self.project.filterModule.removeFilterClause(self._schematicSourceIncludeFilter)
+            self._schematicSourceIncludeFilter = -1
+        if self._schematicSourceHighlightFilter >= 0:
+            self.project.filterModule.removeFilterClause(self._schematicSourceHighlightFilter)
+            self._schematicSourceHighlightFilter = -1
 
     def _findPanContext(self):
         self._findContext()
@@ -690,8 +695,8 @@ class Plan(QObject):
         filterModule = self.project.filterModule
         if self.metadata.siteCode() == '':
             self.metadata.setSiteCode(self.project.siteCode())
-        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicContextFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
+        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.ExcludeFilter):
+            self._schematicContextIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
         self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
 
         itemRequest = self.dock.contextItemKey().featureRequest()

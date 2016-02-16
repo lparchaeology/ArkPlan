@@ -57,6 +57,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     editSourceSelected = pyqtSignal()
+    contextChanged = pyqtSignal()
     resetSelected = pyqtSignal()
 
     _contextDataStatus = SearchStatus.Unknown
@@ -183,6 +184,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     def _contextChanged(self):
         self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
         self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.contextChanged.emit()
 
     def _sourceContextChanged(self):
         self._setSourceStatus(SearchStatus.Unknown, SearchStatus.Unknown)

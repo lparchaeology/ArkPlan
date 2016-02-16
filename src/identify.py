@@ -161,7 +161,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._project.planModule.zoomToItem(itemKey, highlight=True)
 
     def _pan(self, itemKey):
-        self._project.planModule.panToItem(itemKey, highlight=True)
+        self._project.planModule.moveToItem(itemKey, highlight=True)
 
     def _filterItem(self, itemKey):
         self._project.planModule.filterItem(itemKey)

@@ -538,6 +538,22 @@ class Plan(QObject):
             self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
         self.project.mapCanvas().refresh()
 
+    def moveToItem(self, itemKey, highlight=False):
+        extent = self.itemExtent(itemKey)
+        if extent == None or extent.isNull() or extent.isEmpty():
+            return
+        mapExtent = self.project.mapCanvas().extent()
+        if (extent.width() > mapExtent.width() or extent.height() > mapExtent.height()
+            or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):
+            extent.scale(1.05)
+            self.project.mapCanvas().setExtent(extent)
+        else:
+            self.project.mapCanvas().setCenter(extent.center())
+        if highlight:
+            self.project.filterModule.removeHighlightFilters()
+            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+        self.project.mapCanvas().refresh()
+
     def filterItem(self, itemKey):
         self.project.filterModule.removeFilters()
         self.project.filterModule.addFilterClause(FilterType.IncludeFilter, itemKey)
@@ -677,7 +693,7 @@ class Plan(QObject):
     def _findPanContext(self):
         self._findContext()
         if self.dock.contextStatus() == SearchStatus.Found:
-            self.panToItem(self.dock.contextItemKey())
+            self.moveToItem(self.dock.contextItemKey())
 
     def _findZoomContext(self):
         self._findContext()
@@ -736,7 +752,7 @@ class Plan(QObject):
         if self.dock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
         if self.dock.sourceStatus() == SearchStatus.Found:
-            self.panToItem(self.dock.sourceItemKey())
+            self.moveToItem(self.dock.sourceItemKey())
 
     def _findZoomSource(self):
         if self.dock.sourceStatus() == SearchStatus.Unknown:

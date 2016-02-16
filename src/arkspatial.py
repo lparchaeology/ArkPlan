@@ -196,6 +196,8 @@ class ArkSpatial(Plugin):
 
     # Close the project
     def closeProject(self):
+        if self.identifyMapTool.action().isChecked():
+            self.iface.actionPan().trigger()
         if self.isLoaded():
             self.writeProject()
             self.gridModule.closeProject()
@@ -217,8 +219,6 @@ class ArkSpatial(Plugin):
     def unload(self):
         if self.isInitialised():
             self.closeProject()
-
-            self.identifyMapTool.deactivate()
 
             # Restore the original QGIS gui
             self.layerDock.menuAction().setChecked(False)

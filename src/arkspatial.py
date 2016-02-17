@@ -482,7 +482,10 @@ class ArkSpatial(Plugin):
 
     def siteCodes(self):
         # TODO Make a stored list, updated via settings
-        return self.plan.uniqueValues(self.fieldName('site'))
+        vals = set()
+        vals.add(self.siteCode())
+        vals.update(self.plan.uniqueValues(self.fieldName('site')))
+        return sorted(vals)
 
     def setSiteCode(self, siteCode):
         self.writeEntry('siteCode', siteCode)

@@ -50,6 +50,8 @@ class GridModule(QObject):
     initialised = False
     gridWizard = None  # QWizard
     _vertexMarker = None  # QgsVertexMarker
+    mapTransformer = None  #LinearTransformer()
+    localTransformer = None  #LinearTransformer()
 
     def __init__(self, project):
         super(GridModule, self).__init__(project)

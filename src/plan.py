@@ -120,8 +120,7 @@ class Plan(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
-        self.siteCodes = set(self.project.plan.uniqueValues(self.project.fieldName('site')))
-        self.siteCodes.add(self.project.siteCode())
+        self.siteCodes = set(self.project.siteCodes())
         self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
 
         self.dock.loadProject(self.project)

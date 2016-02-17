@@ -86,16 +86,20 @@ class Filter(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         # Load the Site Codes
-        self.dock.initSiteCodes(self.project.plan.uniqueValues(self.project.fieldName('site')))
+        self.dock.initSiteCodes(self.project.siteCodes())
 
         # Load the Class Codes
-        codeList = self.project.plan.uniqueValues(self.project.fieldName('class'))
+        codeList = set()
+        for key in Config.classCodes:
+            classCode = Config.classCodes[key]
+            if classCode['plan']:
+                codeList.add(classCode['code'])
         if self.project.data.hasClassData('sgr'):
-            codeList.append('sgr')
+            codeList.add('sgr')
         if self.project.data.hasClassData('grp'):
-            codeList.append('grp')
+            codeList.add('grp')
         codes = {}
-        for code in codeList:
+        for code in sorted(codeList):
             codes[code] = code
         self.dock.initClassCodes(codes)
 

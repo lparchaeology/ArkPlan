@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>338</height>
+    <width>524</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,35 +24,6 @@
        <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="4" column="0">
-        <widget class="QLabel" name="useArkLabel">
-         <property name="text">
-          <string>Use ARK DB:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <layout class="QHBoxLayout" name="projectFolderLayout">
-         <item>
-          <widget class="QLineEdit" name="projectFolderEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="projectFolderButton">
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="multiSiteCheck">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="projectFolderLabel">
          <property name="text">
@@ -73,17 +44,61 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="multiSiteLabel">
+       <item row="5" column="0">
+        <widget class="QLabel" name="useArkLabel">
          <property name="text">
-          <string>Multi-site Project</string>
+          <string>Use ARK DB:</string>
          </property>
          <property name="buddy">
-          <cstring>multiSiteCheck</cstring>
+          <cstring>useArkCheck</cstring>
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
+       <item row="0" column="2">
+        <layout class="QHBoxLayout" name="projectFolderLayout">
+         <item>
+          <widget class="QLineEdit" name="projectFolderEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="projectFolderButton">
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>12</width>
+             <height>12</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="customStylesLabel">
+         <property name="text">
+          <string>Custom Styles Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>styleFolderEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="2">
         <layout class="QHBoxLayout" name="styleFolderLayout">
          <item>
           <widget class="QCheckBox" name="styleFolderCheck">
@@ -108,37 +123,20 @@
             <iconset resource="resources.qrc">
              <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>12</width>
+             <height>12</height>
+            </size>
+           </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="customStylesLabel">
-         <property name="text">
-          <string>Custom Styles Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>styleFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="2" column="2">
         <widget class="QLineEdit" name="siteCodeEdit"/>
        </item>
-       <item row="4" column="2">
+       <item row="5" column="2">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QCheckBox" name="useArkCheck">
@@ -156,345 +154,33 @@
          </item>
         </layout>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="gridTab">
-      <attribute name="title">
-       <string>Grid</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="4" column="0">
-        <widget class="QLabel" name="gridPolygonsNameLabel">
-         <property name="text">
-          <string>Polygons Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPolygonsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="gridGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="gridPointsNameEdit"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="gridLinesNameLabel">
-         <property name="text">
-          <string>Lines Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridLinesNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="gridPolygonsNameEdit"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="gridGroupNameEdit"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="gridPointNameLabel">
-         <property name="text">
-          <string>Points Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPointsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="gridLinesNameEdit"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="gridFolderLabel">
-         <property name="text">
-          <string>Custom Data Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <layout class="QHBoxLayout" name="gridFolderLayout">
+       <item row="3" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QCheckBox" name="gridFolderCheck">
+          <widget class="QCheckBox" name="multiSiteCheck">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="gridFolderEdit">
+          <widget class="QLineEdit" name="multiSiteEdit">
            <property name="enabled">
             <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="gridFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="baseTab">
-      <attribute name="title">
-       <string>Base</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="2" column="1" colspan="2">
-        <widget class="QLineEdit" name="basePointsNameEdit"/>
-       </item>
-       <item row="7" column="1">
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>99</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="1" colspan="2">
-        <widget class="QLineEdit" name="baseLinesNameEdit"/>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="baseLinesNameLabel">
+        <widget class="QLabel" name="multiSiteLabel">
          <property name="text">
-          <string>Lines Base Name:</string>
+          <string>Multi-site Project</string>
          </property>
          <property name="buddy">
-          <cstring>gridLinesNameEdit</cstring>
+          <cstring>multiSiteCheck</cstring>
          </property>
         </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="baseGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="basePointsNameLabel">
-         <property name="text">
-          <string>Points Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPointsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="2">
-        <widget class="QLineEdit" name="basePolygonsNameEdit"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="basePolygonsNameLabel">
-         <property name="text">
-          <string>Polygons Base Name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="baseGroupNameEdit"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="baseFolderLabel">
-         <property name="text">
-          <string>Custom Data Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1" colspan="2">
-        <layout class="QHBoxLayout" name="baseFolderLayout">
-         <item>
-          <widget class="QCheckBox" name="baseFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="baseFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="baseFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="planTab">
-      <attribute name="title">
-       <string>Plan</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="planPointsNameEdit"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="planPolygonsNameLabel">
-         <property name="text">
-          <string>Polygons Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPolygonsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="planBufferGroupNameEdit"/>
-       </item>
-       <item row="12" column="1">
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>68</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="planLinesNameEdit"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="planPointNameLabel">
-         <property name="text">
-          <string>Points Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridPointsNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="planBufferGroupNameLabel">
-         <property name="text">
-          <string>Buffer Group Name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="planDataGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridGroupNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="planPolygonsNameEdit"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="planLinesNameLabel">
-         <property name="text">
-          <string>Lines Base Name:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridLinesNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="planDataGroupNameEdit"/>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="planVectorFolderLabel">
-         <property name="text">
-          <string>Custom Data Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>gridFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <layout class="QHBoxLayout" name="planDataFolderLayout">
-         <item>
-          <widget class="QCheckBox" name="planDataFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="planDataFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="planDataFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>
@@ -503,7 +189,98 @@
        <string>Drawings</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="3" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="planDrawingFolderCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="planDrawingFolderEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="planDrawingFolderButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="georefFolderLabel">
+         <property name="text">
+          <string>Separate georef folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>georefFolderCheck</cstring>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="2">
+        <widget class="QCheckBox" name="georefFolderCheck">
+         <property name="toolTip">
+          <string>Select if the raw and processed plans should be stored in separate folders.</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="planDrawingFolderLabel">
+         <property name="text">
+          <string>Plan Drawings:</string>
+         </property>
+         <property name="buddy">
+          <cstring>planDrawingFolderCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="contextDrawingFolderCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="contextDrawingFolderEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="contextDrawingFolderButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="2">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QSpinBox" name="drawingTransparencySpin">
@@ -533,10 +310,20 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="drawingTransparencyLabel">
+         <property name="text">
+          <string>Image tranparency:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="contextDrawingFolderLabel">
          <property name="text">
           <string>Context Drawings:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextDrawingFolderCheck</cstring>
          </property>
         </widget>
        </item>
@@ -553,31 +340,24 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="drawingTransparencyLabel">
-         <property name="text">
-          <string>Image tranparency:</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="QCheckBox" name="planDrawingFolderCheck">
+          <widget class="QCheckBox" name="sectionDrawingFolderCheck">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="planDrawingFolderEdit">
+          <widget class="QLineEdit" name="sectionDrawingFolderEdit">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="planDrawingFolderButton">
+          <widget class="QPushButton" name="sectionDrawingFolderButton">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -589,74 +369,15 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="georefFolderLabel">
+       <item row="4" column="0">
+        <widget class="QLabel" name="sectionDrawingFolderLabel">
          <property name="text">
-          <string>Separate georef folder:</string>
+          <string>Section Drawings:</string>
          </property>
          <property name="buddy">
-          <cstring>georefFolderCheck</cstring>
+          <cstring>sectionDrawingFolderCheck</cstring>
          </property>
         </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="planDrawingFolderLabel">
-         <property name="text">
-          <string>Plan Drawings:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="georefFolderCheck">
-         <property name="toolTip">
-          <string>Select if the raw and processed plans should be stored in separate folders.</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QCheckBox" name="contextDrawingFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="contextDrawingFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="contextDrawingFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="drawingGroupNameLabel">
-         <property name="text">
-          <string>Group Name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLineEdit" name="drawingGroupNameEdit"/>
        </item>
       </layout>
      </widget>
@@ -677,44 +398,27 @@
  <tabstops>
   <tabstop>projectFolderEdit</tabstop>
   <tabstop>projectFolderButton</tabstop>
-  <tabstop>multiSiteCheck</tabstop>
   <tabstop>siteCodeEdit</tabstop>
+  <tabstop>multiSiteCheck</tabstop>
+  <tabstop>multiSiteEdit</tabstop>
   <tabstop>styleFolderCheck</tabstop>
   <tabstop>styleFolderEdit</tabstop>
   <tabstop>styleFolderButton</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>useArkCheck</tabstop>
+  <tabstop>arkUrlEdit</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>gridLinesNameEdit</tabstop>
-  <tabstop>gridPolygonsNameEdit</tabstop>
-  <tabstop>gridGroupNameEdit</tabstop>
-  <tabstop>gridPointsNameEdit</tabstop>
-  <tabstop>gridFolderEdit</tabstop>
-  <tabstop>gridFolderButton</tabstop>
-  <tabstop>baseGroupNameEdit</tabstop>
-  <tabstop>basePointsNameEdit</tabstop>
-  <tabstop>baseFolderEdit</tabstop>
-  <tabstop>baseFolderButton</tabstop>
-  <tabstop>baseLinesNameEdit</tabstop>
-  <tabstop>basePolygonsNameEdit</tabstop>
-  <tabstop>planLinesNameEdit</tabstop>
-  <tabstop>planPointsNameEdit</tabstop>
-  <tabstop>planBufferGroupNameEdit</tabstop>
-  <tabstop>planPolygonsNameEdit</tabstop>
-  <tabstop>planDataGroupNameEdit</tabstop>
-  <tabstop>planDataFolderEdit</tabstop>
-  <tabstop>planDataFolderButton</tabstop>
-  <tabstop>gridFolderCheck</tabstop>
-  <tabstop>baseFolderCheck</tabstop>
-  <tabstop>contextDrawingFolderEdit</tabstop>
-  <tabstop>contextDrawingFolderButton</tabstop>
   <tabstop>drawingTransparencySpin</tabstop>
   <tabstop>georefFolderCheck</tabstop>
   <tabstop>contextDrawingFolderCheck</tabstop>
+  <tabstop>contextDrawingFolderEdit</tabstop>
+  <tabstop>contextDrawingFolderButton</tabstop>
   <tabstop>planDrawingFolderCheck</tabstop>
   <tabstop>planDrawingFolderEdit</tabstop>
   <tabstop>planDrawingFolderButton</tabstop>
-  <tabstop>planDataFolderCheck</tabstop>
-  <tabstop>drawingGroupNameEdit</tabstop>
+  <tabstop>sectionDrawingFolderCheck</tabstop>
+  <tabstop>sectionDrawingFolderEdit</tabstop>
+  <tabstop>sectionDrawingFolderButton</tabstop>
+  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
@@ -727,8 +431,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>333</y>
+     <x>266</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -743,172 +447,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>333</y>
+     <x>334</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>gridFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>gridFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>181</x>
-     <y>182</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>276</x>
-     <y>180</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>gridFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>gridFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>181</x>
-     <y>181</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>470</x>
-     <y>181</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>baseFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>baseFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>213</x>
-     <y>185</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>398</x>
-     <y>185</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>baseFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>baseFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>176</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>465</x>
-     <y>185</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contextDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>contextDrawingFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>200</x>
-     <y>152</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>481</x>
-     <y>153</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contextDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>contextDrawingFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>202</x>
-     <y>144</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>255</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>planDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDrawingFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>197</x>
-     <y>192</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>planDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDrawingFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>207</x>
-     <y>196</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>248</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>planDataFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDataFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>188</x>
-     <y>212</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>482</x>
-     <y>212</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>planDataFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDataFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>190</x>
-     <y>216</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>239</x>
-     <y>215</y>
     </hint>
    </hints>
   </connection>
@@ -919,12 +463,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>159</y>
+     <x>191</x>
+     <y>179</y>
     </hint>
     <hint type="destinationlabel">
      <x>473</x>
      <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>planDrawingFolderCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>planDrawingFolderButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>483</x>
+     <y>177</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>useArkCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>arkUrlEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>222</y>
     </hint>
    </hints>
   </connection>
@@ -936,27 +512,91 @@
    <hints>
     <hint type="sourcelabel">
      <x>191</x>
-     <y>150</y>
+     <y>179</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>149</y>
+     <x>383</x>
+     <y>180</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>useArkCheck</sender>
+   <sender>planDrawingFolderCheck</sender>
    <signal>toggled(bool)</signal>
-   <receiver>arkUrlEdit</receiver>
+   <receiver>planDrawingFolderEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>200</y>
+     <x>208</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
-     <x>230</x>
-     <y>200</y>
+     <x>397</x>
+     <y>170</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>contextDrawingFolderCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>contextDrawingFolderEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>126</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>404</x>
+     <y>127</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>contextDrawingFolderCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>contextDrawingFolderButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>126</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>483</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>multiSiteCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>multiSiteEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>178</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>247</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionDrawingFolderCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>sectionDrawingFolderEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>204</y>
     </hint>
    </hints>
   </connection>

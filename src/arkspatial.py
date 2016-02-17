@@ -536,35 +536,6 @@ class ArkSpatial(Plugin):
             default = self._groupDefault(group, key)
         self.setEntry(group + '/' + key, value, default)
 
-    def groupDir(self, group):
-        return QDir(self.groupPath(group))
-
-    def groupPath(self, group):
-        return self.groupPathDefault(group)
-
-    def groupPathDefault(self, group):
-        path = self.projectPath()
-        suffix = self._groupDefault(group, 'pathSuffix')
-        if path and suffix:
-            path = path + '/' + suffix
-        return path
-
-    def setGroupPath(self, group, useCustomFolder, absolutePath):
-        self._setGroupEntry(group, 'useCustomFolder', useCustomFolder, False)
-        if useCustomFolder:
-            self._setGroupEntry(group, 'path', absolutePath)
-        else:
-            self._setGroupEntry(group, 'path', '')
-
-    def useCustomPath(self, group):
-        return self._groupBoolEntry(group, 'useCustomPath', False)
-
-    def layersGroupName(self, group):
-        return self._groupEntry(group, 'layersGroupName')
-
-    def setLayersGroupName(self, group, layersGroupName):
-        self._setGroupEntry(group, 'layersGroupName', layersGroupName)
-
     def collection(self, collection):
         if collection == 'plan':
             return self.plan
@@ -575,11 +546,30 @@ class ArkSpatial(Plugin):
 
     # Raster Drawings settings
 
+    def rasterGroupDir(self, group):
+        return QDir(self.rasterGroupPath(group))
+
+    def rasterGroupPath(self, group):
+        if self.useCustomPath(group):
+            return self._groupEntry(group, path)
+        else:
+            return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
+
+    def setRasterGroupPath(self, group, useCustomPath, absolutePath):
+        self._setGroupEntry(group, 'useCustomPath', useCustomPath, False)
+        if useCustomPath:
+            self._setGroupEntry(group, 'path', absolutePath)
+        else:
+            self._setGroupEntry(group, 'path', '')
+
+    def useCustomPath(self, group):
+        return self._groupBoolEntry(group, 'useCustomPath', False)
+
     def rawDrawingDir(self, group):
         return QDir(self.rawDrawingPath(group))
 
     def rawDrawingPath(self, group):
-        return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
+        return self.rasterGroupPath(group)
 
     def georefDrawingDir(self, group):
         return QDir(self.georefDrawingPath(group))

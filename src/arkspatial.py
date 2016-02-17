@@ -173,12 +173,9 @@ class ArkSpatial(Plugin):
         if self.isInitialised() and self.isConfigured():
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
             #Load the layer collections
-            self.grid = self._createCollection('grid')
-            self._createCollectionLayers('grid', self.grid.settings)
-            self.plan = self._createCollection('plan')
-            self._createCollectionMultiLayers('plan', self.plan.settings)
-            self.base = self._createCollection('base')
-            self._createCollectionLayers('base', self.base.settings)
+            self.grid = self._loadCollection('grid')
+            self.plan = self._loadCollection('plan')
+            self.base = self._loadCollection('base')
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -260,32 +257,89 @@ class ArkSpatial(Plugin):
             return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
-        if wizard.exec_() and (not wizard.advancedMode() or self.showSettingsDialog()):
-            if not wizard.advancedMode():
-                self.setProjectPath(wizard.projectPath())
-                self.setMultiSiteProject(wizard.multiSiteProject())
-                self.setSiteCode(wizard.siteCode())
-                self.setUseArkDB(wizard.useArkDB())
-                self.setArkUrl(wizard.arkUrl())
-            if (self.siteCode()
-                and self.projectDir().mkpath('.')
-                and self.siteCode()
-                and self.groupDir('cxt').mkpath('.')
-                and self.rawDrawingDir('cxt').mkpath('.')
-                and self.georefDrawingDir('cxt').mkpath('.')
-                and self.groupDir('pln').mkpath('.')
-                and self.rawDrawingDir('pln').mkpath('.')
-                and self.georefDrawingDir('pln').mkpath('.')
-                and self.groupDir('grid').mkpath('.')
-                and self.groupDir('plan').mkpath('.')
-                and self.groupDir('base').mkpath('.')):
-                self._setIsConfigured(True)
+        if wizard.exec_() and wizard.projectPath() and wizard.siteCode() and QDir(wizard.projectPath()).mkpath('.'):
+            self.setProjectPath(wizard.projectPath())
+            self.setMultiSiteProject(wizard.multiSiteProject())
+            self.setSiteCode(wizard.siteCode())
+            self.setUseArkDB(wizard.useArkDB())
+            self.setArkUrl(wizard.arkUrl())
+
+            self._configureVectorGroup('plan')
+            self._configureVectorGroup('grid')
+            self._configureVectorGroup('base')
+
+            self._configureRasterGroup('cxt')
+            self._configureRasterGroup('pln')
+            self._configureRasterGroup('sec')
+
+            self._setIsConfigured(True)
+
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
             self.layerDock.menuAction().setChecked(False)
             return False
         else:
             return True
+
+    def _configureVectorGroup(self, grp):
+        config = Config.vectorGroups[grp]
+        path = self.projectPath() + '/' + config['pathSuffix']
+        bufferPath = path + '/buffer'
+        logPath = path + '/log'
+        QDir(path).mkpath('.')
+        if config['buffer']:
+            QDir(bufferPath).mkpath('.')
+        if config['log']:
+            QDir(logPath).mkpath('.')
+        lcs = LayerCollectionSettings()
+        lcs.collection = grp
+        lcs.collectionPath = path
+        lcs.parentGroupName = Config.projectGroupName
+        lcs.collectionGroupName = config['groupName']
+        lcs.bufferGroupName = config['bufferGroupName']
+        lcs.log = config['log']
+        if config['pointsBaseName']:
+            lcs.pointsLayerLabel = config['pointsLabel']
+            lcs.pointsLayerName = self._layerName(config['pointsBaseName'])
+            lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
+            lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, config['pointsBaseName'])
+            if config['buffer']:
+                lcs.pointsBufferName = lcs.pointsLayerName + Config.bufferSuffix
+                lcs.pointsBufferPath = self._shapeFile(bufferPath, lcs.pointsBufferName)
+            if config['log']:
+                lcs.pointsLogName = lcs.pointsLayerName + Config.logSuffix
+                lcs.pointsLogPath = self._shapeFile(logPath, lcs.pointsLogName)
+        if config['linesBaseName']:
+            lcs.linesLayerLabel = config['linesLabel']
+            lcs.linesLayerName = self._layerName(config['linesBaseName'])
+            lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
+            lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, config['linesBaseName'])
+            if config['buffer']:
+                lcs.linesBufferName = lcs.linesLayerName + Config.bufferSuffix
+                lcs.linesBufferPath = self._shapeFile(bufferPath, lcs.linesBufferName)
+            if config['log']:
+                lcs.linesLogName = lcs.linesLayerName + Config.logSuffix
+                lcs.linesLogPath = self._shapeFile(logPath, lcs.linesLogName)
+        if config['polygonsBaseName']:
+            lcs.polygonsLayerLabel = config['polygonsLabel']
+            lcs.polygonsLayerName = self._layerName(config['polygonsBaseName'])
+            lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
+            lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, config['polygonsBaseName'])
+            if config['buffer']:
+                lcs.polygonsBufferName = lcs.polygonsLayerName + Config.bufferSuffix
+                lcs.polygonsBufferPath = self._shapeFile(bufferPath, lcs.polygonsBufferName)
+            if config['log']:
+                lcs.polygonsLogName = lcs.polygonsLayerName + Config.logSuffix
+                lcs.polygonsLogPath = self._shapeFile(logPath, lcs.polygonsLogName)
+        lcs.toProject(self.pluginName)
+        if config['multi']:
+            self._createCollectionMultiLayers(grp, lcs)
+        else:
+            self._createCollectionLayers(grp, lcs)
+
+    def _configureRasterGroup(self, grp):
+        self.rawDrawingDir(grp).mkpath('.')
+        self.georefDrawingDir(grp).mkpath('.')
 
     def _triggerSettingsDialog(self):
         if self.isConfigured():
@@ -298,9 +352,9 @@ class ArkSpatial(Plugin):
             self.projectGroupIndex = newIndex
 
     def _layerName(self, baseName):
-        if (baseName and not self.multiSiteProject() and self.siteCode()):
-            return self.siteCode() + '_' + baseName
-        return 'ark_' + baseName
+        if self.multiSiteProject():
+            return 'ARK_' + baseName
+        return self.siteCode() + '_' + baseName
 
     def loadGeoLayer(self, geoFile, zoomToLayer=True):
         #TODO Check if already loaded, remove old one?
@@ -316,51 +370,28 @@ class ArkSpatial(Plugin):
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
 
-    def _styleFile(self, layerPath, layerName, baseName, defaultName):
+    def _styleFile(self, layerPath, layerName, baseName):
         # First see if the layer itself has a default style saved
         filePath = layerPath + '/' + layerName + '.qml'
         if QFile.exists(filePath):
             return filePath
-        # Next see if the base name has a style in the styles folder (which may be a special folder, the site folder or the plugin folder)
-        filePath = self.stylePath() + '/' + baseName + '.qml'
+        # Next see if the layer name has a style in the styles folder (which may be a special folder, the site folder or the plugin folder)
+        filePath = self.stylePath() + '/' + layerName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # Next see if the default name has a style in the style folder
-        filePath = self.stylePath() + '/' + defaultName + '.qml'
+        filePath = self.stylePath() + '/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self.stylePath() + '/' + defaultName + '.qml'
+        filePath = self.pluginPath() + '/styles/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!
         return ''
 
-    def _createCollection(self, collection):
-        path = self.groupPath(collection)
-        lcs = LayerCollectionSettings()
-        lcs.collectionGroupName = self.layersGroupName(collection)
-        lcs.parentGroupName = Config.projectGroupName
-        lcs.bufferGroupName = self.bufferGroupName(collection)
-        lcs.bufferSuffix = self._groupDefault(collection, 'bufferSuffix')
-        layerName = self.pointsLayerName(collection)
-        if layerName:
-            lcs.pointsLayerLabel = self._groupDefault(collection, 'pointsLabel')
-            lcs.pointsLayerName = layerName
-            lcs.pointsLayerPath = self._shapeFile(path, layerName)
-            lcs.pointsStylePath = self._styleFile(path, layerName, self.pointsBaseName(collection), self.pointsBaseNameDefault(collection))
-        layerName = self.linesLayerName(collection)
-        if layerName:
-            lcs.linesLayerLabel = self._groupDefault(collection, 'linesLabel')
-            lcs.linesLayerName = layerName
-            lcs.linesLayerPath = self._shapeFile(path, layerName)
-            lcs.linesStylePath = self._styleFile(path, layerName, self.linesBaseName(collection), self.linesBaseNameDefault(collection))
-        layerName = self.polygonsLayerName(collection)
-        if layerName:
-            lcs.poolygonsLayerLabel = self._groupDefault(collection, 'polygonsLabel')
-            lcs.polygonsLayerName = layerName
-            lcs.polygonsLayerPath = self._shapeFile(path, layerName)
-            lcs.polygonsStylePath = self._styleFile(path, layerName, self.polygonsBaseName(collection), self.polygonsBaseNameDefault(collection))
+    def _loadCollection(self, collection):
+        lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
         return LayerCollection(self.iface, lcs)
 
     def _createCollectionLayers(self, collection, settings):
@@ -451,7 +482,7 @@ class ArkSpatial(Plugin):
 
     def siteCodes(self):
         # TODO Make a stored list, updated via settings
-        return sorted(set(self.plan.uniqueValues(self.fieldName('site'))))
+        return self.plan.uniqueValues(self.fieldName('site'))
 
     def setSiteCode(self, siteCode):
         self.writeEntry('siteCode', siteCode)
@@ -479,7 +510,7 @@ class ArkSpatial(Plugin):
     # Group settings
 
     def _groupDefault(self, group, key):
-        return Config.groupDefaults[group][key]
+        return Config.vectorGroups[group][key]
 
     def _groupEntry(self, group, key, default=None):
         if default is None:
@@ -500,18 +531,13 @@ class ArkSpatial(Plugin):
         return QDir(self.groupPath(group))
 
     def groupPath(self, group):
-        path =  self._groupEntry(group, 'path')
-        if (not path):
-            return self.groupPathDefault(group)
-        return path
+        return self.groupPathDefault(group)
 
     def groupPathDefault(self, group):
-        path = self._groupDefault(group, 'path')
-        if not path:
-            path = self.projectPath()
-            suffix = self._groupDefault(group, 'pathSuffix')
-            if path and suffix:
-                path = path + '/' + suffix
+        path = self.projectPath()
+        suffix = self._groupDefault(group, 'pathSuffix')
+        if path and suffix:
+            path = path + '/' + suffix
         return path
 
     def setGroupPath(self, group, useCustomFolder, absolutePath):
@@ -548,6 +574,9 @@ class ArkSpatial(Plugin):
         self._setGroupEntry(collection, 'pointsBaseName', pointsBaseName)
 
     def pointsLayerName(self, collection):
+        return self._layerName(self.pointsBaseName(collection))
+
+    def pointsBufferName(self, collection):
         return self._layerName(self.pointsBaseName(collection))
 
     def linesBaseNameDefault(self, collection):
@@ -588,15 +617,15 @@ class ArkSpatial(Plugin):
         return QDir(self.rawDrawingPath(group))
 
     def rawDrawingPath(self, group):
-        return self.groupPath(group)
+        return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
 
     def georefDrawingDir(self, group):
         return QDir(self.georefDrawingPath(group))
 
     def georefDrawingPath(self, group):
         if self.useGeorefFolder():
-            return QDir(self.groupPath(group) + '/georef').absolutePath()
-        return self.groupPath(group)
+            return self.rawDrawingPath(group) + '/georef'
+        return self.rawDrawingPath(group)
 
     def useGeorefFolder(self):
         return self.readBoolEntry('useGeorefFolder', True)

@@ -64,6 +64,8 @@ class Config():
     pluginName = u'ArkPlan'
     projectGroupName = u'Ark Spatial'
     filterSetGroupName = u'Filter Export Data'
+    bufferSuffix = '_buf'
+    logSuffix = '_log'
 
     # Field deafults to use if *not* using ARK DB, so as not to confuse normal users
     fieldDefaults = {
@@ -111,15 +113,14 @@ class Config():
         'updated_by': QgsField('mod_by',     QVariant.String, '',  20, 0, 'Updated By'),
     }
 
-    groupDefaults = {
+    vectorGroups = {
         'plan' : {
-            'path'             : '',
             'pathSuffix'       : 'vector/plan',
-            'layersGroupName'  : 'Plan Data',
+            'groupName'        : 'Plan Data',
+            'buffer'           : True,
             'bufferGroupName'  : 'Edit',
-            'bufferSuffix'     : '_edit',
-            'logSuffix'        : '_log',
             'log'              : True,
+            'multi'            : True,
             'pointsLabel'      : 'Plan Points',
             'linesLabel'       : 'Plan Lines',
             'polygonsLabel'    : 'Plan Polygons',
@@ -131,13 +132,12 @@ class Config():
             'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
         },
         'grid' : {
-            'path'             : '',
             'pathSuffix'       : 'vector/grid',
-            'layersGroupName'  : 'Grid',
+            'groupName'        : 'Grid Data',
+            'buffer'           : False,
             'bufferGroupName'  : '',
-            'bufferSuffix'     : '',
-            'logSuffix'        : '',
             'log'              : False,
+            'multi'            : False,
             'pointsLabel'      : 'Grid Points',
             'linesLabel'       : 'Grid Lines',
             'polygonsLabel'    : 'Grid Polygons',
@@ -149,13 +149,12 @@ class Config():
             'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created_on', 'created_by'],
         },
         'base' : {
-            'path'             : '',
             'pathSuffix'       : 'vector/base',
-            'layersGroupName'  : 'Base Data',
+            'groupName'        : 'Base Data',
+            'buffer'           : False,
             'bufferGroupName'  : '',
-            'bufferSuffix'     : '',
-            'logSuffix'        : '',
             'log'              : False,
+            'multi'            : False,
             'pointsLabel'      : 'Base Points',
             'linesLabel'       : 'Base Lines',
             'polygonsLabel'    : 'Base Polygons',
@@ -166,20 +165,23 @@ class Config():
             'linesFields'      : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
             'polygonsFields'   : ['site', 'name', 'category', 'source_cd', 'file', 'comment', 'created_on', 'created_by'],
         },
+    }
+
+    rasterGroups = {
         'cxt' : {
-            'path'             : '',
+            'groupName'        : 'Contexts',
             'pathSuffix'       : 'raster/context',
-            'layersGroupName'  : 'Drawings'
+            'layersGroupName'  : 'Drawings',
         },
         'pln' : {
-            'path'             : '',
+            'groupName'        : 'Plans',
             'pathSuffix'       : 'raster/plan',
-            'layersGroupName'  : 'Drawings'
+            'layersGroupName'  : 'Drawings',
         },
         'sec' : {
-            'path'             : '',
+            'groupName'        : 'Sections',
             'pathSuffix'       : 'raster/section',
-            'layersGroupName'  : 'Drawings'
+            'layersGroupName'  : 'Drawings',
         },
     }
 

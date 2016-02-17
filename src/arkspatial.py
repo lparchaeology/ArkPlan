@@ -283,14 +283,14 @@ class ArkSpatial(Plugin):
 
     def _configureVectorGroup(self, grp):
         config = Config.vectorGroups[grp]
-        path = self.projectPath() + '/' + config['pathSuffix']
+        path = config['pathSuffix']
         bufferPath = path + '/buffer'
         logPath = path + '/log'
-        QDir(path).mkpath('.')
+        QDir(self.projectPath() + '/' + path).mkpath('.')
         if config['buffer']:
-            QDir(bufferPath).mkpath('.')
+            QDir(self.projectPath() + '/' + bufferPath).mkpath('.')
         if config['log']:
-            QDir(logPath).mkpath('.')
+            QDir(self.projectPath() + '/' + logPath).mkpath('.')
         lcs = LayerCollectionSettings()
         lcs.collection = grp
         lcs.collectionPath = path
@@ -392,23 +392,29 @@ class ArkSpatial(Plugin):
 
     def _loadCollection(self, collection):
         lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
-        return LayerCollection(self.iface, lcs)
+        return LayerCollection(self.iface, self.projectPath(), lcs)
 
     def _createCollectionLayers(self, collection, settings):
-        if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint,      self.projectCrs(), self._layerFields(collection, 'pointsFields'))
-        if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString, self.projectCrs(), self._layerFields(collection, 'linesFields'))
-        if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon,    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+        if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint,
+                                   self.projectCrs(), self._layerFields(collection, 'pointsFields'))
+        if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString,
+                                   self.projectCrs(), self._layerFields(collection, 'linesFields'))
+        if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon,
+                                   self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, collection, settings):
-        if (settings.pointsLayerPath and not QFile.exists(settings.pointsLayerPath)):
-            layers.createShapefile(settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint,      self.projectCrs(), self._layerFields(collection, 'pointsFields'))
-        if (settings.linesLayerPath and not QFile.exists(settings.linesLayerPath)):
-            layers.createShapefile(settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString, self.projectCrs(), self._layerFields(collection, 'linesFields'))
-        if (settings.polygonsLayerPath and not QFile.exists(settings.polygonsLayerPath)):
-            layers.createShapefile(settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon,    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+        if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint,
+                                   self.projectCrs(), self._layerFields(collection, 'pointsFields'))
+        if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString,
+                                   self.projectCrs(), self._layerFields(collection, 'linesFields'))
+        if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
+            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon,
+                                   self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):
         fieldKeys = self._groupDefault(collection, fieldsKey)
@@ -558,53 +564,6 @@ class ArkSpatial(Plugin):
 
     def setLayersGroupName(self, group, layersGroupName):
         self._setGroupEntry(group, 'layersGroupName', layersGroupName)
-
-    # Vector Collection settings
-
-    def bufferGroupName(self, collection):
-        return self._groupEntry(collection, 'bufferGroupName')
-
-    def setBuffersGroupName(self, collection, bufferGroupName):
-        self._setGroupEntry(collection, 'bufferGroupName', bufferGroupName)
-
-    def pointsBaseNameDefault(self, collection):
-        return self._groupDefault(collection, 'pointsBaseName')
-
-    def pointsBaseName(self, collection):
-        return self._groupEntry(collection, 'pointsBaseName')
-
-    def setPointsBaseName(self, collection, pointsBaseName):
-        self._setGroupEntry(collection, 'pointsBaseName', pointsBaseName)
-
-    def pointsLayerName(self, collection):
-        return self._layerName(self.pointsBaseName(collection))
-
-    def pointsBufferName(self, collection):
-        return self._layerName(self.pointsBaseName(collection))
-
-    def linesBaseNameDefault(self, collection):
-        return self._groupDefault(collection, 'linesBaseName')
-
-    def linesBaseName(self, collection):
-        return self._groupEntry(collection, 'linesBaseName')
-
-    def setLinesBaseName(self, collection, linesBaseName):
-        self._setGroupEntry(collection, 'linesBaseName', linesBaseName)
-
-    def linesLayerName(self, collection):
-        return self._layerName(self.linesBaseName(collection))
-
-    def polygonsBaseNameDefault(self, collection):
-        return self._groupDefault(collection, 'polygonsBaseName')
-
-    def polygonsBaseName(self, collection):
-        return self._groupEntry(collection, 'polygonsBaseName')
-
-    def setPolygonsBaseName(self, collection, polygonsBaseName):
-        self._setGroupEntry(collection, 'polygonsBaseName', polygonsBaseName)
-
-    def polygonsLayerName(self, collection):
-        return self._layerName(self.polygonsBaseName(collection))
 
     def collection(self, collection):
         if collection == 'plan':

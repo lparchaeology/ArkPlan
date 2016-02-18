@@ -85,13 +85,22 @@ class SnappingWidget(QGroupBox, snapping_widget_base.Ui_SnappingWidget):
 
     # Close the project
     def closeProject(self):
+        self.snapBufferPointsTool.defaultAction().unload()
+        self.snapBufferLinesTool.defaultAction().unload()
+        self.snapBufferPolygonsTool.defaultAction().unload()
+        self.snapPlanPointsTool.defaultAction().unload()
+        self.snapPlanLinesTool.defaultAction().unload()
+        self.snapPlanPolygonsTool.defaultAction().unload()
+        self.snapBaseLinesTool.defaultAction().unload()
+        self.snapBasePolygonsTool.defaultAction().unload()
         QgsProject.instance().snapSettingsChanged.disconnect(self._refresh)
 
     def _setLayer(self, iface, layer, tool):
-        Snapping.setLayerSnappingEnabled(layer.id(), False)
-        action = LayerSnappingAction(layer, tool)
-        action.setInterface(iface)
-        tool.setDefaultAction(action)
+        if layer and layer.isValid():
+            Snapping.setLayerSnappingEnabled(layer.id(), False)
+            action = LayerSnappingAction(layer, tool)
+            action.setInterface(iface)
+            tool.setDefaultAction(action)
 
     def _refresh(self):
         self.setEnabled(Snapping.snappingMode() == Snapping.SelectedLayers)

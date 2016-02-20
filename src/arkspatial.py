@@ -168,18 +168,14 @@ class ArkSpatial(Plugin):
 
     # Load the project settings when project is loaded
     def loadProject(self):
-        utils.logMessage('loadProject')
         if self.isLoaded():
             self.closeProject()
         if self.isInitialised() and self.isConfigured():
-            utils.logMessage('loading...')
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
             #Load the layer collections
-            utils.logMessage('create collections...')
             self.grid = self._loadCollection('grid')
             self.plan = self._loadCollection('plan')
             self.base = self._loadCollection('base')
-            utils.logMessage('init collections...')
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -395,10 +391,7 @@ class ArkSpatial(Plugin):
         return ''
 
     def _loadCollection(self, collection):
-        utils.logMessage('_loadCollection ' + collection)
         lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
-        utils.logMessage(lcs.collection)
-        utils.logMessage(lcs.pointsLayerName)
         return LayerCollection(self.iface, self.projectPath(), lcs)
 
     def _createCollectionLayers(self, collection, settings):

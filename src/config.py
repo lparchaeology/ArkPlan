@@ -118,7 +118,7 @@ class Config():
             'pathSuffix'       : 'vector/plan',
             'groupName'        : 'Plan Data',
             'buffer'           : True,
-            'bufferGroupName'  : 'Edit',
+            'bufferGroupName'  : 'Plan Edit',
             'log'              : True,
             'multi'            : True,
             'pointsLabel'      : 'Plan Points',

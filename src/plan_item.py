@@ -142,6 +142,9 @@ class ItemKey():
         _setDict(attrs, 'id', self.itemId)
         return attrs
 
+    def toCsv(self):
+        return utils.doublequote(self.siteCode) + ',' + utils.doublequote(self.classCode) + ',' + utils.doublequote(self.itemId)
+
     def setSiteCode(self, siteCode):
         self.siteCode = utils.string(siteCode)
 

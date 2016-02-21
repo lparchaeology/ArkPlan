@@ -23,7 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir
+from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
 from qgis.core import *
@@ -77,6 +77,8 @@ class Plan(QObject):
     _schematicSourceHighlightFilter = -1
 
     _editSchematic = False
+
+    _itemLogPath = ''
 
     def __init__(self, project):
         super(Plan, self).__init__(project)
@@ -136,6 +138,13 @@ class Plan(QObject):
                 self.addDrawingTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5], category[7])
             if category[6] == True:
                 self._definitiveCategories.add(category[2])
+
+        if self.project.plan.settings.log:
+            self._itemLogPath = self.project.projectPath() + '/' + self.project.plan.settings.collectionPath + '/log/itemLog.csv'
+            if not QFile.exists(self._itemLogPath):
+                fd = open(self._itemLogPath, 'a')
+                fd.write('timestamp,action,siteCode,classCode,itemId\n')
+                fd.close()
 
         self.project.plan.pointsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
         self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
@@ -277,6 +286,7 @@ class Plan(QObject):
         # Finally actually merge the data
         if self.project.plan.mergeBuffers('Merge plan data', timestamp):
             self.project.showInfoMessage('Plan data successfully merged.')
+            self._logItemAction(self.metadata.itemFeature.key, 'Merge Buffers', timestamp)
             if self._editSchematic:
                 self._editSchematic = False
                 self.dock.activateSchematicCheck()
@@ -486,26 +496,37 @@ class Plan(QObject):
         confirm, ok = QInputDialog.getText(None, title, label, text='')
         return ok and confirm == str(itemId)
 
+    def _logItemAction(self, key, action, timestamp=None):
+        if self.project.plan.settings.log:
+            if not timestamp:
+                timestamp = utils.timestamp()
+            fd = open(self._itemLogPath, 'a')
+            fd.write(utils.doublequote(timestamp) + ',' + utils.doublequote(action) + ',' + key.toCsv() + '\n')
+            fd.close()
+
     def editInBuffers(self, itemKey):
         if self._confirmDelete(itemKey.itemId, 'Confirm Move Item'):
-            self._editInBuffers(itemKey)
-
-    def _editInBuffers(self, itemKey):
-        request = itemKey.featureRequest()
-        self.project.plan.moveFeatureRequestToBuffers(request, 'Edit Item', utils.timestamp())
-        self.metadata.setSiteCode(itemKey.siteCode)
-        self.metadata.setClassCode(itemKey.classCode)
-        self.metadata.setItemId(itemKey.itemId)
-        self.metadata.setComment('')
-        self.metadata.setSourceCode('drw')
-        self.metadata.setSourceClass(itemKey.classCode)
-        self.metadata.setSourceId(itemKey.itemId)
-        self.metadata.setSourceFile('')
+            request = itemKey.featureRequest()
+            timestamp = utils.timestamp()
+            action = 'Edit Item'
+            if self.project.plan.moveFeatureRequestToBuffers(request, action, timestamp):
+                self._logItemAction(itemKey, action, timestamp)
+                self.metadata.setSiteCode(itemKey.siteCode)
+                self.metadata.setClassCode(itemKey.classCode)
+                self.metadata.setItemId(itemKey.itemId)
+                self.metadata.setComment('')
+                self.metadata.setSourceCode('drw')
+                self.metadata.setSourceClass(itemKey.classCode)
+                self.metadata.setSourceId(itemKey.itemId)
+                self.metadata.setSourceFile('')
 
     def deleteItem(self, itemKey):
         if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
             request = itemKey.featureRequest()
-            self.project.plan.deleteFeatureRequest(request, 'Delete Item', utils.timestamp())
+            timestamp = utils.timestamp()
+            action = 'Delete Item'
+            if self.project.plan.deleteFeatureRequest(request, action, timestamp):
+                self._logItemAction(itemKey, action, timestamp)
 
     def panToItem(self, itemKey, highlight=False):
         extent = self.itemExtent(itemKey)

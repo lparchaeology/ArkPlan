@@ -466,9 +466,11 @@ class Plan(QObject):
                 if str(feature.attribute(self.project.fieldName('id'))) == str(md.sourceId()) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
         if len(definitiveFeatures) <= 0:
+            self.project.logMessage('Auto Schematic failed: No definitive features')
             return
         schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
+            self.project.logMessage('Auto Schematic failed: No schematic features')
             return
         schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
         attrs = md.itemFeature.toAttributes()

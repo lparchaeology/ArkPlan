@@ -819,10 +819,11 @@ class Plan(QObject):
         self.editInBuffers(self.dock.sourceItemKey())
         self.dock.widget.setCurrentIndex(0)
 
-    def _findSource(self):
+    def _findSource(self, source=ItemKey()):
         self._clearSchematicSourceFilters()
 
-        source = source
+        if not source.isValid():
+            source = self.dock.sourceItemKey()
 
         filterModule = self.project.filterModule
         if self.metadata.siteCode() == '':

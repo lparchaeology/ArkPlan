@@ -754,8 +754,26 @@ class Plan(QObject):
         self.editInBuffers(self.dock.contextItemKey())
         self.dock.widget.setCurrentIndex(0)
 
-    def _schematicStatus(self, context):
-        schRequest = self._categoryRequest(context, 'sch')
+    def _arkStatus(self, item):
+        try:
+            if item in self.project.data.itemKeys[item.classCode]:
+                return SearchStatus.Found
+        except:
+            return SearchStatus.Unknown
+        return SearchStatus.NotFound
+
+    def _featureStatus(self, item, copyMetadata=False):
+        itemRequest = item.featureRequest()
+        try:
+            feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
+            if copyMetadata:
+                self._copyFeatureMetadata(feature)
+        except StopIteration:
+            return SearchStatus.NotFound
+        return SearchStatus.Found
+
+    def _schematicStatus(self, item):
+        schRequest = self._categoryRequest(item, 'sch')
         try:
             self.project.plan.polygonsLayer.getFeatures(schRequest).next()
         except StopIteration:
@@ -781,13 +799,8 @@ class Plan(QObject):
         except:
             haveArk = SearchStatus.Unknown
 
-        itemRequest = context.featureRequest()
-        haveFeature = SearchStatus.Found
-        try:
-            feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
-            self._copyFeatureMetadata(feature)
-        except StopIteration:
-            haveFeature = SearchStatus.NotFound
+        haveArk = self._arkStatus(context)
+        haveFeature = self._featureStatus(context, True)
 
         if haveFeature == SearchStatus.NotFound:
             polyRequest = self._notCategoryRequest(context, 'sch')
@@ -833,22 +846,11 @@ class Plan(QObject):
         self._clearSchematicContextHighlightFilter()
         self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, source, FilterAction.LockFilter)
 
-        itemRequest = source.featureRequest()
-        haveFeature = SearchStatus.Found
-        try:
-            self.project.plan.linesLayer.getFeatures(itemRequest).next()
-        except StopIteration:
-            haveFeature = SearchStatus.NotFound
+        haveArk = self._arkStatus(source)
+        haveFeature = self._featureStatus(source)
+        haveSchematic = self._schematicStatus(source)
 
-        schRequest = self._categoryRequest(source, 'sch')
-        haveSchematic = SearchStatus.Found
-        try:
-            feature = self.project.plan.polygonsLayer.getFeatures(schRequest).next()
-            self._copyFeatureMetadata(feature)
-        except StopIteration:
-            haveSchematic = SearchStatus.NotFound
-
-        self.dock.setSourceContext(source, haveFeature, haveSchematic)
+        self.dock.setSourceContext(source, haveArk, haveFeature, haveSchematic)
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))

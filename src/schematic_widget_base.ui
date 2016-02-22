@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>303</width>
-    <height>616</height>
+    <width>304</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -314,7 +314,7 @@
         <item row="1" column="0">
          <widget class="QLabel" name="featureDataLabel">
           <property name="text">
-           <string>Has Line Features:</string>
+           <string>Has Features:</string>
           </property>
          </widget>
         </item>
@@ -416,15 +416,75 @@
       </item>
       <item row="1" column="0">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="sourceDataLabel">
+        <item row="2" column="1">
+         <spacer name="sourceSchematicSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="sourceSchematicLabel">
+          <property name="text">
+           <string>Has Schematic:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="sourceFeatureDataStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="sourceSchematicStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="sourceFeatureDataLabel">
           <property name="text">
            <string>Has Features:</string>
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <spacer name="sourceFeatureDataSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="sourceArkDataLabel">
+          <property name="text">
+           <string>Has ARK Record:</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
-         <spacer name="horizontalSpacer">
+         <spacer name="sourceArkDataSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -437,37 +497,7 @@
          </spacer>
         </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="sourceDataStatusLabel">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="sourceSchematicLabel">
-          <property name="text">
-           <string>Has Schematic:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="sourceSchematicStatusLabel">
+         <widget class="QLabel" name="sourceArkDataStatusLabel">
           <property name="text">
            <string/>
           </property>
@@ -587,6 +617,7 @@
  <resources>
   <include location="resources.qrc"/>
   <include location="resources.qrc"/>
+  <include location="Users/j.layt/Development/ArkPlan/src/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

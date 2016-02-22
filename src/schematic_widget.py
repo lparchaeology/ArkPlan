@@ -165,10 +165,10 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     def resetSourceContext(self):
         self.setSourceContext(ItemKey())
 
-    def setSourceContext(self, context, foundData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
+    def setSourceContext(self, context, foundArk=SearchStatus.Unknown, foundFeature=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
         if context.isValid():
             self.sourceContextSpin.setValue(int(context.itemId))
-            self._setSourceStatus(foundData, foundSchematic)
+            self._setSourceStatus(foundArk, foundFeature, foundSchematic)
         else:
             self.sourceContextSpin.setValue(0)
             self._setSourceStatus()
@@ -180,10 +180,11 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
             return SearchStatus.Found
         return SearchStatus.NotFound
 
-    def _setSourceStatus(self, foundData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
-        self._sourceDataStatus = foundData
+    def _setSourceStatus(self, foundArk=SearchStatus.Unknown, foundFeature=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
+        self._sourceDataStatus = foundFeature
         self._sourceSchematicStatus = foundSchematic
-        self._setStatusLabel(self.sourceDataStatusLabel, foundData)
+        self._setStatusLabel(self.sourceArkDataStatusLabel, foundArk)
+        self._setStatusLabel(self.sourceFeatureDataStatusLabel, foundFeature)
         self._setStatusLabel(self.sourceSchematicStatusLabel, foundSchematic)
         self._enableClone(foundSchematic == SearchStatus.Found)
         self.editSourceButton.setEnabled(self.sourceStatus() == SearchStatus.Found)

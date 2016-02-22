@@ -219,8 +219,8 @@ class PlanDock(ToolDockWidget):
     def resetSourceContext(self):
         self.widget.schematicWidget.resetSourceContext()
 
-    def setSourceContext(self, context, foundData, foundSchematic):
-        self.widget.schematicWidget.setSourceContext(context, foundData, foundSchematic)
+    def setSourceContext(self, context, foundArk, foundFeature, foundSchematic):
+        self.widget.schematicWidget.setSourceContext(context, foundArk, foundFeature, foundSchematic)
 
     def sourceStatus(self):
         return self.widget.schematicWidget.sourceStatus()

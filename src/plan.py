@@ -44,7 +44,7 @@ from config import Config
 from metadata import Metadata
 from schematic_widget import SearchStatus
 
-import resources_rc
+import resources
 
 def _quote(string):
     return "'" + string + "'"
@@ -102,11 +102,13 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.dock.findContextSelected.connect(self._findPanContext)
-        self.dock.zoomContextSelected.connect(self._findZoomContext)
+        self.dock.findContextSelected.connect(self._findMoveContext)
+        self.dock.firstContextSelected.connect(self._firstContext)
+        self.dock.lastContextSelected.connect(self._lastContext)
+        self.dock.prevContextSelected.connect(self._prevContext)
+        self.dock.nextContextSelected.connect(self._nextContext)
         self.dock.editContextSelected.connect(self._editSchematicContext)
         self.dock.findSourceSelected.connect(self._findPanSource)
-        self.dock.zoomSourceSelected.connect(self._findZoomSource)
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.dock.editSourceSelected.connect(self._editSource)
@@ -463,14 +465,12 @@ class Plan(QObject):
         else:
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
-                if str(feature.attribute(self.project.fieldName('id'))) == str(md.sourceId()) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
+                if str(feature.attribute(self.project.fieldName('id'))) == str(md.itemId()) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
                     definitiveFeatures.append(feature)
         if len(definitiveFeatures) <= 0:
-            self.project.logMessage('Auto Schematic failed: No definitive features')
             return
         schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
         if len(schematicFeatures) <= 0:
-            self.project.logMessage('Auto Schematic failed: No schematic features')
             return
         schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
         attrs = md.itemFeature.toAttributes()
@@ -668,17 +668,16 @@ class Plan(QObject):
     # SchematicDock methods
 
     def _resetSchematic(self):
-        self._clearSchematicFilters()
-        self.dock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
+        self._clearSchematic()
         self.dock.activateSchematicCheck()
 
     def _clearSchematic(self):
         self._clearSchematicFilters()
-        self.dock.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.dock.resetContext()
 
     def _mergeSchematic(self):
         self.mergeBuffers()
-        self._findPanContext()
+        self._findMoveContext()
 
     def _clearSchematicFilters(self):
         self._clearSchematicContextIncludeFilter()
@@ -703,32 +702,52 @@ class Plan(QObject):
             self.project.filterModule.removeFilterClause(self._schematicSourceHighlightFilter)
             self._schematicSourceHighlightFilter = -1
 
-    def _findPanContext(self):
-        self._findContext()
+    def _findMoveContext(self, context=ItemKey()):
+        self._findContext(context)
         if self.dock.contextStatus() == SearchStatus.Found:
             self.moveToItem(self.dock.contextItemKey())
 
-    def _findZoomContext(self):
-        self._findContext()
-        if self.dock.contextStatus() == SearchStatus.Found:
-            self.zoomToItem(self.dock.contextItemKey())
+    def _firstContext(self):
+        self._findMoveContext(self.project.data.itemKeys['cxt'][0])
+
+    def _lastContext(self):
+        self._findMoveContext(self.project.data.itemKeys['cxt'][-1])
+
+    def _prevContext(self):
+        idx = self.project.data.itemKeys['cxt'].index(self.dock.contextItemKey())
+        if idx > 0:
+            self._findMoveContext(self.project.data.itemKeys['cxt'][idx - 1])
+
+    def _nextContext(self):
+        idx = self.project.data.itemKeys['cxt'].index(self.dock.contextItemKey())
+        if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
+            self._findMoveContext(self.project.data.itemKeys['cxt'][idx + 1])
 
     def _editSchematicContext(self):
         self._editSchematic = True
         self.editInBuffers(self.dock.contextItemKey())
         self.dock.widget.setCurrentIndex(0)
 
-    def _findContext(self):
+    def _findContext(self, context=ItemKey()):
         self._clearSchematicFilters()
 
-        filterModule = self.project.filterModule
-        if self.metadata.siteCode() == '':
-            self.metadata.setSiteCode(self.project.siteCode())
-        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.ExcludeFilter):
-            self._schematicContextIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
-        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.dock.contextItemKey(), FilterAction.LockFilter)
+        if not context.isValid():
+            context = self.dock.contextItemKey()
 
-        itemRequest = self.dock.contextItemKey().featureRequest()
+        filterModule = self.project.filterModule
+        self.metadata.setSiteCode(context.siteCode)
+        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.ExcludeFilter):
+            self._schematicContextIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, context, FilterAction.LockFilter)
+        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, context, FilterAction.LockFilter)
+
+        haveArk = SearchStatus.NotFound
+        try:
+            if context in self.project.data.itemKeys['cxt']:
+                haveArk = SearchStatus.Found
+        except:
+            haveArk = SearchStatus.Unknown
+
+        itemRequest = context.featureRequest()
         haveFeature = SearchStatus.Found
         try:
             feature = self.project.plan.linesLayer.getFeatures(itemRequest).next()
@@ -737,41 +756,35 @@ class Plan(QObject):
             haveFeature = SearchStatus.NotFound
 
         if haveFeature == SearchStatus.NotFound:
-            polyRequest = self._notCategoryRequest(self.dock.contextItemKey(), 'sch')
+            polyRequest = self._notCategoryRequest(context, 'sch')
             haveFeature = SearchStatus.Found
             try:
                 self.project.plan.polygonsLayer.getFeatures(polyRequest).next()
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(self.dock.contextItemKey(), 'sch')
+        schRequest = self._categoryRequest(context, 'sch')
         haveSchematic = SearchStatus.Found
         try:
             self.project.plan.polygonsLayer.getFeatures(schRequest).next()
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
-        scsRequest = self._categoryRequest(self.dock.contextItemKey(), 'scs')
+        scsRequest = self._categoryRequest(context, 'scs')
         haveSectionSchematic = SearchStatus.Found
         try:
             self.project.plan.polygonsLayer.getFeatures(scsRequest).next()
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 
-        self.dock.setContext(self.dock.context(), haveFeature, haveSchematic, haveSectionSchematic)
-        self.metadata.setItemId(self.dock.context())
+        self.dock.setContext(context, haveArk, haveFeature, haveSchematic, haveSectionSchematic)
+        self.metadata.setItemId(context.itemId)
 
     def _findPanSource(self):
         if self.dock.sourceStatus() == SearchStatus.Unknown:
             self._findSource()
         if self.dock.sourceStatus() == SearchStatus.Found:
             self.moveToItem(self.dock.sourceItemKey())
-
-    def _findZoomSource(self):
-        if self.dock.sourceStatus() == SearchStatus.Unknown:
-            self._findSource()
-        if self.dock.sourceStatus() == SearchStatus.Found:
-            self.zoomToItem(self.dock.sourceItemKey())
 
     def _editSource(self):
         self.editInBuffers(self.dock.sourceItemKey())
@@ -780,22 +793,24 @@ class Plan(QObject):
     def _findSource(self):
         self._clearSchematicSourceFilters()
 
+        source = source
+
         filterModule = self.project.filterModule
         if self.metadata.siteCode() == '':
             self.metadata.setSiteCode(self.project.siteCode())
         if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, self.dock.sourceItemKey(), FilterAction.LockFilter)
+            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, source, FilterAction.LockFilter)
         self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, self.dock.sourceItemKey(), FilterAction.LockFilter)
+        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, source, FilterAction.LockFilter)
 
-        itemRequest = self.dock.sourceItemKey().featureRequest()
+        itemRequest = source.featureRequest()
         haveFeature = SearchStatus.Found
         try:
             self.project.plan.linesLayer.getFeatures(itemRequest).next()
         except StopIteration:
             haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(self.dock.sourceItemKey(), 'sch')
+        schRequest = self._categoryRequest(source, 'sch')
         haveSchematic = SearchStatus.Found
         try:
             feature = self.project.plan.polygonsLayer.getFeatures(schRequest).next()
@@ -803,7 +818,7 @@ class Plan(QObject):
         except StopIteration:
             haveSchematic = SearchStatus.NotFound
 
-        self.dock.setSourceContext(self.dock.sourceContext(), haveFeature, haveSchematic)
+        self.dock.setSourceContext(source, haveFeature, haveSchematic)
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))

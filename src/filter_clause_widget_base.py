@@ -63,4 +63,4 @@ class Ui_FilterClauseWidget(object):
         self.filterTypeTool.setText(_translate("FilterClauseWidget", "...", None))
         self.filterActionTool.setText(_translate("FilterClauseWidget", "...", None))
 
-import resources_rc
+import resources

@@ -41,7 +41,7 @@ from filter_clause_widget import FilterType, FilterAction
 from config import Config
 from plan_item import ItemKey
 
-import resources_rc
+import resources
 
 class Filter(QObject):
 
@@ -374,15 +374,17 @@ class Filter(QObject):
         return filterSets
 
     def loadFilterSet(self, filterSet='Default'):
-        self._loadFilterSet(filterSet)
-        self.dock.setFilterSet(filterSet)
-        self.applyFilters()
+        if filterSet in self._listFilterSets():
+            self._loadFilterSet(filterSet)
+            self.dock.setFilterSet(filterSet)
+            self.applyFilters()
 
     def _loadFilterSet(self, key):
         group = self._filterSetGroup(key)
         settings = QSettings()
         x = settings.beginReadArray(group)
-        self.dock.fromSettings(settings, x)
+        if x > 0:
+            self.dock.fromSettings(settings, x)
         settings.endArray()
 
     def _saveFilterSetSelected(self, key, name):

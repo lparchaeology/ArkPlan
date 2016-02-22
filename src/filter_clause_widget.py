@@ -24,7 +24,7 @@
  ***************************************************************************/
 """
 
-import resources_rc
+import resources
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal

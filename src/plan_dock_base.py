@@ -207,4 +207,4 @@ class Ui_PlanDockWidget(object):
 
 from ..libarkqgis.dock import ArkDockWidget
 from metadata_widget import MetadataWidget
-import resources_rc
+import resources

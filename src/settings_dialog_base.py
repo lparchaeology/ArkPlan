@@ -262,4 +262,4 @@ class Ui_SettingsDialogBase(object):
         self.sectionDrawingFolderLabel.setText(_translate("SettingsDialogBase", "Section Drawings:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.drawingsTab), _translate("SettingsDialogBase", "Drawings", None))
 
-import resources_rc
+import resources

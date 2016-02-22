@@ -96,4 +96,4 @@ class Ui_DrawingWidget(object):
         self.sectionLabel.setText(_translate("DrawingWidget", "Section:", None))
         DrawingWidget.setTabText(DrawingWidget.indexOf(self.sectionsTab), _translate("DrawingWidget", "Sections", None))
 
-import resources_rc
+import resources

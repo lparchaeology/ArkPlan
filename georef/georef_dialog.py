@@ -37,7 +37,7 @@ from ..src.plan_util import *
 import georef_dialog_base
 import georef_graphics_view
 
-import resources_rc
+import resources
 
 class ProcessStatus():
 

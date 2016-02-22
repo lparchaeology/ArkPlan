@@ -155,4 +155,4 @@ class Ui_SettingsWizard(object):
         self.confirmPage.setSubTitle(_translate("SettingsWizard", "Create your new project.", None))
         self.confirmLabel.setText(_translate("SettingsWizard", "Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.", None))
 
-import resources_rc
+import resources

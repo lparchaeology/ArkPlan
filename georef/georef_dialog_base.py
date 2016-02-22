@@ -220,4 +220,4 @@ class Ui_GeorefDialogBase(object):
 
 from gcp_widget import GcpWidget
 from georef_graphics_view import GeorefGraphicsView
-import resources_rc
+import resources

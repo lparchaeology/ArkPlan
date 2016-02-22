@@ -88,4 +88,4 @@ class Ui_FilterSetWidget(object):
         self.deleteFilterSetAction.setText(_translate("FilterSetWidget", "Delete Filter Set", None))
         self.exportFilterSetAction.setText(_translate("FilterSetWidget", "Export Filter Set", None))
 
-import resources_rc
+import resources

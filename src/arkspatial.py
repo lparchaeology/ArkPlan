@@ -48,7 +48,7 @@ from settings_dialog import SettingsDialog
 from select_item_dialog import SelectItemDialog
 from data_model import *
 
-import resources_rc
+import resources
 
 class ArkSpatial(Plugin):
     """QGIS Plugin Implementation."""
@@ -417,7 +417,7 @@ class ArkSpatial(Plugin):
                                    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):
-        fieldKeys = self._groupDefault(collection, fieldsKey)
+        fieldKeys = self._vectorGroupDefault(collection, fieldsKey)
         fields = QgsFields()
         for fieldKey in fieldKeys:
             fields.append(self.field(fieldKey))
@@ -518,22 +518,25 @@ class ArkSpatial(Plugin):
 
     # Group settings
 
-    def _groupDefault(self, group, key):
+    def _vectorGroupDefault(self, group, key):
         return Config.vectorGroups[group][key]
 
-    def _groupEntry(self, group, key, default=None):
+    def _rasterGroupDefault(self, group, key):
+        return Config.rasterGroups[group][key]
+
+    def _rasterGroupEntry(self, group, key, default=None):
         if default is None:
-            default = self._groupDefault(group, key)
+            default = self._rasterGroupDefault(group, key)
         return self.readEntry(group + '/' + key, default)
 
-    def _groupBoolEntry(self, group, key, default=None):
+    def _rasterGroupBoolEntry(self, group, key, default=None):
         if default is None:
-            default = self._groupDefault(group, key)
+            default = self._rasterGroupDefault(group, key)
         return self.readBoolEntry(group + '/' + key, default)
 
-    def _setGroupEntry(self, group, key, value, default=None):
+    def _setRasterGroupEntry(self, group, key, value, default=None):
         if default is None:
-            default = self._groupDefault(group, key)
+            default = self._rasterGroupDefault(group, key)
         self.setEntry(group + '/' + key, value, default)
 
     def collection(self, collection):
@@ -551,19 +554,19 @@ class ArkSpatial(Plugin):
 
     def rasterGroupPath(self, group):
         if self.useCustomPath(group):
-            return self._groupEntry(group, path)
+            return self._rasterGroupEntry(group, path)
         else:
             return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
 
     def setRasterGroupPath(self, group, useCustomPath, absolutePath):
-        self._setGroupEntry(group, 'useCustomPath', useCustomPath, False)
+        self._setRasterGroupEntry(group, 'useCustomPath', useCustomPath, False)
         if useCustomPath:
-            self._setGroupEntry(group, 'path', absolutePath)
+            self._setRasterGroupEntry(group, 'pathSuffix', absolutePath)
         else:
-            self._setGroupEntry(group, 'path', '')
+            self._setRasterGroupEntry(group, 'pathSuffix', '')
 
     def useCustomPath(self, group):
-        return self._groupBoolEntry(group, 'useCustomPath', False)
+        return self._rasterGroupBoolEntry(group, 'useCustomPath', False)
 
     def rawDrawingDir(self, group):
         return QDir(self.rawDrawingPath(group))

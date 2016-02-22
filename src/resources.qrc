@@ -5,6 +5,12 @@
     <file alias="settings.svg">../resources/settings.svg</file>
   </qresource>
   <qresource prefix="/plugins/ark/plan">
+    <file alias="goFirstItem.svg">../resources/go-first-view.svg</file>
+    <file alias="goPrevMissing.svg">../resources/go-first.svg</file>
+    <file alias="goLastItem.svg">../resources/go-last-view.svg</file>
+    <file alias="goNextMissing.svg">../resources/go-last.svg</file>
+    <file alias="goNextItem.svg">../resources/go-next-view.svg</file>
+    <file alias="goPrevItem.svg">../resources/go-previous-view.svg</file>
     <file alias="georef.png">../resources/mGeorefRun.png</file>
     <file alias="loadDrawings.svg">../resources/mIconRaster.svg</file>
     <file alias="autoSchematic.png">../resources/mActionCustomProjection.png</file>

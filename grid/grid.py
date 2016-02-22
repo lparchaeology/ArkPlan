@@ -39,7 +39,7 @@ from update_layer_dialog import UpdateLayerDialog
 from grid_wizard import GridWizard
 from grid_dock import GridDock
 
-import resources_rc
+import resources
 
 class GridModule(QObject):
 

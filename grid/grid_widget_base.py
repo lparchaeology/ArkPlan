@@ -106,4 +106,4 @@ class Ui_GridWidget(object):
         self.copyLocalPointAction.setText(_translate("GridWidget", "Copy", None))
         self.copyLocalPointAction.setToolTip(_translate("GridWidget", "Copy Local Point", None))
 
-import resources_rc
+import resources

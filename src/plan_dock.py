@@ -62,7 +62,10 @@ class PlanDock(ToolDockWidget):
 
     # Schematic Signals
     findContextSelected = pyqtSignal()
-    zoomContextSelected = pyqtSignal()
+    firstContextSelected = pyqtSignal()
+    lastContextSelected = pyqtSignal()
+    prevContextSelected = pyqtSignal()
+    nextContextSelected = pyqtSignal()
     editContextSelected = pyqtSignal()
     findSourceSelected = pyqtSignal()
     zoomSourceSelected = pyqtSignal()
@@ -125,10 +128,12 @@ class PlanDock(ToolDockWidget):
         self.widget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.findContextSelected.connect(self.findContextSelected)
-        self.widget.schematicWidget.zoomContextSelected.connect(self.zoomContextSelected)
+        self.widget.schematicWidget.firstContextSelected.connect(self.firstContextSelected)
+        self.widget.schematicWidget.lastContextSelected.connect(self.lastContextSelected)
+        self.widget.schematicWidget.prevContextSelected.connect(self.prevContextSelected)
+        self.widget.schematicWidget.nextContextSelected.connect(self.nextContextSelected)
         self.widget.schematicWidget.editContextSelected.connect(self.editContextSelected)
         self.widget.schematicWidget.findSourceSelected.connect(self.findSourceSelected)
-        self.widget.schematicWidget.zoomSourceSelected.connect(self.zoomSourceSelected)
         self.widget.schematicWidget.copySourceSelected.connect(self.copySourceSelected)
         self.widget.schematicWidget.cloneSourceSelected.connect(self.cloneSourceSelected)
         self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
@@ -192,8 +197,11 @@ class PlanDock(ToolDockWidget):
     def context(self):
         return self.widget.schematicWidget.context()
 
-    def setContext(self, context, foundData, foundSchematic, foundSectionSchematic):
-        self.widget.schematicWidget.setContext(context, foundData, foundSchematic, foundSectionSchematic)
+    def resetContext(self):
+        self.widget.schematicWidget.resetContext()
+
+    def setContext(self, context, foundArkData, foundFeatureData, foundSchematic, foundSectionSchematic):
+        self.widget.schematicWidget.setContext(context, foundArkData, foundFeatureData, foundSchematic, foundSectionSchematic)
 
     def contextStatus(self):
         return self.widget.schematicWidget.contextStatus()
@@ -203,6 +211,9 @@ class PlanDock(ToolDockWidget):
 
     def sourceContext(self):
         return self.widget.schematicWidget.sourceContext()
+
+    def resetSourceContext(self):
+        self.widget.schematicWidget.resetSourceContext()
 
     def setSourceContext(self, context, foundData, foundSchematic):
         self.widget.schematicWidget.setSourceContext(context, foundData, foundSchematic)

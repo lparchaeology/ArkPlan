@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>303</width>
-    <height>547</height>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,142 +35,337 @@
      <property name="title">
       <string>Check Schematic</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_6">
-      <item row="1" column="0">
-       <widget class="QLabel" name="contextLabel">
-        <property name="text">
-         <string>Context:</string>
-        </property>
-        <property name="buddy">
-         <cstring>contextSpin</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="6" colspan="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="contextDataStatusLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="6" colspan="2">
-       <widget class="QPushButton" name="editContextButton">
-        <property name="text">
-         <string>Edit</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QLabel" name="sectionSchematicLabel">
-        <property name="text">
-         <string>Has Section Schematic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="4">
-       <widget class="QLabel" name="contextDataLabel">
-        <property name="text">
-         <string>Has Features:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="6" colspan="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="sectionSchematicStatusLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0" colspan="4">
-       <widget class="QLabel" name="editContexLabel">
-        <property name="text">
-         <string>Edit Context:</string>
-        </property>
-        <property name="buddy">
-         <cstring>editContextButton</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="4">
-       <widget class="QLabel" name="contextSchematicLabel">
-        <property name="text">
-         <string>Has Schematic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7">
-       <widget class="QToolButton" name="zoomContextTool">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ark/plan/zoomToItem.svg</normaloff>:/plugins/ark/plan/zoomToItem.svg</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="6" colspan="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="contextSchematicStatusLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="6" colspan="2">
-       <widget class="QPushButton" name="resetButton">
-        <property name="text">
-         <string>Reset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="6">
-       <widget class="QToolButton" name="findContextTool">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
-        </property>
-       </widget>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QLabel" name="editContexLabel">
+          <property name="text">
+           <string>Edit Context:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editContextButton</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="editContextSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="editContextButton">
+          <property name="text">
+           <string>Edit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="resetLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="resetSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="resetButton">
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="siteCodeLabel">
-        <property name="text">
-         <string>Site Code:</string>
-        </property>
-        <property name="buddy">
-         <cstring>siteCodeCombo</cstring>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QLabel" name="contextLabel">
+          <property name="text">
+           <string>Context:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="siteCodeCombo"/>
+        </item>
+        <item row="2" column="1">
+         <layout class="QHBoxLayout" name="contextNavLayout">
+          <item>
+           <widget class="QToolButton" name="firstContextTool">
+            <property name="toolTip">
+             <string>Go First Context</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goFirstItem.svg</normaloff>:/plugins/ark/plan/goFirstItem.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="prevMissingTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Go Previous Missing Schematic</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goPrevMissing.svg</normaloff>:/plugins/ark/plan/goPrevMissing.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="prevContextTool">
+            <property name="toolTip">
+             <string>Go Previous Context</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goPrevItem.svg</normaloff>:/plugins/ark/plan/goPrevItem.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="nextContextTool">
+            <property name="toolTip">
+             <string>Go Next Context</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goNextItem.svg</normaloff>:/plugins/ark/plan/goNextItem.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="nextMissingTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Go Next Missing Schematic</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goNextMissing.svg</normaloff>:/plugins/ark/plan/goNextMissing.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="lastContextTool">
+            <property name="toolTip">
+             <string>Go Last Context</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/goLastItem.svg</normaloff>:/plugins/ark/plan/goLastItem.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="siteCodeLabel">
+          <property name="text">
+           <string>Site Code:</string>
+          </property>
+          <property name="buddy">
+           <cstring>siteCodeCombo</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QSpinBox" name="contextSpin">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="findContextTool">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
-      <item row="0" column="1" colspan="7">
-       <widget class="QComboBox" name="siteCodeCombo"/>
-      </item>
-      <item row="1" column="1" colspan="5">
-       <widget class="QSpinBox" name="contextSpin">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="maximum">
-         <number>99999</number>
-        </property>
-       </widget>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="2" column="1">
+         <spacer name="schematicSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="schematicStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="featureDataSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="1">
+         <spacer name="sectionSchematicSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="featureDataStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="schematicLabel">
+          <property name="text">
+           <string>Has Schematic:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="featureDataLabel">
+          <property name="text">
+           <string>Has Line Features:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="sectionSchematicStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="sectionSchematicLabel">
+          <property name="text">
+           <string>Has Section Schematic:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="arkDataLabel">
+          <property name="text">
+           <string>Has ARK Record:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="arkDataSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="arkDataStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -180,139 +375,202 @@
      <property name="title">
       <string>Clone Schematic</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="5" column="0" colspan="3">
-       <widget class="QLabel" name="copySourceLabel">
-        <property name="text">
-         <string>Copy and Edit Schematic:</string>
-        </property>
-        <property name="buddy">
-         <cstring>copySourceButton</cstring>
-        </property>
-       </widget>
-      </item>
+     <layout class="QGridLayout" name="gridLayout_8">
       <item row="0" column="0">
-       <widget class="QLabel" name="sourceContextLabel">
-        <property name="text">
-         <string>Source Context:</string>
-        </property>
-        <property name="buddy">
-         <cstring>sourceContextSpin</cstring>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="sourceContextLabel">
+          <property name="text">
+           <string>Source Context:</string>
+          </property>
+          <property name="buddy">
+           <cstring>sourceContextSpin</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="sourceContextSpin">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Source Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>99999</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="findSourceTool">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="5" column="3" colspan="2">
-       <widget class="QPushButton" name="copySourceButton">
-        <property name="text">
-         <string>Copy</string>
-        </property>
-       </widget>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QLabel" name="sourceDataLabel">
+          <property name="text">
+           <string>Has Features:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="sourceDataStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="sourceSchematicLabel">
+          <property name="text">
+           <string>Has Schematic:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="sourceSchematicStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QLabel" name="sourceSchematicLabel">
-        <property name="text">
-         <string>Has Schematic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="3">
-       <widget class="QLabel" name="cloneSourceLabel">
-        <property name="text">
-         <string>Clone and Save Schematic:</string>
-        </property>
-        <property name="buddy">
-         <cstring>cloneSourceButton</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0" colspan="3">
-       <widget class="QLabel" name="editSourceLabel">
-        <property name="text">
-         <string>Edit Source Context:</string>
-        </property>
-        <property name="buddy">
-         <cstring>editSourceButton</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QToolButton" name="findSourceTool">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QToolButton" name="zoomSourceTool">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/ark/plan/zoomToItem.svg</normaloff>:/plugins/ark/plan/zoomToItem.svg</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3" colspan="2">
-       <widget class="QPushButton" name="cloneSourceButton">
-        <property name="text">
-         <string>Clone</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QSpinBox" name="sourceContextSpin">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Source Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="maximum">
-         <number>99999</number>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3" colspan="2">
-       <widget class="QPushButton" name="editSourceButton">
-        <property name="text">
-         <string>Edit</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="3">
-       <widget class="QLabel" name="sourceDataLabel">
-        <property name="text">
-         <string>Has Features:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3" colspan="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="sourceSchematicStatusLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="2" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="sourceDataStatusLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-        </property>
-       </widget>
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QLabel" name="cloneSourceLabel">
+          <property name="text">
+           <string>Clone and Save Schematic:</string>
+          </property>
+          <property name="buddy">
+           <cstring>cloneSourceButton</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="cloneSourceButton">
+          <property name="text">
+           <string>Clone</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="copySourceLabel">
+          <property name="text">
+           <string>Copy and Edit Schematic:</string>
+          </property>
+          <property name="buddy">
+           <cstring>copySourceButton</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="copySourceButton">
+          <property name="text">
+           <string>Copy</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="editSourceLabel">
+          <property name="text">
+           <string>Edit Source Context:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editSourceButton</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="editSourceButton">
+          <property name="text">
+           <string>Edit</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -320,22 +578,13 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>contextSpin</tabstop>
-  <tabstop>findContextTool</tabstop>
-  <tabstop>zoomContextTool</tabstop>
-  <tabstop>editContextButton</tabstop>
-  <tabstop>resetButton</tabstop>
   <tabstop>sourceContextSpin</tabstop>
-  <tabstop>findSourceTool</tabstop>
-  <tabstop>zoomSourceTool</tabstop>
   <tabstop>cloneSourceButton</tabstop>
   <tabstop>copySourceButton</tabstop>
   <tabstop>editSourceButton</tabstop>
   <tabstop>siteCodeCombo</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc"/>
-  <include location="resources.qrc"/>
   <include location="resources.qrc"/>
   <include location="resources.qrc"/>
  </resources>

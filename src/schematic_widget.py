@@ -39,7 +39,7 @@ from plan_item import ItemKey
 
 import schematic_widget_base
 
-import resources_rc
+import resources
 
 class SearchStatus():
 
@@ -50,17 +50,20 @@ class SearchStatus():
 class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     findContextSelected = pyqtSignal()
-    zoomContextSelected = pyqtSignal()
+    firstContextSelected = pyqtSignal()
+    lastContextSelected = pyqtSignal()
+    nextContextSelected = pyqtSignal()
+    prevContextSelected = pyqtSignal()
     editContextSelected = pyqtSignal()
     findSourceSelected = pyqtSignal()
-    zoomSourceSelected = pyqtSignal()
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
     editSourceSelected = pyqtSignal()
     contextChanged = pyqtSignal()
     resetSelected = pyqtSignal()
 
-    _contextDataStatus = SearchStatus.Unknown
+    _contextArkDataStatus = SearchStatus.Unknown
+    _contextFeatureDataStatus = SearchStatus.Unknown
     _contextSchematicStatus = SearchStatus.Unknown
     _sourceDataStatus = SearchStatus.Unknown
     _sourceSchematicStatus = SearchStatus.Unknown
@@ -70,19 +73,22 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.setupUi(self)
 
     def initGui(self):
+        self.siteCodeCombo.currentIndexChanged.connect(self._contextChanged)
         self.contextSpin.valueChanged.connect(self._contextChanged)
         self._contextSpinFilter = ReturnPressedFilter(self)
         self.contextSpin.installEventFilter(self._contextSpinFilter)
         self._contextSpinFilter.returnPressed.connect(self.findContextSelected)
         self.findContextTool.clicked.connect(self.findContextSelected)
-        self.zoomContextTool.clicked.connect(self.zoomContextSelected)
+        self.firstContextTool.clicked.connect(self.firstContextSelected)
+        self.lastContextTool.clicked.connect(self.lastContextSelected)
+        self.nextContextTool.clicked.connect(self.nextContextSelected)
+        self.prevContextTool.clicked.connect(self.prevContextSelected)
         self.editContextButton.clicked.connect(self.editContextSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
         self._sourceSpinFilter = ReturnPressedFilter(self)
         self.sourceContextSpin.installEventFilter(self._sourceSpinFilter)
         self._sourceSpinFilter.returnPressed.connect(self.findSourceSelected)
         self.findSourceTool.clicked.connect(self.findSourceSelected)
-        self.zoomSourceTool.clicked.connect(self.zoomSourceSelected)
         self.copySourceButton.clicked.connect(self.copySourceSelected)
         self.cloneSourceButton.clicked.connect(self.cloneSourceSelected)
         self.editSourceButton.clicked.connect(self.editSourceSelected)
@@ -98,7 +104,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         idx = self.siteCodeCombo.findData(project.siteCode())
         if idx >= 0:
             self.siteCodeCombo.setCurrentIndex(idx)
-        self.setContext(0, SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
+        self.resetContext()
 
     def closeProject(self):
         pass
@@ -114,23 +120,34 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     def context(self):
         return self.contextSpin.value()
 
-    def setContext(self, context, foundData, foundSchematic, foundSectionSchematic):
-        self.contextSpin.setValue(context)
-        self._setContextStatus(foundData, foundSchematic, foundSectionSchematic)
-        self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+    def resetContext(self):
+        self.setContext(ItemKey())
+
+    def setContext(self, context, foundArkData=SearchStatus.Unknown, foundFeatureData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown, foundSectionSchematic=SearchStatus.Unknown):
+        if context.isValid():
+            self.blockSignals(True)
+            self.contextSpin.setValue(int(context.itemId))
+            self._setContextStatus(foundArkData, foundFeatureData, foundSchematic, foundSectionSchematic)
+            self.blockSignals(False)
+        else:
+            self.contextSpin.setValue(0)
+            self._setContextStatus()
+        self.resetSourceContext()
 
     def contextStatus(self):
-        if self._contextDataStatus == SearchStatus.Unknown or self._contextSchematicStatus == SearchStatus.Unknown:
+        if self._contextFeatureDataStatus == SearchStatus.Unknown or self._contextSchematicStatus == SearchStatus.Unknown:
             return SearchStatus.Unknown
-        if self._contextDataStatus == SearchStatus.Found or self._contextSchematicStatus == SearchStatus.Found:
+        if self._contextFeatureDataStatus == SearchStatus.Found or self._contextSchematicStatus == SearchStatus.Found:
             return SearchStatus.Found
         return SearchStatus.NotFound
 
-    def _setContextStatus(self, foundData, foundSchematic, foundSectionSchematic):
-        self._contextDataStatus = foundData
+    def _setContextStatus(self, foundArkData=SearchStatus.Unknown, foundFeatureData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown, foundSectionSchematic=SearchStatus.Unknown):
+        self._contextArkDataStatus = foundArkData
+        self._contextFeatureDataStatus = foundFeatureData
         self._contextSchematicStatus = foundSchematic
-        self._setStatusLabel(self.contextDataStatusLabel, foundData)
-        self._setStatusLabel(self.contextSchematicStatusLabel, foundSchematic)
+        self._setStatusLabel(self.arkDataStatusLabel, foundArkData)
+        self._setStatusLabel(self.featureDataStatusLabel, foundFeatureData)
+        self._setStatusLabel(self.schematicStatusLabel, foundSchematic)
         self._setStatusLabel(self.sectionSchematicStatusLabel, foundSectionSchematic)
         self.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
@@ -141,9 +158,16 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     def sourceContext(self):
         return self.sourceContextSpin.value()
 
-    def setSourceContext(self, context, foundData, foundSchematic):
-        self.sourceContextSpin.setValue(context)
-        self._setSourceStatus(foundData, foundSchematic)
+    def resetSourceContext(self):
+        self.setSourceContext(ItemKey())
+
+    def setSourceContext(self, context, foundData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
+        if context.isValid():
+            self.sourceContextSpin.setValue(int(context.itemId))
+            self._setSourceStatus(foundData, foundSchematic)
+        else:
+            self.sourceContextSpin.setValue(0)
+            self._setSourceStatus()
 
     def sourceStatus(self):
         if self._sourceDataStatus == SearchStatus.Unknown or self._sourceSchematicStatus == SearchStatus.Unknown:
@@ -152,7 +176,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
             return SearchStatus.Found
         return SearchStatus.NotFound
 
-    def _setSourceStatus(self, foundData, foundSchematic):
+    def _setSourceStatus(self, foundData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
         self._sourceDataStatus = foundData
         self._sourceSchematicStatus = foundSchematic
         self._setStatusLabel(self.sourceDataStatusLabel, foundData)
@@ -173,7 +197,6 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         if enable:
             self.sourceContextSpin.setFocus()
         self.findSourceTool.setEnabled(enable)
-        self.zoomSourceTool.setEnabled(enable)
         if not enable:
             self._enableClone(enable)
 
@@ -182,8 +205,8 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.cloneSourceButton.setEnabled(enable)
 
     def _contextChanged(self):
-        self._setContextStatus(SearchStatus.Unknown, SearchStatus.Unknown, SearchStatus.Unknown)
-        self.setSourceContext(0, SearchStatus.Unknown, SearchStatus.Unknown)
+        self._setContextStatus()
+        self.resetSourceContext()
         self.contextChanged.emit()
 
     def _sourceContextChanged(self):

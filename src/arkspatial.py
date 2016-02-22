@@ -362,7 +362,7 @@ class ArkSpatial(Plugin):
         self.geoLayer.renderer().setOpacity(self.drawingTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.createLayerGroup(self.iface, self.layersGroupName('cxt'), Config.projectGroupName)
+            self.planGroupIndex = layers.createLayerGroup(self.iface, Config.rasterGroups['cxt']['layersGroupName'], Config.projectGroupName)
         self.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
         if zoomToLayer:
             self.mapCanvas().setExtent(self.geoLayer.extent())

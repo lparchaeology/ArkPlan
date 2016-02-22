@@ -254,7 +254,7 @@ class Plan(QObject):
 
     def georeferencePlan(self, rawFile):
         pmd = PlanMetadata(rawFile)
-        georefDialog = GeorefDialog(rawFile, self.project.georefDrawingDir(pmd.sourceClass), self.project.projectCrs().authid(), self.project.pointsLayerName('grid'), self.project.fieldName('local_x'), self.project.fieldName('local_y'))
+        georefDialog = GeorefDialog(rawFile, self.project.georefDrawingDir(pmd.sourceClass), self.project.projectCrs().authid(), self.project.grid.settings.pointsLayerName, self.project.fieldName('local_x'), self.project.fieldName('local_y'))
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()

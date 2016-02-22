@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>304</width>
+    <width>312</width>
     <height>654</height>
    </rect>
   </property>
@@ -113,6 +113,9 @@
          <layout class="QHBoxLayout" name="contextNavLayout">
           <item>
            <widget class="QToolButton" name="firstContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="toolTip">
              <string>Go First Context</string>
             </property>
@@ -128,7 +131,7 @@
           <item>
            <widget class="QToolButton" name="prevMissingTool">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="toolTip">
              <string>Go Previous Missing Schematic</string>
@@ -144,6 +147,9 @@
           </item>
           <item>
            <widget class="QToolButton" name="prevContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="toolTip">
              <string>Go Previous Context</string>
             </property>
@@ -158,6 +164,9 @@
           </item>
           <item>
            <widget class="QToolButton" name="nextContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="toolTip">
              <string>Go Next Context</string>
             </property>
@@ -173,7 +182,7 @@
           <item>
            <widget class="QToolButton" name="nextMissingTool">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="toolTip">
              <string>Go Next Missing Schematic</string>
@@ -189,6 +198,9 @@
           </item>
           <item>
            <widget class="QToolButton" name="lastContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="toolTip">
              <string>Go Last Context</string>
             </property>
@@ -240,6 +252,16 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="loadArkButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>ARK</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

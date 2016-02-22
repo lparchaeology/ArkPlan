@@ -49,6 +49,7 @@ class SearchStatus():
 
 class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
+    loadArkData = pyqtSignal()
     findContextSelected = pyqtSignal()
     firstContextSelected = pyqtSignal()
     lastContextSelected = pyqtSignal()
@@ -75,6 +76,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.setupUi(self)
 
     def initGui(self):
+        self.loadArkButton.clicked.connect(self.loadArkData)
         self.siteCodeCombo.currentIndexChanged.connect(self._contextChanged)
         self.contextSpin.valueChanged.connect(self._contextChanged)
         self._contextSpinFilter = ReturnPressedFilter(self)
@@ -102,6 +104,9 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         pass
 
     def loadProject(self, project):
+        if project.useArkDB() and project.arkUrl():
+            self.loadArkButton.setEnabled(True)
+        self._enableArkNav(False)
         self.siteCodeCombo.clear()
         for siteCode in sorted(set(project.siteCodes())):
             self.siteCodeCombo.addItem(siteCode, siteCode)
@@ -196,6 +201,17 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
             label.setPixmap(QPixmap(':/plugins/ark/plan/statusNotFound.png'))
         else:
             label.setPixmap(QPixmap(':/plugins/ark/plan/statusUnknown.png'))
+
+    def activateArkData(self):
+        self._enableArkNav()
+
+    def _enableArkNav(self, enabled=True):
+        self.firstContextTool.setEnabled(enabled)
+        self.lastContextTool.setEnabled(enabled)
+        self.prevContextTool.setEnabled(enabled)
+        self.nextContextTool.setEnabled(enabled)
+        self.prevMissingTool.setEnabled(enabled)
+        self.nextMissingTool.setEnabled(enabled)
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)

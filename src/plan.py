@@ -23,6 +23,8 @@
  *                                                                         *
  ***************************************************************************/
 """
+import bisect
+
 from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
 
@@ -102,6 +104,7 @@ class Plan(QObject):
         self.dock.clearSelected.connect(self.clearBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
+        self.dock.loadArkData.connect(self._loadArkData)
         self.dock.findContextSelected.connect(self._findMoveContext)
         self.dock.firstContextSelected.connect(self._firstContext)
         self.dock.lastContextSelected.connect(self._lastContext)
@@ -670,6 +673,11 @@ class Plan(QObject):
 
     # SchematicDock methods
 
+    def _loadArkData(self):
+        self.project.data.loadAllItems(self.project)
+        if self.project.data.itemKeys['cxt'] and len(self.project.data.itemKeys['cxt']) > 0:
+            self.dock.activateArkData()
+
     def _resetSchematic(self):
         self._clearSchematic()
         self.dock.activateSchematicCheck()
@@ -717,22 +725,28 @@ class Plan(QObject):
         self._findMoveContext(self.project.data.itemKeys['cxt'][-1])
 
     def _prevContext(self):
-        idx = self.project.data.itemKeys['cxt'].index(self.dock.contextItemKey())
-        if idx > 0:
-            self._findMoveContext(self.project.data.itemKeys['cxt'][idx - 1])
+        context = self.dock.contextItemKey()
+        idx = 0
+        if context.isValid():
+            idx = bisect.bisect_left(self.project.data.itemKeys['cxt'], context) - 1
+        if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
+            self._findMoveContext(self.project.data.itemKeys['cxt'][idx])
 
     def _nextContext(self):
-        idx = self.project.data.itemKeys['cxt'].index(self.dock.contextItemKey())
+        context = self.dock.contextItemKey()
+        idx = 0
+        if context.isValid():
+            idx = bisect.bisect(self.project.data.itemKeys['cxt'], context)
         if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
-            self._findMoveContext(self.project.data.itemKeys['cxt'][idx + 1])
+            self._findMoveContext(self.project.data.itemKeys['cxt'][idx])
 
     def _prevMissing(self):
         context = self.dock.contextItemKey()
-        if not context.isValid():
-            context = self.project.data.itemKeys['cxt'][-1]
-        prv = self.project.data.itemKeys['cxt'].index(context) - 1
-        for idx in reversed(range(prv)):
-            item = self.project.data.itemKeys['cxt'][idx]
+        idx = 0
+        if context.isValid():
+            idx = bisect.bisect_left(self.project.data.itemKeys['cxt'], context)
+        for prv in reversed(range(idx)):
+            item = self.project.data.itemKeys['cxt'][prv]
             status = self._schematicStatus(item)
             if status == SearchStatus.NotFound:
                 self._findContext(item)
@@ -740,10 +754,10 @@ class Plan(QObject):
 
     def _nextMissing(self):
         context = self.dock.contextItemKey()
-        if not context.isValid():
-            context = self.project.data.itemKeys['cxt'][0]
-        nxt = self.project.data.itemKeys['cxt'].index(context) + 1
-        for item in self.project.data.itemKeys['cxt'][nxt:]:
+        idx = 0
+        if context.isValid():
+            idx = bisect.bisect(self.project.data.itemKeys['cxt'], context)
+        for item in self.project.data.itemKeys['cxt'][idx:]:
             status = self._schematicStatus(item)
             if status == SearchStatus.NotFound:
                 self._findContext(item)

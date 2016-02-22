@@ -67,7 +67,9 @@ class ItemKey():
             self.setKey(siteCode, classCode, itemId)
 
     def __eq__(self, other):
-        return self.siteCode == other.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
+        if type(other) == ItemKey:
+            return self.siteCode == other.siteCode and self.classCode == other.classCode and str(self.itemId) == str(other.itemId)
+        return False
 
     def __lt__(self, other):
         if self.siteCode == other.siteCode and self.classCode == other.classCode:

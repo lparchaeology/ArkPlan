@@ -136,6 +136,8 @@ class DataManager(QObject):
         if not project.arkUrl():
             return
         self._createArkSession(project)
+        if self._ark is None:
+            return
         response = self._ark.getItems(classCode + '_cd')
         if response.error:
             project.logMessage(response.url)

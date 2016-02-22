@@ -31,13 +31,14 @@ import urllib2
 from PyQt4.QtCore import QObject, QFile
 from PyQt4.QtGui import QSortFilterProxyModel
 
-from qgis.core import NULL
+from qgis.core import NULL, QgsCredentials
 
 from ..libarkqgis.models import TableModel, ParentChildModel
 
 from ..pyARK.ark import Ark
 
 from plan_item import ItemKey
+from credentials_dialog import CredentialsDialog
 
 class ItemModel(TableModel):
 
@@ -78,6 +79,8 @@ class DataManager(QObject):
     _grpProxyModel = QSortFilterProxyModel()
     _linkModel = None  # ParentChildModel()
 
+    _ark = None
+
     itemKeys = {} # {classCode: [ItemKey]
 
     def __init__(self):
@@ -114,19 +117,26 @@ class DataManager(QObject):
         self._addLinks(self._subModel._table)
         self._addLinks(self._grpModel._table)
 
+    def _createArkSession(self, project):
+        if self._ark is None:
+            dialog = CredentialsDialog()
+            if dialog.exec_():
+                self._ark = Ark(project.arkUrl(), dialog.username(), dialog.password())
+
     def loadAllItems(self, project):
+        if not project.arkUrl():
+            return
         self.itemKeys = {}
         for classCode in project.plan.uniqueValues(project.fieldName('class')):
             if classCode is not None and classCode != NULL:
                 self.loadClassItems(project, classCode)
+        self._ark = None
 
     def loadClassItems(self, project, classCode):
         if not project.arkUrl():
             return
-        _user = 'test_user'
-        _password = 'arkpass'
-        ark = Ark(project.arkUrl(), _user, _password)
-        response = ark.getItems(classCode + '_cd')
+        self._createArkSession(project)
+        response = self._ark.getItems(classCode + '_cd')
         if response.error:
             project.logMessage(response.url)
             project.logMessage(response.message)

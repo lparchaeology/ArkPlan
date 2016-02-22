@@ -158,7 +158,8 @@ class Plan(QObject):
 
     # Save the project
     def writeProject(self):
-        pass
+        # We don't want to save the schematic serach or filters
+        self._clearSchematic()
 
     # Close the project
     def closeProject(self):

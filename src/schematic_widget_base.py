@@ -72,7 +72,7 @@ class Ui_SchematicWidget(object):
         self.firstContextTool.setObjectName(_fromUtf8("firstContextTool"))
         self.contextNavLayout.addWidget(self.firstContextTool)
         self.prevMissingTool = QtGui.QToolButton(self.checkGroup)
-        self.prevMissingTool.setEnabled(False)
+        self.prevMissingTool.setEnabled(True)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/plan/goPrevMissing.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.prevMissingTool.setIcon(icon1)
@@ -91,7 +91,7 @@ class Ui_SchematicWidget(object):
         self.nextContextTool.setObjectName(_fromUtf8("nextContextTool"))
         self.contextNavLayout.addWidget(self.nextContextTool)
         self.nextMissingTool = QtGui.QToolButton(self.checkGroup)
-        self.nextMissingTool.setEnabled(False)
+        self.nextMissingTool.setEnabled(True)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/plan/goNextMissing.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nextMissingTool.setIcon(icon4)
@@ -289,4 +289,4 @@ class Ui_SchematicWidget(object):
         self.editSourceLabel.setText(_translate("SchematicWidget", "Edit Source Context:", None))
         self.editSourceButton.setText(_translate("SchematicWidget", "Edit", None))
 
-import resources
+import resources_rc

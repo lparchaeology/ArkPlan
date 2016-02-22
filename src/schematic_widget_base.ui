@@ -128,7 +128,7 @@
           <item>
            <widget class="QToolButton" name="prevMissingTool">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Go Previous Missing Schematic</string>
@@ -173,7 +173,7 @@
           <item>
            <widget class="QToolButton" name="nextMissingTool">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Go Next Missing Schematic</string>

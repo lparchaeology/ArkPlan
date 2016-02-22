@@ -107,6 +107,8 @@ class Plan(QObject):
         self.dock.lastContextSelected.connect(self._lastContext)
         self.dock.prevContextSelected.connect(self._prevContext)
         self.dock.nextContextSelected.connect(self._nextContext)
+        self.dock.prevMissingSelected.connect(self._prevMissing)
+        self.dock.nextMissingSelected.connect(self._nextMissing)
         self.dock.editContextSelected.connect(self._editSchematicContext)
         self.dock.findSourceSelected.connect(self._findPanSource)
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
@@ -723,10 +725,41 @@ class Plan(QObject):
         if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
             self._findMoveContext(self.project.data.itemKeys['cxt'][idx + 1])
 
+    def _prevMissing(self):
+        context = self.dock.contextItemKey()
+        if not context.isValid():
+            context = self.project.data.itemKeys['cxt'][-1]
+        prv = self.project.data.itemKeys['cxt'].index(context) - 1
+        for idx in reversed(range(prv)):
+            item = self.project.data.itemKeys['cxt'][idx]
+            status = self._schematicStatus(item)
+            if status == SearchStatus.NotFound:
+                self._findContext(item)
+                return
+
+    def _nextMissing(self):
+        context = self.dock.contextItemKey()
+        if not context.isValid():
+            context = self.project.data.itemKeys['cxt'][0]
+        nxt = self.project.data.itemKeys['cxt'].index(context) + 1
+        for item in self.project.data.itemKeys['cxt'][nxt:]:
+            status = self._schematicStatus(item)
+            if status == SearchStatus.NotFound:
+                self._findContext(item)
+                return
+
     def _editSchematicContext(self):
         self._editSchematic = True
         self.editInBuffers(self.dock.contextItemKey())
         self.dock.widget.setCurrentIndex(0)
+
+    def _schematicStatus(self, context):
+        schRequest = self._categoryRequest(context, 'sch')
+        try:
+            self.project.plan.polygonsLayer.getFeatures(schRequest).next()
+        except StopIteration:
+            return SearchStatus.NotFound
+        return SearchStatus.Found
 
     def _findContext(self, context=ItemKey()):
         self._clearSchematicFilters()
@@ -763,12 +796,7 @@ class Plan(QObject):
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
-        schRequest = self._categoryRequest(context, 'sch')
-        haveSchematic = SearchStatus.Found
-        try:
-            self.project.plan.polygonsLayer.getFeatures(schRequest).next()
-        except StopIteration:
-            haveSchematic = SearchStatus.NotFound
+        haveSchematic = self._schematicStatus(context)
 
         scsRequest = self._categoryRequest(context, 'scs')
         haveSectionSchematic = SearchStatus.Found

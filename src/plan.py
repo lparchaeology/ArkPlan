@@ -23,7 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-import bisect
+import bisect, copy
 
 from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
@@ -36,6 +36,7 @@ from ..libarkqgis import utils, layers, geometry
 from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
+from plan_error import ErrorDialog, PlanError
 from select_drawing_dialog import SelectDrawingDialog
 
 from filter import FilterType, FilterAction
@@ -279,10 +280,14 @@ class Plan(QObject):
             return
 
         # Check the buffers contain valid data
-        #if (not self._preMergeBufferCheck(self.project.plan.pointsBuffer)
-        #    or not self._preMergeBufferCheck(self.project.plan.linesBuffer)
-        #or not self._preMergeBufferCheck(self.project.plan.polygonsBuffer)):
-        #return
+        errors = self._preMergeBufferCheck(self.project.plan.pointsBuffer)
+        errors.extend(self._preMergeBufferCheck(self.project.plan.linesBuffer))
+        errors.extend(self._preMergeBufferCheck(self.project.plan.polygonsBuffer))
+        if len(errors) > 0:
+            dialog = ErrorDialog()
+            dialog.loadErrors(errors)
+            dialog.exec_()
+            return
 
         # Update the audit attributes
         timestamp = utils.timestamp()
@@ -312,28 +317,77 @@ class Plan(QObject):
         sourceIdField = self.project.fieldName('source_id')
         fileField = self.project.fieldName('file')
         commentField = self.project.fieldName('comment')
+        errors = []
+        row = 0
         for feature in layer.getFeatures():
-            valid = True
+            # Set up the error template
+            error = PlanError()
+            error.layer = layer.name()
+            error.row = row
+            row = row + 1
+            error.fid = feature.id()
+            error.feature.fromFeature(feature)
+            # Feature must be valid
+            if not feature.isValid():
+                error.field = 'feature'
+                error.message = 'Invalid Feature'
+                errors.append(copy.deepcopy(error))
+            # Geometry must be valid
+            error.field = 'geometry'
+            if feature.geometry() is None:
+                error.message = 'No Geometry'
+                errors.append(copy.deepcopy(error))
+            elif feature.geometry().isEmpty():
+                error.message = 'Empty Geometry'
+                errors.append(copy.deepcopy(error))
+            else:
+                error.message = 'Invalid Geometry'
+                geomErrs = feature.geometry().validateGeometry()
+                for err in geomErrs:
+                    error.message = err.what()
+                    errors.append(copy.deepcopy(error))
             # Key attributes that must always be populated
-            if (self._isEmpty(feature.attribute(siteField))
-                or self._isEmpty(feature.attribute(classField))
-                or self._isEmpty(feature.attribute(idField))
-                or self._isEmpty(feature.attribute(categoryField))
-                or self._isEmpty(feature.attribute(sourceCodeField))):
-                valid = False
+            if self._isEmpty(feature.attribute(siteField)):
+                error.field = siteField
+                error.message = 'Site Code is required'
+                errors.append(copy.deepcopy(error))
+            if self._isEmpty(feature.attribute(classField)):
+                error.field = classField
+                error.message = 'Class Code is required'
+                errors.append(copy.deepcopy(error))
+            if self._isEmpty(feature.attribute(idField)):
+                error.field = idField
+                error.message = 'ID is required'
+                errors.append(copy.deepcopy(error))
+            if self._isEmpty(feature.attribute(categoryField)):
+                error.field = categoryField
+                error.message = 'Category is required'
+                errors.append(copy.deepcopy(error))
+            if self._isEmpty(feature.attribute(sourceCodeField)):
+                error.field = sourceCodeField
+                error.message = 'Source Code is required'
+                errors.append(copy.deepcopy(error))
             # Source attributes required depend on the source type
             if feature.attribute(sourceCodeField) == 'cre' or feature.attribute(sourceCodeField) == 'oth':
                 if self._isEmpty(feature.attribute(commentField)):
-                    valid = False
+                    error.field = sourceCodeField
+                    error.message = 'Comment is required for Source type of Creator or Other'
+                    errors.append(copy.deepcopy(error))
             elif feature.attribute(sourceCodeField) == 'svy':
                 if self._isEmpty(feature.attribute(fileField)):
-                    valid = False
-            elif (self._isEmpty(feature.attribute(sourceClassField)) or self._isEmpty(feature.attribute(sourceIdField))):
-                    valid = False
-            if not valid:
-                self.project.showCriticalMessage('Plan data merge failed! Some key attributes are not populated, please check the attribute table and complete the missing data.', 5)
-                return False
-        return True
+                    error.field = sourceCodeField
+                    error.message = 'Filename is required for Source type of Survey'
+                    errors.append(copy.deepcopy(error))
+            else: # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
+                if (feature.attribute(sourceCodeField) == 'drw' or feature.attribute(sourceCodeField) == 'unc') and self._isEmpty(feature.attribute(fileField)):
+                    error.field = sourceCodeField
+                    error.message = 'Filename is required for Source type of Drawing'
+                    errors.append(copy.deepcopy(error))
+                if (self._isEmpty(feature.attribute(sourceClassField)) or self._isEmpty(feature.attribute(sourceIdField))):
+                    error.field = sourceCodeField
+                    error.message = 'Source Class and ID is required'
+                    errors.append(copy.deepcopy(error))
+        return errors
 
     def _isEmpty(self, val):
         if val is None or val == NULL:

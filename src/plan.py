@@ -282,7 +282,8 @@ class Plan(QObject):
             dialog = ErrorDialog()
             dialog.loadErrors(errors)
             dialog.exec_()
-            return
+            if not dialog.ignoreErrors():
+                return
 
         # Update the audit attributes
         timestamp = utils.timestamp()
@@ -338,7 +339,8 @@ class Plan(QObject):
             else:
                 error.message = 'Invalid Geometry'
                 geomErrs = feature.geometry().validateGeometry()
-                for err in geomErrs:
+                # Ignore the last error, it is just a total
+                for err in geomErrs[:-1]:
                     error.message = err.what()
                     errors.append(copy.deepcopy(error))
             # Key attributes that must always be populated
@@ -361,26 +363,31 @@ class Plan(QObject):
             if self._isEmpty(feature.attribute(sourceCodeField)):
                 error.field = sourceCodeField
                 error.message = 'Source Code is required'
+                error.ignore = True
                 errors.append(copy.deepcopy(error))
             # Source attributes required depend on the source type
             if feature.attribute(sourceCodeField) == 'cre' or feature.attribute(sourceCodeField) == 'oth':
                 if self._isEmpty(feature.attribute(commentField)):
                     error.field = sourceCodeField
                     error.message = 'Comment is required for Source type of Creator or Other'
+                    error.ignore = True
                     errors.append(copy.deepcopy(error))
             elif feature.attribute(sourceCodeField) == 'svy':
                 if self._isEmpty(feature.attribute(fileField)):
                     error.field = sourceCodeField
                     error.message = 'Filename is required for Source type of Survey'
+                    error.ignore = True
                     errors.append(copy.deepcopy(error))
             else: # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
                 if (feature.attribute(sourceCodeField) == 'drw' or feature.attribute(sourceCodeField) == 'unc') and self._isEmpty(feature.attribute(fileField)):
                     error.field = sourceCodeField
                     error.message = 'Filename is required for Source type of Drawing'
+                    error.ignore = True
                     errors.append(copy.deepcopy(error))
                 if (self._isEmpty(feature.attribute(sourceClassField)) or self._isEmpty(feature.attribute(sourceIdField))):
                     error.field = sourceCodeField
                     error.message = 'Source Class and ID is required'
+                    error.ignore = True
                     errors.append(copy.deepcopy(error))
         return errors
 

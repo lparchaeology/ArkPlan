@@ -26,44 +26,7 @@
    <attribute name="pageId">
     <string notr="true">welcomePage</string>
    </attribute>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1">
-     <widget class="QPushButton" name="advancedButton">
-      <property name="text">
-       <string>Advanced</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="advancedLabel">
-      <property name="text">
-       <string>If you require advanced custom settings, please click on the Advanced button to use the Settings dialog instead.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <property name="buddy">
-       <cstring>advancedButton</cstring>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <layout class="QGridLayout" name="gridLayout"/>
   </widget>
   <widget class="QWizardPage" name="folderPage">
    <property name="title">
@@ -243,7 +206,9 @@ ARK Spatial will automatically organise the data under this folder. If you wish 
     <item row="0" column="0">
      <widget class="QLabel" name="confirmLabel">
       <property name="text">
-       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.</string>
+       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.
+
+Once the project is created you can modify these settings or configure more settings in the Settings Dialog.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>

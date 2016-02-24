@@ -714,10 +714,10 @@ class Plan(QObject):
     # Feature Request Methods
 
     def _eqClause(self, field, value):
-        return _doublequote(self.project.fieldName(field)) + ' = ' + _quote(str(value))
+        return utils.eqClause(self.project.fieldName(field), value)
 
     def _neClause(self, field, value):
-        return _doublequote(self.project.fieldName(field)) + ' != ' + _quote(str(value))
+        return utils.neClause(self.project.fieldName(field), value)
 
     def _categoryClause(self, category):
         return self._eqClause('category', category)

@@ -95,6 +95,9 @@ class Plan(QObject):
         self.dock.editPointsSelected.connect(self._editPointsLayer)
         self.dock.editLinesSelected.connect(self._editLinesLayer)
         self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
+        self.dock.selectPointsSelected.connect(self._selectPointsLayer)
+        self.dock.selectLinesSelected.connect(self._selectLinesLayer)
+        self.dock.selectPolygonsSelected.connect(self._selectPolygonsLayer)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
         self.dock.sectionChanged.connect(self._sectionChanged)
         self.dock.clearSelected.connect(self.clearBuffers)
@@ -554,6 +557,18 @@ class Plan(QObject):
     def _editPolygonsLayer(self):
         self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
         self.project.iface.actionNodeTool().trigger()
+
+    def _selectPointsLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.pointsBuffer)
+        self.project.iface.actionSelect().trigger()
+
+    def _selectLinesLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.linesBuffer)
+        self.project.iface.actionSelect().trigger()
+
+    def _selectPolygonsLayer(self):
+        self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
+        self.project.iface.actionSelect().trigger()
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item'):
         label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'

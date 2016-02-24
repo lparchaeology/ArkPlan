@@ -55,6 +55,9 @@ class PlanDock(ToolDockWidget):
     editPointsSelected = pyqtSignal()
     editLinesSelected = pyqtSignal()
     editPolygonsSelected = pyqtSignal()
+    selectPointsSelected = pyqtSignal()
+    selectLinesSelected = pyqtSignal()
+    selectPolygonsSelected = pyqtSignal()
     featureNameChanged = pyqtSignal(str)
     sectionChanged = pyqtSignal(object)
     clearSelected = pyqtSignal()
@@ -115,6 +118,10 @@ class PlanDock(ToolDockWidget):
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPoints.svg'), self.tr(u'Edit Points in Buffer'), self.editPointsSelected)
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editLines.svg'), self.tr(u'Edit Lines in Buffer'), self.editLinesSelected)
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPolygons.svg'), self.tr(u'Edit Polygons in Buffer'), self.editPolygonsSelected)
+        self.toolbar2.addSeparator()
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectPoints.svg'), self.tr(u'Select Points in Buffer'), self.selectPointsSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectLines.svg'), self.tr(u'Select Lines in Buffer'), self.selectLinesSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectPolygons.svg'), self.tr(u'Select Polygons in Buffer'), self.selectPolygonsSelected)
 
         # Init the child widgets
         self.widget.metadataWidget.initGui()

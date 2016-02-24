@@ -23,6 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 """
+from functools import total_ordering
 
 from PyQt4.QtCore import QVariant
 
@@ -55,6 +56,7 @@ def _attribute(feature, field):
     except:
         return None
 
+@total_ordering
 class ItemKey():
     siteCode = ''
     classCode = ''
@@ -67,9 +69,10 @@ class ItemKey():
             self.setKey(siteCode, classCode, itemId)
 
     def __eq__(self, other):
-        if type(other) == ItemKey:
-            return self.siteCode == other.siteCode and self.classCode == other.classCode and str(self.itemId) == str(other.itemId)
-        return False
+        try:
+            return self.siteCode == other.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
+        except:
+            return False
 
     def __lt__(self, other):
         if self.siteCode == other.siteCode and self.classCode == other.classCode:
@@ -82,13 +85,16 @@ class ItemKey():
         if type(id1) == str and id1.isdigit() and type(id2) == str and id2.isdigit():
             return int(id1) < int(id2)
         else:
-            return id1 < id2
+            return str(id1) < str(id2)
 
     def __hash__(self):
         return hash((self.siteCode, self.classCode, self.itemId))
 
     def __str__(self):
         return 'ItemKey(' + str(self.siteCode) + ', ' +  str(self.classCode) + ', ' +  str(self.itemId) + ')'
+
+    def debug(self):
+        return 'ItemKey(' + utils.printable(self.siteCode) + ', ' +  utils.printable(self.classCode) + ', ' +  utils.printable(self.itemId) + ')'
 
     def isValid(self):
         return (type(self.siteCode) == str and self.siteCode
@@ -101,12 +107,10 @@ class ItemKey():
                 or type(self.itemId) != str or self.itemId == '')
 
     def isNull(self):
-        return (type(self.siteCode) == str and self.siteCode == ''
-                and type(self.classCode) == str and self.classCode == ''
-                and type(self.itemId) == str and self.itemId == '')
+        return (self.siteCode == '' and self.classCode == '' and self.itemId == '')
 
     def isItemRange(self):
-        return self.itemId.contains('-') or self.itemId.contains(' ')
+        return type(self.itemId) == str and (self.itemId.contains('-') or self.itemId.contains(' '))
 
     def itemLabel(self):
         if self.classCode:
@@ -118,8 +122,8 @@ class ItemKey():
 
     def setKey(self, siteCode, classCode, itemId):
         if siteCode and classCode and itemId:
-            self.siteCode = utils.string(siteCode)
-            self.classCode = utils.string(classCode)
+            self.setSiteCode(siteCode)
+            self.setClassCode(classCode)
             self.setItemId(itemId)
         else:
             self.siteCode = ''

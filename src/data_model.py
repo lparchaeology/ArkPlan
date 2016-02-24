@@ -53,10 +53,7 @@ class ItemModel(TableModel):
                 for field in self._fields:
                     self._nullRecord[field] = ''
                 for record in reader:
-                    key = ItemKey()
-                    key.siteCode = str(record[keyFields.siteCode])
-                    key.classCode = str(record[keyFields.classCode])
-                    key.itemId = str(record[keyFields.itemId])
+                    key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
                     self._addItem(key, record)
 
     def getItem(self, itemKey):
@@ -104,23 +101,20 @@ class DataManager(QObject):
         if self._cxtModel:
             self._cxtModel.clear()
         filePath = path + 'cxt.csv'
-        if QFile.exists(filePath):
-            self._cxtModel = ItemModel(filePath, keyFields, self)
-            project.logMessage('Loaded Context Model : ' + filePath + ' : ' + str(self._cxtModel.rowCount()) + ' rows')
+        self._cxtModel = ItemModel(filePath, keyFields, self)
+        project.logMessage('Loaded Context Model : ' + filePath + ' : ' + str(self._cxtModel.rowCount()) + ' rows')
         self._cxtProxyModel.setSourceModel(self._cxtModel)
         if self._subModel:
             self._subModel.clear()
         filePath = path + 'sgr.csv'
-        if QFile.exists(filePath):
-            self._subModel = ItemModel(filePath, keyFields, self)
-            project.logMessage('Loaded Subgroup Model : ' + filePath + ' : ' + str(self._subModel.rowCount()) + ' rows')
+        self._subModel = ItemModel(filePath, keyFields, self)
+        project.logMessage('Loaded Subgroup Model : ' + filePath + ' : ' + str(self._subModel.rowCount()) + ' rows')
         self._subProxyModel.setSourceModel(self._subModel)
         if self._grpModel:
             self._grpModel.clear()
         filePath = path + 'grp.csv'
-        if QFile.exists(filePath):
-            self._grpModel = ItemModel(filePath, keyFields, self)
-            project.logMessage('Loaded Group Model : ' + filePath + ' : ' + str(self._grpModel.rowCount()) + ' rows')
+        self._grpModel = ItemModel(filePath, keyFields, self)
+        project.logMessage('Loaded Group Model : ' + filePath + ' : ' + str(self._grpModel.rowCount()) + ' rows')
         self._grpProxyModel.setSourceModel(self._grpModel)
         self._linkModel = ParentChildModel(self)
         self._addLinks(self._subModel._table)

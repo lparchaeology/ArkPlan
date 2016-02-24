@@ -138,6 +138,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.setSiteCode(settings.value('siteCode'))
         self.setClassCode(settings.value('classCode'))
         self.setFilterRange(settings.value('filterRange'))
+        self.setFilterAction(FilterAction.RemoveFilter)
         if self.filterType() == FilterType.HighlightFilter:
             self.setHighlightColor(settings.value('highlightColor', QColor))
 

@@ -32,7 +32,7 @@ from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
-from ..libarkqgis import layers
+from ..libarkqgis import layers, utils
 
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
@@ -107,6 +107,7 @@ class Filter(QObject):
         self.dock.initFilterSets(self._listFilterSets())
 
         self._initialised = True
+        self._clearFilterSet()
         self.loadFilterSet('Default')
         return self._initialised
 
@@ -137,41 +138,50 @@ class Filter(QObject):
     # Filter methods
 
     def filterItem(self, itemKey):
-        self.removeFilters()
+        if not self._initialised:
+            return
+        self.dock.removeFilters()
         self.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.zoomFilter()
 
     def addFilterClause(self, filterType, itemKey, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:
             return
-        return self.dock.addFilterClause(filterType, itemKey, filterAction)
+        idx = self.dock.addFilterClause(filterType, itemKey, filterAction)
+        self.applyFilters()
+        return idx
 
     def removeFilterClause(self, filterIndex):
         if not self._initialised:
             return
-        self.dock.removeFilterClause(filterIndex)
+        if self.dock.removeFilterClause(filterIndex):
+            self.applyFilters()
 
     def removeFilters(self):
         if not self._initialised:
             return
-        return self.dock.removeFilters()
+        if self.dock.removeFilters():
+            self.applyFilters()
 
     def removeSelectFilters(self):
         if not self._initialised:
             return
-        return self.dock.removeSelectFilters()
+        if self.dock.removeSelectFilters():
+            self.applyFilters()
 
     def removeHighlightFilters(self):
         if not self._initialised:
             return
-        return self.dock.removeHighlightFilters()
+        if self.dock.removeHighlightFilters():
+            self.applyFilters()
 
     def hasFilterType(self, filterType):
         if not self._initialised:
-            return
+            return False
         return self.dock.hasFilterType(filterType)
 
     def applyFilters(self):
+        utils.logMessage('Filter.applyFilters()')
         if not self._initialised:
             return
         excludeString = ''
@@ -208,6 +218,9 @@ class Filter(QObject):
                     else:
                         includeString += ' or '
                     includeString += filterItemKey.filterClause()
+        utils.logMessage(' - include = ' + includeString)
+        utils.logMessage(' - exclude = ' + excludeString)
+        utils.logMessage(' - select = ' + selectString)
         if includeString and excludeString:
             self.applyFilter('(' + includeString + ') and NOT (' + excludeString + ')')
         elif excludeString:
@@ -219,6 +232,7 @@ class Filter(QObject):
 
 
     def applyHighlightFilters(self):
+        utils.logMessage('Filter.applyHighlightFilters() = ' + str(self._initialised))
         if not self._initialised:
             return
         highlightString = ''
@@ -239,8 +253,6 @@ class Filter(QObject):
 
 
     def _clearFilterSet(self):
-        if not self._initialised:
-            return
         self.project.plan.clearFilter()
         self.project.plan.clearSelection()
         self.project.plan.clearHighlight()

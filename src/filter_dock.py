@@ -29,6 +29,7 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QWidget, QListWidgetItem, QIcon, QAction, QActionGroup, QMenu
 
 from ..libarkqgis.dock import ToolDockWidget
+from ..libarkqgis import utils
 
 import filter_set_widget_base
 from filter_clause_widget import *
@@ -148,7 +149,7 @@ class FilterDock(ToolDockWidget):
         idx = self._filterIndex
         filterClauseWidget.setIndex(idx)
         self._filterClauses[idx] = filterClauseWidget
-        filterClauseWidget.filterRemoved.connect(self.removeFilterClause)
+        filterClauseWidget.filterRemoved.connect(self._filterClauseRemoved)
         filterClauseWidget.filterChanged.connect(self.filterChanged)
         newItem = QListWidgetItem()
         newItem.setData(Qt.UserRole, idx)
@@ -157,49 +158,46 @@ class FilterDock(ToolDockWidget):
         self.widget.filterListWidget.setItemWidget(newItem, filterClauseWidget)
         self._items[idx] = newItem
         self._filterIndex += 1
-        self.filterChanged.emit()
         return idx
 
     def removeFilters(self):
         changed = False
         for index in self._filterClauses.keys():
-            self._removeFilterClause(index)
+            self.removeFilterClause(index)
             changed = True
-        if changed:
-            self.filterChanged.emit()
+        return changed
 
     def removeSelectFilters(self):
         changed = False
         for index in self._filterClauses.keys():
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.SelectFilter:
-                self._removeFilterClause(index)
+                self.removeFilterClause(index)
                 changed = True
-        if changed:
-            self.filterChanged.emit()
+        return changed
 
     def removeHighlightFilters(self):
         changed = False
         for index in self._filterClauses.keys():
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.HighlightFilter:
-                self._removeFilterClause(index)
+                self.removeFilterClause(index)
                 changed = True
-        if changed:
-            self.filterChanged.emit()
+        return changed
 
-    def removeFilterClause(self, index):
-        self._removeFilterClause(index)
+    def _filterClauseRemoved(self, index):
+        self.removeFilterClause(index)
         self.filterChanged.emit()
 
-    def _removeFilterClause(self, index):
+    def removeFilterClause(self, index):
         if index not in self._filterClauses:
-            return
+            return False
         self.widget.filterListWidget.takeItem(self.widget.filterListWidget.row(self._items[index]))
         self._filterClauses.pop(index)
         self._items.pop(index)
+        return True
 
     def _clearFilters(self):
         for index in self._filterClauses.keys():
-            self._removeFilterClause(index)
+            self.removeFilterClause(index)
 
     def _createNewFilterClauseWidget(self):
         self.newFilterClauseWidget = self._createFilterClauseWidget()
@@ -250,10 +248,12 @@ class FilterDock(ToolDockWidget):
         self.newFilterClauseWidget.setClassCodes(classCodes)
 
     def initFilterSets(self, filterSets):
+        self.blockSignals(True)
         self.addFilterSet('Default', 'Default')
         for filterSet in filterSets:
             if filterSet[0] != 'Default':
                 self.addFilterSet(filterSet[0], filterSet[1])
+        self.blockSignals(False)
 
     def activeFilters(self):
         return self._filterClauses
@@ -278,4 +278,3 @@ class FilterDock(ToolDockWidget):
             flt = self._createFilterClauseWidget()
             flt.fromSettings(settings)
             self._addFilterClause(flt)
-        self.filterChanged.emit()

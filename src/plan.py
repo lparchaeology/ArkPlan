@@ -293,7 +293,7 @@ class Plan(QObject):
         self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
 
         # Finally actually merge the data
-        if self.project.plan.mergeBuffers('Merge plan data', timestamp):
+        if self.project.plan.mergeBuffers('Merge plan data', self.project.logUpdates(), timestamp):
             self.project.showInfoMessage('Plan data successfully merged.')
             self._logItemAction(self.metadata.itemFeature.key, 'Merge Buffers', timestamp)
             if self._editSchematic:
@@ -573,7 +573,7 @@ class Plan(QObject):
             request = itemKey.featureRequest()
             timestamp = utils.timestamp()
             action = 'Edit Item'
-            if self.project.plan.moveFeatureRequestToBuffers(request, action, timestamp):
+            if self.project.plan.moveFeatureRequestToBuffers(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
                 self.metadata.setSiteCode(itemKey.siteCode)
                 self.metadata.setClassCode(itemKey.classCode)
@@ -589,7 +589,7 @@ class Plan(QObject):
             request = itemKey.featureRequest()
             timestamp = utils.timestamp()
             action = 'Delete Item'
-            if self.project.plan.deleteFeatureRequest(request, action, timestamp):
+            if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
 
     def panToItem(self, itemKey, highlight=False):

@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_SettingsDialogBase(object):
     def setupUi(self, SettingsDialogBase):
         SettingsDialogBase.setObjectName(_fromUtf8("SettingsDialogBase"))
-        SettingsDialogBase.resize(524, 308)
+        SettingsDialogBase.resize(474, 336)
         self.verticalLayout = QtGui.QVBoxLayout(SettingsDialogBase)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.tabWidget = QtGui.QTabWidget(SettingsDialogBase)
@@ -60,7 +60,7 @@ class Ui_SettingsDialogBase(object):
         self.customStylesLabel.setObjectName(_fromUtf8("customStylesLabel"))
         self.gridLayout_5.addWidget(self.customStylesLabel, 4, 0, 1, 2)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_5.addItem(spacerItem, 6, 2, 1, 1)
+        self.gridLayout_5.addItem(spacerItem, 7, 2, 1, 1)
         self.styleFolderLayout = QtGui.QHBoxLayout()
         self.styleFolderLayout.setObjectName(_fromUtf8("styleFolderLayout"))
         self.styleFolderCheck = QtGui.QCheckBox(self.projectTab)
@@ -106,6 +106,14 @@ class Ui_SettingsDialogBase(object):
         self.multiSiteLabel = QtGui.QLabel(self.projectTab)
         self.multiSiteLabel.setObjectName(_fromUtf8("multiSiteLabel"))
         self.gridLayout_5.addWidget(self.multiSiteLabel, 3, 0, 1, 1)
+        self.logUpdatesLabel = QtGui.QLabel(self.projectTab)
+        self.logUpdatesLabel.setObjectName(_fromUtf8("logUpdatesLabel"))
+        self.gridLayout_5.addWidget(self.logUpdatesLabel, 6, 0, 1, 1)
+        self.logUpdatesCheck = QtGui.QCheckBox(self.projectTab)
+        self.logUpdatesCheck.setText(_fromUtf8(""))
+        self.logUpdatesCheck.setChecked(True)
+        self.logUpdatesCheck.setObjectName(_fromUtf8("logUpdatesCheck"))
+        self.gridLayout_5.addWidget(self.logUpdatesCheck, 6, 2, 1, 1)
         self.tabWidget.addTab(self.projectTab, _fromUtf8(""))
         self.drawingsTab = QtGui.QWidget()
         self.drawingsTab.setObjectName(_fromUtf8("drawingsTab"))
@@ -252,6 +260,7 @@ class Ui_SettingsDialogBase(object):
         self.useArkLabel.setText(_translate("SettingsDialogBase", "Use ARK DB:", None))
         self.customStylesLabel.setText(_translate("SettingsDialogBase", "Custom Styles Folder:", None))
         self.multiSiteLabel.setText(_translate("SettingsDialogBase", "Multi-site Project", None))
+        self.logUpdatesLabel.setText(_translate("SettingsDialogBase", "Log Updates:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.projectTab), _translate("SettingsDialogBase", "Project", None))
         self.georefFolderLabel.setText(_translate("SettingsDialogBase", "Separate georef folder:", None))
         self.georefFolderCheck.setToolTip(_translate("SettingsDialogBase", "Select if the raw and processed plans should be stored in separate folders.", None))
@@ -262,4 +271,4 @@ class Ui_SettingsDialogBase(object):
         self.sectionDrawingFolderLabel.setText(_translate("SettingsDialogBase", "Section Drawings:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.drawingsTab), _translate("SettingsDialogBase", "Drawings", None))
 
-import resources
+import resources_rc

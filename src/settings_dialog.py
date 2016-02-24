@@ -53,6 +53,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.arkUrlEdit.setText(project.arkUrl())
         if project.isConfigured():
             self.useArkCheck.setEnabled(False)
+        self.logUpdatesCheck.setChecked(project.logUpdates())
 
         # Drawings tab settings
         self.drawingTransparencySpin.setValue(project.drawingTransparency())
@@ -82,6 +83,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
         self._project.setUseArkDB(self.useArkCheck.isChecked())
         self._project.setArkUrl(self.arkUrlEdit.text())
+        self._project.setLogUpdates(self.logUpdatesCheck.isChecked())
 
         # Drawings tab settings
         self._project.setRasterGroupPath('cxt', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())

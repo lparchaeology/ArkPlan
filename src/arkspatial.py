@@ -455,6 +455,12 @@ class ArkSpatial(Plugin):
 
     # Project settings
 
+    def logUpdates(self):
+        return self.readBoolEntry('logUpdates', True)
+
+    def setLogUpdates(self, logUpdates):
+        self.writeEntry('logUpdates', logUpdates)
+
     def useArkDB(self):
         return self.readBoolEntry('useArkDB', True)
 

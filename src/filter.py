@@ -175,19 +175,24 @@ class Filter(QObject):
         self.applyFilters()
 
     def clearSchematicFilter(self):
-        self._clearSchematicFilter()
-        self.applyFilters()
+        if  self._clearSchematicFilter()
+            self.applyFilters()
 
     def _clearSchematicFilter(self):
+        changed = False
         if self._schematicIncludeFilter >= 0:
             self.dock.removeFilterClause(self._schematicIncludeFilter)
             self._schematicIncludeFilter = -1
+            changed = True
         if self._schematicSelectFilter >= 0:
             self.dock.removeFilterClause(self._schematicSelectFilter)
             self._schematicSelectFilter = -1
+            changed = True
         if self._schematicHighlightFilter >= 0:
             self.dock.removeFilterClause(self._schematicHighlightFilter)
             self._schematicHighlightFilter = -1
+            changed = True
+        return changed
 
     def addFilterClause(self, filterType, itemKey, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:

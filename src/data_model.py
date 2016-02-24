@@ -103,15 +103,24 @@ class DataManager(QObject):
         path = project.projectPath() + '/data/' + project.siteCode() + '_'
         if self._cxtModel:
             self._cxtModel.clear()
-        self._cxtModel = ItemModel(path + 'cxt.csv', keyFields, self)
+        filePath = path + 'cxt.csv'
+        if QFile.exists(filePath):
+            self._cxtModel = ItemModel(filePath, keyFields, self)
+            project.logMessage('Loaded Context Model : ' + filePath + ' : ' + str(self._cxtModel.rowCount()) + ' rows')
         self._cxtProxyModel.setSourceModel(self._cxtModel)
         if self._subModel:
             self._subModel.clear()
-        self._subModel = ItemModel(path + 'sgr.csv', keyFields, self)
+        filePath = path + 'sgr.csv'
+        if QFile.exists(filePath):
+            self._subModel = ItemModel(filePath, keyFields, self)
+            project.logMessage('Loaded Subgroup Model : ' + filePath + ' : ' + str(self._subModel.rowCount()) + ' rows')
         self._subProxyModel.setSourceModel(self._subModel)
         if self._grpModel:
             self._grpModel.clear()
-        self._grpModel = ItemModel(path + 'grp.csv', keyFields, self)
+        filePath = path + 'grp.csv'
+        if QFile.exists(filePath):
+            self._grpModel = ItemModel(filePath, keyFields, self)
+            project.logMessage('Loaded Group Model : ' + filePath + ' : ' + str(self._grpModel.rowCount()) + ' rows')
         self._grpProxyModel.setSourceModel(self._grpModel)
         self._linkModel = ParentChildModel(self)
         self._addLinks(self._subModel._table)

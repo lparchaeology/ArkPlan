@@ -58,6 +58,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     nextMissingSelected = pyqtSignal()
     prevMissingSelected = pyqtSignal()
     editContextSelected = pyqtSignal()
+    deleteSectionSchematicSelected = pyqtSignal()
     findSourceSelected = pyqtSignal()
     copySourceSelected = pyqtSignal()
     cloneSourceSelected = pyqtSignal()
@@ -90,6 +91,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.nextMissingTool.clicked.connect(self.nextMissingSelected)
         self.prevMissingTool.clicked.connect(self.prevMissingSelected)
         self.editContextButton.clicked.connect(self.editContextSelected)
+        self.deleteSectionButton.clicked.connect(self.deleteSectionSchematicSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
         self._sourceSpinFilter = ReturnPressedFilter(self)
         self.sourceContextSpin.installEventFilter(self._sourceSpinFilter)
@@ -160,6 +162,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self._setStatusLabel(self.sectionSchematicStatusLabel, foundSectionSchematic)
         self.editContextButton.setEnabled(self.contextStatus() == SearchStatus.Found)
         self._enableSource(foundSchematic == SearchStatus.NotFound)
+        self.deleteSectionButton.setEnabled(foundSectionSchematic == SearchStatus.Found)
 
     def sourceItemKey(self):
         return ItemKey(self.siteCode(), 'cxt', self.sourceContext())

@@ -112,6 +112,7 @@ class Plan(QObject):
         self.dock.prevMissingSelected.connect(self._prevMissing)
         self.dock.nextMissingSelected.connect(self._nextMissing)
         self.dock.editContextSelected.connect(self._editSchematicContext)
+        self.dock.deleteSectionSchematicSelected.connect(self._deleteSectionSchematic)
         self.dock.findSourceSelected.connect(self._findPanSource)
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
@@ -570,8 +571,9 @@ class Plan(QObject):
         self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
         self.project.iface.actionSelect().trigger()
 
-    def _confirmDelete(self, itemId, title='Confirm Delete Item'):
-        label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'
+    def _confirmDelete(self, itemId, title='Confirm Delete Item', label=None):
+        if not label:
+            label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'
         confirm, ok = QInputDialog.getText(None, title, label, text='')
         return ok and confirm == str(itemId)
 
@@ -813,6 +815,17 @@ class Plan(QObject):
         self._editSchematic = True
         self.editInBuffers(self.dock.contextItemKey())
         self.dock.widget.setCurrentIndex(0)
+
+    def _deleteSectionSchematic(self):
+        itemKey = self.dock.contextItemKey()
+        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + str(itemKey.itemId) + '\n\nPlease enter the item ID to confirm.'
+        if self._confirmDelete(itemKey.itemId, 'Confirm Delete Section Schematic', label):
+            request = self._categoryRequest(itemKey, 'scs')
+            timestamp = utils.timestamp()
+            action = 'Delete Section Schematic'
+            if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
+                self._logItemAction(itemKey, action, timestamp)
+            self._findContext(itemKey)
 
     def _arkStatus(self, item):
         try:

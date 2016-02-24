@@ -39,7 +39,6 @@ from plan_dock import PlanDock
 from plan_error import ErrorDialog, PlanError
 from select_drawing_dialog import SelectDrawingDialog
 
-from filter import FilterType, FilterAction
 from plan_util import *
 from plan_item import *
 from plan_map_tools import *
@@ -74,10 +73,6 @@ class Plan(QObject):
     metadata = None  # Metadata()
 
     _definitiveCategories = set()
-    _schematicContextIncludeFilter = -1
-    _schematicContextHighlightFilter = -1
-    _schematicSourceIncludeFilter = -1
-    _schematicSourceHighlightFilter = -1
 
     _editSchematic = False
 
@@ -596,8 +591,7 @@ class Plan(QObject):
             return
         self.project.mapCanvas().setCenter(extent.center())
         if highlight:
-            self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+            self.project.filterModule.highlightItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def zoomToItem(self, itemKey, highlight=False):
@@ -607,8 +601,7 @@ class Plan(QObject):
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
         if highlight:
-            self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+            self.project.filterModule.highlightItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def moveToItem(self, itemKey, highlight=False):
@@ -623,26 +616,23 @@ class Plan(QObject):
         else:
             self.project.mapCanvas().setCenter(extent.center())
         if highlight:
-            self.project.filterModule.removeHighlightFilters()
-            self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+            self.project.filterModule.highlightItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def filterItem(self, itemKey):
-        self.project.filterModule.removeFilters()
-        self.project.filterModule.addFilterClause(FilterType.IncludeFilter, itemKey)
+        self.project.filterModule.filterItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def excludeFilterItem(self, itemKey):
-        self.project.filterModule.addFilterClause(FilterType.ExcludeFilter, itemKey)
+        self.project.filterModule.excludeItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def highlightItem(self, itemKey):
-        self.project.filterModule.removeHighlightFilters()
-        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+        self.project.filterModule.highlightItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def addHighlightItem(self, itemKey):
-        self.project.filterModule.addFilterClause(FilterType.HighlightFilter, itemKey)
+        self.project.filterModule.addHighlightItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def itemExtent(self, itemKey):
@@ -745,27 +735,7 @@ class Plan(QObject):
         self._findMoveContext()
 
     def _clearSchematicFilters(self):
-        self._clearSchematicContextIncludeFilter()
-        self._clearSchematicContextHighlightFilter()
-        self._clearSchematicSourceFilters()
-
-    def _clearSchematicContextIncludeFilter(self):
-        if self._schematicContextIncludeFilter >= 0:
-            self.project.filterModule.removeFilterClause(self._schematicContextIncludeFilter)
-            self._schematicContextIncludeFilter = -1
-
-    def _clearSchematicContextHighlightFilter(self):
-        if self._schematicContextHighlightFilter >= 0:
-            self.project.filterModule.removeFilterClause(self._schematicContextHighlightFilter)
-            self._schematicContextHighlightFilter = -1
-
-    def _clearSchematicSourceFilters(self):
-        if self._schematicSourceIncludeFilter >= 0:
-            self.project.filterModule.removeFilterClause(self._schematicSourceIncludeFilter)
-            self._schematicSourceIncludeFilter = -1
-        if self._schematicSourceHighlightFilter >= 0:
-            self.project.filterModule.removeFilterClause(self._schematicSourceHighlightFilter)
-            self._schematicSourceHighlightFilter = -1
+        self.project.filterModule.clearSchematicFilter()
 
     def _findMoveContext(self, context=ItemKey()):
         self._findContext(context)
@@ -854,11 +824,7 @@ class Plan(QObject):
         if not context.isValid():
             context = self.dock.contextItemKey()
 
-        filterModule = self.project.filterModule
-        self.metadata.setSiteCode(context.siteCode)
-        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.ExcludeFilter):
-            self._schematicContextIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, context, FilterAction.LockFilter)
-        self._schematicContextHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, context, FilterAction.LockFilter)
+        self.project.filterModule.applySchematicFilter(context)
 
         haveArk = SearchStatus.NotFound
         try:
@@ -901,18 +867,10 @@ class Plan(QObject):
         self.dock.widget.setCurrentIndex(0)
 
     def _findSource(self, source=ItemKey()):
-        self._clearSchematicSourceFilters()
-
         if not source.isValid():
             source = self.dock.sourceItemKey()
 
-        filterModule = self.project.filterModule
-        if self.metadata.siteCode() == '':
-            self.metadata.setSiteCode(self.project.siteCode())
-        if filterModule.hasFilterType(FilterType.IncludeFilter) or filterModule.hasFilterType(FilterType.IncludeFilter):
-            self._schematicSourceIncludeFilter = filterModule.addFilterClause(FilterType.IncludeFilter, source, FilterAction.LockFilter)
-        self._clearSchematicContextHighlightFilter()
-        self._schematicSourceHighlightFilter = filterModule.addFilterClause(FilterType.HighlightFilter, source, FilterAction.LockFilter)
+        self.project.filterModule.applySchematicFilter(source)
 
         haveArk = self._arkStatus(source)
         haveFeature = self._featureStatus(source)
@@ -957,7 +915,7 @@ class Plan(QObject):
             self.project.plan.polygonsBuffer.addFeature(feature)
 
     def _editSourceSchematic(self):
-        self._clearSchematicSourceFilters()
+        self._clearSchematicFilters()
         self._copySourceSchematic()
         self._editSchematic = True
         self.dock.widget.setCurrentIndex(0)
@@ -967,6 +925,6 @@ class Plan(QObject):
         self.project.iface.actionNodeTool().trigger()
 
     def _cloneSourceSchematic(self):
-        self._clearSchematicSourceFilters()
+        self._clearSchematicFilters()
         self._copySourceSchematic()
         self._mergeSchematic()

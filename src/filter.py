@@ -56,6 +56,10 @@ class Filter(QObject):
     _useGroups = False
     _filterSetGroupIndex = -1
 
+    _schematicIncludeFilter = -1
+    _schematicSelectFilter = -1
+    _schematicHighlightFilter = -1
+
     def __init__(self, project):
         super(Filter, self).__init__(project)
         self.project = project
@@ -143,6 +147,47 @@ class Filter(QObject):
         self.dock.removeFilters()
         self.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.zoomFilter()
+
+    def excludeItem(self, itemKey):
+        if not self._initialised:
+            return
+        self.addFilterClause(FilterType.ExcludeFilter, itemKey)
+
+    def highlightItem(self, itemKey):
+        if not self._initialised:
+            return
+        self.dock.removeHighlightFilters()
+        self.addFilterClause(FilterType.HighlightFilter, itemKey)
+
+    def addHighlightItem(self, itemKey):
+        if not self._initialised:
+            return
+        self.addFilterClause(FilterType.HighlightFilter, itemKey)
+
+    def applySchematicFilter(self, itemKey):
+        if not self._initialised:
+            return
+        self._clearSchematicFilter()
+        if self.hasFilterType(FilterType.IncludeFilter) or self.hasFilterType(FilterType.ExcludeFilter):
+            self._schematicIncludeFilter = self.dock.addFilterClause(FilterType.IncludeFilter, itemKey, FilterAction.LockFilter)
+        self._schematicSelectFilter = self.dock.addFilterClause(FilterType.SelectFilter, itemKey, FilterAction.LockFilter)
+        self._schematicHighlightFilter = self.dock.addFilterClause(FilterType.HighlightFilter, itemKey, FilterAction.LockFilter)
+        self.applyFilters()
+
+    def clearSchematicFilter(self):
+        self._clearSchematicFilter()
+        self.applyFilters()
+
+    def _clearSchematicFilter(self):
+        if self._schematicIncludeFilter >= 0:
+            self.dock.removeFilterClause(self._schematicIncludeFilter)
+            self._schematicIncludeFilter = -1
+        if self._schematicSelectFilter >= 0:
+            self.dock.removeFilterClause(self._schematicSelectFilter)
+            self._schematicSelectFilter = -1
+        if self._schematicHighlightFilter >= 0:
+            self.dock.removeFilterClause(self._schematicHighlightFilter)
+            self._schematicHighlightFilter = -1
 
     def addFilterClause(self, filterType, itemKey, filterAction=FilterAction.RemoveFilter):
         if not self._initialised:

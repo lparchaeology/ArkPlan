@@ -175,7 +175,7 @@ class Filter(QObject):
         self.applyFilters()
 
     def clearSchematicFilter(self):
-        if  self._clearSchematicFilter()
+        if  self._clearSchematicFilter():
             self.applyFilters()
 
     def _clearSchematicFilter(self):

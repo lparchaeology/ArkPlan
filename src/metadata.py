@@ -173,6 +173,19 @@ class Metadata(QObject):
     def setCreatedOn(self, createdOn):
         self.itemFeature.setCreatedOn(createdOn)
 
+    def fromFeature(self, feature):
+        self.fromItemFeature(ItemFeature(feature))
+
+    def fromItemFeature(self, feature):
+        self.setSiteCode(feature.key.siteCode)
+        self.setClassCode(feature.key.classCode)
+        self.setItemId(feature.key.itemId)
+        self.setComment(feature.comment)
+        self.setSourceCode(feature.source.sourceCode)
+        self.setSourceClass(feature.source.key.classCode)
+        self.setSourceId(feature.source.key.itemId)
+        self.setSourceFile(feature.source.filename)
+
     def validate(self):
         signalChanged = False
         if self.siteCode() == '':

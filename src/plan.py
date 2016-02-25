@@ -592,14 +592,7 @@ class Plan(QObject):
             action = 'Edit Item'
             if self.project.plan.moveFeatureRequestToBuffers(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
-                self.metadata.setSiteCode(itemKey.siteCode)
-                self.metadata.setClassCode(itemKey.classCode)
-                self.metadata.setItemId(itemKey.itemId)
-                self.metadata.setComment('')
-                self.metadata.setSourceCode('drw')
-                self.metadata.setSourceClass(itemKey.classCode)
-                self.metadata.setSourceId(itemKey.itemId)
-                self.metadata.setSourceFile('')
+                self._metadataFromBuffers(itemKey)
 
     def deleteItem(self, itemKey):
         if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
@@ -711,6 +704,39 @@ class Plan(QObject):
         except:
             pass
 
+    def _metadataFromBuffers(self, item):
+        feature = self._getFeature(self.project.plan.polygonsBuffer, item, 'sch')
+        if feature:
+            self.metadata.fromFeature(feature)
+            return
+        feature = self._getFeature(self.project.plan.polygonsBuffer, item, 'scs')
+        if feature:
+            self.metadata.fromFeature(feature)
+            return
+        feature = self._getFeature(self.project.plan.polygonsBuffer, item)
+        if feature:
+            self.metadata.fromFeature(feature)
+            return
+        feature = self._getFeature(self.project.plan.linesBuffer, item)
+        if feature:
+            self.metadata.fromFeature(feature)
+            return
+        feature = self._getFeature(self.project.plan.pointsBuffer, item)
+        if feature:
+            self.metadata.fromFeature(feature)
+
+    def _getFeature(self, layer, item, category=''):
+        req = None
+        if category:
+            req = self._categoryRequest(item, 'sch')
+        else:
+            req = self._itemRequest(item)
+        try:
+            return layer.getFeatures(req).next()
+        except StopIteration:
+            return None
+        return None
+
     # Feature Request Methods
 
     def _eqClause(self, field, value):
@@ -729,6 +755,9 @@ class Plan(QObject):
         request = QgsFeatureRequest()
         request.setFilterExpression(expr)
         return request
+
+    def _itemRequest(self, itemKey):
+        return self._featureRequest(itemKey.filterClause())
 
     def _categoryRequest(self, itemKey, category):
         return self._featureRequest(itemKey.filterClause() + ' and ' + self._categoryClause(category))

@@ -683,9 +683,9 @@ class Plan(QObject):
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
         request = self._classItemsRequest(siteCode, 'sec')
-        fi = self.project.plan.linesLayer.getFeatures(request)
+        features = layers.getAllFeaturesRequest(request, self.project.plan.linesLayer)
         lst = []
-        for feature in fi:
+        for feature in features:
             lst.append(ItemFeature(feature))
         lst.sort()
         return lst
@@ -693,8 +693,8 @@ class Plan(QObject):
     def _sectionLineGeometry(self, itemKey):
         if itemKey and itemKey.isValid():
             request = self._categoryRequest(itemKey, 'sln')
-            fi = self.project.plan.linesLayer.getFeatures(request)
-            for feature in fi:
+            features = layers.getAllFeaturesRequest(request, self.project.plan.linesLayer)
+            for feature in features:
                 return QgsGeometry(feature.geometry())
         return QgsGeometry()
 
@@ -826,7 +826,7 @@ class Plan(QObject):
         for prv in reversed(range(idx)):
             item = self.project.data.itemKeys['cxt'][prv]
             if item not in schematics:
-                self._findContext(item)
+                self._findMoveContext(item)
                 return
 
     def _nextMissing(self):
@@ -837,7 +837,7 @@ class Plan(QObject):
         schematics = self._getAllSchematicItems()
         for item in self.project.data.itemKeys['cxt'][idx:]:
             if item not in schematics:
-                self._findContext(item)
+                self._findMoveContext(item)
                 return
 
     def _getAllSchematicItems(self):
@@ -974,8 +974,8 @@ class Plan(QObject):
     def _copySourceSchematic(self):
         self.metadata.validate()
         request = self._categoryRequest(self.dock.sourceItemKey(), 'sch')
-        fi = self.project.plan.polygonsLayer.getFeatures(request)
-        for feature in fi:
+        features = layers.getAllFeaturesRequest(request, self.project.plan.polygonsLayer)
+        for feature in features:
             feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode())
             feature.setAttribute(self.project.fieldName('class'), 'cxt')
             feature.setAttribute(self.project.fieldName('id'), self.dock.context())

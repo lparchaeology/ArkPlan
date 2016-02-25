@@ -119,6 +119,7 @@ class DataManager(QObject):
         self._linkModel = ParentChildModel(self)
         self._addLinks(self._subModel._table)
         self._addLinks(self._grpModel._table)
+        project.logMessage('Loaded Link Model : ' + str(self._linkModel.rowCount()) + ' rows')
 
     def _createArkSession(self, project):
         if self._ark is None:

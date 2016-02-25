@@ -247,12 +247,9 @@ class Filter(QObject):
                 filterItemKey = filter.itemKey()
                 if filter.classCode() == 'grp':
                     subItemKey = self._childrenItemKey(filterItemKey)
-                    utils.logMessage(' - grp ' + utils.printable(subItemKey))
                     filterItemKey = self._childrenItemKey(subItemKey)
-                    utils.logMessage(' - grp ' + utils.printable(filterItemKey))
                 elif filter.classCode() == 'sgr':
                     filterItemKey = self._childrenItemKey(filterItemKey)
-                    utils.logMessage(' - sgr ' + utils.printable(filterItemKey))
                 if filter.filterType() == FilterType.SelectFilter:
                     if firstSelect:
                         firstSelect = False
@@ -389,17 +386,13 @@ class Filter(QObject):
         return dataDialog.exec_()
 
     def _childrenItemKey(self, parentItemKey):
-        utils.logMessage('_childrenItemKey')
         childSiteCode = ''
         childClassCode = ''
         childIdSet = set()
         lookupItemKey = copy.deepcopy(parentItemKey)
-        utils.logMessage('parents = ' + utils.printable(parentItemKey.itemIdList()))
         for parent in parentItemKey.itemIdList():
-            lookupItemKey.itemId = parent
-            utils.logMessage('lookupItemKey = ' + utils.printable(lookupItemKey))
+            lookupItemKey.setItemId(parent)
             children = self.project.data.getChildren(lookupItemKey)
-            utils.logMessage('children = ' + utils.printable(children))
             for child in children:
                 childSiteCode = child.siteCode
                 childClassCode = child.classCode

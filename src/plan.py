@@ -822,10 +822,10 @@ class Plan(QObject):
         idx = 0
         if context.isValid():
             idx = bisect.bisect_left(self.project.data.itemKeys['cxt'], context)
+        schematics = self._getAllSchematicItems()
         for prv in reversed(range(idx)):
             item = self.project.data.itemKeys['cxt'][prv]
-            status = self._schematicStatus(item)
-            if status == SearchStatus.NotFound:
+            if item not in schematics:
                 self._findContext(item)
                 return
 
@@ -834,11 +834,23 @@ class Plan(QObject):
         idx = 0
         if context.isValid():
             idx = bisect.bisect(self.project.data.itemKeys['cxt'], context)
+        schematics = self._getAllSchematicItems()
         for item in self.project.data.itemKeys['cxt'][idx:]:
-            status = self._schematicStatus(item)
-            if status == SearchStatus.NotFound:
+            if item not in schematics:
                 self._findContext(item)
                 return
+
+    def _getAllSchematicItems(self):
+        features = self._getAllSchematicFeatures()
+        items = set()
+        for feature in features:
+            item = ItemKey(feature)
+            items.add(item)
+        return sorted(items)
+
+    def _getAllSchematicFeatures(self):
+        req = self._featureRequest(self._categoryClause('sch'))
+        return layers.getAllFeaturesRequest(req, self.project.plan.polygonsLayer)
 
     def _editSchematicContext(self):
         self._editSchematic = True

@@ -32,12 +32,9 @@ from settings_wizard_base import *
 
 class SettingsWizard(QWizard, Ui_SettingsWizard):
 
-    _advanced = False
-
     def __init__(self, parent=None):
         super(SettingsWizard, self).__init__(parent)
         self.setupUi(self)
-        self.advancedButton.clicked.connect(self._advancedSettings)
         self.projectFolderButton.clicked.connect(self._selectProjectFolder)
 
     def advancedMode(self):
@@ -57,10 +54,6 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
 
     def arkUrl(self):
         return self.arkUrlEdit.text()
-
-    def _advancedSettings(self):
-        self._advanced = True
-        self.accept()
 
     def _selectProjectFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))

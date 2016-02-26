@@ -26,10 +26,10 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog, QMenu
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
-from qgis.gui import QgsMessageBar, QgsLayerTreeView
+from qgis.gui import QgsMessageBar, QgsLayerTreeView, QgsLayerTreeViewMenuProvider, QgsLayerTreeViewDefaultActions
 
 from ..libarkqgis.plugin import Plugin
 from ..libarkqgis.layercollection import *
@@ -49,6 +49,26 @@ from select_item_dialog import SelectItemDialog
 from data_model import *
 
 import resources
+
+class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
+
+    _iface = None
+    _view = None
+
+    def __init__(self, iface, view):
+        QgsLayerTreeViewMenuProvider.__init__(self)
+        self._iface = iface
+        self._view = view
+
+    def createContextMenu(self):
+        if not self._view.currentLayer():
+            return None
+        menu = QMenu()
+        action = self._view.defaultActions().actionZoomToLayer(self._iface.mapCanvas(), menu)
+        action.triggered.connect(self._view.defaultActions().zoomToLayer(self._iface.mapCanvas()))
+        menu.addAction(action)
+        return menu
+
 
 class ArkSpatial(Plugin):
     """QGIS Plugin Implementation."""
@@ -130,6 +150,8 @@ class ArkSpatial(Plugin):
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
         self.projectLayerModel.setAutoCollapseLegendNodes(-1)
         self.projectLayerView.setModel(self.projectLayerModel)
+        menuProvider = LayerTreeMenu(self.iface, self.projectLayerView)
+        self.projectLayerView.setMenuProvider(menuProvider)
         self.projectLayerView.setCurrentLayer(self.iface.activeLayer())
         self.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
         self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)

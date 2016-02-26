@@ -134,7 +134,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             del self._highlights[:]
         else:
             return
-        if type(item) is not IdentifyItemAction:
+        if not isinstance(item, IdentifyItemAction):
             return
         request = item.itemKey.featureRequest()
         for feature in self._project.plan.polygonsLayer.getFeatures(request):

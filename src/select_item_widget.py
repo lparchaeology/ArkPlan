@@ -83,7 +83,7 @@ class SelectItemWidget(QWidget, Ui_SelectItemWidget):
         return ItemKey(self.siteCode(), self.classCode(), self.itemId())
 
     def setItem(self, itemKey):
-        if type(itemKey) == ItemKey and itemKey.isValid():
+        if isinstance(itemKey, ItemKey) and itemKey.isValid():
             self.siteCodeCombo.setCurrentIndex(self.siteCodeCombo.findData(itemKey.siteCode))
             self.classCodeCombo.setCurrentIndex(self.classCodeCombo.findData(itemKey.classCode))
             self.itemIdEdit.setText(itemKey.itemId)

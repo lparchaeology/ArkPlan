@@ -122,10 +122,6 @@ class Plan(QObject):
 
         self.project.filterModule.filterSetCleared.connect(self._clearSchematic)
 
-        # TODO Think of a better way...
-        self.metadata = Metadata(self.dock.widget.metadataWidget)
-        self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
-
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
@@ -153,9 +149,9 @@ class Plan(QObject):
                 fd.write('timestamp,action,siteCode,classCode,itemId\n')
                 fd.close()
 
-        self.project.plan.pointsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
-        self.project.plan.linesBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
-        self.project.plan.polygonsBuffer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+        # TODO Think of a better way...
+        self.metadata = Metadata(self.dock.widget.metadataWidget)
+        self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
         self.initialised = True
 
@@ -169,6 +165,7 @@ class Plan(QObject):
         self._clearSchematicFilters()
         # TODO Unload the drawing tools!
         self.dock.closeProject()
+        self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
@@ -398,7 +395,7 @@ class Plan(QObject):
     def _isEmpty(self, val):
         if val is None or val == NULL:
             return True
-        if type(val) == str and (val == '' or val.strip() == ''):
+        if isinstance(val, str) and (val == '' or val.strip() == ''):
             return True
         return False
 
@@ -513,10 +510,10 @@ class Plan(QObject):
         mapTool.setDefaultAttributes(self.metadata.itemFeature.toAttributes())
 
     def validateFeature(self):
-        if self.metadata.sourceClass() == self.metadata.classCode() and int(self.metadata.sourceId()) <= 0:
+        if self.metadata.sourceClass() == self.metadata.classCode() and self.metadata.sourceId().isdigit() and int(self.metadata.sourceId()) <= 0:
             self.metadata.setSourceId(self.metadata.itemId())
         self.metadata.validate()
-        if self.metadata.sourceClass() == self.metadata.classCode() and int(self.metadata.sourceId()) <= 0:
+        if self.metadata.sourceClass() == self.metadata.classCode() and self.metadata.sourceId().isdigit() and int(self.metadata.sourceId()) <= 0:
             self.metadata.setSourceId(self.metadata.itemId())
         self.dock.setFeatureName(self.metadata.name())
 

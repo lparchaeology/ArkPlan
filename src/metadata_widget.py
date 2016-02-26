@@ -31,6 +31,7 @@ from PyQt4.QtGui import QGroupBox
 from qgis.core import NULL
 
 from config import Config
+from plan_item import *
 
 import metadata_widget_base
 
@@ -85,13 +86,25 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
     def closeProject(self):
         pass
 
+    def item(self):
+        return ItemKey(self.siteCode(), self.classCode(), self.itemId())
+
+    def sourceItem(self):
+        return ItemKey(self.siteCode(), self.sourceClass(), self.sourceId())
+
+    def source(self):
+        return ItemSource(self.sourceCode(), self.sourceItem(), self.sourceFile())
+
+    def feature(self):
+        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), createdBy=self.createdBy())
+
     def setSiteCode(self, siteCode):
         idx = self.siteCodeCombo.findData(siteCode)
         if idx >= 0:
             self.siteCodeCombo.setCurrentIndex(idx)
 
     def siteCode(self):
-        return self.classCombo.itemData(self.classCombo.currentIndex())
+        return self.siteCodeCombo.itemData(self.classCombo.currentIndex())
 
     def _siteCodeChanged(self, idx):
         self.siteCodeChanged.emit(self.siteCodeCombo.itemData(idx))
@@ -107,17 +120,14 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
 
     def setItemId(self, itemId):
         self.blockSignals(True)
-        if itemId is None or itemId ==  NULL or itemId == '':
-            self.idSpin.setValue(0)
-        else:
+        if (isinstance(itemId, int) and itemId >=0) or (isinstance(itemId, str) and itemId.isdigit() and int(itemId) >= 0):
             self.idSpin.setValue(int(itemId))
+        else:
+            self.idSpin.setValue(0)
         self.blockSignals(False)
 
     def itemId(self):
-        if self.idSpin.value() > 0:
-            return str(self.idSpin.value())
-        else:
-            return ''
+        return str(self.idSpin.value())
 
     def _itemIdChanged(self, itemId):
         self.itemIdChanged.emit(self.itemId())
@@ -142,17 +152,14 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
 
     def setSourceId(self, sourceId):
         self.blockSignals(True)
-        if sourceId is None or sourceId ==  NULL or sourceId == '':
-            self.sourceIdSpin.setValue(0)
-        else:
+        if (isinstance(sourceId, int) and sourceId >=0) or (isinstance(sourceId, str) and sourceId.isdigit() and int(sourceId) >= 0):
             self.sourceIdSpin.setValue(int(sourceId))
+        else:
+            self.sourceIdSpin.setValue(0)
         self.blockSignals(False)
 
     def sourceId(self):
-        if self.sourceIdSpin.value() > 0:
-            return str(self.sourceIdSpin.value())
-        else:
-            return ''
+        return str(self.sourceIdSpin.value())
 
     def _sourceIdChanged(self, sourceId):
         self.sourceIdChanged.emit(self.sourceId())

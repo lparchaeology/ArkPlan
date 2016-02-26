@@ -93,12 +93,13 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
             name = name + '_' + self._str(self.eastingSpin.value()) + 'e' + self._str(self.northingSpin.value()) + 'n'
 
         nameList = []
-        nameList.append(name + '.png')
-        nameList.append(name + '.tif')
-        nameList.append(name + '.tiff')
-        nameList.append(name + '_*.png')
-        nameList.append(name + '_*.tif')
-        nameList.append(name + '_*.tiff')
+        if self._georef:
+            nameList.append(name + '_r.tif')
+            nameList.append(name + '_modified.tif')
+        else:
+            nameList.append(name + '.png')
+            nameList.append(name + '.tif')
+            nameList.append(name + '.tiff')
 
         self._dir.setNameFilters(nameList)
         files = self._dir.entryInfoList()

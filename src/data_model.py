@@ -181,5 +181,5 @@ class DataManager(QObject):
     def getChildren(self, itemKey):
         return self._linkModel.getChildren(itemKey)
 
-    def getParent(self, siteCode, classCode, itemId):
+    def getParent(self, itemKey):
         return self._linkModel.getParent(itemKey)

@@ -34,7 +34,7 @@ from ..libarkqgis import utils
 from config import Config
 
 def _value(value):
-    if type(value) == str and value.strip() == '':
+    if isinstance(value, str) and value.strip() == '':
         return None
     return value
 
@@ -63,15 +63,15 @@ class ItemKey():
     itemId = ''
 
     def __init__(self, siteCode=None, classCode=None, itemId=None):
-        if type(siteCode) == QgsFeature:
+        if isinstance(siteCode, QgsFeature):
             self.fromFeature(siteCode)
         else:
             self.setKey(siteCode, classCode, itemId)
 
     def __eq__(self, other):
-        try:
+        if isinstance(other, ItemKey):
             return self.siteCode == other.siteCode and self.classCode == other.classCode and self.itemId == other.itemId
-        except:
+        else:
             return False
 
     def __lt__(self, other):
@@ -82,7 +82,7 @@ class ItemKey():
         return self.siteCode < other.siteCode and self.classCode < other.classCode and self._lt(self.itemId, other.itemId)
 
     def _lt(self, id1, id2):
-        if type(id1) == str and id1.isdigit() and type(id2) == str and id2.isdigit():
+        if isinstance(id1, str) and id1.isdigit() and isinstance(id2, str) and id2.isdigit():
             return int(id1) < int(id2)
         else:
             return str(id1) < str(id2)
@@ -97,20 +97,20 @@ class ItemKey():
         return 'ItemKey(' + utils.printable(self.siteCode) + ', ' +  utils.printable(self.classCode) + ', ' +  utils.printable(self.itemId) + ')'
 
     def isValid(self):
-        return (type(self.siteCode) == str and self.siteCode
-                and type(self.classCode) == str and self.classCode
-                and type(self.itemId) == str and self.itemId)
+        return (isinstance(self.siteCode, str) and self.siteCode
+                and isinstance(self.classCode, str) and self.classCode
+                and isinstance(self.itemId, str) and self.itemId)
 
     def isInvalid(self):
-        return (type(self.siteCode) != str or self.siteCode == ''
-                or type(self.classCode) != str or self.classCode == ''
-                or type(self.itemId) != str or self.itemId == '')
+        return (not isinstance(self.siteCode, str) or self.siteCode == ''
+                or not isinstance(self.classCode, str) or self.classCode == ''
+                or not isinstance(self.itemId, str) or self.itemId == '')
 
     def isNull(self):
         return (self.siteCode == '' and self.classCode == '' and self.itemId == '')
 
     def isItemRange(self):
-        return type(self.itemId) == str and (self.itemId.contains('-') or self.itemId.contains(' '))
+        return isinstance(self.itemId, str) and (self.itemId.contains('-') or self.itemId.contains(' '))
 
     def itemLabel(self):
         if self.classCode:
@@ -158,7 +158,7 @@ class ItemKey():
         self.classCode = utils.string(classCode)
 
     def setItemId(self, itemId):
-        if type(itemId) == list or type(itemId) == set:
+        if isinstance(itemId, list) or isinstance(itemId, set):
             self.itemId = utils.listToRange(itemId)
         else:
             self.itemId = utils.string(itemId)
@@ -168,7 +168,7 @@ class ItemKey():
             self.setItemId(itemId)
         else:
             lst = self.itemIdList()
-            if type(itemId) == list or type(itemId) == set:
+            if isinstance(itemId, list) or isinstance(itemId, set):
                 lst.extend(itemId)
             else:
                 lst.append(utils.string(itemId))
@@ -214,45 +214,49 @@ class ItemSource():
     filename = ''
 
     def __init__(self, sourceCode=None, sourceKey=None, filename=None):
-        if type(sourceCode) == QgsFeature:
+        if isinstance(sourceCode, QgsFeature):
             self.fromFeature(sourceCode)
         else:
             self.setSource(sourceCode, sourceKey, filename)
 
     def __eq__(self, other):
-        return self.sourceCode == other.sourceCode and self.key == other.key and self.filename == other.filename
+        if isinstance(other, ItemSource):
+            return self.sourceCode == other.sourceCode and self.key == other.key and self.filename == other.filename
+        else:
+            return False
 
     def __hash__(self):
         return hash((self.sourceCode, self.key, self.filename))
 
     def __str__(self):
-        return 'ItemSource(' + str(self.sourceCode) + ', ' + str(self.key.siteCode) + ', ' +  str(self.key.classCode) + ', ' +  str(self.key.itemId) + ')'
+        return 'ItemSource(' + str(self.sourceCode) + ', ' + str(self.key) + ', ' +  str(self.filename) + ')'
+
+    def debug(self):
+        return 'ItemSource(' + utils.printable(self.sourceCode) + ', ' +  self.key.debug() + ', ' +  utils.printable(self.filename) + ')'
 
     def isValid(self):
         if self.sourceCode == '':
             return False
         if Config.sourceCodes[self.sourceCode]['sourceItem']:
             return self.key.isValid()
-        return self.key.isValid() or self.key.isNull()
+        return isinstance(sourceKey, ItemKey) and (self.key.isValid() or self.key.isNull())
 
     def isInvalid(self):
         return not self.isValid()
 
     def isNull(self):
-        return self.sourceCode == '' and self.key.isNull() and self.filename == ''
+        return self.sourceCode == '' and isinstance(sourceKey, ItemKey) and self.key.isNull() and self.filename == ''
 
     def sourceCodeLabel(self):
         return Config.sourceCodes[self.sourceCode]['label']
 
     def setSource(self, sourceCode, sourceKey, filename):
-        if sourceCode:
-            self.sourceCode = utils.string(sourceCode)
+        self.sourceCode = utils.string(sourceCode)
+        if isinstance(sourceKey, ItemKey):
             self.key = sourceKey
-            self.filename = utils.string(filename)
         else:
-            self.sourceCode = ''
             self.key = ItemKey()
-            self.filename = ''
+        self.filename = utils.string(filename)
 
     def setSourceCode(self, sourceCode):
         self.sourceCode = utils.string(sourceCode)
@@ -302,15 +306,18 @@ class ItemFeature():
     createdOn = ''
 
     def __init__(self, key=None, category=None, name=None, source=None, comment=None, createdBy=None, createdOn=None):
-        if type(key) == QgsFeature:
+        if isinstance(key, QgsFeature):
             self.fromFeature(key)
         else:
             self.setFeature(key, category, name, source, comment, createdBy, createdOn)
 
     def __eq__(self, other):
-        return (self.key == other.key and self.category == other.cateegory and self.name == other.name
-                and self.source == other.source and self.comment == other.comment
-                and self.createdBy == other.createdBy and self.createdOn == other.createdOn)
+        if isinstance(other, ItemFeature):
+            return (self.key == other.key and self.category == other.category and self.name == other.name
+                    and self.source == other.source and self.comment == other.comment
+                    and self.createdBy == other.createdBy and self.createdOn == other.createdOn)
+        else:
+            return False
 
     def __lt__(self, other):
         if self.key == other.key:
@@ -321,35 +328,36 @@ class ItemFeature():
         return hash((self.key, self.category, self.name, self.source, self.comment, self.createdBy, self.createdOn))
 
     def __str__(self):
-        return 'ItemFeature(' + str(self.key.siteCode) + ', ' +  str(self.key.classCode) + ', ' +  str(self.key.itemId) + ', ' + str(self.category) + ')'
+        return 'ItemFeature(' + str(self.key) + ', ' +  str(self.key.category) + ', ' +  str(self.key.name) + ', ' + str(self.source) + ', ' + str(self.comment) + ', ' + str(self.createdBy) + ', ' + str(self.createdOn) + ')'
+
+    def debug(self):
+        return 'ItemFeature(' + self.key.debug() + ', ' +  utils.printable(self.category) + ', ' +  utils.printable(self.name) + ', ' + self.source.debug() + ', ' +  utils.printable(self.comment) + ', ' +  utils.printable(self.createdBy) + ', ' +  utils.printable(self.createdOn) + ')'
 
     def isValid(self):
-        return self.key.isValid() and self.category and (self.source.isNull() or self.source.isValid())
+        return isinstance(self.key, ItemKey) and self.key.isValid() and self.category and isinstance(self.source, ItemSource) and (self.source.isNull() or self.source.isValid())
 
     def isInvalid(self):
-        return self.key.isInvalid()
+        return not self.isValid()
 
     def isNull(self):
-        return (self.key.isNull() and self.category == '' and self.name == '' and self.source.isNull()
+        return (isinstance(self.key, ItemKey) and self.key.isNull() and self.category == '' and self.name == ''
+                and isinstance(self.source, ItemSource) and self.source.isNull()
                 and self.comment == '' and self.createdBy == '' and self.createdOn == '' )
 
     def setFeature(self, key, category, name, source, comment, createdBy, createdOn):
-        if key and key.isValid() and category and (source.isNull() or source.isValid()):
+        if isinstance(key, ItemKey):
             self.key = key
-            self.category = utils.string(category)
-            self.name = utils.string(name)
-            self.source = source
-            self.comment = utils.string(comment)
-            self.createdBy = utils.string(createdBy)
-            self.createdOn = utils.string(createdOn)
         else:
             self.key = ItemKey()
-            self.category = ''
-            self.name = ''
+        self.category = utils.string(category)
+        self.name = utils.string(name)
+        if isinstance(source, ItemSource):
+            self.source = source
+        else:
             self.source = ItemSource()
-            self.comment = ''
-            self.createdBy = ''
-            self.createdOn = ''
+        self.comment = utils.string(comment)
+        self.createdBy = utils.string(createdBy)
+        self.createdOn = utils.string(createdOn)
 
     def setCategory(self, category):
         self.category = utils.string(category)

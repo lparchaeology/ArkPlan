@@ -28,7 +28,7 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog, QMenu
 
-from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel
+from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel, QgsLayerTreeNode
 from qgis.gui import QgsMessageBar, QgsLayerTreeView, QgsLayerTreeViewMenuProvider, QgsLayerTreeViewDefaultActions
 
 from ..libarkqgis.plugin import Plugin
@@ -59,14 +59,17 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
         QgsLayerTreeViewMenuProvider.__init__(self)
         self._iface = iface
         self._view = view
+        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._iface.mapCanvas())
+        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._iface.mapCanvas())
 
     def createContextMenu(self):
-        if not self._view.currentLayer():
+        if not self._view.currentNode():
             return None
         menu = QMenu()
-        action = self._view.defaultActions().actionZoomToLayer(self._iface.mapCanvas(), menu)
-        action.triggered.connect(self._view.defaultActions().zoomToLayer(self._iface.mapCanvas()))
-        menu.addAction(action)
+        if self._view.currentNode().nodeType() == QgsLayerTreeNode.NodeGroup:
+            menu.addAction(self._zoomGroup)
+        else:
+            menu.addAction(self._zoomLayer)
         return menu
 
 

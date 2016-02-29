@@ -239,7 +239,7 @@ class ItemSource():
             return False
         if Config.sourceCodes[self.sourceCode]['sourceItem']:
             return self.key.isValid()
-        return isinstance(sourceKey, ItemKey) and (self.key.isValid() or self.key.isNull())
+        return isinstance(self.key, ItemKey) and (self.key.isValid() or self.key.isNull())
 
     def isInvalid(self):
         return not self.isValid()

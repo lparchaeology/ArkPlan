@@ -55,12 +55,16 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
     _iface = None
     _view = None
 
-    def __init__(self, iface, view):
+    def __init__(self, project, view):
         QgsLayerTreeViewMenuProvider.__init__(self)
-        self._iface = iface
+        self._project = project
         self._view = view
-        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._iface.mapCanvas())
-        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._iface.mapCanvas())
+        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._project.mapCanvas())
+        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._project.mapCanvas())
+        self._remove = self._view.defaultActions().actionRemoveGroupOrLayer(self._project.mapCanvas())
+        self._rename = self._view.defaultActions().actionRenameGroupOrLayer(self._project.mapCanvas())
+        self._removeDrawings = QAction('Remove All Drawings', view)
+        self._removeDrawings.triggered.connect(self._project.clearDrawings)
 
     def createContextMenu(self):
         if not self._view.currentNode():
@@ -68,8 +72,21 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
         menu = QMenu()
         if self._view.currentNode().nodeType() == QgsLayerTreeNode.NodeGroup:
             menu.addAction(self._zoomGroup)
+            name = self._view.currentNode().name()
+            if not self._project.isArkGroup(name):
+                menu.addAction(self._rename)
+                menu.addAction(self._remove)
+            if name == self._project.drawingsGroupName:
+                menu.addAction(self._removeDrawings)
         else:
             menu.addAction(self._zoomLayer)
+            layerId = self._view.currentNode().layerId()
+            if not self._project.isArkLayer(layerId):
+                menu.addAction(self._rename)
+                menu.addAction(self._remove)
+            parent = self._view.currentNode().parent()
+            if parent.nodeType() == QgsLayerTreeNode.NodeGroup and parent.name() == self._project.drawingsGroupName:
+                menu.addAction(self._removeDrawings)
         return menu
 
 
@@ -87,7 +104,8 @@ class ArkSpatial(Plugin):
     filterModule = None  # Filter()
 
     projectGroupIndex = -1
-    planGroupIndex = -1
+    drawingsGroupIndex = -1
+    drawingsGroupName = ''
 
     geoLayer = None  #QgsRasterLayer()
     plan = None  # LayerCollection()
@@ -153,7 +171,7 @@ class ArkSpatial(Plugin):
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
         self.projectLayerModel.setAutoCollapseLegendNodes(-1)
         self.projectLayerView.setModel(self.projectLayerModel)
-        menuProvider = LayerTreeMenu(self.iface, self.projectLayerView)
+        menuProvider = LayerTreeMenu(self, self.projectLayerView)
         self.projectLayerView.setMenuProvider(menuProvider)
         self.projectLayerView.setCurrentLayer(self.iface.activeLayer())
         self.projectLayerView.doubleClicked.connect(self.iface.actionOpenTable().trigger)
@@ -201,6 +219,7 @@ class ArkSpatial(Plugin):
             self.grid = self._loadCollection('grid')
             self.plan = self._loadCollection('plan')
             self.base = self._loadCollection('base')
+            self.drawingsGroupName = Config.rasterGroups['cxt']['layersGroupName']
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -385,11 +404,51 @@ class ArkSpatial(Plugin):
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
         self.geoLayer.renderer().setOpacity(self.drawingTransparency()/100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
-        if (self.planGroupIndex < 0):
-            self.planGroupIndex = layers.createLayerGroup(self.iface, Config.rasterGroups['cxt']['layersGroupName'], Config.projectGroupName)
-        self.legendInterface().moveLayer(self.geoLayer, self.planGroupIndex)
+        if (self.drawingsGroupIndex < 0):
+            self.drawingsGroupIndex = layers.createLayerGroup(self.iface, self.drawingsGroupName, Config.projectGroupName)
+        self.legendInterface().moveLayer(self.geoLayer, self.drawingsGroupIndex)
         if zoomToLayer:
             self.mapCanvas().setExtent(self.geoLayer.extent())
+
+    def clearDrawings(self):
+        if (self.drawingsGroupIndex >= 0):
+            self.drawingsLayerTreeGroup().removeAllChildren()
+
+    def drawingsLayerTreeGroup(self):
+        if (self.drawingsGroupIndex >= 0):
+            return QgsProject.instance().layerTreeRoot().findGroup(self.drawingsGroupName)
+        else:
+            return None
+
+    def isArkGroup(self, name):
+        return (name == Config.projectGroupName
+                or name == self.plan.settings.collectionGroupName
+                or name == self.plan.settings.bufferGroupName
+                or name == self.grid.settings.collectionGroupName
+                or name == self.grid.settings.bufferGroupName
+                or name == self.base.settings.collectionGroupName
+                or name == self.base.settings.bufferGroupName
+                or name == self.drawingsGroupName)
+
+    def isArkLayer(self, layerId):
+        return (layerId == self.plan.pointsLayerId
+                or layerId == self.plan.linesLayerId
+                or layerId == self.plan.polygonsLayerId
+                or layerId == self.plan.pointsBufferId
+                or layerId == self.plan.linesBufferId
+                or layerId == self.plan.polygonsBufferId
+                or layerId == self.base.pointsLayerId
+                or layerId == self.base.linesLayerId
+                or layerId == self.base.polygonsLayerId
+                or layerId == self.base.pointsBufferId
+                or layerId == self.base.linesBufferId
+                or layerId == self.base.polygonsBufferId
+                or layerId == self.grid.pointsLayerId
+                or layerId == self.grid.linesLayerId
+                or layerId == self.grid.polygonsLayerId
+                or layerId == self.grid.pointsBufferId
+                or layerId == self.grid.linesBufferId
+                or layerId == self.grid.polygonsBufferId)
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
@@ -647,6 +706,7 @@ class ArkSpatial(Plugin):
             self.filterModule.filterItem(item)
             self.filterModule.showDock()
             if dialog.loadDrawings():
+                self.clearDrawings()
                 self.planModule.loadSourceDrawings(item)
             if dialog.zoomToItem():
                 self.filterModule.zoomFilter()

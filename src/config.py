@@ -330,6 +330,7 @@ class Config():
         ['plan', 'cxt', 'irn', 'Iron',                    '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'mtr', 'Mortar',                  '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'pot', 'Pot',                     '', FeatureType.Polygon, False, 'cxt'],
+        ['plan', 'cxt', 'ren', 'Render',                  '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'sto', 'Stone',                   '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'til', 'Tile',                    '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'tim', 'Timber',                  '', FeatureType.Polygon, False, 'cxt'],

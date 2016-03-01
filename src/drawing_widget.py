@@ -110,7 +110,7 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
                 self._sgRow += 1
                 self._sgCol = 0
             else:
-                self._cgCol += 1
+                self._sgCol += 1
         else:
             self.featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
             if self._fgCol == self._fgColMax:

@@ -341,5 +341,7 @@ class Config():
         ['plan', 'sec', 'sln', 'Section Line',            '', FeatureType.Line,    False, 'oth'],
         ['plan', 'rgf', 'spf', 'Special Find',            '', FeatureType.Point,   False, 'oth'],
         ['plan', 'smp', 'spl', 'Sample',                  '', FeatureType.Point,   False, 'oth'],
+        ['plan', 'cxt', 'cut', 'Cut in Section',          '', FeatureType.Line,    False, 'sec'],
+        ['plan', 'cxt', 'tip', 'Tipline in Section',      '', FeatureType.Line,    False, 'sec'],
         ['plan', 'cxt', 'scs', 'Context in Section',      '', FeatureType.Segment, False, 'sec'],
     ]

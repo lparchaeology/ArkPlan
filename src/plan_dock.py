@@ -195,7 +195,7 @@ class PlanDock(ToolDockWidget):
         return self.widget.drawingWidget.sectionKey()
 
     def setSection(self, itemKey):
-        self.widget.drawingWidget.setSection(itemList)
+        self.widget.drawingWidget.setSection(itemKey)
 
     def addDrawingTool(self, dockTab, action):
         self.widget.drawingWidget.addDrawingTool(dockTab, action)

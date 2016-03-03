@@ -643,7 +643,7 @@ class ArkSpatial(Plugin):
 
     def rasterGroupPath(self, group):
         if self.useCustomPath(group):
-            return self._rasterGroupEntry(group, path)
+            return self._rasterGroupEntry(group, 'pathSuffix')
         else:
             return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
 

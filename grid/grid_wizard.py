@@ -74,7 +74,7 @@ class GridWizard(QWizard, Ui_GridWizard):
     def localPoint1(self):
         if self.methodType() == GridWizard.TwoKnownPoints:
             return QgsPoint(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
-        return QgsPoint()
+        return QgsPoint(self.localOriginEastingSpin.value(), self.localOriginNorthingSpin.value())
 
     def localPoint2(self):
         if self.methodType() == GridWizard.TwoKnownPoints:

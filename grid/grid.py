@@ -31,7 +31,7 @@ from qgis.core import *
 from qgis.gui import QgsVertexMarker
 
 from ..libarkqgis.geometry import LinearTransformer
-from ..libarkqgis import utils
+from ..libarkqgis import utils, layers
 from ..libarkqgis.map_tools import ArkMapToolEmitPoint
 
 from translate_features_dialog import TranslateFeaturesDialog
@@ -272,7 +272,7 @@ class GridModule(QObject):
                                    localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
                                    self._attributes(points, siteCode, gridName), local_x, local_y, map_x, map_y)
 
-        if self.project.linesLayerName('grid'):
+        if self.project.grid.settings.linesLayerName:
             lines = self.project.grid.linesLayer
             if lines is None or not lines.isValid():
                 self.project.showCriticalMessage('Invalid grid lines file!')
@@ -282,7 +282,7 @@ class GridModule(QObject):
                                           localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
                                           self._attributes(lines, siteCode, gridName), local_x, local_y, map_x, map_y)
 
-        if self.project.polygonsLayerName('grid'):
+        if self.project.grid.settings.polygonsLayerName:
             polygons = self.project.grid.polygonsLayer
             if lines is None or not lines.isValid():
                 self.project.showCriticalMessage('Invalid grid polygons file!')
@@ -321,7 +321,7 @@ class GridModule(QObject):
                 feature.setAttribute(mapFieldX, mapPoint.x())
                 feature.setAttribute(mapFieldY, mapPoint.y())
                 features.append(feature)
-        layer.dataProvider().addFeatures(features)
+        layers.addFeatures(features, layer)
 
     def _addGridLinesToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
         if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Line):
@@ -351,7 +351,7 @@ class GridModule(QObject):
             feature.setAttribute(localFieldY, localY)
             feature.setAttribute(mapFieldY, mapStartPoint.y())
             features.append(feature)
-        layer.dataProvider().addFeatures(features)
+        layers.addFeatures(features, layer)
 
     def _addGridPolygonsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
         if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Polygon):
@@ -374,7 +374,7 @@ class GridModule(QObject):
                 feature.setAttribute(mapFieldX, mapPoint.x())
                 feature.setAttribute(mapFieldY, mapPoint.y())
                 features.append(feature)
-        layer.dataProvider().addFeatures(features)
+        layers.addFeatures(features, layer)
 
     def _triggerMapTool(self):
         if not self.initialised:

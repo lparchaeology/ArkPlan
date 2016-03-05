@@ -50,11 +50,11 @@ class GridWizard(QWizard, Ui_GridWizard):
         self._iface = iface
 
         self.setupUi(self)
-        self.gridFolderEdit.setText(project.groupPath('grid'))
-        self.gridGroupNameEdit.setText(project.layersGroupName('grid'))
-        self.gridPointsNameEdit.setText(project.pointsBaseName('grid'))
-        self.gridLinesNameEdit.setText(project.linesBaseName('grid'))
-        self.gridPolygonsNameEdit.setText(project.polygonsBaseName('grid'))
+        self.gridFolderEdit.setText(project.grid.settings.collectionPath)
+        self.gridGroupNameEdit.setText(project.grid.settings.collectionGroupName)
+        self.gridPointsNameEdit.setText(project.grid.settings.pointsLayerName)
+        self.gridLinesNameEdit.setText(project.grid.settings.linesLayerName)
+        self.gridPolygonsNameEdit.setText(project.grid.settings.polygonsLayerName)
         self.siteCodeEdit.setText(project.siteCode())
         self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)

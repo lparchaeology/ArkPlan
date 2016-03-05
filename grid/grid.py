@@ -253,6 +253,7 @@ class GridModule(QObject):
                            xInterval, yInterval):
             self.project.mapCanvas().refresh()
             self.loadGridNames()
+            self.setGrid(self.gridWizard.siteCode(), self.gridWizard.gridName())
             self._setReadOnly(False)
             self.project.showInfoMessage('Grid successfully created', 10)
 

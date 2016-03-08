@@ -50,6 +50,7 @@ class SearchStatus():
 class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     loadArkData = pyqtSignal()
+    openArkData = pyqtSignal()
     findContextSelected = pyqtSignal()
     firstContextSelected = pyqtSignal()
     lastContextSelected = pyqtSignal()
@@ -77,7 +78,8 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.setupUi(self)
 
     def initGui(self):
-        self.loadArkButton.clicked.connect(self.loadArkData)
+        self.loadArkTool.clicked.connect(self.loadArkData)
+        self.openArkTool.clicked.connect(self.openArkData)
         self.siteCodeCombo.currentIndexChanged.connect(self._contextChanged)
         self.contextSpin.valueChanged.connect(self._contextChanged)
         self._contextSpinFilter = ReturnPressedFilter(self)
@@ -107,7 +109,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     def loadProject(self, project):
         if project.useArkDB() and project.arkUrl():
-            self.loadArkButton.setEnabled(True)
+            self.loadArkTool.setEnabled(True)
         self._enableArkNav(False)
         self.siteCodeCombo.clear()
         for siteCode in sorted(set(project.siteCodes())):
@@ -156,6 +158,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self._contextArkDataStatus = foundArkData
         self._contextFeatureDataStatus = foundFeatureData
         self._contextSchematicStatus = foundSchematic
+        self.openArkTool.setEnabled(self._contextArkDataStatus == SearchStatus.Found)
         self._setStatusLabel(self.arkDataStatusLabel, foundArkData)
         self._setStatusLabel(self.featureDataStatusLabel, foundFeatureData)
         self._setStatusLabel(self.schematicStatusLabel, foundSchematic)

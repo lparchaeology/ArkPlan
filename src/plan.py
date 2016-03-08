@@ -23,10 +23,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-import bisect, copy
+import bisect, copy, webbrowser
 
 from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog, QApplication
 
 from qgis.core import *
 
@@ -104,6 +104,7 @@ class Plan(QObject):
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.dock.loadArkData.connect(self._loadArkData)
+        self.dock.openArkData.connect(self._openArkData)
         self.dock.findContextSelected.connect(self._findMoveContext)
         self.dock.firstContextSelected.connect(self._firstContext)
         self.dock.lastContextSelected.connect(self._lastContext)
@@ -771,6 +772,22 @@ class Plan(QObject):
         self.project.data.loadAllItems(self.project)
         if self.project.data.itemKeys['cxt'] and len(self.project.data.itemKeys['cxt']) > 0:
             self.dock.activateArkData()
+
+    def _openArkData(self):
+        self.openItemInArk(self.dock.contextItemKey())
+
+    def openItemInArk(self, itemKey):
+        if not self.project.useArkDB() and not self.project.arkUrl():
+            self.project.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
+            return
+        mod_cd = itemKey.classCode + '_cd'
+        item_cd = itemKey.siteCode + '_' + itemKey.itemId
+        url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
+        try:
+            webbrowser.get().open_new_tab(url)
+        except:
+            QApplication.clipboard().setText(url)
+            self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
     def _resetSchematic(self):
         self._clearSchematic()

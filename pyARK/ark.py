@@ -213,9 +213,14 @@ class Ark():
         return url
 
     def _arg(self, key, value):
+        ret = ''
         if (key is not None and value is not None):
-            return u'&' + unicode(key) + u'=' + unicode(value)
-        return ''
+            if isinstance(value, list):
+                for val in value:
+                    ret = ret + u'&' + unicode(key) + u'[]=' + unicode(val)
+            else:
+                ret = u'&' + unicode(key) + u'=' + unicode(value)
+        return ret
 
 
 class ArkContainer(object):

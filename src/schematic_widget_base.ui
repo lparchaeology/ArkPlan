@@ -304,7 +304,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/plugins/ark/filter/web.svg</normaloff>:/plugins/ark/filter/web.svg</iconset>
+              <normaloff>:/plugins/ark/data/openData.svg</normaloff>:/plugins/ark/data/openData.svg</iconset>
             </property>
            </widget>
           </item>
@@ -324,7 +324,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/filter/loadData.png</normaloff>:/plugins/ark/filter/loadData.png</iconset>
+            <normaloff>:/plugins/ark/data/loadData.svg</normaloff>:/plugins/ark/data/loadData.svg</iconset>
           </property>
          </widget>
         </item>
@@ -341,7 +341,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goFirstItem.svg</normaloff>:/plugins/ark/plan/goFirstItem.svg</iconset>
+            <normaloff>:/plugins/ark/data/goFirstItem.svg</normaloff>:/plugins/ark/data/goFirstItem.svg</iconset>
           </property>
          </widget>
         </item>
@@ -358,7 +358,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goPrevMissing.svg</normaloff>:/plugins/ark/plan/goPrevMissing.svg</iconset>
+            <normaloff>:/plugins/ark/data/goPrevMissing.svg</normaloff>:/plugins/ark/data/goPrevMissing.svg</iconset>
           </property>
          </widget>
         </item>
@@ -375,7 +375,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goPrevItem.svg</normaloff>:/plugins/ark/plan/goPrevItem.svg</iconset>
+            <normaloff>:/plugins/ark/data/goPrevItem.svg</normaloff>:/plugins/ark/data/goPrevItem.svg</iconset>
           </property>
          </widget>
         </item>
@@ -392,7 +392,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goNextItem.svg</normaloff>:/plugins/ark/plan/goNextItem.svg</iconset>
+            <normaloff>:/plugins/ark/data/goNextItem.svg</normaloff>:/plugins/ark/data/goNextItem.svg</iconset>
           </property>
          </widget>
         </item>
@@ -409,7 +409,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goNextMissing.svg</normaloff>:/plugins/ark/plan/goNextMissing.svg</iconset>
+            <normaloff>:/plugins/ark/data/goNextMissing.svg</normaloff>:/plugins/ark/data/goNextMissing.svg</iconset>
           </property>
          </widget>
         </item>
@@ -426,7 +426,7 @@
           </property>
           <property name="icon">
            <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/goLastItem.svg</normaloff>:/plugins/ark/plan/goLastItem.svg</iconset>
+            <normaloff>:/plugins/ark/data/goLastItem.svg</normaloff>:/plugins/ark/data/goLastItem.svg</iconset>
           </property>
          </widget>
         </item>
@@ -630,7 +630,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/plugins/ark/filter/web.svg</normaloff>:/plugins/ark/filter/web.svg</iconset>
+              <normaloff>:/plugins/ark/data/openData.svg</normaloff>:/plugins/ark/data/openData.svg</iconset>
             </property>
            </widget>
           </item>

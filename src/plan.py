@@ -770,7 +770,7 @@ class Plan(QObject):
     # SchematicDock methods
 
     def _loadArkData(self):
-        self.project.data.loadAllItems(self.project)
+        self.project.data.loadAllItems()
         if self.project.data.itemKeys['cxt'] and len(self.project.data.itemKeys['cxt']) > 0:
             self.dock.activateArkData()
 

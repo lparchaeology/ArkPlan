@@ -38,6 +38,7 @@ from ..libarkqgis.dock import ToolDockWidget
 
 from ..grid.grid import GridModule
 
+from data import Data
 from plan import Plan
 from filter import Filter
 from identify import MapToolIndentifyItems
@@ -99,6 +100,7 @@ class ArkSpatial(Plugin):
     identifyMapTool = None  # MapToolIndentifyItems()
 
     # Modules
+    data = None  # Data()
     gridModule = None  # Grid()
     planModule = None  # Plan()
     filterModule = None  # Filter()
@@ -111,8 +113,6 @@ class ArkSpatial(Plugin):
     plan = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
-
-    data = None  # DataManager()
 
     projectLayerView = None  # QgsLayerTreeView()
     layerDock = None  # ToolDockWidget()
@@ -188,6 +188,8 @@ class ArkSpatial(Plugin):
         self.showItemAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
 
         # Init the modules and add to the toolbar
+        self.data = Data(self)
+        self.data.initGui()
         self.layerDock.toolbar.addSeparator()
         self.gridModule = GridModule(self)
         self.gridModule.initGui()
@@ -195,7 +197,6 @@ class ArkSpatial(Plugin):
         self.filterModule.initGui()
         self.planModule = Plan(self)
         self.planModule.initGui()
-        self.data = DataManager()
 
         # Add Settings to the toolbar
         self.layerDock.toolbar.addSeparator()
@@ -221,15 +222,16 @@ class ArkSpatial(Plugin):
             self.base = self._loadCollection('base')
             self.drawingsGroupName = Config.rasterGroups['cxt']['layersGroupName']
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
+                self.data.loadProject()
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
-                self.data.loadProject(self)
                 self.filterModule.loadProject()
                 self._loaded = True
 
     # Write the project for saving
     def writeProject(self):
         if  self.isLoaded():
+            self.data.writeProject()
             self.gridModule.writeProject()
             self.planModule.writeProject()
             self.filterModule.writeProject()
@@ -240,6 +242,7 @@ class ArkSpatial(Plugin):
             self.iface.actionPan().trigger()
         if self.isLoaded():
             self.writeProject()
+            self.data.closeProject()
             self.gridModule.closeProject()
             self.planModule.closeProject()
             self.filterModule.closeProject()
@@ -267,6 +270,7 @@ class ArkSpatial(Plugin):
             self.planModule.unloadGui()
             self.filterModule.unloadGui()
             self.gridModule.unloadGui()
+            self.data.unloadGui()
 
             self._initialised = False
 
@@ -288,6 +292,7 @@ class ArkSpatial(Plugin):
             self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
         else:
             if self._initialised:
+                self.data.dock.setVisible(False)
                 self.planModule.dock.setVisible(False)
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)

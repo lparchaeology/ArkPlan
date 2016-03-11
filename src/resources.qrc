@@ -4,13 +4,18 @@
     <file alias="folder.png">../resources/folder.png</file>
     <file alias="settings.svg">../resources/settings.svg</file>
   </qresource>
-  <qresource prefix="/plugins/ark/plan">
+  <qresource prefix="/plugins/ark/data">
+    <file alias="data.svg">../resources/server-database.svg</file>
+    <file alias="loadData.svg">../resources/svn-update.svg</file>
+    <file alias="openData.svg">../resources/applications-internet.svg</file>
     <file alias="goFirstItem.svg">../resources/go-first-view.svg</file>
     <file alias="goPrevMissing.svg">../resources/go-first.svg</file>
     <file alias="goLastItem.svg">../resources/go-last-view.svg</file>
     <file alias="goNextMissing.svg">../resources/go-last.svg</file>
     <file alias="goNextItem.svg">../resources/go-next-view.svg</file>
     <file alias="goPrevItem.svg">../resources/go-previous-view.svg</file>
+  </qresource>
+  <qresource prefix="/plugins/ark/plan">
     <file alias="georef.png">../resources/mGeorefRun.png</file>
     <file alias="loadDrawings.svg">../resources/mIconRaster.svg</file>
     <file alias="autoSchematic.png">../resources/mActionCustomProjection.png</file>
@@ -30,15 +35,12 @@
     <file alias="statusFound.png">../resources/user-online.png</file>
   </qresource>
   <qresource prefix="/plugins/ark/filter">
-    <file alias="web.svg">../resources/applications-internet.svg</file>
     <file alias="filter.png">../resources/view-filter.png</file>
     <file alias="identify.png">../resources/edit-node.png</file>
     <file alias="showContext.png">../resources/semn.png</file>
     <file alias="buildFilter.svg">../resources/mIconExpressionEditorOpen.svg</file>
     <file alias="buildSelection.svg">../resources/mIconExpressionSelect.svg</file>
     <file alias="buildHighlight.svg">../resources/mIconExpressionHighlight.svg</file>
-    <file alias="loadData.png">../resources/mIconDbSchema.png</file>
-    <file alias="viewData.png">../resources/mActionOpenTable.png</file>
     <file alias="zoomToFilterSet.svg">../resources/mActionZoomToSelected.svg</file>
     <file alias="exportFilterSet.png">../resources/mActionCreateMemory.png</file>
     <file alias="refreshFilterSet.png">../resources/mActionRefresh.png</file>

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/plugins/ark">
+    <file alias="close.svg">../resources/window-close.svg</file>
     <file alias="icon.png">../icon.png</file>
     <file alias="folder.png">../resources/folder.png</file>
     <file alias="settings.svg">../resources/settings.svg</file>
@@ -17,6 +18,7 @@
     <file alias="editPoints.svg">../resources/mActionEditPoint.svg</file>
     <file alias="editLines.svg">../resources/mActionEditLine.svg</file>
     <file alias="editPolygons.svg">../resources/mActionEditPolygon.svg</file>
+    <file alias="section.svg">../resources/office-chart-area.svg</file>
     <file alias="selectPoints.svg">../resources/mActionSelectPoint.svg</file>
     <file alias="selectLines.svg">../resources/mActionSelectLine.svg</file>
     <file alias="selectPolygons.svg">../resources/mActionSelectPolygon.svg</file>

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SectionWindow</class>
+ <widget class="QMainWindow" name="SectionWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>910</width>
+    <height>762</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Section Window</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>910</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSection">
+    <property name="title">
+     <string>Section</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionEditMode"/>
+    <addaction name="actionClearEdits"/>
+    <addaction name="actionMergeEdits"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditPoints"/>
+    <addaction name="actionEditLines"/>
+    <addaction name="actionEditPolygons"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectPoints"/>
+    <addaction name="actionSelectLines"/>
+    <addaction name="actionSelectPolygons"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionPanMap"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoomIn"/>
+    <addaction name="actionZoomOut"/>
+    <addaction name="actionZoomFull"/>
+    <addaction name="actionZoomLast"/>
+    <addaction name="actionZoomNext"/>
+    <addaction name="separator"/>
+    <addaction name="actionRefreshMap"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowDrawings"/>
+   </widget>
+   <addaction name="menuSection"/>
+   <addaction name="menuView"/>
+   <addaction name="menuEdit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="mainToolbar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="separator"/>
+   <addaction name="actionPanMap"/>
+   <addaction name="separator"/>
+   <addaction name="actionZoomIn"/>
+   <addaction name="actionZoomOut"/>
+   <addaction name="actionZoomFull"/>
+   <addaction name="actionZoomLast"/>
+   <addaction name="actionZoomNext"/>
+   <addaction name="separator"/>
+   <addaction name="actionRefreshMap"/>
+   <addaction name="separator"/>
+   <addaction name="actionShowDrawings"/>
+   <addaction name="separator"/>
+   <addaction name="actionEditMode"/>
+   <addaction name="actionClearEdits"/>
+   <addaction name="actionMergeEdits"/>
+   <addaction name="actionEditPoints"/>
+   <addaction name="actionEditLines"/>
+   <addaction name="actionEditPolygons"/>
+   <addaction name="actionSelectPoints"/>
+   <addaction name="actionSelectLines"/>
+   <addaction name="actionSelectPolygons"/>
+  </widget>
+  <widget class="QDockWidget" name="editDock">
+   <property name="windowTitle">
+    <string>Edit Section</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>235</width>
+          <height>584</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="metadataWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>10</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="drawingToolsLayout"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="autoSchematiclLabel">
+             <property name="text">
+              <string>Auto Schematic:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="autoSchematicTool">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto Schematic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/plugins/ark/plan/autoSchematic.png</normaloff>:/plugins/ark/plan/autoSchematic.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>511</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="clearButton">
+         <property name="toolTip">
+          <string>Clear unsaved changes from work layers</string>
+         </property>
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mergeButton">
+         <property name="toolTip">
+          <string>Move new context to main layers</string>
+         </property>
+         <property name="text">
+          <string>Merge</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/close.svg</normaloff>:/plugins/ark/close.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionClearEdits">
+   <property name="text">
+    <string>Clear Edits</string>
+   </property>
+  </action>
+  <action name="actionMergeEdits">
+   <property name="text">
+    <string>Merge Edits</string>
+   </property>
+  </action>
+  <action name="actionPanMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Pan Map</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoomOut">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionZoomFull">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Full</string>
+   </property>
+  </action>
+  <action name="actionZoomLast">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Last</string>
+   </property>
+  </action>
+  <action name="actionZoomNext">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Next</string>
+   </property>
+  </action>
+  <action name="actionRefreshMap">
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/section.svg</normaloff>:/plugins/ark/plan/section.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionEditMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Edit Mode</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit Section</string>
+   </property>
+  </action>
+  <action name="actionEditPoints">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/editPoints.svg</normaloff>:/plugins/ark/plan/editPoints.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Points</string>
+   </property>
+  </action>
+  <action name="actionEditLines">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/editLines.svg</normaloff>:/plugins/ark/plan/editLines.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Lines</string>
+   </property>
+  </action>
+  <action name="actionEditPolygons">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/editPolygons.svg</normaloff>:/plugins/ark/plan/editPolygons.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Polygons</string>
+   </property>
+  </action>
+  <action name="actionSelectPoints">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/selectPoints.svg</normaloff>:/plugins/ark/plan/selectPoints.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select Points</string>
+   </property>
+  </action>
+  <action name="actionSelectLines">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/selectLines.svg</normaloff>:/plugins/ark/plan/selectLines.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select Lines</string>
+   </property>
+  </action>
+  <action name="actionSelectPolygons">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/selectPolygons.svg</normaloff>:/plugins/ark/plan/selectPolygons.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select Polygons</string>
+   </property>
+  </action>
+  <action name="actionShowDrawings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/plugins/ark/plan/loadDrawings.svg</normaloff>:/plugins/ark/plan/loadDrawings.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Show Drawings</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

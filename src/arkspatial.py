@@ -46,6 +46,7 @@ from config import Config
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 from select_item_dialog import SelectItemDialog
+from section_window import SectionWindow
 from data_model import *
 
 import resources
@@ -197,6 +198,9 @@ class ArkSpatial(Plugin):
         self.planModule.initGui()
         self.data = DataManager()
 
+        # Temp add Section Window to the toolbar
+        self.addDockAction(':/plugins/ark/plan/section.svg', self.tr(u'Section'), self._triggerSectionWindow)
+
         # Add Settings to the toolbar
         self.layerDock.toolbar.addSeparator()
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
@@ -308,6 +312,7 @@ class ArkSpatial(Plugin):
             self.setArkUrl(wizard.arkUrl())
 
             self._configureVectorGroup('plan')
+            self._configureVectorGroup('section')
             self._configureVectorGroup('grid')
             self._configureVectorGroup('base')
 
@@ -390,6 +395,11 @@ class ArkSpatial(Plugin):
         else:
             self.configure()
 
+    def _triggerSectionWindow(self):
+        sectionWindow = SectionWindow(self, self.iface.mainWindow())
+        sectionWindow.show()
+        sectionWindow.setFocus()
+
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self.projectGroupIndex):
             self.projectGroupIndex = newIndex
@@ -467,7 +477,7 @@ class ArkSpatial(Plugin):
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self.pluginPath() + '/styles/' + baseName + '.qml'
+        filePath = self.pluginPath + '/styles/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!
@@ -479,24 +489,24 @@ class ArkSpatial(Plugin):
 
     def _createCollectionLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint,
+            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint25D,
                                    self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString,
+            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString25D,
                                    self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon,
+            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon25D,
                                    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint,
+            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint25D,
                                    self.projectCrs(), self._layerFields(collection, 'pointsFields'))
         if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString,
+            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString25D,
                                    self.projectCrs(), self._layerFields(collection, 'linesFields'))
         if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon,
+            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon25D,
                                    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):

@@ -43,11 +43,14 @@
     <edittype widgetv2type="TextEdit" name="mod_on">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="mod_by">
+      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+    </edittype>
   </edittypes>
   <renderer-v2 attr="category" forceraster="0" symbollevels="0" type="categorizedSymbol">
     <categories>
       <category render="true" symbol="0" value="lvl" label="Level"/>
-      <category render="true" symbol="1" value="llv" label="Lowest Level"/>
+      <category render="true" symbol="1" value="lvu" label="Underside Level"/>
       <category render="true" symbol="2" value="spf" label="Special Find"/>
       <category render="true" symbol="3" value="sec" label="Section Pin"/>
       <category render="true" symbol="4" value="" label="UNKNOWN"/>
@@ -405,6 +408,7 @@
   <SingleCategoryDiagramRenderer diagramType="Pie">
     <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
       <fontProperties description=".Helvetica Neue DeskInterface,13,-1,5,50,0,0,0,0,0" style=""/>
+      <attribute field="" color="#000000" label=""/>
     </DiagramCategory>
   </SingleCategoryDiagramRenderer>
   <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" showAll="1"/>

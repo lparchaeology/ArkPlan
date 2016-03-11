@@ -135,7 +135,7 @@ class Plan(QObject):
         self.dock.initSections(self._sectionItemList(self.project.siteCode()))
         for category in Config.featureCategories:
             #TODO Select by map tool type enum
-            if category[2] == 'lvl' or category[2] == 'llv':
+            if category[2] == 'lvl' or category[2] == 'lvu':
                 self.addLevelTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[7])
             elif category[2] == 'scs':
                 self.addSectionSchematicTool(category[0], category[1], category[2], category[3], QIcon(category[4]), category[5], category[7])

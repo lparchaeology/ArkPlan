@@ -336,7 +336,7 @@ class Config():
         ['plan', 'cxt', 'tim', 'Timber',                  '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'wst', 'Wood Stain',              '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'cxt', 'lvl', 'Level',                   '', FeatureType.Point,   False, 'cxt'],
-        ['plan', 'cxt', 'llv', 'Lowest Level',            '', FeatureType.Point,   False, 'cxt'],
+        ['plan', 'cxt', 'lvu', 'Underside Level',         '', FeatureType.Point,   False, 'cxt'],
         ['plan', 'cxt', 'sch', 'Schema',                  '', FeatureType.Polygon, False, 'cxt'],
         ['plan', 'sec', 'sec', 'Section Pin',             '', FeatureType.Point,   False, 'oth'],
         ['plan', 'sec', 'sln', 'Section Line',            '', FeatureType.Line,    False, 'oth'],

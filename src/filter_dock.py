@@ -144,6 +144,7 @@ class FilterDock(ToolDockWidget):
         self.newFilterClauseWidget.setSiteCode(self.siteCode())
         self._addFilterClause(self.newFilterClauseWidget)
         self._createNewFilterClauseWidget()
+        self.newFilterClauseWidget.filterRangeCombo.setFocus()
 
     def _addFilterClause(self, filterClauseWidget):
         idx = self._filterIndex

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>296</width>
-    <height>688</height>
+    <width>284</width>
+    <height>761</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,150 +33,10 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="checkGroup">
      <property name="title">
-      <string>Check Schematic</string>
+      <string>Check Context</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="2">
-         <widget class="QComboBox" name="siteCodeCombo"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="contextLabel">
-          <property name="text">
-           <string>Context:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="siteCodeLabel">
-          <property name="text">
-           <string>Site Code:</string>
-          </property>
-          <property name="buddy">
-           <cstring>siteCodeCombo</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QSpinBox" name="contextSpin">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="maximum">
-             <number>99999</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="findContextTool">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="resources.qrc">
-              <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
       <item row="4" column="0">
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="2" column="0">
-         <widget class="QLabel" name="resetLabel">
-          <property name="text">
-           <string>Reset Check:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="editContexLabel">
-          <property name="text">
-           <string>Edit Context:</string>
-          </property>
-          <property name="buddy">
-           <cstring>editContextButton</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="deleteSectionLabel">
-          <property name="text">
-           <string>Delete Section Schematic:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="deleteSectionButton">
-          <property name="text">
-           <string>Del</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="1">
-         <spacer name="editContextSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="editContextButton">
-          <property name="text">
-           <string>Edit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <spacer name="resetSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="resetButton">
-          <property name="text">
-           <string>Reset</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="0">
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="2" column="1">
          <spacer name="schematicSpacer">
@@ -268,15 +128,56 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="arkDataLabel">
+       </layout>
+      </item>
+      <item row="5" column="0">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="2" column="0">
+         <widget class="QLabel" name="resetLabel">
           <property name="text">
-           <string>Has ARK Record:</string>
+           <string>Reset Check:</string>
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="editContexLabel">
+          <property name="text">
+           <string>Edit Context:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editContextButton</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="deleteSectionLabel">
+          <property name="text">
+           <string>Delete Section Schematic:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="deleteSectionButton">
+          <property name="text">
+           <string>Del</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="0" column="1">
-         <spacer name="arkDataSpacer">
+         <spacer name="editContextSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -289,18 +190,129 @@
          </spacer>
         </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="arkDataStatusLabel">
+         <widget class="QPushButton" name="editContextButton">
           <property name="text">
-           <string/>
+           <string>Edit</string>
           </property>
-          <property name="pixmap">
-           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <spacer name="resetSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="resetButton">
+          <property name="text">
+           <string>Reset</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
       <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QSpinBox" name="contextSpin">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="findContextTool">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="siteCodeLabel">
+          <property name="text">
+           <string>Site Code:</string>
+          </property>
+          <property name="buddy">
+           <cstring>siteCodeCombo</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="siteCodeCombo"/>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <widget class="QLineEdit" name="contextDescriptionEdit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QLabel" name="arkDataLabel">
+          <property name="text">
+           <string>Type:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QLabel" name="contextLabel">
+          <property name="text">
+           <string>Context:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLineEdit" name="contextTypeEdit">
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="openContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/filter/web.svg</normaloff>:/plugins/ark/filter/web.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QToolButton" name="loadArkTool">
@@ -313,20 +325,6 @@
           <property name="icon">
            <iconset resource="resources.qrc">
             <normaloff>:/plugins/ark/filter/loadData.png</normaloff>:/plugins/ark/filter/loadData.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="openArkTool">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/filter/web.svg</normaloff>:/plugins/ark/filter/web.svg</iconset>
           </property>
          </widget>
         </item>
@@ -440,50 +438,12 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="cloneGroup">
      <property name="title">
-      <string>Clone Schematic</string>
+      <string>Source Schematic</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="sourceContextLabel">
-          <property name="text">
-           <string>Source Context:</string>
-          </property>
-          <property name="buddy">
-           <cstring>sourceContextSpin</cstring>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="sourceContextSpin">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Source Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="findSourceTool">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="resources.qrc">
-            <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item row="1" column="0">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="2" column="1">
+        <item row="1" column="1">
          <spacer name="sourceSchematicSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -496,7 +456,7 @@
           </property>
          </spacer>
         </item>
-        <item row="2" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="sourceSchematicLabel">
           <property name="text">
            <string>Has Schematic:</string>
@@ -504,16 +464,6 @@
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QLabel" name="sourceFeatureDataStatusLabel">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="resources.qrc">:/plugins/ark/plan/statusUnknown.png</pixmap>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
          <widget class="QLabel" name="sourceSchematicStatusLabel">
           <property name="text">
            <string/>
@@ -523,14 +473,14 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="0" column="0">
          <widget class="QLabel" name="sourceFeatureDataLabel">
           <property name="text">
            <string>Has Features:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="0" column="1">
          <spacer name="sourceFeatureDataSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -543,28 +493,8 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="sourceArkDataLabel">
-          <property name="text">
-           <string>Has ARK Record:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <spacer name="sourceArkDataSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="sourceArkDataStatusLabel">
+         <widget class="QLabel" name="sourceFeatureDataStatusLabel">
           <property name="text">
            <string/>
           </property>
@@ -669,13 +599,96 @@
         </item>
        </layout>
       </item>
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="1" column="0">
+         <widget class="QLabel" name="sourceContextTypeLabel">
+          <property name="text">
+           <string>Type:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLineEdit" name="sourceContextTypeEdit">
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="openSourceContextTool">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/filter/web.svg</normaloff>:/plugins/ark/filter/web.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QLineEdit" name="sourceContextDescriptionEdit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="sourceContextLabel">
+          <property name="text">
+           <string>Context:</string>
+          </property>
+          <property name="buddy">
+           <cstring>sourceContextSpin</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QSpinBox" name="sourceContextSpin">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Source Context to find&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="findSourceTool">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pan to Context&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/ark/plan/search.svg</normaloff>:/plugins/ark/plan/search.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>sourceContextSpin</tabstop>
   <tabstop>cloneSourceButton</tabstop>
   <tabstop>copySourceButton</tabstop>
   <tabstop>editSourceButton</tabstop>

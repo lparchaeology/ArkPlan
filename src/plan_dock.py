@@ -65,7 +65,8 @@ class PlanDock(ToolDockWidget):
 
     # Schematic Signals
     loadArkData = pyqtSignal()
-    openArkData = pyqtSignal()
+    openContextData = pyqtSignal()
+    openSourceContextData = pyqtSignal()
     findContextSelected = pyqtSignal()
     firstContextSelected = pyqtSignal()
     lastContextSelected = pyqtSignal()
@@ -140,7 +141,8 @@ class PlanDock(ToolDockWidget):
         self.widget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.loadArkData.connect(self.loadArkData)
-        self.widget.schematicWidget.openArkData.connect(self.openArkData)
+        self.widget.schematicWidget.openContextData.connect(self.openContextData)
+        self.widget.schematicWidget.openSourceContextData.connect(self.openSourceContextData)
         self.widget.schematicWidget.findContextSelected.connect(self.findContextSelected)
         self.widget.schematicWidget.firstContextSelected.connect(self.firstContextSelected)
         self.widget.schematicWidget.lastContextSelected.connect(self.lastContextSelected)
@@ -220,8 +222,8 @@ class PlanDock(ToolDockWidget):
     def resetContext(self):
         self.widget.schematicWidget.resetContext()
 
-    def setContext(self, context, foundArkData, foundFeatureData, foundSchematic, foundSectionSchematic):
-        self.widget.schematicWidget.setContext(context, foundArkData, foundFeatureData, foundSchematic, foundSectionSchematic)
+    def setContext(self, context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic):
+        self.widget.schematicWidget.setContext(context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic)
 
     def contextStatus(self):
         return self.widget.schematicWidget.contextStatus()
@@ -235,8 +237,8 @@ class PlanDock(ToolDockWidget):
     def resetSourceContext(self):
         self.widget.schematicWidget.resetSourceContext()
 
-    def setSourceContext(self, context, foundArk, foundFeature, foundSchematic):
-        self.widget.schematicWidget.setSourceContext(context, foundArk, foundFeature, foundSchematic)
+    def setSourceContext(self, context, foundArk, contextType, contextDescription, foundFeature, foundSchematic):
+        self.widget.schematicWidget.setSourceContext(context, foundArk, contextType, contextDescription, foundFeature, foundSchematic)
 
     def sourceStatus(self):
         return self.widget.schematicWidget.sourceStatus()

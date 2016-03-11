@@ -104,7 +104,8 @@ class Plan(QObject):
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.dock.loadArkData.connect(self._loadArkData)
-        self.dock.openArkData.connect(self._openArkData)
+        self.dock.openContextData.connect(self._openContextData)
+        self.dock.openSourceContextData.connect(self._openSourceContextData)
         self.dock.findContextSelected.connect(self._findMoveContext)
         self.dock.firstContextSelected.connect(self._firstContext)
         self.dock.lastContextSelected.connect(self._lastContext)
@@ -773,8 +774,11 @@ class Plan(QObject):
         if self.project.data.itemKeys['cxt'] and len(self.project.data.itemKeys['cxt']) > 0:
             self.dock.activateArkData()
 
-    def _openArkData(self):
+    def _openContextData(self):
         self.openItemInArk(self.dock.contextItemKey())
+
+    def _openSourceContextData(self):
+        self.openItemInArk(self.dock.sourceItemKey())
 
     def openItemInArk(self, itemKey):
         if not self.project.useArkDB() and not self.project.arkUrl():
@@ -883,12 +887,21 @@ class Plan(QObject):
             self._findContext(itemKey)
 
     def _arkStatus(self, item):
+        haveArk = SearchStatus.NotFound
+        contextType = ''
+        contextDescription = ''
         try:
-            if item in self.project.data.itemKeys[item.classCode]:
-                return SearchStatus.Found
+            if item in self.project.data.itemKeys['cxt']:
+                haveArk = SearchStatus.Found
+                vals = self.project.data.getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
+                contextType = vals[u'conf_field_cxttype']
+                contextDescription = vals[u'conf_field_short_desc'][0][u'current']
+            else:
+                contextType = 'None'
+                contextDescription = 'Context not in ARK'
         except:
-            return SearchStatus.Unknown
-        return SearchStatus.NotFound
+            haveArk = SearchStatus.Unknown
+        return haveArk, contextType, contextDescription
 
     def _featureStatus(self, item, copyMetadata=False):
         itemRequest = item.featureRequest()
@@ -916,14 +929,7 @@ class Plan(QObject):
 
         self.project.filterModule.applySchematicFilter(context)
 
-        haveArk = SearchStatus.NotFound
-        try:
-            if context in self.project.data.itemKeys['cxt']:
-                haveArk = SearchStatus.Found
-        except:
-            haveArk = SearchStatus.Unknown
-
-        haveArk = self._arkStatus(context)
+        haveArk, contextType, contextDescription = self._arkStatus(context)
         haveFeature = self._featureStatus(context, True)
 
         if haveFeature == SearchStatus.NotFound:
@@ -943,7 +949,7 @@ class Plan(QObject):
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 
-        self.dock.setContext(context, haveArk, haveFeature, haveSchematic, haveSectionSchematic)
+        self.dock.setContext(context, haveArk, contextType, contextDescription, haveFeature, haveSchematic, haveSectionSchematic)
         self.metadata.setItemId(context.itemId)
 
     def _findPanSource(self):
@@ -962,11 +968,11 @@ class Plan(QObject):
 
         self.project.filterModule.applySchematicFilter(source)
 
-        haveArk = self._arkStatus(source)
+        haveArk, contextType, contextDescription = self._arkStatus(source)
         haveFeature = self._featureStatus(source)
         haveSchematic = self._schematicStatus(source)
 
-        self.dock.setSourceContext(source, haveArk, haveFeature, haveSchematic)
+        self.dock.setSourceContext(source, haveArk, contextType, contextDescription, haveFeature, haveSchematic)
 
     def _attribute(self, feature, fieldName):
         val = feature.attribute(self.project.fieldName(fieldName))

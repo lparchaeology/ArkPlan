@@ -33,6 +33,7 @@ from PyQt4.QtGui import QSortFilterProxyModel
 
 from qgis.core import NULL, QgsCredentials
 
+from ..libarkqgis import utils
 from ..libarkqgis.models import TableModel, ParentChildModel
 
 from ..pyARK.ark import Ark
@@ -134,7 +135,6 @@ class DataManager(QObject):
         for classCode in project.plan.uniqueValues(project.fieldName('class')):
             if classCode is not None and classCode != NULL:
                 self.loadClassItems(project, classCode)
-        self._ark = None
 
     def loadClassItems(self, project, classCode):
         if not project.arkUrl():
@@ -183,3 +183,14 @@ class DataManager(QObject):
 
     def getParent(self, itemKey):
         return self._linkModel.getParent(itemKey)
+
+    def getItemFields(self, itemKey, fields):
+        if self._ark is None or itemKey is None or itemKey.isInvalid():
+            utils.logMessage('none')
+            return {}
+        response = self._ark.getFields(itemKey.classCode + '_cd', itemKey.itemValue(), fields)
+        if response.error:
+            utils.logMessage(response.url)
+            utils.logMessage(response.message)
+            utils.logMessage(response.raw)
+        return response.data

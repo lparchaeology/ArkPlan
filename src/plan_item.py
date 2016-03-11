@@ -120,6 +120,9 @@ class ItemKey():
     def name(self):
         return self.classCode + '_' + self.siteCode + '_' + self.itemId
 
+    def itemValue(self):
+        return self.siteCode + '_' + self.itemId
+
     def setKey(self, siteCode, classCode, itemId):
         if siteCode and classCode and itemId:
             self.setSiteCode(siteCode)

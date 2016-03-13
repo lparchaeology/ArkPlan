@@ -47,7 +47,6 @@ from config import Config
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 from select_item_dialog import SelectItemDialog
-from data_model import *
 
 import resources
 
@@ -706,12 +705,4 @@ class ArkSpatial(Plugin):
         classCodes = sorted(set(self.plan.uniqueValues(self.fieldName('class'))))
         dialog = SelectItemDialog(self.siteCodes(), self.siteCode(), classCodes, self.iface.mainWindow())
         if dialog.exec_():
-            item = dialog.item()
-            self.showMessage('Loading ' + item.itemLabel())
-            self.filterModule.filterItem(item)
-            self.filterModule.showDock()
-            if dialog.loadDrawings():
-                self.clearDrawings()
-                self.planModule.loadSourceDrawings(item)
-            if dialog.zoomToItem():
-                self.filterModule.zoomFilter()
+            self.planModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())

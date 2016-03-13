@@ -24,10 +24,10 @@
  ***************************************************************************/
 """
 
-import csv, json, urllib2
+import csv, json, urllib2, bisect, webbrowser
 
 from PyQt4.QtCore import Qt, QObject, QSettings, QFile, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QSortFilterProxyModel
+from PyQt4.QtGui import QApplication, QAction, QIcon, QSortFilterProxyModel
 
 from qgis.core import NULL, QgsCredentials
 
@@ -85,6 +85,8 @@ class Data(QObject):
     _linkModel = None  # ParentChildModel()
 
     _ark = None
+    _highlightFilter = -1
+    _prevItem = ItemKey()
 
     itemKeys = {} # {classCode: [ItemKey]
 
@@ -100,14 +102,19 @@ class Data(QObject):
         action = self.project.addDockAction(':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
 
+        self.dock.itemChanged.connect(self._itemChanged)
+
         self.dock.loadDataSelected.connect(self._loadDataSelected)
         self.dock.firstItemSelected.connect(self._firstItemSelected)
         self.dock.prevItemSelected.connect(self._prevItemSelected)
         self.dock.openItemData.connect(self._openItemData)
         self.dock.nextItemSelected.connect(self._nextItemSelected)
         self.dock.lastItemSelected.connect(self._lastItemSelected)
+
+        self.dock.showItemSelected.connect(self._showItemSelected)
         self.dock.zoomItemSelected.connect(self._zoomItemSelected)
         self.dock.filterItemSelected.connect(self._filterItemSelected)
+        self.dock.editItemSelected.connect(self._editItemSelected)
         self.dock.loadDrawingsSelected.connect(self._loadDrawingsSelected)
 
     # Load the project settings when project is loaded
@@ -179,6 +186,7 @@ class Data(QObject):
             dialog = CredentialsDialog()
             if dialog.exec_():
                 self._ark = Ark(self.project.arkUrl(), dialog.username(), dialog.password())
+                self.dock.setItemNavEnabled(True)
 
     def loadAllItems(self):
         if not self.project.arkUrl():
@@ -209,6 +217,58 @@ class Data(QObject):
                 keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
             self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
+
+    def haveItem(self, itemKey):
+        try:
+            return itemKey in self.project.data.itemKeys[itemKey.classCode]
+        except:
+            return False
+
+    def firstItem(self, classCode):
+        try:
+            return self.itemKeys[classCode][0]
+        except:
+            return ItemKey()
+
+    def lastItem(self, classCode):
+        try:
+            return self.itemKeys[classCode][-1]
+        except:
+            return ItemKey()
+
+    def prevItem(self, itemKey):
+        idx = -1
+        try:
+            if itemKey.isValid():
+                idx = bisect.bisect_left(self.itemKeys[itemKey.classCode], itemKey) - 1
+            if idx >= 0 and idx < len(self.itemKeys[itemKey.classCode]) - 1:
+                return self.itemKeys[itemKey.classCode][idx]
+        except:
+            pass
+        return ItemKey()
+
+    def nextItem(self, itemKey):
+        idx = -1
+        if itemKey.isValid():
+            idx = bisect.bisect(self.itemKeys[itemKey.classCode], itemKey)
+        if idx >= 0 and idx < len(self.itemKeys[itemKey.classCode]) - 1:
+            return self.itemKeys[itemKey.classCode][idx]
+        return ItemKey()
+
+    def openItem(self, itemKey):
+        if not self.project.useArkDB() or not self.project.arkUrl():
+            self.project.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
+        elif not self.haveItem(itemKey):
+            self.project.showWarningMessage('Item not in ARK.')
+        else:
+            mod_cd = itemKey.classCode + '_cd'
+            item_cd = itemKey.siteCode + '_' + itemKey.itemId
+            url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
+            try:
+                webbrowser.get().open_new_tab(url)
+            except:
+                QApplication.clipboard().setText(url)
+                self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
     def _addLinks(self, table):
         for record in table:
@@ -248,28 +308,70 @@ class Data(QObject):
         return response.data
 
     def _loadDataSelected(self):
-        pass
+        self.loadAllItems()
+
+    def _itemChanged(self):
+        item = self.dock.item()
+        if self._prevItem == item:
+            return
+        self._prevItem = item
+        self.project.filterModule.removeFilterClause(self._highlightFilter)
+        self._highlightFilter = -1
+        if item.isInvalid():
+            self.dock.setItemData('Invalid', 'Not a valid item')
+        elif self.haveItem(item):
+            vals = self.project.data.getItemFields(item, [u'conf_field_cxttype', u'conf_field_short_desc', u'conf_field_interp', u'conf_field_cxtbasicinterp', u'conf_field_process'])
+            self.dock.setItemData(self._value(vals[u'conf_field_cxttype']), self._value(vals[u'conf_field_short_desc']), self._value(vals[u'conf_field_interp']))
+            #self._highlightFilter = self.project.planModule.moveToItem(item, True)
+        else:
+            self.dock.setItemData('None', 'Item not in ARK')
+        self._showItemSelected()
+
+    def _value(self, value):
+        if value == False:
+            return ''
+        if isinstance(value, list):
+            return self._value(value[-1])
+        if isinstance(value, dict):
+            try:
+                return value[u'current']
+            except:
+                return ''
+        return value
 
     def _firstItemSelected(self):
-        pass
+        self.dock.setItem(self.firstItem(self.dock.classCode()))
+        self._itemChanged()
 
     def _prevItemSelected(self):
-        pass
+        self.dock.setItem(self.prevItem(self.dock.item()))
+        self._itemChanged()
 
     def _openItemData(self):
-        pass
+        self.project.planModule.openItemInArk(self.dock.item())
 
     def _nextItemSelected(self):
-        pass
+        self.dock.setItem(self.nextItem(self.dock.item()))
+        self._itemChanged()
 
     def _lastItemSelected(self):
-        pass
+        self.dock.setItem(self.lastItem(self.dock.classCode()))
+        self._itemChanged()
+
+    def _showItemSelected(self):
+        self.project.planModule.showItem(self.dock.item())
 
     def _zoomItemSelected(self):
-        pass
+        self.project.planModule.zoomToItem(self.dock.item())
 
     def _filterItemSelected(self):
-        pass
+        item = self.dock.item()
+        if item.isValid():
+            self._highlightFilter = -1
+            self.project.planModule.filterItem(self.dock.item())
+
+    def _editItemSelected(self):
+        self.project.planModule.editInBuffers(self.dock.item())
 
     def _loadDrawingsSelected(self):
-        pass
+        self.project.planModule.loadSourceDrawings(self.dock.item())

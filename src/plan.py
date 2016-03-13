@@ -23,7 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-import bisect, copy, webbrowser
+import bisect, copy
 
 from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog, QApplication
@@ -235,6 +235,8 @@ class Plan(QObject):
             self.project.loadGeoLayer(drawing, zoomToDrawing)
 
     def loadSourceDrawings(self, itemKey):
+        if itemKey.isInvalid():
+            return
         sourceKeys = set()
         sourceKeys.add(itemKey)
         itemRequest = itemKey.featureRequest()
@@ -601,6 +603,16 @@ class Plan(QObject):
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
 
+    def showItem(self, itemKey, loadDrawings=True, zoom=True):
+        self.project.showMessage('Loading ' + itemKey.itemLabel())
+        self.project.filterModule.filterItem(itemKey)
+        self.project.filterModule.showDock()
+        if loadDrawings:
+            self.project.clearDrawings()
+            self.loadSourceDrawings(itemKey)
+        if zoom:
+            self.project.filterModule.zoomFilter()
+
     def panToItem(self, itemKey, highlight=False):
         extent = self.itemExtent(itemKey)
         if extent == None or extent.isNull() or extent.isEmpty():
@@ -631,9 +643,11 @@ class Plan(QObject):
             self.project.mapCanvas().setExtent(extent)
         else:
             self.project.mapCanvas().setCenter(extent.center())
+        ret = -1
         if highlight:
-            self.project.filterModule.highlightItem(itemKey)
+            ret = self.project.filterModule.highlightItem(itemKey)
         self.project.mapCanvas().refresh()
+        return ret
 
     def filterItem(self, itemKey):
         self.project.filterModule.filterItem(itemKey)
@@ -781,17 +795,7 @@ class Plan(QObject):
         self.openItemInArk(self.dock.sourceItemKey())
 
     def openItemInArk(self, itemKey):
-        if not self.project.useArkDB() and not self.project.arkUrl():
-            self.project.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
-            return
-        mod_cd = itemKey.classCode + '_cd'
-        item_cd = itemKey.siteCode + '_' + itemKey.itemId
-        url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
-        try:
-            webbrowser.get().open_new_tab(url)
-        except:
-            QApplication.clipboard().setText(url)
-            self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
+        self.project.data.openItem(itemKey)
 
     def _resetSchematic(self):
         self._clearSchematic()
@@ -814,26 +818,16 @@ class Plan(QObject):
             self.moveToItem(self.dock.contextItemKey())
 
     def _firstContext(self):
-        self._findMoveContext(self.project.data.itemKeys['cxt'][0])
+        self._findMoveContext(self.project.data.firstItem('cxt'))
 
     def _lastContext(self):
-        self._findMoveContext(self.project.data.itemKeys['cxt'][-1])
+        self._findMoveContext(self.project.data.lastItem('cxt'))
 
     def _prevContext(self):
-        context = self.dock.contextItemKey()
-        idx = 0
-        if context.isValid():
-            idx = bisect.bisect_left(self.project.data.itemKeys['cxt'], context) - 1
-        if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
-            self._findMoveContext(self.project.data.itemKeys['cxt'][idx])
+        self._findMoveContext(self.project.data.prevItem(self.dock.contextItemKey()))
 
     def _nextContext(self):
-        context = self.dock.contextItemKey()
-        idx = 0
-        if context.isValid():
-            idx = bisect.bisect(self.project.data.itemKeys['cxt'], context)
-        if idx >= 0 and idx < len(self.project.data.itemKeys['cxt']) - 1:
-            self._findMoveContext(self.project.data.itemKeys['cxt'][idx])
+        self._findMoveContext(self.project.data.nextItem(self.dock.contextItemKey()))
 
     def _prevMissing(self):
         context = self.dock.contextItemKey()

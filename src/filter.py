@@ -145,24 +145,25 @@ class Filter(QObject):
         if not self._initialised:
             return
         self.dock.removeFilters()
-        self.addFilterClause(FilterType.IncludeFilter, itemKey)
+        ret = self.addFilterClause(FilterType.IncludeFilter, itemKey)
         self.zoomFilter()
+        return ret
 
     def excludeItem(self, itemKey):
         if not self._initialised:
             return
-        self.addFilterClause(FilterType.ExcludeFilter, itemKey)
+        return self.addFilterClause(FilterType.ExcludeFilter, itemKey)
 
     def highlightItem(self, itemKey):
         if not self._initialised:
             return
         self.dock.removeHighlightFilters()
-        self.addFilterClause(FilterType.HighlightFilter, itemKey)
+        return self.addFilterClause(FilterType.HighlightFilter, itemKey)
 
     def addHighlightItem(self, itemKey):
         if not self._initialised:
             return
-        self.addFilterClause(FilterType.HighlightFilter, itemKey)
+        return self.addFilterClause(FilterType.HighlightFilter, itemKey)
 
     def applySchematicFilter(self, itemKey):
         if not self._initialised:

@@ -85,7 +85,7 @@ class Ark():
         return self._getJson('describeFilters', {})
 
     def describeSubforms(self, item_key='all'):
-        return self._getJson('describeSubforms', {'item_key': item_key})
+        return self._getJson('describeSubforms', {'itemkey': item_key})
 
     def describeFields(self, itemkey='all'):
         #FIXME Broken for 'all', works for exact module

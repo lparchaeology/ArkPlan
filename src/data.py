@@ -298,14 +298,32 @@ class Data(QObject):
 
     def getItemFields(self, itemKey, fields):
         if self._ark is None or itemKey is None or itemKey.isInvalid():
-            utils.logMessage('none')
             return {}
         response = self._ark.getFields(itemKey.classCode + '_cd', itemKey.itemValue(), fields)
         if response.error:
             utils.logMessage(response.url)
             utils.logMessage(response.message)
             utils.logMessage(response.raw)
+        else:
+            self.project.logMessage(str(response.url))
+            self.project.logMessage(str(response.data))
         return response.data
+
+    def getItemSubform(self, itemKey, subform):
+        if self._ark is None or itemKey is None or itemKey.isInvalid():
+            return {}
+        response = self._ark.describeSubforms(itemKey.classCode + '_cd')
+        self.project.logMessage(str(response.url))
+        self.project.logMessage(str(response.data))
+        response = self._ark.transcludeSubform(itemKey.classCode + '_cd', itemKey.itemValue(), subform)
+        if response.error:
+            utils.logMessage(response.url)
+            utils.logMessage(response.message)
+            utils.logMessage(response.raw)
+        else:
+            self.project.logMessage(str(response.url))
+            self.project.logMessage(str(response.data))
+        return response.url
 
     def _loadDataSelected(self):
         self.loadAllItems()
@@ -321,7 +339,8 @@ class Data(QObject):
             self.dock.setItemData('Invalid', 'Not a valid item')
         elif self.haveItem(item):
             vals = self.project.data.getItemFields(item, [u'conf_field_cxttype', u'conf_field_short_desc', u'conf_field_interp', u'conf_field_cxtbasicinterp', u'conf_field_process'])
-            self.dock.setItemData(self._value(vals[u'conf_field_cxttype']), self._value(vals[u'conf_field_short_desc']), self._value(vals[u'conf_field_interp']))
+            form = self.project.data.getItemSubform(item, u'cxt_appsum')
+            self.dock.setItemData(self._value(vals[u'conf_field_cxttype']), self._value(vals[u'conf_field_short_desc']), self._value(vals[u'conf_field_interp']), form)
             #self._highlightFilter = self.project.planModule.moveToItem(item, True)
         else:
             self.dock.setItemData('None', 'Item not in ARK')

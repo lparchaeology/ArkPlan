@@ -25,7 +25,7 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import Qt, pyqtSignal, QUrl
 from PyQt4.QtGui import QWidget, QPixmap, QToolButton, QAction, QIcon
 
 from ..libarkqgis.dock import ToolDockWidget
@@ -175,15 +175,11 @@ class DataDock(ToolDockWidget):
         self._nextItemAction.setEnabled(enabled)
         self._lastItemAction.setEnabled(enabled)
 
-    def setItemData(self, itemType, registerDescription, description='', interpretation='', process='', subgroup=0, subgroupDescription=''):
+    def setItemData(self, itemType, registerDescription, description='', form=''):
         self.widget.itemTypeEdit.setText(itemType)
         self.widget.itemRegisterDescriptionEdit.setText(registerDescription)
         self.widget.itemDescriptionEdit.setText(description)
-        self.widget.interpretationEdit.setText(interpretation)
-        self.widget.processEdit.setText(process)
-        self.widget.subgroupSpin.setValue(subgroup)
-        self.widget.openSubgroupTool.setEnabled(subgroup > 0)
-        self.widget.subgroupDescriptionEdit.setText(subgroupDescription)
+        self.widget.itemDataView.load(QUrl(form))
 
     def _itemChanged(self):
         self.itemChanged.emit()

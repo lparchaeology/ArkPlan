@@ -107,8 +107,14 @@ class Ark():
     def transcludeFilter(self, ftype, src, retftrset=None, disp_mode=None):
         return self._getHtml('transcludeFilter', {'ftype': ftype, 'src': src, 'retftrset': retftrset, 'disp_mode': disp_mode})
 
+    def transcludeFilterUrl(self, ftype, src, retftrset=None, disp_mode=None):
+        return self._buildUrl('transcludeFilter', {'ftype': ftype, 'src': src, 'retftrset': retftrset, 'disp_mode': disp_mode})
+
     def transcludeSubform(self, itemkey, item_value, sf_conf):
         return self._getHtml('transcludeSubform', {'itemkey': itemkey, itemkey: item_value, 'sf_conf': sf_conf})
+
+    def transcludeSubformUrl(self, itemkey, item_value, sf_conf):
+        return self._buildUrl('transcludeSubform', {'itemkey': itemkey, itemkey: item_value, 'sf_conf': sf_conf})
 
     def putField(self):
         pass

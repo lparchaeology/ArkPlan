@@ -27,6 +27,7 @@
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal, QUrl
 from PyQt4.QtGui import QWidget, QPixmap, QToolButton, QAction, QIcon
+from PyQt4.QtWebKit import QWebPage
 
 from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.project import Project
@@ -59,6 +60,7 @@ class DataDock(ToolDockWidget):
     filterItemSelected = pyqtSignal()
     editItemSelected = pyqtSignal()
     loadDrawingsSelected = pyqtSignal()
+    itemLinkClicked = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(DataDock, self).__init__(DataWidget(), parent)
@@ -71,8 +73,7 @@ class DataDock(ToolDockWidget):
 
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
-            if classCode['plan']:
-                self.widget.classCodeCombo.addItem(classCode['label'], classCode['code'])
+            self.widget.classCodeCombo.addItem(classCode['label'], classCode['code'])
 
         self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
         self._loadDataAction.triggered.connect(self.loadDataSelected)
@@ -122,10 +123,12 @@ class DataDock(ToolDockWidget):
         self._editItemAction.triggered.connect(self.editItemSelected)
         self.toolbar2.addAction(self._editItemAction)
 
-
         self.widget.siteCodeCombo.currentIndexChanged.connect(self._itemChanged)
         self.widget.classCodeCombo.currentIndexChanged.connect(self._itemChanged)
         self.widget.itemIdSpin.editingFinished.connect(self._itemChanged)
+
+        self.widget.itemDataView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+        self.widget.itemDataView.linkClicked.connect(self._linkClicked)
 
     def initSiteCodes(self, siteCodes):
         self.widget.siteCodeCombo.clear()
@@ -175,11 +178,11 @@ class DataDock(ToolDockWidget):
         self._nextItemAction.setEnabled(enabled)
         self._lastItemAction.setEnabled(enabled)
 
-    def setItemData(self, itemType, registerDescription, description='', form=''):
-        self.widget.itemTypeEdit.setText(itemType)
-        self.widget.itemRegisterDescriptionEdit.setText(registerDescription)
-        self.widget.itemDescriptionEdit.setText(description)
-        self.widget.itemDataView.load(QUrl(form))
+    def setItemUrl(self, url=''):
+        self.widget.itemDataView.load(QUrl(url))
 
     def _itemChanged(self):
         self.itemChanged.emit()
+
+    def _linkClicked(self, url):
+        self.itemLinkClicked.emit(url)

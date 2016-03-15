@@ -218,6 +218,8 @@ class Plan(QObject):
                 self.project.loadGeoLayer(geoFile)
 
     def loadDrawing(self, itemKey, zoomToDrawing=True):
+        if not Config.classCodes[itemKey.classCode]['drawing']:
+            return
         drawingDir = self.project.georefDrawingDir(itemKey.classCode)
         drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         name = itemKey.name()
@@ -606,7 +608,6 @@ class Plan(QObject):
     def showItem(self, itemKey, loadDrawings=True, zoom=True):
         self.project.showMessage('Loading ' + itemKey.itemLabel())
         self.project.filterModule.filterItem(itemKey)
-        self.project.filterModule.showDock()
         if loadDrawings:
             self.project.clearDrawings()
             self.loadSourceDrawings(itemKey)

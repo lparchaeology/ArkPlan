@@ -116,6 +116,7 @@ class Data(QObject):
         self.dock.filterItemSelected.connect(self._filterItemSelected)
         self.dock.editItemSelected.connect(self._editItemSelected)
         self.dock.loadDrawingsSelected.connect(self._loadDrawingsSelected)
+        self.dock.itemLinkClicked.connect(self._itemLinkClicked)
 
     # Load the project settings when project is loaded
     def loadProject(self):
@@ -182,24 +183,24 @@ class Data(QObject):
         self.project.logMessage('Loaded Link Model : ' + str(self._linkModel.rowCount()) + ' rows')
 
     def _createArkSession(self):
-        if self._ark is None:
-            dialog = CredentialsDialog()
-            if dialog.exec_():
-                self._ark = Ark(self.project.arkUrl(), dialog.username(), dialog.password())
-                self.dock.setItemNavEnabled(True)
+        dialog = CredentialsDialog()
+        if dialog.exec_():
+            self._ark = Ark(self.project.arkUrl(), dialog.username(), dialog.password())
+            self.dock.setItemNavEnabled(True)
 
     def loadAllItems(self):
         if not self.project.arkUrl():
             return
         self.itemKeys = {}
-        for classCode in self.project.plan.uniqueValues(self.project.fieldName('class')):
+        for classCode in Config.classCodes.keys():
             if classCode is not None and classCode != NULL:
                 self.loadClassItems(classCode)
 
     def loadClassItems(self, classCode):
         if not self.project.arkUrl():
             return
-        self._createArkSession()
+        if self._ark is None:
+            self._createArkSession()
         if self._ark is None:
             return
         response = self._ark.getItems(classCode + '_cd')
@@ -312,10 +313,6 @@ class Data(QObject):
     def getItemSubform(self, itemKey, subform):
         if self._ark is None or itemKey is None or itemKey.isInvalid():
             return {}
-        response = self._ark.describeSubforms(itemKey.classCode + '_cd')
-        self.project.logMessage(str(response.url))
-        self.project.logMessage(str(response.data))
-        response = self._ark.transcludeSubform(itemKey.classCode + '_cd', itemKey.itemValue(), subform)
         if response.error:
             utils.logMessage(response.url)
             utils.logMessage(response.message)
@@ -336,14 +333,13 @@ class Data(QObject):
         self.project.filterModule.removeFilterClause(self._highlightFilter)
         self._highlightFilter = -1
         if item.isInvalid():
-            self.dock.setItemData('Invalid', 'Not a valid item')
+            self.dock.setItemUrl('') # Invalid
         elif self.haveItem(item):
-            vals = self.project.data.getItemFields(item, [u'conf_field_cxttype', u'conf_field_short_desc', u'conf_field_interp', u'conf_field_cxtbasicinterp', u'conf_field_process'])
-            form = self.project.data.getItemSubform(item, u'cxt_appsum')
-            self.dock.setItemData(self._value(vals[u'conf_field_cxttype']), self._value(vals[u'conf_field_short_desc']), self._value(vals[u'conf_field_interp']), form)
+            url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_app_sum_conf')
+            self.dock.setItemUrl(url)
             #self._highlightFilter = self.project.planModule.moveToItem(item, True)
         else:
-            self.dock.setItemData('None', 'Item not in ARK')
+            self.dock.setItemUrl('') # Not in ark
         self._showItemSelected()
 
     def _value(self, value):
@@ -394,3 +390,11 @@ class Data(QObject):
 
     def _loadDrawingsSelected(self):
         self.project.planModule.loadSourceDrawings(self.dock.item())
+
+    def _itemLinkClicked(self, url):
+        if url.path().endswith('micro_view.php'):
+            item_key = url.queryItemValue('item_key')
+            item_value = url.queryItemValue(item_key).split('_')
+            classCode = item_key[:3]
+            self.dock.setItem(ItemKey(item_value[0], classCode, item_value[1]))
+            self._itemChanged()

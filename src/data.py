@@ -335,7 +335,7 @@ class Data(QObject):
         if item.isInvalid():
             self.dock.setItemUrl('') # Invalid
         elif self.haveItem(item):
-            url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_app_sum_conf')
+            url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_apisum')
             self.dock.setItemUrl(url)
             #self._highlightFilter = self.project.planModule.moveToItem(item, True)
         else:
@@ -392,9 +392,25 @@ class Data(QObject):
         self.project.planModule.loadSourceDrawings(self.dock.item())
 
     def _itemLinkClicked(self, url):
-        if url.path().endswith('micro_view.php'):
+        item_key = ''
+        item_value = []
+        self.project.logMessage(url.toString())
+        self.project.logMessage(url.path())
+        self.project.logMessage(url.path()[:5])
+        if url.hasQueryItem('item_key'):
             item_key = url.queryItemValue('item_key')
             item_value = url.queryItemValue(item_key).split('_')
-            classCode = item_key[:3]
-            self.dock.setItem(ItemKey(item_value[0], classCode, item_value[1]))
-            self._itemChanged()
+        elif url.hasQueryItem('itemkey'):
+            item_key = url.queryItemValue('itemkey')
+            item_value = url.queryItemValue(item_key).split('_')
+        else:
+            parts = url.path().split('/')
+            self.project.logMessage(str(parts))
+            if len(parts) >= 2:
+                item_key = parts[-2]
+                item_value = parts[-1].split('_')
+        if item_key and len(item_value) == 2:
+            item = ItemKey(item_value[0], item_key[:3], item_value[1])
+            if self.haveItem(item):
+                self.dock.setItem(item)
+                self._itemChanged()

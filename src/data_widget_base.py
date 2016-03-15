@@ -27,6 +27,7 @@ class Ui_DataWidget(object):
         DataWidget.setObjectName(_fromUtf8("DataWidget"))
         DataWidget.resize(269, 332)
         self.gridLayout = QtGui.QGridLayout(DataWidget)
+        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.itemDataView = QtWebKit.QWebView(DataWidget)
         self.itemDataView.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))

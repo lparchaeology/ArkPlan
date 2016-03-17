@@ -28,6 +28,7 @@ import csv, json, urllib2, bisect, webbrowser
 
 from PyQt4.QtCore import Qt, QObject, QSettings, QFile, pyqtSignal
 from PyQt4.QtGui import QApplication, QAction, QIcon, QSortFilterProxyModel
+from PyQt4.QtWebKit import QWebView
 
 from qgis.core import NULL, QgsCredentials
 
@@ -397,6 +398,12 @@ class Data(QObject):
         self.project.logMessage(url.toString())
         self.project.logMessage(url.path())
         self.project.logMessage(url.path()[:5])
+        if 'download.php' in url.toString():
+            #web = QWebView()
+            #web.load(url)
+            self.project.logMessage('load it')
+            self.dock.widget.itemDataView.load(url)
+            return
         if url.hasQueryItem('item_key'):
             item_key = url.queryItemValue('item_key')
             item_value = url.queryItemValue(item_key).split('_')

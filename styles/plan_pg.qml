@@ -37,35 +37,30 @@
     <edittype widgetv2type="TextEdit" name="cre_by">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="mod_on">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-    </edittype>
-    <edittype widgetv2type="TextEdit" name="mod_by">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-    </edittype>
   </edittypes>
-  <renderer-v2 attr="category" forceraster="0" symbollevels="1" type="categorizedSymbol">
-    <categories>
-      <category render="true" symbol="0" value="ash" label="Ash"/>
-      <category render="true" symbol="1" value="bne" label="Bone"/>
-      <category render="true" symbol="2" value="brk" label="Brick"/>
-      <category render="true" symbol="3" value="cbm" label="CBM"/>
-      <category render="true" symbol="4" value="clk" label="Chalk"/>
-      <category render="true" symbol="5" value="chk" label="Chalk"/>
-      <category render="true" symbol="6" value="coi" label="Coin"/>
-      <category render="true" symbol="7" value="gls" label="Glass"/>
-      <category render="true" symbol="8" value="irn" label="Iron"/>
-      <category render="true" symbol="9" value="mtr" label="Mortar"/>
-      <category render="true" symbol="10" value="pot" label="Pot"/>
-      <category render="true" symbol="11" value="ren" label="Render"/>
-      <category render="true" symbol="12" value="sch" label="Schema"/>
-      <category render="true" symbol="13" value="scs" label="Section Schema"/>
-      <category render="true" symbol="14" value="sto" label="Stone"/>
-      <category render="true" symbol="15" value="til" label="Tile"/>
-      <category render="true" symbol="16" value="tim" label="Timber"/>
-      <category render="true" symbol="17" value="wst" label="Wood Stain"/>
-      <category render="true" symbol="18" value="" label="UNKNOWN"/>
-    </categories>
+  <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer">
+    <rules key="{81e0707b-7c01-476f-a351-51ba1f0da9fb}">
+      <rule filter="category = 'ash'" key="{c5e1b544-c826-4e06-9033-f8cbb1125632}" symbol="0" label="Ash"/>
+      <rule filter="category = 'bne'" key="{f5567eea-8ae3-40ed-b6d3-1b96bd4a482f}" symbol="1" label="Bone"/>
+      <rule filter="category = 'brk'" key="{28c93372-d9fb-4a17-88b8-30d160ae342d}" symbol="2" label="Brick"/>
+      <rule filter="category = 'cbm'" key="{e9b60b27-8128-418e-8ee5-2161cec44c20}" symbol="3" label="CBM"/>
+      <rule filter="category = 'clk'" key="{f55771b2-6957-49a5-afff-ec5e9182c1dd}" symbol="4" label="Chalk"/>
+      <rule filter="category = 'chk'" key="{7d8e5c74-260b-4314-9748-bb833faf51d9}" symbol="5" label="Chalk"/>
+      <rule filter="category = 'coi'" key="{e799be72-c414-42da-be4f-f8c4ae642ed2}" symbol="6" label="Coin"/>
+      <rule filter="category = 'gls'" key="{d0b4d65a-bf6e-4108-9593-f4df91fd7a47}" symbol="7" label="Glass"/>
+      <rule filter="category = 'irn'" key="{95f27611-9f1c-4da3-8750-b611d1673786}" symbol="8" label="Iron"/>
+      <rule filter="category = 'mtr'" key="{7113da77-368d-41f0-8aba-8b121395594d}" symbol="9" label="Mortar"/>
+      <rule filter="category = 'pot'" key="{465162d6-4285-4775-94a6-7f8cb98a4c5d}" symbol="10" label="Pot"/>
+      <rule filter="category = 'ren'" key="{8fec8989-d7b3-4426-a20b-1660f90b04d8}" symbol="11" label="Render"/>
+      <rule filter="category = 'sch'" key="{caf44042-e4c7-4f06-b7f3-bae68d45c782}" symbol="12" label="Schema"/>
+      <rule filter="category = 'scs'" key="{16509781-4b90-40e0-9abc-42e3fe686c65}" symbol="13" label="Section Plan Schema"/>
+      <rule filter="category = 'scl'" key="{5d9ed9a5-307e-4ccd-bd26-98488f4d22ac}" symbol="14" label="Section Layer Schema"/>
+      <rule filter="category = 'sto'" key="{b46b6dd2-9fd6-4a96-b66d-a273c703caaa}" symbol="15" label="Stone"/>
+      <rule filter="category = 'til'" key="{4bd0010f-dd54-4c3e-ae84-040ad925737f}" symbol="16" label="Tile"/>
+      <rule filter="category = 'tim'" key="{145a7b98-d7ed-4a92-817e-d1a37c53819e}" symbol="17" label="Timber"/>
+      <rule filter="category = 'wst'" key="{27029c35-af82-4ace-86b6-c12299356844}" symbol="18" label="Wood Stain"/>
+      <rule filter="ELSE" key="{709d074a-25a3-4a72-aff2-d6c53ea5ad80}" symbol="19" label="UNKNOWN"/>
+    </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="fill" name="0">
         <layer pass="1" class="SimpleFill" locked="0">
@@ -157,7 +152,22 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="14">
+      <symbol alpha="0.196078" clip_to_extent="1" type="fill" name="14">
+        <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="color" v="241,244,199,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="15">
         <layer pass="1" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="color" v="213,213,213,255"/>
@@ -185,7 +195,7 @@
           <prop k="offset_unit" v="MM"/>
           <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="outline_width_unit" v="MM"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@14@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@15@1">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -206,7 +216,7 @@
           </symbol>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="15">
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="16">
         <layer pass="1" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="color" v="227,165,166,255"/>
@@ -221,7 +231,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="16">
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="17">
         <layer pass="1" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="color" v="195,130,28,255"/>
@@ -236,7 +246,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="17">
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="18">
         <layer pass="1" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="color" v="153,101,67,255"/>
@@ -251,7 +261,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="18">
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="19">
         <layer pass="2" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="color" v="255,0,222,255"/>
@@ -387,29 +397,10 @@
         </layer>
       </symbol>
     </symbols>
-    <source-symbol>
-      <symbol alpha="1" clip_to_extent="1" type="fill" name="0">
-        <layer pass="0" class="SimpleFill" locked="0">
-          <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="color" v="90,183,118,255"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.26"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
-        </layer>
-      </symbol>
-    </source-symbol>
-    <rotation/>
-    <sizescale scalemethod="diameter"/>
   </renderer-v2>
   <labeling type="rule-based">
     <rules>
-      <rule description="Schematic" filter="&quot;category&quot; = 'sch' or &quot;category&quot; = 'scs'">
+      <rule description="Schematic" filter="&quot;category&quot; = 'sch' or &quot;category&quot; = 'scs' or category = 'scl'">
         <settings>
           <text-style fontItalic="0" fontFamily="Gill Sans" fontLetterSpacing="0" fontUnderline="0" fontSizeMapUnitMaxScale="0" fontWeight="50" fontStrikeout="0" textTransp="0" previewBkgrdColor="#ffffff" fontCapitals="0" textColor="0,0,0,255" fontSizeMapUnitMinScale="0" fontSizeInMapUnits="0" isExpression="0" blendMode="0" fontSize="10" fieldName="item_no" namedStyle="Regular" fontWordSpacing="0"/>
           <text-format placeDirectionSymbol="0" multilineAlign="0" rightDirectionSymbol=">" multilineHeight="1" plussign="0" addDirectionSymbol="0" leftDirectionSymbol="&lt;" formatNumbers="0" decimals="3" wrapChar="" reverseDirectionSymbol="0"/>

@@ -400,7 +400,7 @@
   </renderer-v2>
   <labeling type="rule-based">
     <rules>
-      <rule description="Schematic" filter="&quot;category&quot; = 'sch' or &quot;category&quot; = 'scs' or category = 'scl'">
+      <rule description="Schematic" filter="&quot;category&quot; = 'sch' or &quot;category&quot; = 'scs' or &quot;category&quot; = 'scl'">
         <settings>
           <text-style fontItalic="0" fontFamily="Gill Sans" fontLetterSpacing="0" fontUnderline="0" fontSizeMapUnitMaxScale="0" fontWeight="50" fontStrikeout="0" textTransp="0" previewBkgrdColor="#ffffff" fontCapitals="0" textColor="0,0,0,255" fontSizeMapUnitMinScale="0" fontSizeInMapUnits="0" isExpression="0" blendMode="0" fontSize="10" fieldName="item_no" namedStyle="Regular" fontWordSpacing="0"/>
           <text-format placeDirectionSymbol="0" multilineAlign="0" rightDirectionSymbol=">" multilineHeight="1" plussign="0" addDirectionSymbol="0" leftDirectionSymbol="&lt;" formatNumbers="0" decimals="3" wrapChar="" reverseDirectionSymbol="0"/>

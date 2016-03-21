@@ -589,7 +589,7 @@ class Plan(QObject):
             fd.close()
 
     def editInBuffers(self, itemKey):
-        if self._confirmDelete(itemKey.itemId, 'Confirm Move Item'):
+        #if self._confirmDelete(itemKey.itemId, 'Confirm Move Item'):
             request = itemKey.featureRequest()
             timestamp = utils.timestamp()
             action = 'Edit Item'

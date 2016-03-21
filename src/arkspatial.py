@@ -28,13 +28,14 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog, QMenu
 
-from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel, QgsLayerTreeNode
+from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel, QgsLayerTreeNode, QgsMapLayer
 from qgis.gui import QgsMessageBar, QgsLayerTreeView, QgsLayerTreeViewMenuProvider, QgsLayerTreeViewDefaultActions
 
 from ..libarkqgis.plugin import Plugin
 from ..libarkqgis.layercollection import *
 from ..libarkqgis import utils, layers
 from ..libarkqgis.dock import ToolDockWidget
+from ..libarkqgis.snapping import LayerSnappingAction
 
 from ..grid.grid import GridModule
 
@@ -119,6 +120,7 @@ class ArkSpatial(Plugin):
     # Private settings
     _initialised = False
     _loaded = False
+    _layerSnappingAction = None  # LayerSnappingAction()
 
     def __init__(self, iface, pluginPath):
         super(ArkSpatial, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
@@ -150,7 +152,8 @@ class ArkSpatial(Plugin):
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.layerDock.setWindowTitle(self.tr(u'ARK Spatial'))
         self.layerDock.setObjectName(u'LayerDock')
-
+        self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
+        self.iface.legendInterface().addLegendLayerAction(self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
 
     # Initialise plugin gui
     def initialise(self):
@@ -272,6 +275,8 @@ class ArkSpatial(Plugin):
             self.data.unloadGui()
 
             self._initialised = False
+
+        self.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
 
         # Unload this dock and uninitialise
         del self.projectLayerView

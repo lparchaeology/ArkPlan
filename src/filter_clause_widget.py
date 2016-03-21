@@ -35,20 +35,11 @@ from qgis.gui import QgsColorButtonV2
 from ..libarkqgis.project import Project
 from ..libarkqgis.utils import *
 
+from enum import FilterType, FilterAction
 from plan_item import ItemKey
 
 import filter_clause_widget_base
 
-class FilterType():
-    IncludeFilter = 0
-    ExcludeFilter = 1
-    SelectFilter = 2
-    HighlightFilter = 3
-
-class FilterAction():
-    AddFilter = 0
-    RemoveFilter = 1
-    LockFilter = 2
 
 class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidget):
 

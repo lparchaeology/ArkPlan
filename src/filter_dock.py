@@ -33,6 +33,7 @@ from ..libarkqgis import utils
 
 import filter_set_widget_base
 from filter_clause_widget import *
+from enum import FilterType, FilterAction
 
 class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
 

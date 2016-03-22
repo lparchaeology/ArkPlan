@@ -32,7 +32,6 @@ from qgis.core import *
 from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from config import Config
-from enum import FilterAction
 from plan_item import ItemKey, ItemSource
 
 def _quote(string):

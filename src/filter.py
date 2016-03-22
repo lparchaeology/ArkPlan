@@ -34,11 +34,11 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 from ..libarkqgis import layers, utils
 
-from enum import FilterType, FilterAction
+from enum import FilterType
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
-from filter_clause_widget import FilterType, FilterAction
+from filter_clause_widget import FilterWidgetAction
 from config import Config
 from plan_item import ItemKey
 
@@ -171,9 +171,9 @@ class Filter(QObject):
             return
         self._clearSchematicFilter()
         if self.hasFilterType(FilterType.IncludeFilter) or self.hasFilterType(FilterType.ExcludeFilter):
-            self._schematicIncludeFilter = self.dock.addFilterClause(FilterType.IncludeFilter, itemKey, FilterAction.LockFilter)
-        self._schematicSelectFilter = self.dock.addFilterClause(FilterType.SelectFilter, itemKey, FilterAction.LockFilter)
-        #self._schematicHighlightFilter = self.dock.addFilterClause(FilterType.HighlightFilter, itemKey, FilterAction.LockFilter)
+            self._schematicIncludeFilter = self.dock.addFilterClause(FilterType.IncludeFilter, itemKey, FilterWidgetAction.LockFilter)
+        self._schematicSelectFilter = self.dock.addFilterClause(FilterType.SelectFilter, itemKey, FilterWidgetAction.LockFilter)
+        #self._schematicHighlightFilter = self.dock.addFilterClause(FilterType.HighlightFilter, itemKey, FilterWidgetAction.LockFilter)
         self.applyFilters()
 
     def clearSchematicFilter(self):
@@ -196,7 +196,7 @@ class Filter(QObject):
             changed = True
         return changed
 
-    def addFilterClause(self, filterType, itemKey, filterAction=FilterAction.RemoveFilter):
+    def addFilterClause(self, filterType, itemKey, filterAction=FilterWidgetAction.RemoveFilter):
         if not self._initialised:
             return
         idx = self.dock.addFilterClause(filterType, itemKey, filterAction)

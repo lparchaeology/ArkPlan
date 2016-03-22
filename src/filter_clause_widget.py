@@ -35,11 +35,15 @@ from qgis.gui import QgsColorButtonV2
 from ..libarkqgis.project import Project
 from ..libarkqgis.utils import *
 
-from enum import FilterType, FilterAction
+from enum import FilterType
 from plan_item import ItemKey
 
 import filter_clause_widget_base
 
+class FilterWidgetAction():
+    AddFilter = 0
+    RemoveFilter = 1
+    LockFilter = 2
 
 class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidget):
 
@@ -66,7 +70,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self._removeAction.setStatusTip('Remove filter')
         self._removeAction.triggered.connect(self._removeFilterClicked)
 
-        self.setFilterAction(FilterAction.AddFilter)
+        self.setFilterAction(FilterWidgetAction.AddFilter)
 
         self._includeIcon = QIcon(':/plugins/ark/filter/includeFilter.png')
         self._includeAction = QAction(self._includeIcon, 'Include', self)
@@ -129,7 +133,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.setSiteCode(settings.value('siteCode'))
         self.setClassCode(settings.value('classCode'))
         self.setFilterRange(settings.value('filterRange'))
-        self.setFilterAction(FilterAction.RemoveFilter)
+        self.setFilterAction(FilterWidgetAction.RemoveFilter)
         if self.filterType() == FilterType.HighlightFilter:
             self.setHighlightColor(settings.value('highlightColor', QColor))
 
@@ -194,16 +198,16 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.filterRangeCombo.clearEditText()
 
     def setFilterAction(self, action):
-        if self._filterActionStatus == FilterAction.AddFilter:
+        if self._filterActionStatus == FilterWidgetAction.AddFilter:
             self.filterRangeCombo.lineEdit().returnPressed.disconnect(self._addFilterClicked)
-        elif self._filterActionStatus == FilterAction.RemoveFilter:
+        elif self._filterActionStatus == FilterWidgetAction.RemoveFilter:
             self.filterRangeCombo.lineEdit().editingFinished.disconnect(self._filterRangeChanged)
         self._filterActionStatus = action
-        if action == FilterAction.LockFilter:
+        if action == FilterWidgetAction.LockFilter:
             self.filterActionTool.removeAction(self._addAction)
             self.filterActionTool.setDefaultAction(self._removeAction)
             self.setEnabled(False)
-        elif action == FilterAction.RemoveFilter:
+        elif action == FilterWidgetAction.RemoveFilter:
             self.filterActionTool.removeAction(self._addAction)
             self.filterActionTool.setDefaultAction(self._removeAction)
             self.filterRangeCombo.lineEdit().editingFinished.connect(self._filterRangeChanged)
@@ -224,7 +228,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         return text.replace(' - ', '-').replace(',', ' ').strip()
 
     def _addFilterClicked(self):
-        self.setFilterAction(FilterAction.RemoveFilter)
+        self.setFilterAction(FilterWidgetAction.RemoveFilter)
         self.filterAdded.emit()
 
     def _removeFilterClicked(self):

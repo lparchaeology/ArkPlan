@@ -236,7 +236,7 @@ class Plan(QObject):
             self._setPlanMetadata(PlanMetadata(drawing))
             self.project.loadGeoLayer(drawing, zoomToDrawing)
 
-    def loadSourceDrawings(self, itemKey):
+    def loadSourceDrawings(self, itemKey, clearDrawings=False):
         if itemKey.isInvalid():
             return
         sourceKeys = set()
@@ -254,6 +254,8 @@ class Plan(QObject):
             itemSource = ItemSource(feature)
             if itemSource.key.isValid():
                 sourceKeys.add(itemSource.key)
+        if clearDrawings and len(sourceKeys) > 0:
+            self.project.clearDrawings()
         for sourceKey in sorted(sourceKeys):
             self.loadDrawing(sourceKey)
 
@@ -605,50 +607,72 @@ class Plan(QObject):
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
 
+    def applyItemActions(self, itemKey, mapAction=MapAction.NoAction, filterAction=FilterAction.NoAction, drawingAction=DrawingAction.NoAction):
+        if highlight:
+            self.project.filterModule.highlightItem(itemKey)
+        if mapAction == MapAction.ZoomMap:
+            self._zoomToExtent(itemKey)
+        elif mapAction == MapAction.PanMap:
+            self._panToExtent(itemKey)
+        elif mapAction == MapAction.MoveMap:
+            self._moveToExtent(itemKey)
+        self.project.mapCanvas().refresh()
+
     def showItem(self, itemKey, loadDrawings=True, zoom=True):
         self.project.showMessage('Loading ' + itemKey.itemLabel())
         self.project.filterModule.filterItem(itemKey)
         if loadDrawings:
-            self.project.clearDrawings()
-            self.loadSourceDrawings(itemKey)
+            self.loadSourceDrawings(itemKey, True)
         if zoom:
-            self.project.filterModule.zoomFilter()
+            self._zoomToItem(itemKey)
 
     def panToItem(self, itemKey, highlight=False):
-        extent = self.itemExtent(itemKey)
-        if extent == None or extent.isNull() or extent.isEmpty():
-            return
-        self.project.mapCanvas().setCenter(extent.center())
         if highlight:
             self.project.filterModule.highlightItem(itemKey)
+        self._panToItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def zoomToItem(self, itemKey, highlight=False):
-        extent = self.itemExtent(itemKey)
+        if highlight:
+            self.project.filterModule.highlightItem(itemKey)
+        self._zoomToItem(itemKey)
+        self.project.mapCanvas().refresh()
+
+    def moveToItem(self, itemKey, highlight=False):
+        ret = -1
+        if highlight:
+            ret = self.project.filterModule.highlightItem(itemKey)
+        self._moveToItem(itemKey)
+        self.project.mapCanvas().refresh()
+        return ret
+
+    def _moveToItem(self, itemKey):
+        self._moveToExtent(self.itemExtent(itemKey))
+
+    def _moveToExtent(self, extent):
+        mapExtent = self.project.mapCanvas().extent()
+        if (extent.width() > mapExtent.width() or extent.height() > mapExtent.height()
+            or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):
+            self._zoomToExtent(extent)
+        else:
+            self._panToExtent(extent)
+
+    def _panToItem(self, itemKey):
+        self._panToExtent(self.itemExtent(itemKey))
+
+    def _panToExtent(self, extent):
+        if extent == None or extent.isNull() or extent.isEmpty():
+            return
+        self.project.mapCanvas().setCenter(extent.center())
+
+    def _zoomToItem(self, itemKey):
+        self._zoomToExtent(self.itemExtent(itemKey))
+
+    def _zoomToExtent(self, extent):
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
-        if highlight:
-            self.project.filterModule.highlightItem(itemKey)
-        self.project.mapCanvas().refresh()
-
-    def moveToItem(self, itemKey, highlight=False):
-        extent = self.itemExtent(itemKey)
-        if extent == None or extent.isNull() or extent.isEmpty():
-            return
-        mapExtent = self.project.mapCanvas().extent()
-        if (extent.width() > mapExtent.width() or extent.height() > mapExtent.height()
-            or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):
-            extent.scale(1.05)
-            self.project.mapCanvas().setExtent(extent)
-        else:
-            self.project.mapCanvas().setCenter(extent.center())
-        ret = -1
-        if highlight:
-            ret = self.project.filterModule.highlightItem(itemKey)
-        self.project.mapCanvas().refresh()
-        return ret
 
     def filterItem(self, itemKey):
         self.project.filterModule.filterItem(itemKey)

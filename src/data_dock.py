@@ -95,7 +95,7 @@ class DataDock(ToolDockWidget):
         self._editItemAction.triggered.connect(self.editItemSelected)
         self.toolbar.addAction(self._editItemAction)
 
-        self.toolbar.setVisible(True)
+        self.toolbar2.setVisible(True)
 
         self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
         self._loadDataAction.triggered.connect(self.loadDataSelected)

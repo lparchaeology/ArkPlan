@@ -75,53 +75,53 @@ class DataDock(ToolDockWidget):
             classCode = Config.classCodes[key]
             self.widget.classCodeCombo.addItem(classCode['label'], classCode['code'])
 
-        self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
-        self._loadDataAction.triggered.connect(self.loadDataSelected)
-        self.toolbar.addAction(self._loadDataAction)
-
-        self._firstItemAction = QAction(QIcon(':/plugins/ark/data/goFirstItem.svg'), "Go to first item", self)
-        self._firstItemAction.triggered.connect(self.firstItemSelected)
-        self.toolbar.addAction(self._firstItemAction)
-
-        self._previousItemAction = QAction(QIcon(':/plugins/ark/data/goPrevItem.svg'), "Go to previous item", self)
-        self._previousItemAction.triggered.connect(self.prevItemSelected)
-        self.toolbar.addAction(self._previousItemAction)
-
-        self._openItemAction = QAction(QIcon(':/plugins/ark/data/openData.svg'), "Open item in ARK", self)
-        self._openItemAction.triggered.connect(self.openItemData)
-        self.toolbar.addAction(self._openItemAction)
-
-        self._nextItemAction = QAction(QIcon(':/plugins/ark/data/goNextItem.svg'), "Go to next item", self)
-        self._nextItemAction.triggered.connect(self.nextItemSelected)
-        self.toolbar.addAction(self._nextItemAction)
-
-        self._lastItemAction = QAction(QIcon(':/plugins/ark/data/goLastItem.svg'), "Go to last item", self)
-        self._lastItemAction.triggered.connect(self.lastItemSelected)
-        self.toolbar.addAction(self._lastItemAction)
-
-        self.setItemNavEnabled(False)
-
-        self.toolbar2.setVisible(True)
-
         self._showItemAction = QAction(QIcon(':/plugins/ark/filter/showContext.png'), self.tr(u'Show Item'), self)
         self._showItemAction.triggered.connect(self.showItemSelected)
-        self.toolbar2.addAction(self._showItemAction)
+        self.toolbar.addAction(self._showItemAction)
 
         self._zoomItemAction = QAction(QIcon(':/plugins/ark/plan/zoomToItem.svg'), "Zoom to item", self)
         self._zoomItemAction.triggered.connect(self.zoomItemSelected)
-        self.toolbar2.addAction(self._zoomItemAction)
+        self.toolbar.addAction(self._zoomItemAction)
 
         self._filterItemAction = QAction(QIcon(':/plugins/ark/filter/filter.png'), "Filter item", self)
         self._filterItemAction.triggered.connect(self.filterItemSelected)
-        self.toolbar2.addAction(self._filterItemAction)
+        self.toolbar.addAction(self._filterItemAction)
 
         self._loadDrawingsAction = QAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), "Load Drawings", self)
         self._loadDrawingsAction.triggered.connect(self.loadDrawingsSelected)
-        self.toolbar2.addAction(self._loadDrawingsAction)
+        self.toolbar.addAction(self._loadDrawingsAction)
 
         self._editItemAction = QAction(Project.getThemeIcon('mActionToggleEditing.svg'), "Edit Item", self)
         self._editItemAction.triggered.connect(self.editItemSelected)
-        self.toolbar2.addAction(self._editItemAction)
+        self.toolbar.addAction(self._editItemAction)
+
+        self.toolbar.setVisible(True)
+
+        self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
+        self._loadDataAction.triggered.connect(self.loadDataSelected)
+        self.toolbar2.addAction(self._loadDataAction)
+
+        self._firstItemAction = QAction(QIcon(':/plugins/ark/data/goFirstItem.svg'), "Go to first item", self)
+        self._firstItemAction.triggered.connect(self.firstItemSelected)
+        self.toolbar2.addAction(self._firstItemAction)
+
+        self._previousItemAction = QAction(QIcon(':/plugins/ark/data/goPrevItem.svg'), "Go to previous item", self)
+        self._previousItemAction.triggered.connect(self.prevItemSelected)
+        self.toolbar2.addAction(self._previousItemAction)
+
+        self._openItemAction = QAction(QIcon(':/plugins/ark/data/openData.svg'), "Open item in ARK", self)
+        self._openItemAction.triggered.connect(self.openItemData)
+        self.toolbar2.addAction(self._openItemAction)
+
+        self._nextItemAction = QAction(QIcon(':/plugins/ark/data/goNextItem.svg'), "Go to next item", self)
+        self._nextItemAction.triggered.connect(self.nextItemSelected)
+        self.toolbar2.addAction(self._nextItemAction)
+
+        self._lastItemAction = QAction(QIcon(':/plugins/ark/data/goLastItem.svg'), "Go to last item", self)
+        self._lastItemAction.triggered.connect(self.lastItemSelected)
+        self.toolbar2.addAction(self._lastItemAction)
+
+        self.setItemNavEnabled(False)
 
         self.widget.siteCodeCombo.currentIndexChanged.connect(self._itemChanged)
         self.widget.classCodeCombo.currentIndexChanged.connect(self._itemChanged)

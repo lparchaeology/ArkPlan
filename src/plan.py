@@ -39,6 +39,7 @@ from plan_dock import PlanDock
 from plan_error import ErrorDialog, PlanError
 from select_drawing_dialog import SelectDrawingDialog
 
+from enum import *
 from plan_util import *
 from plan_item import *
 from plan_map_tools import *
@@ -607,7 +608,7 @@ class Plan(QObject):
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(itemKey, action, timestamp)
 
-    def applyItemActions(self, itemKey, mapAction=MapAction.NoAction, filterAction=FilterAction.NoAction, drawingAction=DrawingAction.NoAction):
+    def applyItemActions(self, itemKey, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
         if highlight:
             self.project.filterModule.highlightItem(itemKey)
         if mapAction == MapAction.ZoomMap:

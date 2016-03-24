@@ -293,6 +293,21 @@ class Data(QObject):
                 QApplication.clipboard().setText(url)
                 self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
+    def linkedItems(self, itemKey, linkClassCode):
+        xmi = unicode('conf_field_' + itemKey.classCode + linkClassCode + 'xmi')
+        data = self.getItemFields(itemKey, [xmi])
+        items = []
+        try:
+            for link in data[xmi]:
+                utils.logMessage(str(link))
+                itemkey = link[u'xmi_itemkey']
+                itemvalue = link[u'xmi_itemvalue'].split(u'_')
+                item = ItemKey(itemvalue[0], itemkey[:3], itemvalue[1])
+                items.append(item)
+        except:
+            return []
+        return items
+
     def _addLinks(self, table):
         for record in table:
             parentItem = record['key']
@@ -313,7 +328,11 @@ class Data(QObject):
                 return self._grpModel.getItem(itemKey)
         return {}
 
-    def getChildren(self, itemKey):
+    def getChildren(self, itemKey, childClassCode):
+        children = self.linkedItems(itemKey, childClassCode)
+        utils.logMessage(str(children))
+        if len(children) > 0:
+            return children
         return self._linkModel.getChildren(itemKey)
 
     def getParent(self, itemKey):
@@ -345,6 +364,7 @@ class Data(QObject):
         return response.url
 
     def _loadDataSelected(self):
+        self._loadData()
         self.loadAllItems()
 
     def _itemChanged(self):

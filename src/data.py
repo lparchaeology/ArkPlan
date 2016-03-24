@@ -198,25 +198,46 @@ class Data(QObject):
                 self.loadClassItems(classCode)
 
     def loadClassItems(self, classCode):
+        self.itemKeys[classCode] = []
+        if not self._loadClassItemsArk(classCode):
+            self._loadClassItemsCsv(classCode)
+
+    def _loadClassItemsArk(self, classCode):
         if not self.project.arkUrl():
-            return
+            return False
         if self._ark is None:
             self._createArkSession()
         if self._ark is None:
-            return
+            return False
         response = self._ark.getItems(classCode + '_cd')
         if response.error:
             self.project.logMessage(response.url)
             self.project.logMessage(response.message)
             self.project.logMessage(response.raw)
-            self.itemKeys[classCode] = []
+            return False
         else:
             self.project.logMessage(classCode + ' = ' + response.url)
             lst = response.data[classCode]
             keys = set()
             for record in lst:
                 key = ItemKey(record['ste_cd'], classCode, record[classCode + '_no'])
-                keys.add(key)
+                if key.isValid():
+                    keys.add(key)
+            self.itemKeys[classCode] = sorted(keys)
+            self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
+            return (len(self.itemKeys[classCode]) > 0)
+
+    def _loadClassItemsCsv(self, classCode):
+        filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
+        if QFile.exists(filePath):
+            with open(filePath) as csvFile:
+                keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
+                keys = set()
+                reader = csv.DictReader(csvFile)
+                fields = reader.fieldnames
+                for record in reader:
+                    key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
+                    keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
             self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
 

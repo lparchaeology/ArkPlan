@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_FilterClauseWidget(object):
     def setupUi(self, FilterClauseWidget):
         FilterClauseWidget.setObjectName(_fromUtf8("FilterClauseWidget"))
-        FilterClauseWidget.resize(295, 32)
+        FilterClauseWidget.resize(295, 34)
         self.horizontalLayout = QtGui.QHBoxLayout(FilterClauseWidget)
         self.horizontalLayout.setMargin(1)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -46,6 +46,7 @@ class Ui_FilterClauseWidget(object):
         sizePolicy.setHeightForWidth(self.filterRangeCombo.sizePolicy().hasHeightForWidth())
         self.filterRangeCombo.setSizePolicy(sizePolicy)
         self.filterRangeCombo.setEditable(True)
+        self.filterRangeCombo.setInsertPolicy(QtGui.QComboBox.InsertAtTop)
         self.filterRangeCombo.setObjectName(_fromUtf8("filterRangeCombo"))
         self.horizontalLayout.addWidget(self.filterRangeCombo)
         self.filterActionTool = QtGui.QToolButton(FilterClauseWidget)

@@ -76,6 +76,7 @@ class FilterDock(ToolDockWidget):
     _filterClauses = {}
     _items = {}
     _classCodes = {}
+    _history = []
 
     def __init__(self, parent=None):
         super(FilterDock, self).__init__(FilterSetWidget(), parent)
@@ -143,6 +144,7 @@ class FilterDock(ToolDockWidget):
     def _addNewFilterClause(self):
         self.newFilterClauseWidget.filterAdded.disconnect(self._addNewFilterClause)
         self.newFilterClauseWidget.setSiteCode(self.siteCode())
+        self._history = self.newFilterClauseWidget.history()
         self._addFilterClause(self.newFilterClauseWidget)
         self._createNewFilterClauseWidget()
         self.newFilterClauseWidget.filterRangeCombo.setFocus()
@@ -203,6 +205,7 @@ class FilterDock(ToolDockWidget):
 
     def _createNewFilterClauseWidget(self):
         self.newFilterClauseWidget = self._createFilterClauseWidget()
+        self.newFilterClauseWidget.setHistory(self._history)
         self.newFilterClauseWidget.filterAdded.connect(self._addNewFilterClause)
         self.widget.newFilterFrame.layout().addWidget(self.newFilterClauseWidget)
 

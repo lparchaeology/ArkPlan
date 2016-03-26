@@ -188,6 +188,16 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
     def setClassCode(self, code):
         self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(code))
 
+    def setHistory(self, history):
+        self.filterRangeCombo.addItems(history)
+        self.filterRangeCombo.clearEditText()
+
+    def history(self):
+        history = []
+        for idx in range(0, self.filterRangeCombo.count()):
+            history.append(self.filterRangeCombo.itemText(idx))
+        return history
+
     def filterRange(self):
         return self._normaliseRange(self.filterRangeCombo.currentText())
 

@@ -73,6 +73,8 @@ class ItemModel(TableModel):
 
 class Data(QObject):
 
+    dataLoaded = pyqtSignal()
+
     project = None # Project()
 
     # Internal variables
@@ -87,6 +89,7 @@ class Data(QObject):
     _linkModel = None  # ParentChildModel()
 
     _ark = None
+    _dataLoaded = False
     _prevItem = ItemKey()
 
     _mapAction = MapAction.MoveMap
@@ -109,8 +112,8 @@ class Data(QObject):
 
         self.dock.itemChanged.connect(self._itemChanged)
 
-        self.dock.loadDataSelected.connect(self._loadDataSelected)
-        self.dock.refreshDataSelected.connect(self._refreshDataSelected)
+        self.dock.loadDataSelected.connect(self.loadData)
+        self.dock.refreshDataSelected.connect(self.refreshData)
         self.dock.firstItemSelected.connect(self._firstItemSelected)
         self.dock.prevItemSelected.connect(self._prevItemSelected)
         self.dock.openItemData.connect(self._openItemData)
@@ -166,7 +169,7 @@ class Data(QObject):
             return (self._grpModel is not None and self._grpModel.rowCount() > 0)
         return False
 
-    def _loadData(self):
+    def _loadCsvData(self):
         keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
         path = self.project.projectPath() + '/data/' + self.project.siteCode() + '_'
         if self._cxtModel:
@@ -223,7 +226,6 @@ class Data(QObject):
             self.project.logMessage(response.url)
             self.project.logMessage(response.message)
             self.project.logMessage(response.raw)
-            return False
         else:
             self.project.logMessage(classCode + ' = ' + response.url)
             lst = response.data[classCode]
@@ -234,7 +236,10 @@ class Data(QObject):
                     keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
             self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
-            return (len(self.itemKeys[classCode]) > 0)
+            if (len(self.itemKeys[classCode]) > 0):
+                self._dataLoaded = True
+                return True
+        return False
 
     def _loadClassItemsCsv(self, classCode):
         filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
@@ -248,6 +253,8 @@ class Data(QObject):
                     key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
                     keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
+            if len(self.itemKeys[classCode]) > 0:
+                self._dataLoaded = True
             self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
 
     def haveItem(self, itemKey):
@@ -372,13 +379,16 @@ class Data(QObject):
             self.project.logMessage(str(response.data))
         return response.url
 
-    def _loadDataSelected(self):
+    def loadData(self):
         self._ark = None
-        self._refreshDataSelected()
+        self.refreshData()
 
-    def _refreshDataSelected(self):
-        self._loadData()
+    def refreshData(self):
+        self._dataLoaded = False
+        self._loadCsvData()
         self.loadAllItems()
+        if self._dataLoaded:
+            self.dataLoaded.emit()
 
     def showItemData(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
         self.dock.setItem(item)

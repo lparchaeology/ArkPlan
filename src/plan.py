@@ -156,6 +156,8 @@ class Plan(QObject):
         self.metadata = Metadata(self.dock.widget.metadataWidget)
         self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
+        self.project.data.dataLoaded.connect(self.dock.activateArkData)
+
         self.initialised = True
 
     # Save the project
@@ -169,6 +171,7 @@ class Plan(QObject):
         # TODO Unload the drawing tools!
         self.dock.closeProject()
         self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
+        self.project.data.dataLoaded.disconnect(self.dock.activateArkData)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
@@ -816,9 +819,7 @@ class Plan(QObject):
     # SchematicDock methods
 
     def _loadArkData(self):
-        self.project.data.loadAllItems()
-        if self.project.data.itemKeys['cxt'] and len(self.project.data.itemKeys['cxt']) > 0:
-            self.dock.activateArkData()
+        self.project.data.loadData()
 
     def _openContextData(self):
         self.openItemInArk(self.dock.contextItemKey())

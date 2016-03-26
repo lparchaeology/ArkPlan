@@ -110,6 +110,7 @@ class Data(QObject):
         self.dock.itemChanged.connect(self._itemChanged)
 
         self.dock.loadDataSelected.connect(self._loadDataSelected)
+        self.dock.refreshDataSelected.connect(self._refreshDataSelected)
         self.dock.firstItemSelected.connect(self._firstItemSelected)
         self.dock.prevItemSelected.connect(self._prevItemSelected)
         self.dock.openItemData.connect(self._openItemData)
@@ -372,6 +373,10 @@ class Data(QObject):
         return response.url
 
     def _loadDataSelected(self):
+        self._ark = None
+        self._refreshDataSelected()
+
+    def _refreshDataSelected(self):
         self._loadData()
         self.loadAllItems()
 

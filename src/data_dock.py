@@ -51,6 +51,7 @@ class DataDock(ToolDockWidget):
 
     itemChanged = pyqtSignal()
     loadDataSelected = pyqtSignal()
+    refreshDataSelected = pyqtSignal()
     firstItemSelected = pyqtSignal()
     prevItemSelected = pyqtSignal()
     openItemData = pyqtSignal()
@@ -143,6 +144,10 @@ class DataDock(ToolDockWidget):
         self._loadDataAction.triggered.connect(self.loadDataSelected)
         self.toolbar2.addAction(self._loadDataAction)
 
+        self._refreshDataAction = QAction(QIcon(':/plugins/ark/data/refreshData.svg'), "Refresh Data", self)
+        self._refreshDataAction.triggered.connect(self.refreshDataSelected)
+        self.toolbar2.addAction(self._refreshDataAction)
+
         self._firstItemAction = QAction(QIcon(':/plugins/ark/data/goFirstItem.svg'), "Go to first item", self)
         self._firstItemAction.triggered.connect(self.firstItemSelected)
         self.toolbar2.addAction(self._firstItemAction)
@@ -214,6 +219,7 @@ class DataDock(ToolDockWidget):
         return str(self.widget.idSpin.value())
 
     def setItemNavEnabled(self, enabled=True):
+        self._refreshDataAction.setEnabled(enabled)
         self._firstItemAction.setEnabled(enabled)
         self._previousItemAction.setEnabled(enabled)
         self._openItemAction.setEnabled(enabled)

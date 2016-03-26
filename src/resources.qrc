@@ -7,6 +7,7 @@
   <qresource prefix="/plugins/ark/data">
     <file alias="data.svg">../resources/server-database.svg</file>
     <file alias="loadData.svg">../resources/svn-update.svg</file>
+    <file alias="refreshData.svg">../resources/view-refresh.svg</file>
     <file alias="openData.svg">../resources/applications-internet.svg</file>
     <file alias="goFirstItem.svg">../resources/go-first-view.svg</file>
     <file alias="goPrevMissing.svg">../resources/go-first.svg</file>

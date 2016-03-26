@@ -612,7 +612,8 @@ class Plan(QObject):
         if drawingAction != DrawingAction.NoDrawingAction:
             self.loadSourceDrawings(itemKey, drawingAction == DrawingAction.LoadDrawings)
 
-        self.project.filterModule.applyItemAction(itemKey, filterAction)
+        if filterAction != FilterAction.NoFilterAction:
+            self.project.filterModule.applyItemAction(itemKey, filterAction)
 
         if mapAction == MapAction.ZoomMap:
             self._zoomToItem(itemKey)
@@ -953,6 +954,7 @@ class Plan(QObject):
             context = self.dock.contextItemKey()
 
         self.project.filterModule.applySchematicFilter(context)
+        self.project.data.showItemData(context)
 
         haveArk, contextType, contextDescription = self._arkStatus(context)
         haveFeature = self._featureStatus(context, True)
@@ -992,6 +994,7 @@ class Plan(QObject):
             source = self.dock.sourceItemKey()
 
         self.project.filterModule.applySchematicFilter(source)
+        self.project.data.showItemData(source)
 
         haveArk, contextType, contextDescription = self._arkStatus(source)
         haveFeature = self._featureStatus(source)

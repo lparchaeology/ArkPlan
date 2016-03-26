@@ -375,19 +375,24 @@ class Data(QObject):
         self._loadData()
         self.loadAllItems()
 
+    def showItemData(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
+        self.dock.setItem(item)
+        self._showItem(item)
+        self.project.planModule.applyItemActions(item, mapAction, filterAction, drawingAction)
+
     def _itemChanged(self):
         item = self.dock.item()
         if self._prevItem == item:
             return
+        self._showItem(item)
+        self.project.planModule.applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
+
+    def _showItem(self, item):
         self._prevItem = item
-        if item.isInvalid():
-            self.dock.setItemUrl('') # Invalid
-        elif self.haveItem(item):
+        url = ''
+        if item.isValid() and self.haveItem(item):
             url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_apisum')
-            self.dock.setItemUrl(url)
-        else:
-            self.dock.setItemUrl('') # Not in ark
-        self.project.planModule.applyItemActions(self.dock.item(), self._mapAction, self._filterAction, self._drawingAction)
+        self.dock.setItemUrl(url)
 
     def _value(self, value):
         if value == False:

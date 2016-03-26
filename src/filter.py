@@ -34,7 +34,7 @@ from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 from ..libarkqgis import layers, utils
 
-from enum import FilterType
+from enum import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
@@ -141,6 +141,32 @@ class Filter(QObject):
         self.dock.menuAction().setChecked(show)
 
     # Filter methods
+
+    def applyItemAction(self, itemKey, filterAction):
+        if not self._initialised or filterAction == FilterAction.NoFilterAction:
+            return
+
+        if (filterAction == FilterAction.ExclusiveFilter
+            or filterAction == FilterAction.ExclusiveSelectFilter
+            or filterAction == FilterAction.ExclusiveHighlightFilter):
+            self.dock.removeFilters()
+
+        filterType = None
+        if (filterAction == FilterAction.IncludeFilter
+            or filterAction == FilterAction.ExclusiveFilter):
+            filterType = FilterType.IncludeFilter
+        elif (filterAction == FilterAction.SelectFilter
+              or filterAction == FilterAction.ExclusiveSelectFilter):
+            filterType = FilterType.SelectFilter
+        elif (filterAction == FilterAction.HighlightFilter
+              or filterAction == FilterAction.ExclusiveHighlightFilter):
+            filterType = FilterType.HighlightFilter
+        elif (filterAction == FilterAction.ExcludeFilter):
+            filterType = FilterType.ExcludeFilter
+
+        if filterType:
+            return self.addFilterClause(filterType, itemKey)
+        return -1
 
     def filterItem(self, itemKey):
         if not self._initialised:

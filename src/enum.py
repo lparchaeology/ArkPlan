@@ -38,10 +38,13 @@ class MapAction():
 
 class FilterAction():
     NoFilterAction = 0
-    ExclusiveFilter = 1
+    ExcludeFilter = 1
     IncludeFilter = 2
-    SelectFilter = 3
-    HighlightFilter = 4
+    ExclusiveFilter = 3
+    SelectFilter = 4
+    ExclusiveSelectFilter = 5
+    HighlightFilter = 6
+    ExclusiveHighlightFilter = 7
 
 class DrawingAction():
     NoDrawingAction = 0

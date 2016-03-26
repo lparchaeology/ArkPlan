@@ -37,6 +37,7 @@ from ..libarkqgis.models import TableModel, ParentChildModel
 
 from ..pyARK.ark import Ark
 
+from enum import *
 from data_dock import DataDock
 from config import Config
 from plan_item import ItemKey
@@ -86,8 +87,11 @@ class Data(QObject):
     _linkModel = None  # ParentChildModel()
 
     _ark = None
-    _highlightFilter = -1
     _prevItem = ItemKey()
+
+    _mapAction = MapAction.MoveMap
+    _filterAction = FilterAction.ExclusiveHighlightFilter
+    _drawingAction = DrawingAction.NoDrawingAction
 
     itemKeys = {} # {classCode: [ItemKey]
 
@@ -118,6 +122,10 @@ class Data(QObject):
         self.dock.editItemSelected.connect(self._editItemSelected)
         self.dock.loadDrawingsSelected.connect(self._loadDrawingsSelected)
         self.dock.itemLinkClicked.connect(self._itemLinkClicked)
+
+        self.dock.mapActionChanged.connect(self._mapActionChanged)
+        self.dock.filterActionChanged.connect(self._filterActionChanged)
+        self.dock.drawingActionChanged.connect(self._drawingActionChanged)
 
     # Load the project settings when project is loaded
     def loadProject(self):
@@ -372,17 +380,14 @@ class Data(QObject):
         if self._prevItem == item:
             return
         self._prevItem = item
-        self.project.filterModule.removeFilterClause(self._highlightFilter)
-        self._highlightFilter = -1
         if item.isInvalid():
             self.dock.setItemUrl('') # Invalid
         elif self.haveItem(item):
             url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_apisum')
             self.dock.setItemUrl(url)
-            #self._highlightFilter = self.project.planModule.moveToItem(item, True)
         else:
             self.dock.setItemUrl('') # Not in ark
-        self._showItemSelected()
+        self.project.planModule.applyItemActions(self.dock.item(), self._mapAction, self._filterAction, self._drawingAction)
 
     def _value(self, value):
         if value == False:
@@ -422,10 +427,7 @@ class Data(QObject):
         self.project.planModule.zoomToItem(self.dock.item())
 
     def _filterItemSelected(self):
-        item = self.dock.item()
-        if item.isValid():
-            self._highlightFilter = -1
-            self.project.planModule.filterItem(self.dock.item())
+        self.project.planModule.filterItem(self.dock.item())
 
     def _editItemSelected(self):
         self.project.planModule.editInBuffers(self.dock.item())
@@ -462,3 +464,12 @@ class Data(QObject):
             if self.haveItem(item):
                 self.dock.setItem(item)
                 self._itemChanged()
+
+    def _mapActionChanged(self, mapAction):
+        self._mapAction = mapAction
+
+    def _filterActionChanged(self, filterAction):
+        self._filterAction = filterAction
+
+    def _drawingActionChanged(self, drawingAction):
+        self._drawingAction = drawingAction

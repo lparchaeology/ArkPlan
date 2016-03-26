@@ -26,13 +26,14 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal, QUrl
-from PyQt4.QtGui import QWidget, QPixmap, QToolButton, QAction, QIcon
+from PyQt4.QtGui import QWidget, QPixmap, QToolButton, QAction, QIcon, QMenu, QActionGroup
 from PyQt4.QtWebKit import QWebPage
 
 from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.project import Project
 from ..libarkqgis import utils
 
+from enum import *
 from config import Config
 from plan_item import ItemKey
 
@@ -61,6 +62,9 @@ class DataDock(ToolDockWidget):
     editItemSelected = pyqtSignal()
     loadDrawingsSelected = pyqtSignal()
     itemLinkClicked = pyqtSignal(object)
+    mapActionChanged = pyqtSignal(int)
+    filterActionChanged = pyqtSignal(int)
+    drawingActionChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(DataDock, self).__init__(DataWidget(), parent)
@@ -87,13 +91,51 @@ class DataDock(ToolDockWidget):
         self._filterItemAction.triggered.connect(self.filterItemSelected)
         self.toolbar.addAction(self._filterItemAction)
 
-        self._loadDrawingsAction = QAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), "Load Drawings", self)
-        self._loadDrawingsAction.triggered.connect(self.loadDrawingsSelected)
-        self.toolbar.addAction(self._loadDrawingsAction)
+        self._loadItemDrawingsAction = QAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), "Load Drawings", self)
+        self._loadItemDrawingsAction.triggered.connect(self.loadDrawingsSelected)
+        self.toolbar.addAction(self._loadItemDrawingsAction)
 
         self._editItemAction = QAction(Project.getThemeIcon('mActionToggleEditing.svg'), "Edit Item", self)
         self._editItemAction.triggered.connect(self.editItemSelected)
         self.toolbar.addAction(self._editItemAction)
+
+        self._mapActionGroup = QActionGroup(self)
+        self._noMapAction = self._addMapAction(MapAction.NoMapAction, 'No map action')
+        self._zoomMapAction = self._addMapAction(MapAction.ZoomMap, 'Zoom map view')
+        self._panMapAction = self._addMapAction(MapAction.PanMap, 'Pan map view')
+        self._moveMapAction = self._addMapAction(MapAction.MoveMap, 'Move map view')
+        self._moveMapAction.setChecked(True)
+
+        self._filterActionGroup = QActionGroup(self)
+        self._noFilterAction = self._addFilterAction(FilterAction.NoFilterAction, 'No filter action')
+        self._includeFilterAction = self._addFilterAction(FilterAction.IncludeFilter, 'Add to filter')
+        self._exclusiveFilterAction = self._addFilterAction(FilterAction.ExclusiveFilter, 'Exclusive filter')
+        self._selectFilterAction = self._addFilterAction(FilterAction.SelectFilter, 'Add to selection')
+        self._exclusiveSelectFilterAction = self._addFilterAction(FilterAction.ExclusiveSelectFilter, 'Exclusive selection')
+        self._highlightFilterAction = self._addFilterAction(FilterAction.HighlightFilter, 'Add to highlight')
+        self._exclusiveHighlightFilterAction = self._addFilterAction(FilterAction.ExclusiveHighlightFilter, 'Exclusive highlight')
+        self._exclusiveHighlightFilterAction.setChecked(True)
+
+        self._drawingActionGroup = QActionGroup(self)
+        self._noDrawingAction = self._addDrawingAction(FilterAction.NoFilterAction, 'No drawing action')
+        self._noDrawingAction.setChecked(True)
+        self._loadDrawingsAction = self._addDrawingAction(FilterAction.IncludeFilter, 'Load drawings')
+        self._addDrawingsAction = self._addDrawingAction(FilterAction.ExclusiveFilter, 'Add drawings')
+
+        self._settingsMenu = QMenu(self)
+        self._settingsMenu.addActions(self._mapActionGroup.actions())
+        self._settingsMenu.addSeparator()
+        self._settingsMenu.addActions(self._filterActionGroup.actions())
+        self._settingsMenu.addSeparator()
+        self._settingsMenu.addActions(self._drawingActionGroup.actions())
+
+        self.toolbar.addSeparator()
+        self._settingsAction = QAction(QIcon(':/plugins/ark/settings.svg'), "Action Settings", self)
+        self._settingsAction.setMenu(self._settingsMenu)
+        self._settingsTool = QToolButton()
+        self._settingsTool.setDefaultAction(self._settingsAction)
+        self._settingsTool.setPopupMode(QToolButton.InstantPopup)
+        self.toolbar.addWidget(self._settingsTool)
 
         self.toolbar2.setVisible(True)
 
@@ -186,3 +228,36 @@ class DataDock(ToolDockWidget):
 
     def _linkClicked(self, url):
         self.itemLinkClicked.emit(url)
+
+    def _addMapAction(self, mapAction, text):
+        action = QAction(text, self)
+        action.setCheckable(True)
+        action.setData(mapAction)
+        action.triggered.connect(self._mapActionSelected)
+        self._mapActionGroup.addAction(action)
+        return action
+
+    def _mapActionSelected(self):
+        self.mapActionChanged.emit(self.sender().data())
+
+    def _addFilterAction(self, filterAction, text):
+        action = QAction(text, self)
+        action.setCheckable(True)
+        action.setData(filterAction)
+        action.triggered.connect(self._filterActionSelected)
+        self._filterActionGroup.addAction(action)
+        return action
+
+    def _filterActionSelected(self):
+        self.filterActionChanged.emit(self.sender().data())
+
+    def _addDrawingAction(self, drawingAction, text):
+        action = QAction(text, self)
+        action.setCheckable(True)
+        action.setData(drawingAction)
+        action.triggered.connect(self._drawingActionSelected)
+        self._drawingActionGroup.addAction(action)
+        return action
+
+    def _drawingActionSelected(self):
+        self.drawingActionChanged.emit(self.sender().data())

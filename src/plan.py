@@ -609,14 +609,17 @@ class Plan(QObject):
                 self._logItemAction(itemKey, action, timestamp)
 
     def applyItemActions(self, itemKey, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
-        if highlight:
-            self.project.filterModule.highlightItem(itemKey)
+        if drawingAction != DrawingAction.NoDrawingAction:
+            self.loadSourceDrawings(itemKey, drawingAction == DrawingAction.LoadDrawings)
+
+        self.project.filterModule.applyItemAction(itemKey, filterAction)
+
         if mapAction == MapAction.ZoomMap:
-            self._zoomToExtent(itemKey)
+            self._zoomToItem(itemKey)
         elif mapAction == MapAction.PanMap:
-            self._panToExtent(itemKey)
+            self._panToItem(itemKey)
         elif mapAction == MapAction.MoveMap:
-            self._moveToExtent(itemKey)
+            self._moveToItem(itemKey)
         self.project.mapCanvas().refresh()
 
     def showItem(self, itemKey, loadDrawings=True, zoom=True):
@@ -651,6 +654,8 @@ class Plan(QObject):
         self._moveToExtent(self.itemExtent(itemKey))
 
     def _moveToExtent(self, extent):
+        if extent is None or extent.isNull() or extent.isEmpty():
+            return
         mapExtent = self.project.mapCanvas().extent()
         if (extent.width() > mapExtent.width() or extent.height() > mapExtent.height()
             or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):

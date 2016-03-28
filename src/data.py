@@ -211,8 +211,8 @@ class Data(QObject):
 
     def loadClassItems(self, classCode):
         self.itemKeys[classCode] = []
-        if not self._loadClassItemsArk(classCode):
-            self._loadClassItemsCsv(classCode)
+        if not self._loadClassItemsCsv(classCode):
+            self._loadClassItemsArk(classCode)
 
     def _loadClassItemsArk(self, classCode):
         if not self.project.arkUrl():
@@ -235,7 +235,7 @@ class Data(QObject):
                 if key.isValid():
                     keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
-            self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
+            self.project.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
             if (len(self.itemKeys[classCode]) > 0):
                 self._dataLoaded = True
                 return True
@@ -253,9 +253,11 @@ class Data(QObject):
                     key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
                     keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
+            self.project.logMessage('CSV Items ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
             if len(self.itemKeys[classCode]) > 0:
                 self._dataLoaded = True
-            self.project.logMessage('Items = ' + str(len(self.itemKeys[classCode])))
+                return True
+        return False
 
     def haveItem(self, itemKey):
         try:

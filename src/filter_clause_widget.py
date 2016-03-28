@@ -234,6 +234,11 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
     def highlightColor(self):
         return self._highlightColorTool.color()
 
+    def highlightLineColor(self):
+        color = QColor(self._highlightColorTool.color()) # force deep copy
+        color.setAlpha(255)
+        return color
+
     def _normaliseRange(self, text):
         return text.replace(' - ', '-').replace(',', ' ').strip()
 

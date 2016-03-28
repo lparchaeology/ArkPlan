@@ -327,7 +327,7 @@ class Filter(QObject):
                 elif filter.classCode() == 'sgr':
                     filterItemKey = self._childrenItemKey(filterItemKey, 'cxt')
                 if filter.filterType() == FilterType.HighlightFilter:
-                    self.addHighlight(filterItemKey.filterClause(), filter.highlightColor())
+                    self.addHighlight(filterItemKey.filterClause(), filter.highlightLineColor(), filter.highlightColor())
 
 
     def _clearFilterSet(self):
@@ -346,12 +346,12 @@ class Filter(QObject):
         self.project.plan.applySelection(expression)
 
 
-    def applyHighlight(self, expression, color=None):
-        self.project.plan.applyHighlight(expression, color)
+    def applyHighlight(self, expression, lineColor=None, fillColor=None):
+        self.project.plan.applyHighlight(expression, lineColor, fillColor)
 
 
-    def addHighlight(self, expression, color=None):
-        self.project.plan.addHighlight(expression, color)
+    def addHighlight(self, expression, lineColor=None, fillColor=None):
+        self.project.plan.addHighlight(expression, lineColor, fillColor)
 
 
     def buildFilter(self):

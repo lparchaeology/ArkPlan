@@ -347,11 +347,11 @@ class Filter(QObject):
 
 
     def applyHighlight(self, expression, lineColor=None, fillColor=None):
-        self.project.plan.applyHighlight(expression, lineColor, fillColor)
+        self.project.plan.applyHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
 
     def addHighlight(self, expression, lineColor=None, fillColor=None):
-        self.project.plan.addHighlight(expression, lineColor, fillColor)
+        self.project.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
 
     def buildFilter(self):

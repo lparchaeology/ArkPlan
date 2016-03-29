@@ -61,6 +61,27 @@ class Config():
         except:
             return ''
 
+    @classmethod
+    def isGroupClass(cls, classCode):
+        try:
+            return Config.classCodes[classCode]['group']
+        except IndexError:
+            return False
+
+    @classmethod
+    def parentClass(cls, classCode):
+        try:
+            return Config.classCodes[classCode]['parent']
+        except IndexError:
+            return ''
+
+    @classmethod
+    def childClass(cls, classCode):
+        try:
+            return Config.classCodes[classCode]['child']
+        except IndexError:
+            return ''
+
     pluginName = u'ArkPlan'
     projectGroupName = u'Ark Spatial'
     filterSetGroupName = u'Filter Export Data'
@@ -244,6 +265,9 @@ class Config():
     # 'plan' = If can be drawn in the plan data
     # 'source' = If can be used as a source in the plan data
     # 'drawing' = If is a drawing in own right
+    # 'group' = If is a group of other classes
+    # 'parent' = The parent group (optional)
+    # 'child' = The child group (optional)
     classCodes = {
         'cxt' : {
             'code'             : 'cxt',
@@ -251,6 +275,8 @@ class Config():
             'plan'             : True,
             'source'           : True,
             'drawing'          : True,
+            'group'            : False,
+            'parent'           : 'grp',
         },
         'sgr' : {
             'code'             : 'sgr',
@@ -258,6 +284,9 @@ class Config():
             'plan'             : False,
             'source'           : False,
             'drawing'          : False,
+            'group'            : True,
+            'parent'           : 'grp',
+            'child'            : 'cxt',
         },
         'grp' : {
             'code'             : 'grp',
@@ -265,6 +294,9 @@ class Config():
             'plan'             : False,
             'source'           : False,
             'drawing'          : False,
+            'group'            : True,
+            'parent'           : 'sgr',
+            'child'            : 'grp',
         },
         'pln' : {
             'code'             : 'pln',
@@ -272,6 +304,7 @@ class Config():
             'plan'             : False,
             'source'           : True,
             'drawing'          : True,
+            'group'            : False,
         },
         'rgf' : {
             'code'             : 'rgf',
@@ -279,6 +312,7 @@ class Config():
             'plan'             : True,
             'source'           : True,
             'drawing'          : False,
+            'group'            : False,
         },
         'sec' : {
             'code'             : 'sec',
@@ -286,6 +320,7 @@ class Config():
             'plan'             : True,
             'source'           : True,
             'drawing'          : True,
+            'group'            : False,
         },
         'smp' : {
             'code'             : 'smp',
@@ -293,6 +328,7 @@ class Config():
             'plan'             : True,
             'source'           : False,
             'drawing'          : False,
+            'group'            : False,
         },
         'sph' : {
             'code'             : 'sph',
@@ -300,6 +336,7 @@ class Config():
             'plan'             : False,
             'source'           : False,
             'drawing'          : False,
+            'group'            : False,
         },
         'tmb' : {
             'code'             : 'tmb',
@@ -307,6 +344,7 @@ class Config():
             'plan'             : True,
             'source'           : False,
             'drawing'          : False,
+            'group'            : False,
         },
     }
 

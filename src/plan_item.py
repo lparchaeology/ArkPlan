@@ -154,6 +154,12 @@ class ItemKey():
     def toCsv(self):
         return utils.doublequote(self.siteCode) + ',' + utils.doublequote(self.classCode) + ',' + utils.doublequote(self.itemId)
 
+    def toList(self):
+        lst = []
+        for itemId in self.itemIdList():
+            lst.append(ItemKey(self.siteCode, self.classCode, itemId))
+        return lst
+
     def setSiteCode(self, siteCode):
         self.siteCode = utils.string(siteCode)
 

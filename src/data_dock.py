@@ -212,12 +212,6 @@ class DataDock(ToolDockWidget):
     def itemId(self):
         return str(self.widget.itemIdSpin.value())
 
-    def subgroup(self):
-        return ItemKey(self.siteCode(), 'sgr', self.itemId())
-
-    def subgroupId(self):
-        return str(self.widget.idSpin.value())
-
     def setItemNavEnabled(self, enabled=True):
         self._refreshDataAction.setEnabled(enabled)
         self._firstItemAction.setEnabled(enabled)

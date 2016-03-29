@@ -97,12 +97,8 @@ class Filter(QObject):
         codeList = set()
         for key in Config.classCodes:
             classCode = Config.classCodes[key]
-            if classCode['plan']:
+            if classCode['plan'] or classCode['group']:
                 codeList.add(classCode['code'])
-        #if self.project.data.hasClassData('sgr'):
-        codeList.add('sgr')
-        #if self.project.data.hasClassData('grp'):
-        codeList.add('grp')
         codes = {}
         for code in sorted(codeList):
             codes[code] = code
@@ -272,12 +268,8 @@ class Filter(QObject):
         for index in activeFilters:
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
-                filterItemKey = filter.itemKey()
-                if filter.classCode() == 'grp':
-                    subItemKey = self._childrenItemKey(filterItemKey, 'sgr')
-                    filterItemKey = self._childrenItemKey(subItemKey, 'cxt')
-                elif filter.classCode() == 'sgr':
-                    filterItemKey = self._childrenItemKey(filterItemKey, 'cxt')
+                filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
+                self.project.logMessage('filter key = ' + filterItemKey.debug())
                 if filter.filterType() == FilterType.SelectFilter:
                     if firstSelect:
                         firstSelect = False
@@ -320,12 +312,8 @@ class Filter(QObject):
         for index in activeFilters:
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
-                filterItemKey = filter.itemKey()
-                if filter.classCode() == 'grp':
-                    subItemKey = self._childrenItemKey(filterItemKey, 'sgr')
-                    filterItemKey = self._childrenItemKey(subItemKey, 'cxt')
-                elif filter.classCode() == 'sgr':
-                    filterItemKey = self._childrenItemKey(filterItemKey, 'cxt')
+                filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
+                self.project.logMessage('filter key = ' + filterItemKey.debug())
                 if filter.filterType() == FilterType.HighlightFilter:
                     self.addHighlight(filterItemKey.filterClause(), filter.highlightLineColor(), filter.highlightColor())
 
@@ -412,18 +400,6 @@ class Filter(QObject):
         self.data._groupProxyModel.setFilterRegExp(utils._listToRegExp(groupList))
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
-
-    def _childrenItemKey(self, parentItemKey, childClassCode):
-        childSiteCode = ''
-        childIdSet = set()
-        lookupItemKey = copy.deepcopy(parentItemKey)
-        for parent in parentItemKey.itemIdList():
-            lookupItemKey.setItemId(parent)
-            children = self.project.data.getChildren(lookupItemKey, childClassCode)
-            for child in children:
-                childSiteCode = child.siteCode
-                childIdSet.add(child.itemId)
-        return ItemKey(childSiteCode, childClassCode, childIdSet)
 
     def _filterSetGroup(self, key):
         return 'filterset/' + key

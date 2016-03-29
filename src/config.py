@@ -185,7 +185,7 @@ class Config():
         },
     }
 
-    sourceCodesOrder = ['drw', 'unc', 'svy', 'skt', 'cln', 'mod', 'inf', 'cre', 'oth']
+    sourceCodesOrder = ['drw', 'unc', 'svy', 'skt', 'gph', 'cln', 'mod', 'inf', 'cre', 'oth']
     sourceCodes = {
         'drw' : {
             'code'             : 'drw',
@@ -205,6 +205,11 @@ class Config():
         'skt' : {
             'code'             : 'skt',
             'label'            : 'Sketch',
+            'sourceItem'       : True,
+        },
+        'gph' : {
+            'code'             : 'gph',
+            'label'            : 'Georeferenced Photo',
             'sourceItem'       : True,
         },
         'cln' : {

@@ -701,7 +701,8 @@ class Plan(QObject):
         self.project.mapCanvas().refresh()
 
     def itemExtent(self, itemKey):
-        request = itemKey.featureRequest()
+        requestKey = self.project.data.nodesItemKey(itemKey)
+        request = requestKey.featureRequest()
         points = self._requestAsLayer(request, self.project.plan.pointsLayer, 'points')
         lines = self._requestAsLayer(request, self.project.plan.linesLayer, 'lines')
         polygons = self._requestAsLayer(request, self.project.plan.polygonsLayer, 'polygons')

@@ -252,7 +252,6 @@ class Data(QObject):
             self.project.logMessage(response.message)
             self.project.logMessage(response.raw)
         else:
-            self.project.logMessage(classCode + ' = ' + response.url)
             lst = response.data[classCode]
             keys = set()
             for record in lst:
@@ -326,7 +325,6 @@ class Data(QObject):
         items = []
         try:
             for link in data[xmi]:
-                utils.logMessage(str(link))
                 itemkey = link[u'xmi_itemkey']
                 itemvalue = link[u'xmi_itemvalue'].split(u'_')
                 item = ItemKey(itemvalue[0], itemkey[:3], itemvalue[1])
@@ -354,7 +352,6 @@ class Data(QObject):
         return children
 
     def nodesItemKey(self, parentItemKey):
-        self.project.logMessage('nodesItemKey = ' + parentItemKey.debug())
         if not self._dataLoaded or not parentItemKey or parentItemKey.isInvalid() or not Config.isGroupClass(parentItemKey.classCode):
             return parentItemKey
         else:
@@ -382,9 +379,6 @@ class Data(QObject):
             utils.logMessage(response.url)
             utils.logMessage(response.message)
             utils.logMessage(response.raw)
-        else:
-            self.project.logMessage(str(response.url))
-            self.project.logMessage(str(response.data))
         return response.data
 
     def getItemSubform(self, itemKey, subform):
@@ -394,9 +388,6 @@ class Data(QObject):
             utils.logMessage(response.url)
             utils.logMessage(response.message)
             utils.logMessage(response.raw)
-        else:
-            self.project.logMessage(str(response.url))
-            self.project.logMessage(str(response.data))
         return response.url
 
     def showItemData(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
@@ -467,13 +458,9 @@ class Data(QObject):
     def _itemLinkClicked(self, url):
         item_key = ''
         item_value = []
-        self.project.logMessage(url.toString())
-        self.project.logMessage(url.path())
-        self.project.logMessage(url.path()[:5])
         if 'download.php' in url.toString():
             #web = QWebView()
             #web.load(url)
-            self.project.logMessage('load it')
             self.dock.widget.itemDataView.load(url)
             return
         if url.hasQueryItem('item_key'):
@@ -484,7 +471,6 @@ class Data(QObject):
             item_value = url.queryItemValue(item_key).split('_')
         else:
             parts = url.path().split('/')
-            self.project.logMessage(str(parts))
             if len(parts) >= 2:
                 item_key = parts[-2]
                 item_value = parts[-1].split('_')

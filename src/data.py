@@ -347,11 +347,10 @@ class Data(QObject):
         return {}
 
     def getChildren(self, itemKey, childClassCode):
-        children = self.linkedItems(itemKey, childClassCode)
-        utils.logMessage(str(children))
+        children = self._linkModel.getChildren(itemKey)
         if len(children) > 0:
             return children
-        return self._linkModel.getChildren(itemKey)
+        return self.linkedItems(itemKey, childClassCode)
 
     def getParent(self, itemKey):
         return self._linkModel.getParent(itemKey)

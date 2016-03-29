@@ -255,7 +255,6 @@ class Filter(QObject):
         return self.dock.hasFilterType(filterType)
 
     def applyFilters(self):
-        utils.logMessage('Filter.applyFilters()')
         if not self._initialised:
             return
         excludeString = ''
@@ -269,7 +268,6 @@ class Filter(QObject):
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
                 filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
-                self.project.logMessage('filter key = ' + filterItemKey.debug())
                 if filter.filterType() == FilterType.SelectFilter:
                     if firstSelect:
                         firstSelect = False
@@ -288,9 +286,6 @@ class Filter(QObject):
                     else:
                         includeString += ' or '
                     includeString += filterItemKey.filterClause()
-        utils.logMessage(' - include = ' + includeString)
-        utils.logMessage(' - exclude = ' + excludeString)
-        utils.logMessage(' - select = ' + selectString)
         if includeString and excludeString:
             self.applyFilter('(' + includeString + ') and NOT (' + excludeString + ')')
         elif excludeString:
@@ -302,7 +297,6 @@ class Filter(QObject):
 
 
     def applyHighlightFilters(self):
-        utils.logMessage('Filter.applyHighlightFilters() = ' + str(self._initialised))
         if not self._initialised:
             return
         highlightString = ''
@@ -313,7 +307,6 @@ class Filter(QObject):
             if activeFilters[index] is not None:
                 filter = activeFilters[index]
                 filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
-                self.project.logMessage('filter key = ' + filterItemKey.debug())
                 if filter.filterType() == FilterType.HighlightFilter:
                     self.addHighlight(filterItemKey.filterClause(), filter.highlightLineColor(), filter.highlightColor())
 

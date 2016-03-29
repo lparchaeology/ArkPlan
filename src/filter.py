@@ -160,7 +160,7 @@ class Filter(QObject):
         elif (filterAction == FilterAction.ExcludeFilter):
             filterType = FilterType.ExcludeFilter
 
-        if filterType:
+        if filterType is not None:
             return self.addFilterClause(filterType, itemKey)
         return -1
 

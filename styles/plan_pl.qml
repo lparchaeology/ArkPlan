@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.12.1-Lyon" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.12.1-Lyon" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="ste_cd">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
@@ -60,7 +60,7 @@
       <rule filter="category = 'ros'" key="{305d7047-2c28-4770-82d2-580501cbf953}" symbol="11" label="Return of Slope"/>
       <rule filter="category = 'cut'" key="{b2a7b2ab-ee8b-4321-b935-25983b2499d2}" symbol="12" label="Cut in Section"/>
       <rule filter="category = 'tip'" key="{f5507640-faa0-4b39-b0e8-9c64107e7eaf}" symbol="13" label="Tipline in Section"/>
-      <rule filter="category NOT IN ('sln', 'ext', 'veg', 'ueg', 'loe', 'trn', 'vtr', 'bos', 'vbs', 'hch', 'unc', 'ros', 'cut', 'tip')" key="{75e4d065-e788-4b6d-8c7d-807baece5fb4}" symbol="14" label="UNKNOWN"/>
+      <rule filter="category IS NULL or category NOT IN ('sln', 'ext', 'veg', 'ueg', 'loe', 'trn', 'vtr', 'bos', 'vbs', 'hch', 'unc', 'ros', 'cut', 'tip')" key="{75e4d065-e788-4b6d-8c7d-807baece5fb4}" symbol="14" label="UNKNOWN"/>
     </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="line" name="0">
@@ -657,7 +657,7 @@
           <data-defined/>
         </settings>
       </rule>
-      <rule description="Default" filter="category NOT IN  ('cut', 'sln') and name IS NOT NULL">
+      <rule description="Name" filter="name IS NOT NULL and (category IS NULL or category NOT IN  ('cut', 'sln'))">
         <settings>
           <text-style fontItalic="0" fontFamily="Gill Sans" fontLetterSpacing="0" fontUnderline="0" fontSizeMapUnitMaxScale="0" fontWeight="50" fontStrikeout="0" textTransp="0" previewBkgrdColor="#ffffff" fontCapitals="0" textColor="0,0,0,255" fontSizeMapUnitMinScale="0" fontSizeInMapUnits="0" isExpression="0" blendMode="0" fontSize="10" fieldName="name" namedStyle="Regular" fontWordSpacing="0"/>
           <text-format placeDirectionSymbol="0" multilineAlign="0" rightDirectionSymbol=">" multilineHeight="1" plussign="0" addDirectionSymbol="0" leftDirectionSymbol="&lt;" formatNumbers="0" decimals="3" wrapChar="" reverseDirectionSymbol="0"/>
@@ -845,7 +845,7 @@
     <selectedonly on=""/>
   </labelattributes>
   <SingleCategoryDiagramRenderer diagramType="Pie">
-    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
+    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
       <fontProperties description=".Helvetica Neue DeskInterface,13,-1,5,50,0,0,0,0,0" style=""/>
       <attribute field="" color="#000000" label=""/>
     </DiagramCategory>

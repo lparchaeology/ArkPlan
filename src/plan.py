@@ -77,6 +77,10 @@ class Plan(QObject):
 
     _editSchematic = False
 
+    _mapAction = MapAction.MoveMap
+    _filterAction = FilterAction.ExclusiveHighlightFilter
+    _drawingAction = DrawingAction.NoDrawingAction
+
     _itemLogPath = ''
 
     def __init__(self, project):
@@ -105,9 +109,12 @@ class Plan(QObject):
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.dock.loadArkData.connect(self._loadArkData)
+        self.dock.mapActionChanged.connect(self._mapActionChanged)
+        self.dock.filterActionChanged.connect(self._filterActionChanged)
+        self.dock.drawingActionChanged.connect(self._drawingActionChanged)
         self.dock.openContextData.connect(self._openContextData)
         self.dock.openSourceContextData.connect(self._openSourceContextData)
-        self.dock.findContextSelected.connect(self._findMoveContext)
+        self.dock.findContextSelected.connect(self._findContext)
         self.dock.firstContextSelected.connect(self._firstContext)
         self.dock.lastContextSelected.connect(self._lastContext)
         self.dock.prevContextSelected.connect(self._prevContext)
@@ -116,7 +123,7 @@ class Plan(QObject):
         self.dock.nextMissingSelected.connect(self._nextMissing)
         self.dock.editContextSelected.connect(self._editSchematicContext)
         self.dock.deleteSectionSchematicSelected.connect(self._deleteSectionSchematic)
-        self.dock.findSourceSelected.connect(self._findPanSource)
+        self.dock.findSourceSelected.connect(self._findSource)
         self.dock.copySourceSelected.connect(self._editSourceSchematic)
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.dock.editSourceSelected.connect(self._editSource)
@@ -822,6 +829,15 @@ class Plan(QObject):
     def _loadArkData(self):
         self.project.data.loadData()
 
+    def _mapActionChanged(self, mapAction):
+        self._mapAction = mapAction
+
+    def _filterActionChanged(self, filterAction):
+        self._filterAction = filterAction
+
+    def _drawingActionChanged(self, drawingAction):
+        self._drawingAction = drawingAction
+
     def _openContextData(self):
         self.openItemInArk(self.dock.contextItemKey())
 
@@ -841,27 +857,22 @@ class Plan(QObject):
 
     def _mergeSchematic(self):
         self.mergeBuffers()
-        self._findMoveContext()
+        self._findContext()
 
     def _clearSchematicFilters(self):
         self.project.filterModule.clearSchematicFilter()
 
-    def _findMoveContext(self, context=ItemKey()):
-        self._findContext(context)
-        if self.dock.contextStatus() == SearchStatus.Found:
-            self.moveToItem(self.dock.contextItemKey())
-
     def _firstContext(self):
-        self._findMoveContext(self.project.data.firstItem('cxt'))
+        self._findContext(self.project.data.firstItem('cxt'))
 
     def _lastContext(self):
-        self._findMoveContext(self.project.data.lastItem('cxt'))
+        self._findContext(self.project.data.lastItem('cxt'))
 
     def _prevContext(self):
-        self._findMoveContext(self.project.data.prevItem(self.dock.contextItemKey()))
+        self._findContext(self.project.data.prevItem(self.dock.contextItemKey()))
 
     def _nextContext(self):
-        self._findMoveContext(self.project.data.nextItem(self.dock.contextItemKey()))
+        self._findContext(self.project.data.nextItem(self.dock.contextItemKey()))
 
     def _prevMissing(self):
         context = self.dock.contextItemKey()
@@ -872,7 +883,7 @@ class Plan(QObject):
         for prv in reversed(range(idx)):
             item = self.project.data.itemKeys['cxt'][prv]
             if item not in schematics:
-                self._findMoveContext(item)
+                self._findContext(item)
                 return
 
     def _nextMissing(self):
@@ -883,7 +894,7 @@ class Plan(QObject):
         schematics = self._getAllSchematicItems()
         for item in self.project.data.itemKeys['cxt'][idx:]:
             if item not in schematics:
-                self._findMoveContext(item)
+                self._findContext(item)
                 return
 
     def _getAllSchematicItems(self):
@@ -955,8 +966,8 @@ class Plan(QObject):
         if not context.isValid():
             context = self.dock.contextItemKey()
 
-        self.project.filterModule.applySchematicFilter(context)
-        self.project.data.showItemData(context)
+        self.project.filterModule.applySchematicFilter(context, self._filterAction)
+        self.applyItemActions(context, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
 
         haveArk, contextType, contextDescription = self._arkStatus(context)
         haveFeature = self._featureStatus(context, True)
@@ -981,12 +992,6 @@ class Plan(QObject):
         self.dock.setContext(context, haveArk, contextType, contextDescription, haveFeature, haveSchematic, haveSectionSchematic)
         self.metadata.setItemId(context.itemId)
 
-    def _findPanSource(self):
-        if self.dock.sourceStatus() == SearchStatus.Unknown:
-            self._findSource()
-        if self.dock.sourceStatus() == SearchStatus.Found:
-            self.moveToItem(self.dock.sourceItemKey())
-
     def _editSource(self):
         self.editInBuffers(self.dock.sourceItemKey())
         self.dock.widget.setCurrentIndex(0)
@@ -995,8 +1000,8 @@ class Plan(QObject):
         if not source.isValid():
             source = self.dock.sourceItemKey()
 
-        self.project.filterModule.applySchematicFilter(source)
-        self.project.data.showItemData(source)
+        self.project.filterModule.applySchematicFilter(source, self._filterAction)
+        self.applyItemActions(source, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
 
         haveArk, contextType, contextDescription = self._arkStatus(source)
         haveFeature = self._featureStatus(source)

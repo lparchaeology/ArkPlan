@@ -35,6 +35,7 @@ from qgis.core import QgsMessageLog
 from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.event_filters import ReturnPressedFilter
 
+from enum import *
 from plan_item import ItemKey
 
 import schematic_widget_base
@@ -50,6 +51,9 @@ class SearchStatus():
 class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     loadArkData = pyqtSignal()
+    mapActionChanged = pyqtSignal(int)
+    filterActionChanged = pyqtSignal(int)
+    drawingActionChanged = pyqtSignal(int)
     openContextData = pyqtSignal()
     openSourceContextData = pyqtSignal()
     findContextSelected = pyqtSignal()
@@ -80,6 +84,10 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
 
     def initGui(self):
         self.loadArkTool.clicked.connect(self.loadArkData)
+        self.actionSettingsTool.setFilterAction(FilterAction.HighlightFilter)
+        self.actionSettingsTool.mapActionChanged.connect(self.mapActionChanged)
+        self.actionSettingsTool.filterActionChanged.connect(self.filterActionChanged)
+        self.actionSettingsTool.drawingActionChanged.connect(self.drawingActionChanged)
         self.openContextTool.clicked.connect(self.openContextData)
         self.openSourceContextTool.clicked.connect(self.openSourceContextData)
         self.siteCodeCombo.currentIndexChanged.connect(self._contextChanged)

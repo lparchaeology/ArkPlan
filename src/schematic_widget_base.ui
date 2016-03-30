@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>284</width>
-    <height>761</height>
+    <width>317</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -430,6 +430,20 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="ActionSettingsTool" name="actionSettingsTool">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/plugins/ark/settings.svg</normaloff>:/plugins/ark/settings.svg</iconset>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::InstantPopup</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -688,6 +702,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ActionSettingsTool</class>
+   <extends>QToolButton</extends>
+   <header>action_settings.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>cloneSourceButton</tabstop>
   <tabstop>copySourceButton</tabstop>

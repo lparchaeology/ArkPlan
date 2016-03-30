@@ -65,6 +65,9 @@ class PlanDock(ToolDockWidget):
 
     # Schematic Signals
     loadArkData = pyqtSignal()
+    mapActionChanged = pyqtSignal(int)
+    filterActionChanged = pyqtSignal(int)
+    drawingActionChanged = pyqtSignal(int)
     openContextData = pyqtSignal()
     openSourceContextData = pyqtSignal()
     findContextSelected = pyqtSignal()
@@ -141,6 +144,9 @@ class PlanDock(ToolDockWidget):
         self.widget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.loadArkData.connect(self.loadArkData)
+        self.widget.schematicWidget.mapActionChanged.connect(self.mapActionChanged)
+        self.widget.schematicWidget.filterActionChanged.connect(self.filterActionChanged)
+        self.widget.schematicWidget.drawingActionChanged.connect(self.drawingActionChanged)
         self.widget.schematicWidget.openContextData.connect(self.openContextData)
         self.widget.schematicWidget.openSourceContextData.connect(self.openSourceContextData)
         self.widget.schematicWidget.findContextSelected.connect(self.findContextSelected)

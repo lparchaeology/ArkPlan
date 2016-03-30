@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_SchematicWidget(object):
     def setupUi(self, SchematicWidget):
         SchematicWidget.setObjectName(_fromUtf8("SchematicWidget"))
-        SchematicWidget.resize(284, 761)
+        SchematicWidget.resize(317, 782)
         self.gridLayout = QtGui.QGridLayout(SchematicWidget)
         self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -195,6 +195,13 @@ class Ui_SchematicWidget(object):
         self.lastContextTool.setIcon(icon8)
         self.lastContextTool.setObjectName(_fromUtf8("lastContextTool"))
         self.horizontalLayout_3.addWidget(self.lastContextTool)
+        self.actionSettingsTool = ActionSettingsTool(self.checkGroup)
+        icon9 = QtGui.QIcon()
+        icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/settings.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionSettingsTool.setIcon(icon9)
+        self.actionSettingsTool.setPopupMode(QtGui.QToolButton.InstantPopup)
+        self.actionSettingsTool.setObjectName(_fromUtf8("actionSettingsTool"))
+        self.horizontalLayout_3.addWidget(self.actionSettingsTool)
         self.gridLayout_4.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
         self.gridLayout.addWidget(self.checkGroup, 0, 0, 1, 1)
         self.cloneGroup = QtGui.QGroupBox(SchematicWidget)
@@ -333,6 +340,7 @@ class Ui_SchematicWidget(object):
         self.nextMissingTool.setText(_translate("SchematicWidget", "...", None))
         self.lastContextTool.setToolTip(_translate("SchematicWidget", "Go Last Context", None))
         self.lastContextTool.setText(_translate("SchematicWidget", "...", None))
+        self.actionSettingsTool.setText(_translate("SchematicWidget", "...", None))
         self.cloneGroup.setTitle(_translate("SchematicWidget", "Source Schematic", None))
         self.sourceSchematicLabel.setText(_translate("SchematicWidget", "Has Schematic:", None))
         self.sourceFeatureDataLabel.setText(_translate("SchematicWidget", "Has Features:", None))
@@ -348,4 +356,5 @@ class Ui_SchematicWidget(object):
         self.findSourceTool.setToolTip(_translate("SchematicWidget", "<html><head/><body><p>Pan to Context</p></body></html>", None))
         self.findSourceTool.setText(_translate("SchematicWidget", "...", None))
 
+from action_settings import ActionSettingsTool
 import resources_rc

@@ -299,22 +299,21 @@ class IdentifyItemAction(QAction):
             menu.addAction('Unknown Source')
         else:
             menu.addAction('No Schematic')
-        if project.data.hasData():
-            menu.addSeparator()
-            if itemKey.classCode == 'cxt':
-                subItem = project.data.getParent(itemKey)
-                if subItem:
-                    grpItem = project.data.getParent(subItem)
-                    if project.useArkDB() and project.arkUrl():
-                        self.subAction = OpenArkAction(project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId), parent)
-                        menu.addAction(self.subAction)
-                        if grpItem:
-                            self.grpAction = OpenArkAction(project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId), parent)
-                            menu.addAction(self.grpAction)
-                    else:
-                        menu.addAction('Sub-group: ' + str(subItem.itemId))
-                        if grpItem:
-                            menu.addAction('Group: ' + str(grpItem.itemId))
+        if itemKey.classCode == 'cxt':
+            subItem = project.data.parentItem(itemKey)
+            if subItem and subItem.isValid():
+                menu.addSeparator()
+                grpItem = project.data.parentItem(subItem)
+                if project.useArkDB() and project.arkUrl():
+                    self.subAction = OpenArkAction(project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId), parent)
+                    menu.addAction(self.subAction)
+                    if grpItem:
+                        self.grpAction = OpenArkAction(project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId), parent)
+                        menu.addAction(self.grpAction)
+                else:
+                    menu.addAction('Sub-group: ' + str(subItem.itemId))
+                    if grpItem:
+                        menu.addAction('Group: ' + str(grpItem.itemId))
         if len(area) > 0:
             menu.addSeparator()
             tot = 0

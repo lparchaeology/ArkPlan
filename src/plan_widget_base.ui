@@ -37,8 +37,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>392</width>
-         <height>223</height>
+         <width>394</width>
+         <height>229</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -71,12 +71,12 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="clearButton">
+       <widget class="QPushButton" name="resetButton">
         <property name="toolTip">
          <string>Clear unsaved changes from work layers</string>
         </property>
         <property name="text">
-         <string>Clear</string>
+         <string>Reset</string>
         </property>
        </widget>
       </item>
@@ -115,8 +115,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>392</width>
-         <height>265</height>
+         <width>100</width>
+         <height>30</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -166,8 +166,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>392</width>
-         <height>265</height>
+         <width>100</width>
+         <height>30</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">

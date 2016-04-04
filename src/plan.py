@@ -105,7 +105,7 @@ class Plan(QObject):
         self.dock.selectPolygonsSelected.connect(self._selectPolygonsLayer)
         self.dock.featureNameChanged.connect(self._featureNameChanged)
         self.dock.sectionChanged.connect(self._sectionChanged)
-        self.dock.clearSelected.connect(self.clearBuffers)
+        self.dock.resetSelected.connect(self.resetBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
         self.dock.loadArkData.connect(self._loadArkData)
@@ -436,8 +436,8 @@ class Plan(QObject):
             self.siteCodes.add(feature.attribute(siteField))
             self.classCodes.add(feature.attribute(classField))
 
-    def clearBuffers(self):
-        self.project.plan.clearBuffers('Clear Buffers')
+    def resetBuffers(self):
+        self.project.plan.resetBuffers('Clear Buffers')
         if self._editSchematic:
             self._editSchematic = False
             self.dock.activateSchematicCheck()

@@ -155,9 +155,9 @@ class Ui_PlanDockWidget(object):
         self.verticalLayout_2.addWidget(self.scrollArea)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.clearButton = QtGui.QPushButton(self.PlanDockContents)
-        self.clearButton.setObjectName(_fromUtf8("clearButton"))
-        self.horizontalLayout.addWidget(self.clearButton)
+        self.resetButton = QtGui.QPushButton(self.PlanDockContents)
+        self.resetButton.setObjectName(_fromUtf8("resetButton"))
+        self.horizontalLayout.addWidget(self.resetButton)
         self.mergeButton = QtGui.QPushButton(self.PlanDockContents)
         self.mergeButton.setObjectName(_fromUtf8("mergeButton"))
         self.horizontalLayout.addWidget(self.mergeButton)
@@ -172,8 +172,8 @@ class Ui_PlanDockWidget(object):
         PlanDockWidget.setTabOrder(self.loadRawButton, self.loadGeoButton)
         PlanDockWidget.setTabOrder(self.loadGeoButton, self.loadContextButton)
         PlanDockWidget.setTabOrder(self.loadContextButton, self.tabWidget)
-        PlanDockWidget.setTabOrder(self.tabWidget, self.clearButton)
-        PlanDockWidget.setTabOrder(self.clearButton, self.mergeButton)
+        PlanDockWidget.setTabOrder(self.tabWidget, self.resetButton)
+        PlanDockWidget.setTabOrder(self.resetButton, self.mergeButton)
         PlanDockWidget.setTabOrder(self.mergeButton, self.featureNameEdit)
 
     def retranslateUi(self, PlanDockWidget):
@@ -200,11 +200,11 @@ class Ui_PlanDockWidget(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.featuresTab), _translate("PlanDockWidget", "Features", None))
         self.sectionLabel.setText(_translate("PlanDockWidget", "Section:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.sectionsTab), _translate("PlanDockWidget", "Sections", None))
-        self.clearButton.setToolTip(_translate("PlanDockWidget", "Clear unsaved changes from work layers", None))
-        self.clearButton.setText(_translate("PlanDockWidget", "Clear", None))
+        self.resetButton.setToolTip(_translate("PlanDockWidget", "Clear unsaved changes from work layers", None))
+        self.resetButton.setText(_translate("PlanDockWidget", "Reset", None))
         self.mergeButton.setToolTip(_translate("PlanDockWidget", "Move new context to main layers", None))
         self.mergeButton.setText(_translate("PlanDockWidget", "Merge", None))
 
 from ..libarkqgis.dock import ArkDockWidget
 from metadata_widget import MetadataWidget
-import resources
+import resources_rc

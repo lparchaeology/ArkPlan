@@ -161,7 +161,7 @@
                <string>...</string>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
@@ -175,7 +175,7 @@
                <string>...</string>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
@@ -189,7 +189,7 @@
                <string>...</string>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/plugins/ark/plan/nodeTool.png</normaloff>:/plugins/ark/plan/nodeTool.png</iconset>
               </property>
              </widget>
@@ -287,12 +287,12 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="clearButton">
+       <widget class="QPushButton" name="resetButton">
         <property name="toolTip">
          <string>Clear unsaved changes from work layers</string>
         </property>
         <property name="text">
-         <string>Clear</string>
+         <string>Reset</string>
         </property>
        </widget>
       </item>
@@ -331,7 +331,7 @@
   <tabstop>loadGeoButton</tabstop>
   <tabstop>loadContextButton</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>clearButton</tabstop>
+  <tabstop>resetButton</tabstop>
   <tabstop>mergeButton</tabstop>
   <tabstop>featureNameEdit</tabstop>
  </tabstops>

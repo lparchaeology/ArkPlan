@@ -60,7 +60,7 @@ class PlanDock(ToolDockWidget):
     selectPolygonsSelected = pyqtSignal()
     featureNameChanged = pyqtSignal(str)
     sectionChanged = pyqtSignal(object)
-    clearSelected = pyqtSignal()
+    resetSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
     # Schematic Signals
@@ -140,7 +140,7 @@ class PlanDock(ToolDockWidget):
         self.widget.drawingWidget.featureNameChanged.connect(self.featureNameChanged)
         self.widget.drawingWidget.sectionChanged.connect(self.sectionChanged)
 
-        self.widget.clearButton.clicked.connect(self.clearSelected)
+        self.widget.resetButton.clicked.connect(self.resetSelected)
         self.widget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.loadArkData.connect(self.loadArkData)

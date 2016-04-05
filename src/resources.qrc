@@ -34,6 +34,7 @@
     <file alias="statusNotFound.png">../resources/user-busy.png</file>
     <file alias="statusUnknown.png">../resources/user-offline.png</file>
     <file alias="statusFound.png">../resources/user-online.png</file>
+    <file alias="schematicReport.svg">../resources/mail-mark-task.svg</file>
   </qresource>
   <qresource prefix="/plugins/ark/filter">
     <file alias="filter.png">../resources/view-filter.png</file>

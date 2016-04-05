@@ -37,6 +37,7 @@ from ..georef.georef_dialog import GeorefDialog
 
 from plan_dock import PlanDock
 from plan_error import ErrorDialog, PlanError
+from table_dialog import TableDialog
 from select_drawing_dialog import SelectDrawingDialog
 
 from enum import *
@@ -121,6 +122,7 @@ class Plan(QObject):
         self.dock.nextContextSelected.connect(self._nextContext)
         self.dock.prevMissingSelected.connect(self._prevMissing)
         self.dock.nextMissingSelected.connect(self._nextMissing)
+        self.dock.schematicReportSelected.connect(self._showSchematicReport)
         self.dock.editContextSelected.connect(self._editSchematicContext)
         self.dock.deleteSectionSchematicSelected.connect(self._deleteSectionSchematic)
         self.dock.findSourceSelected.connect(self._findSource)
@@ -1059,3 +1061,42 @@ class Plan(QObject):
         self._clearSchematicFilters()
         self._copySourceSchematic()
         self._mergeSchematic()
+
+    def _showSchematicReport(self):
+        features = set()
+        for feature in self.project.plan.pointsLayer.getFeatures():
+            features.add(ItemKey(feature))
+        for feature in self.project.plan.linesLayer.getFeatures():
+            features.add(ItemKey(feature))
+        for feature in self.project.plan.polygonsLayer.getFeatures():
+            features.add(ItemKey(feature))
+        schRequest = self._featureRequest(self._categoryClause('sch'))
+        schematics = set()
+        for feature in self.project.plan.polygonsLayer.getFeatures(schRequest):
+            schematics.add(ItemKey(feature))
+        missing = []
+        contexts = self.project.data.itemKeys['cxt']
+        for context in contexts:
+            if context not in schematics:
+                row = {}
+                row['Site Code'] = context.siteCode
+                row['Context'] = context.itemId
+                itemData = self.project.data.getItemData(context)
+                try:
+                    row['Type'] = itemData['context_type']
+                except:
+                    row['Type'] = ''
+                    try:
+                        vals = self.project.data.getItemFields(context, ['conf_field_cxttype'])
+                        row['Type'] = vals[u'conf_field_cxttype']
+                    except:
+                        row['Type'] = ''
+                if context in features:
+                    row['GIS'] = 'Y'
+                else:
+                    row['GIS'] = 'N'
+                missing.append(row)
+        text = '<html><head/><body><p><span style=" font-weight:600;">Missing Schematics:</span></p><p>There are ' + str(len(contexts)) + ' Contexts in ARK, of which ' + str(len(missing)) + ' are missing schematics.<br/></p></body></html>'
+        dialog = TableDialog('Missing Schematics', text, ['Site Code', 'Context', 'Type', 'GIS'], {'Site Code' : '', 'Context' : '', 'Type' : '', 'GIS' : ''}, self.dock)
+        dialog.addRows(missing)
+        dialog.exec_()

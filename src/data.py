@@ -335,7 +335,7 @@ class Data(QObject):
 
     def getItemData(self, itemKey):
         try:
-            return self._model[itemKey.classCode].getItem(itemKey)
+            return self._classDataModels[itemKey.classCode].getItem(itemKey)
         except KeyError:
             return {}
 

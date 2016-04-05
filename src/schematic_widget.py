@@ -71,6 +71,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     editSourceSelected = pyqtSignal()
     contextChanged = pyqtSignal()
     resetSelected = pyqtSignal()
+    schematicReportSelected = pyqtSignal()
 
     _contextArkDataStatus = SearchStatus.Unknown
     _contextFeatureDataStatus = SearchStatus.Unknown
@@ -102,6 +103,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.prevContextTool.clicked.connect(self.prevContextSelected)
         self.nextMissingTool.clicked.connect(self.nextMissingSelected)
         self.prevMissingTool.clicked.connect(self.prevMissingSelected)
+        self.schematicReportTool.clicked.connect(self.schematicReportSelected)
         self.editContextButton.clicked.connect(self.editContextSelected)
         self.deleteSectionButton.clicked.connect(self.deleteSectionSchematicSelected)
         self.sourceContextSpin.valueChanged.connect(self._sourceContextChanged)
@@ -231,6 +233,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self.nextContextTool.setEnabled(enabled)
         self.prevMissingTool.setEnabled(enabled)
         self.nextMissingTool.setEnabled(enabled)
+        self.schematicReportTool.setEnabled(enabled)
 
     def _enableSource(self, enable):
         self.sourceContextSpin.setEnabled(enable)

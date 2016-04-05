@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>317</width>
-    <height>782</height>
+    <width>330</width>
+    <height>775</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -317,7 +317,7 @@
         <item>
          <widget class="QToolButton" name="loadArkTool">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string/>
@@ -427,6 +427,20 @@
           <property name="icon">
            <iconset resource="resources.qrc">
             <normaloff>:/plugins/ark/data/goLastItem.svg</normaloff>:/plugins/ark/data/goLastItem.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="schematicReportTool">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/plugins/ark/plan/schematicReport.svg</normaloff>:/plugins/ark/plan/schematicReport.svg</iconset>
           </property>
          </widget>
         </item>

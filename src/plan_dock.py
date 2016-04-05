@@ -86,6 +86,7 @@ class PlanDock(ToolDockWidget):
     editSourceSelected = pyqtSignal()
     contextChanged = pyqtSignal()
     resetSelected = pyqtSignal()
+    schematicReportSelected = pyqtSignal()
 
     _iface = None # QgsisInterface()
     _snappingAction = None  # ProjectSnappingAction()
@@ -156,6 +157,7 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.nextContextSelected.connect(self.nextContextSelected)
         self.widget.schematicWidget.prevMissingSelected.connect(self.prevMissingSelected)
         self.widget.schematicWidget.nextMissingSelected.connect(self.nextMissingSelected)
+        self.widget.schematicWidget.schematicReportSelected.connect(self.schematicReportSelected)
         self.widget.schematicWidget.editContextSelected.connect(self.editContextSelected)
         self.widget.schematicWidget.deleteSectionSchematicSelected.connect(self.deleteSectionSchematicSelected)
         self.widget.schematicWidget.findSourceSelected.connect(self.findSourceSelected)

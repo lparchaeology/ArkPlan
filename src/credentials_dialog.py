@@ -37,6 +37,10 @@ class CredentialsDialog(QDialog, Ui_CredentialsDialog):
     def __init__(self, parent=None):
         super(CredentialsDialog, self).__init__(parent)
         self.setupUi(self)
+        self.passwordEdit.setText('anon')
+        self.passwordEdit.selectAll()
+        self.usernameEdit.setText('anon')
+        self.usernameEdit.selectAll()
 
     def username(self):
         return self.usernameEdit.text()

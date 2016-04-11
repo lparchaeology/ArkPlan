@@ -212,7 +212,7 @@ class Metadata(QObject):
             if ok and value > 0:
                 self.setSourceId(str(value))
                 signalChanged = True
-        if (self.sourceCode() == 'drw' or self.sourceCode() == 'unc' or self.sourceCode() == 'svy') and self.sourceFile() == '':
+        if (self.sourceCode() == 'svy' and self.sourceFile() == ''):
             value, ok = QInputDialog.getText(None, 'Source File', "Please enter the source file name")
             if ok and value.strip():
                 self.setSourceFile(value)

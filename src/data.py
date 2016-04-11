@@ -85,7 +85,8 @@ class Data(QObject):
     _linkModel = ParentChildModel()
 
     _ark = None
-    _dataLoaded = False
+    _indexLoaded = False
+    _dataMode = ''
     _prevItem = ItemKey()
 
     _mapAction = MapAction.MoveMap
@@ -158,38 +159,30 @@ class Data(QObject):
         self.refreshData()
 
     def refreshData(self):
-        self._dataLoaded = False
-        self._loadCachedData()
-        self._loadItems()
-        if self._dataLoaded:
+        self._loadIndex()
+        self._loadOfflineData()
+        if self._indexLoaded or self._hasOfflineData():
             self.dataLoaded.emit()
 
-    def hasCachedData(self):
+    def _hasOfflineData(self):
         return len(self._classDataModels) > 0
 
-    def hasCachedClassData(self, classCode):
-        try:
-            return (self._classDataModels[classCode].rowCount() > 0)
-        except KeyError:
-            return False
-
-    def _loadCachedData(self):
+    def _loadOfflineData(self):
         for classCode in Config.classCodes.keys():
-            self._loadCachedClassData(classCode)
+            keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
+            filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
+            if classCode in self._classDataModels:
+                self._classDataModels[classCode].clear()
+            if QFile.exists(filePath):
+                self._classDataModels[classCode] = ItemModel(filePath, keyFields, self)
+                self._classDataProxyModels[classCode] = QSortFilterProxyModel()
+                self._classDataProxyModels[classCode].setSourceModel(self._classDataModels[classCode])
+                if Config.classCodes[classCode]['group']:
+                    self._loadOfflineLinks(self._classDataModels[classCode].getList())
+        if self._hasOfflineData():
+            self._dataMode = 'offline'
 
-    def _loadCachedClassData(self, classCode):
-        keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
-        filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
-        self._clearCachedClassData(classCode)
-        if QFile.exists(filePath):
-            self._classDataModels[classCode] = ItemModel(filePath, keyFields, self)
-            self.project.logMessage('Loaded cached' + classCode + ' data : ' + filePath + ' : ' + str(self._classDataModels[classCode].rowCount()) + ' rows')
-            self._classDataProxyModels[classCode] = QSortFilterProxyModel()
-            self._classDataProxyModels[classCode].setSourceModel(self._classDataModels[classCode])
-            if Config.classCodes[classCode]['group']:
-                self._loadCachedClassLinks(self._classDataModels[classCode].getList())
-
-    def _loadCachedClassLinks(self, table):
+    def _loadOfflineLinks(self, table):
         for record in table:
             parentItem = record['key']
             siteCode = record['ste_cd']
@@ -199,29 +192,21 @@ class Data(QObject):
                 childItem = ItemKey(siteCode, childModule, child)
                 self._linkModel.addChild(parentItem, childItem)
 
-    def _clearCachedClassData(self, classCode):
-        try:
-            self._classDataModels[classCode].clear()
-        except KeyError:
-            pass
-
     def _createArkSession(self):
         dialog = CredentialsDialog()
         if dialog.exec_():
             self._ark = Ark(self.project.arkUrl(), dialog.username(), dialog.password())
-            self.dock.setItemNavEnabled(True)
 
-    def _loadItems(self):
+    def _loadIndex(self):
+        self._indexLoaded = False
         self.itemKeys = {}
         for classCode in Config.classCodes.keys():
-            self._loadClassItems(classCode)
+            self.itemKeys[classCode] = []
+            if not self._loadOfflineClassIndex(classCode):
+                self._loadOnlineClassIndex(classCode)
+        self.dock.setItemNavEnabled(self._indexLoaded)
 
-    def _loadClassItems(self, classCode):
-        self.itemKeys[classCode] = []
-        if not self._loadCachedClassItems(classCode):
-            self._loadArkClassItems(classCode)
-
-    def _loadCachedClassItems(self, classCode):
+    def _loadOfflineClassIndex(self, classCode):
         filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
         if QFile.exists(filePath):
             with open(filePath) as csvFile:
@@ -233,13 +218,13 @@ class Data(QObject):
                     key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
                     keys.add(key)
             self.itemKeys[classCode] = sorted(keys)
-            self.project.logMessage('Cached Item Keys ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
+            self.project.logMessage('Offline Item Keys ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
             if len(self.itemKeys[classCode]) > 0:
-                self._dataLoaded = True
+                self._indexLoaded = True
                 return True
         return False
 
-    def _loadArkClassItems(self, classCode):
+    def _loadOnlineClassIndex(self, classCode):
         if not self.project.arkUrl():
             return False
         if self._ark is None:
@@ -261,7 +246,7 @@ class Data(QObject):
             self.itemKeys[classCode] = sorted(keys)
             self.project.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
             if (len(self.itemKeys[classCode]) > 0):
-                self._dataLoaded = True
+                self._indexLoaded = True
                 return True
         return False
 
@@ -317,9 +302,9 @@ class Data(QObject):
                 QApplication.clipboard().setText(url)
                 self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
-    def linkedItems(self, itemKey, linkClassCode):
+    def _getOnlineLinks(self, itemKey, linkClassCode):
         if not self.project.arkUrl():
-            return
+            return []
         xmi = unicode('conf_field_' + itemKey.classCode + linkClassCode + 'xmi')
         data = self.getItemFields(itemKey, [xmi])
         items = []
@@ -348,11 +333,11 @@ class Data(QObject):
         if len(children) > 0:
             return children
         for item in itemKey.toList():
-            children.extend(self.linkedItems(itemKey, Config.childClass(itemKey.classCode)))
+            children.extend(self._getOnlineLinks(itemKey, Config.childClass(itemKey.classCode)))
         return children
 
     def nodesItemKey(self, parentItemKey):
-        if not self._dataLoaded or not parentItemKey or parentItemKey.isInvalid() or not Config.isGroupClass(parentItemKey.classCode):
+        if not self._indexLoaded or not parentItemKey or parentItemKey.isInvalid() or not Config.isGroupClass(parentItemKey.classCode):
             return parentItemKey
         else:
             return self.nodesItemKey(self.childrenItemKey(parentItemKey))
@@ -403,6 +388,8 @@ class Data(QObject):
         self.project.planModule.applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
 
     def _showItem(self, item):
+        if not self.project.arkUrl():
+            return
         self._prevItem = item
         url = ''
         if item.isValid() and self.haveItem(item):

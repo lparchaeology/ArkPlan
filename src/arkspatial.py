@@ -148,6 +148,7 @@ class ArkSpatial(Plugin):
     _initialised = False
     _loaded = False
     _layerSnappingAction = None  # LayerSnappingAction()
+    _userDocks = []
 
     def __init__(self, iface, pluginPath):
         super(ArkSpatial, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
@@ -178,7 +179,7 @@ class ArkSpatial(Plugin):
         self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.layerDock.setWindowTitle(self.tr(u'ARK Spatial'))
-        self.layerDock.setObjectName(u'LayerDock')
+        self.layerDock.setObjectName(u'ArkLayerDock')
         self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
         self.iface.legendInterface().addLegendLayerAction(self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
 
@@ -319,16 +320,22 @@ class ArkSpatial(Plugin):
         if checked and self.initialise() and self.configure():
             if not self._loaded:
                 self.loadProject()
-            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(False)
-            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(False)
+            #Close all open docks
+            self._userDocks = []
+            docks = self.iface.mainWindow().findChildren(QDockWidget)
+            for dock in docks:
+                if dock.isVisible() and dock.objectName() != 'ArkLayerDock':
+                    self._userDocks.append(dock.objectName())
+                    dock.setVisible(False)
         else:
             if self._initialised:
                 self.data.dock.setVisible(False)
                 self.planModule.dock.setVisible(False)
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)
-            self.iface.mainWindow().findChild(QDockWidget, "Browser").setVisible(True)
-            self.iface.mainWindow().findChild(QDockWidget, "Layers").setVisible(True)
+            for dock in self._userDocks:
+                self.iface.mainWindow().findChild(QDockWidget, dock).setVisible(True)
+            self._userDocks = []
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):

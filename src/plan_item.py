@@ -133,6 +133,17 @@ class ItemKey():
             self.classCode = ''
             self.itemId = ''
 
+    def fromArkKey(self, itemKey, itemValue):
+        try:
+            keyParts = itemKey.split('_')
+            valParts = itemValue.split('_')
+            siteCode = valParts[0]
+            classCode = keyParts[0]
+            itemId = valParts[1]
+            self.setKey(siteCode, classCode, itemId)
+        except:
+            pass
+
     def fromFeature(self, feature):
         siteCode = _attribute(feature, 'site')
         classCode = _attribute(feature, 'class')

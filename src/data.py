@@ -164,6 +164,12 @@ class Data(QObject):
         if self._indexLoaded or self._hasOfflineData():
             self.dataLoaded.emit()
 
+    def hasClassData(self, classCode):
+        try:
+            return (len(self.itemKeys[classCode]) > 0)
+        except:
+            return False
+
     def _hasOfflineData(self):
         return len(self._classDataModels) > 0
 
@@ -355,6 +361,35 @@ class Data(QObject):
     def parentItem(self, itemKey):
         # TODO Get from ARK
         return self._linkModel.getParent(itemKey)
+
+    def getFilters(self):
+        if self._ark is None:
+            return {}
+        response = self._ark.describeFilters()
+        if response.error:
+            utils.logMessage(response.url)
+            utils.logMessage(response.message)
+            utils.logMessage(response.raw)
+        return response.data
+
+    def getFilterItems(self, filterId):
+        items = []
+        if self._ark is None:
+            return items
+        response = self._ark.getFilterSet(filterId)
+        if response.error:
+            utils.logMessage(response.url)
+            utils.logMessage(response.message)
+            utils.logMessage(response.raw)
+        else:
+            for key in response.data:
+                res = response.data[key]
+                item = ItemKey()
+                item.fromArkKey(res['itemkey'], res['itemval'])
+                utils.logMessage(item.debug())
+                if item.isValid():
+                    items.append(item)
+        return sorted(items)
 
     def getItemFields(self, itemKey, fields):
         if self._ark is None or itemKey is None or itemKey.isInvalid():

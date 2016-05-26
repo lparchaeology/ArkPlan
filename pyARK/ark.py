@@ -97,8 +97,11 @@ class Ark():
     def getFrags(self, itemkey, item_value, dataclass='all', classtype=None, aliased=None):
         return self._getJson('getFrags', {'itemkey': itemkey, itemkey: item_value, 'dataclass': dataclass, 'classtype': classtype, 'aliased': aliased})
 
-    def getFilter(self, ftype, src, retftrset=None):
-        return self._getJson('getFilter', {'ftype': ftype, 'src': src, 'retftrset': retftrset})
+    def getFilter(self, ftype, src):
+        return self._getJson('getFilter', {'ftype': ftype, 'src': src})
+
+    def getFilterSet(self, retftrset):
+        return self._getJson('getFilter', {'retftrset': retftrset})
 
     def getFields(self, itemkey, item_value, fields, aliased=None):
         #TODO multiple fields!!!

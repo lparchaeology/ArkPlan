@@ -10,7 +10,7 @@
         git sha              : $Format:%H$
         copyright            : 2014, 2015 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2014, 2015, 2016 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -35,21 +35,16 @@ from qgis.gui import QgsColorButtonV2
 from ..libarkqgis.project import Project
 from ..libarkqgis.utils import *
 
-from enum import FilterType
 from plan_item import ItemKey
+from filter_base import *
 
 import filter_clause_widget_base
 
-class FilterWidgetAction():
-    AddFilter = 0
-    RemoveFilter = 1
-    LockFilter = 2
-
 class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidget):
 
-    filterAdded = pyqtSignal()
-    filterRemoved = pyqtSignal(int)
-    filterChanged = pyqtSignal(int)
+    clauseAdded = pyqtSignal()
+    clauseRemoved = pyqtSignal(int)
+    clauseChanged = pyqtSignal(int)
 
     _filterIndex = -1
     _filterType = FilterType.IncludeFilter
@@ -102,40 +97,23 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self._typeActionGroup.addAction(self._selectAction)
         self._typeActionGroup.addAction(self._highlightAction)
 
-        self._highlightColorTool = QgsColorButtonV2(self)
-        self._highlightColorTool.setAllowAlpha(True)
-        self._highlightColorTool.setColorDialogTitle('Choose Highlight Color')
-        self._highlightColorTool.setContext('Choose Highlight Color')
-        self._highlightColorTool.setDefaultColor(Project.highlightFillColor())
-        self._highlightColorTool.setToDefaultColor()
-        self._highlightColorTool.colorChanged.connect(self._colorChanged)
-        self._highlightColorAction = QWidgetAction(self)
-        self._highlightColorAction.setDefaultWidget(self._highlightColorTool)
+        self._colorTool = QgsColorButtonV2(self)
+        self._colorTool.setAllowAlpha(True)
+        self._colorTool.setColorDialogTitle('Choose Highlight Color')
+        self._colorTool.setContext('Choose Highlight Color')
+        self._colorTool.setDefaultColor(Project.highlightFillColor())
+        self._colorTool.setToDefaultColor()
+        self._colorTool.colorChanged.connect(self._colorChanged)
+        self._colorAction = QWidgetAction(self)
+        self._colorAction.setDefaultWidget(self._colorTool)
 
         self._typeMenu = QMenu(self)
         self._typeMenu.addActions(self._typeActionGroup.actions())
         self._typeMenu.addSeparator()
-        self._typeMenu.addAction(self._highlightColorAction)
+        self._typeMenu.addAction(self._colorAction)
         self.filterTypeTool.setMenu(self._typeMenu)
 
-        self.setFilterType(FilterType.IncludeFilter)
-
-    def toSettings(self, settings):
-        settings.setValue('filterType', self.filterType())
-        settings.setValue('siteCode', self.siteCode())
-        settings.setValue('classCode', self.classCode())
-        settings.setValue('filterRange', self.filterRange())
-        if self.filterType() == FilterType.HighlightFilter:
-            settings.setValue('highlightColor', self.highlightColor())
-
-    def fromSettings(self, settings):
-        self.setFilterType(int(settings.value('filterType')))
-        self.setSiteCode(settings.value('siteCode'))
-        self.setClassCode(settings.value('classCode'))
-        self.setFilterRange(settings.value('filterRange'))
-        self.setFilterAction(FilterWidgetAction.RemoveFilter)
-        if self.filterType() == FilterType.HighlightFilter:
-            self.setHighlightColor(settings.value('highlightColor', QColor))
+        self._setFilterType(FilterType.IncludeFilter)
 
     def index(self):
         return self._filterIndex
@@ -143,7 +121,25 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
     def setIndex(self, index):
         self._filterIndex = index
 
-    def setFilterType(self, filterType):
+    def clause(self):
+        cl = FilterClause()
+        cl.key = ItemKey(self.siteCode(), self.classCode(), self.filterRange())
+        cl.action = self.filterType()
+        cl.color = self.color()
+        return cl
+
+    def setClause(self, clause):
+        self.blockSignals(True)
+        self._colorTool.blockSignals(True)
+        self._siteCode = clause.key.siteCode
+        self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(clause.key.classCode))
+        self.filterRangeCombo.setEditText(clause.key.itemId)
+        self._setFilterType(clause.action)
+        self._colorTool.setColor(clause.color)
+        self._colorTool.blockSignals(False)
+        self.blockSignals(False)
+
+    def _setFilterType(self, filterType):
         self._filterType = filterType
         if filterType == FilterType.ExcludeFilter:
             self._excludeAction.setChecked(True)
@@ -161,22 +157,20 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
     def filterType(self):
         return self._filterType
 
-    def setItemKey(self, itemKey):
-        self.setSiteCode(itemKey.siteCode)
-        self.setClassCode(itemKey.classCode)
-        self.filterRange(itemKey.itemId)
-
-    def itemKey(self):
-        return ItemKey(self.siteCode(), self.classCode(), self.filterRange())
+    def siteCode(self):
+        return self._siteCode
 
     def setSiteCode(self, siteCode):
         self._siteCode = siteCode
 
-    def siteCode(self):
-        return self._siteCode
-
     def classCode(self):
         return self.filterClassCombo.itemData(self.filterClassCombo.currentIndex())
+
+    def filterRange(self):
+        return self._normaliseRange(self.filterRangeCombo.currentText())
+
+    def color(self):
+        return self._colorTool.color()
 
     def setClassCodes(self, codes):
         self.filterClassCombo.clear()
@@ -184,9 +178,6 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         keys.sort()
         for key in keys:
             self.filterClassCombo.addItem(codes[key], key)
-
-    def setClassCode(self, code):
-        self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(code))
 
     def setHistory(self, history):
         self.filterRangeCombo.addItems(history)
@@ -197,12 +188,6 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         for idx in range(0, self.filterRangeCombo.count()):
             history.append(self.filterRangeCombo.itemText(idx))
         return history
-
-    def filterRange(self):
-        return self._normaliseRange(self.filterRangeCombo.currentText())
-
-    def setFilterRange(self, filterRange):
-        self.filterRangeCombo.setEditText(filterRange)
 
     def clearFilterRange(self):
         self.filterRangeCombo.clearEditText()
@@ -228,50 +213,39 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
             self.filterRangeCombo.lineEdit().returnPressed.connect(self._addFilterClicked)
             self.setEnabled(True)
 
-    def setHighlightColor(self, color):
-        return self._highlightColorTool.setColor(color)
-
-    def highlightColor(self):
-        return self._highlightColorTool.color()
-
-    def highlightLineColor(self):
-        color = QColor(self._highlightColorTool.color()) # force deep copy
-        color.setAlpha(255)
-        return color
-
     def _normaliseRange(self, text):
         return text.replace(' - ', '-').replace(',', ' ').strip()
 
     def _addFilterClicked(self):
         self.setFilterAction(FilterWidgetAction.RemoveFilter)
-        self.filterAdded.emit()
+        self.clauseAdded.emit()
 
     def _removeFilterClicked(self):
-        self.filterRemoved.emit(self._filterIndex)
+        self.clauseRemoved.emit(self._filterIndex)
 
     def _includeFilterChecked(self):
-        self.setFilterType(FilterType.IncludeFilter)
-        self.filterChanged.emit(self._filterIndex)
+        self._setFilterType(FilterType.IncludeFilter)
+        self.clauseChanged.emit(self._filterIndex)
 
     def _excludeFilterChecked(self):
-        self.setFilterType(FilterType.ExcludeFilter)
-        self.filterChanged.emit(self._filterIndex)
+        self._setFilterType(FilterType.ExcludeFilter)
+        self.clauseChanged.emit(self._filterIndex)
 
     def _highlightFilterChecked(self):
-        self.setFilterType(FilterType.HighlightFilter)
-        self.filterChanged.emit(self._filterIndex)
+        self._setFilterType(FilterType.HighlightFilter)
+        self.clauseChanged.emit(self._filterIndex)
 
     def _selectFilterChecked(self):
-        self.setFilterType(FilterType.SelectFilter)
-        self.filterChanged.emit(self._filterIndex)
+        self._setFilterType(FilterType.SelectFilter)
+        self.clauseChanged.emit(self._filterIndex)
 
     def _filterRangeChanged(self):
-        self.filterChanged.emit(self._filterIndex)
+        self.clauseChanged.emit(self._filterIndex)
 
     def _colorChanged(self, color):
         pix = QPixmap(22, 22)
         pix.fill(color)
         self._highlightIcon = QIcon(pix)
         self._highlightAction.setIcon(self._highlightIcon)
-        self.setFilterType(FilterType.HighlightFilter)
-        self.filterChanged.emit(self._filterIndex)
+        self._setFilterType(FilterType.HighlightFilter)
+        self.clauseChanged.emit(self._filterIndex)

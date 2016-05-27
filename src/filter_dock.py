@@ -32,8 +32,8 @@ from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis import utils
 
 import filter_set_widget_base
+from filter_base import *
 from filter_clause_widget import *
-from enum import FilterType
 
 class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
 
@@ -42,12 +42,27 @@ class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
         self.setupUi(self)
         self._filterSetActionGroup = QActionGroup(self)
         self._filterSetActionGroup.addAction(self.saveFilterSetAction)
+        self._filterSetActionGroup.addAction(self.reloadFilterSetAction)
         self._filterSetActionGroup.addAction(self.deleteFilterSetAction)
         self._filterSetActionGroup.addAction(self.exportFilterSetAction)
         self._filterSetMenu = QMenu(self)
         self._filterSetMenu.addActions(self._filterSetActionGroup.actions())
         self.filterSetTool.setMenu(self._filterSetMenu)
         self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
+
+    def setFilterSet(self, filterSet):
+        self.setFilterSetKey(filterSet.key)
+        if filterSet.source == 'ark':
+            self.saveFilterSetAction.setEnabled(False)
+            self.deleteFilterSetAction.setEnabled(False)
+            self.filterSetTool.setDefaultAction(self.reloadFilterSetAction)
+        else:
+            self.saveFilterSetAction.setEnabled(True)
+            self.deleteFilterSetAction.setEnabled(True)
+            self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
+
+    def setFilterSetKey(self, key):
+        self.filterSetCombo.setCurrentIndex(self.filterSetCombo.findData(key))
 
     def currentFilterSetKey(self):
         return self.filterSetCombo.itemData(self.filterSetCombo.currentIndex())
@@ -58,6 +73,7 @@ class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
 class FilterDock(ToolDockWidget):
 
     filterChanged = pyqtSignal()
+    filterClauseAdded = pyqtSignal()
 
     buildFilterSelected = pyqtSignal()
     buildSelectionSelected = pyqtSignal()
@@ -65,16 +81,21 @@ class FilterDock(ToolDockWidget):
     clearFilterSelected = pyqtSignal()
     zoomFilterSelected = pyqtSignal()
     loadDataSelected = pyqtSignal()
+    refreshDataSelected = pyqtSignal()
     showDataSelected = pyqtSignal()
     filterSetChanged = pyqtSignal(str)
-    saveFilterSetSelected = pyqtSignal(str, str)
+    saveFilterSetSelected = pyqtSignal(str)
+    reloadFilterSetSelected = pyqtSignal(str)
     deleteFilterSetSelected = pyqtSignal(str)
     exportFilterSetSelected = pyqtSignal(str, str)
 
     newFilterClauseWidget = None  # FilterClauseWidget()
+
     _filterIndex = 0
     _filterClauses = {}
     _items = {}
+    _schematicClauses = []
+    _schematicItems = []
     _classCodes = {}
     _history = []
 
@@ -104,12 +125,18 @@ class FilterDock(ToolDockWidget):
         self.toolbar.addAction(self._buildHighlightAction)
 
         self._clearFilterAction = QAction(QIcon(':/plugins/ark/filter/removeFilter.svg'), "Clear Filter", self)
-        self._clearFilterAction.triggered.connect(self._clearFilterClicked)
+        self._clearFilterAction.triggered.connect(self.clearFilterSelected)
         self.toolbar.addAction(self._clearFilterAction)
 
-        #self._loadDataAction = QAction(QIcon(':/plugins/ark/filter/loadData.png'), "Load Data", self)
-        #self._loadDataAction.triggered.connect(self.loadDataSelected)
-        #self.toolbar.addAction(self._loadDataAction)
+        self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
+        self._loadDataAction.triggered.connect(self.loadDataSelected)
+        self.toolbar.addAction(self._loadDataAction)
+        self._loadDataAction.setEnabled(False);
+
+        self._refreshDataAction = QAction(QIcon(':/plugins/ark/data/refreshData.svg'), "Refresh Filter Sets", self)
+        self._refreshDataAction.triggered.connect(self.refreshDataSelected)
+        self.toolbar.addAction(self._refreshDataAction)
+        self._refreshDataAction.setEnabled(False);
 
         #self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
         #self._showDataAction.triggered.connect(self.showDataSelected)
@@ -118,13 +145,19 @@ class FilterDock(ToolDockWidget):
         self.widget.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
 
         self.widget.saveFilterSetAction.triggered.connect(self._saveFilterSetSelected)
+        self.widget.reloadFilterSetAction.triggered.connect(self._reloadFilterSetSelected)
         self.widget.deleteFilterSetAction.triggered.connect(self._deleteFilterSetSelected)
         self.widget.exportFilterSetAction.triggered.connect(self._exportFilterSetSelected)
+
+        self.widget.schematicClauseList.setHidden(True)
 
         self._createNewFilterClauseWidget()
 
     def _saveFilterSetSelected(self):
-        self.saveFilterSetSelected.emit(self.widget.currentFilterSetKey(), self.widget.currentFilterSetName())
+        self.saveFilterSetSelected.emit(self.widget.currentFilterSetKey())
+
+    def _reloadFilterSetSelected(self):
+        self.reloadFilterSetSelected.emit(self.widget.currentFilterSetKey())
 
     def _deleteFilterSetSelected(self):
         self.deleteFilterSetSelected.emit(self.widget.currentFilterSetKey())
@@ -132,50 +165,68 @@ class FilterDock(ToolDockWidget):
     def _exportFilterSetSelected(self):
         self.exportFilterSetSelected.emit(self.widget.currentFilterSetKey(), self.widget.currentFilterSetName())
 
-    def addFilterClause(self, filterType, itemKey, filterAction):
+    def addFilterClause(self, clause):
         filterClauseWidget = self._createFilterClauseWidget()
-        filterClauseWidget.setFilterType(filterType)
-        filterClauseWidget.setSiteCode(itemKey.siteCode)
-        filterClauseWidget.setClassCode(itemKey.classCode)
-        filterClauseWidget.setFilterRange(itemKey.itemId)
-        filterClauseWidget.setFilterAction(filterAction)
-        return self._addFilterClause(filterClauseWidget)
+        filterClauseWidget.setClause(clause)
+        filterClauseWidget.setFilterAction(FilterWidgetAction.RemoveFilter)
+        self._addFilterClause(filterClauseWidget)
 
     def _addNewFilterClause(self):
-        self.newFilterClauseWidget.filterAdded.disconnect(self._addNewFilterClause)
+        self.newFilterClauseWidget.clauseAdded.disconnect(self._addNewFilterClause)
         self.newFilterClauseWidget.setSiteCode(self.siteCode())
         self._history = self.newFilterClauseWidget.history()
         self._addFilterClause(self.newFilterClauseWidget)
         self._createNewFilterClauseWidget()
         self.newFilterClauseWidget.filterRangeCombo.setFocus()
+        self.filterClauseAdded.emit()
 
     def _addFilterClause(self, filterClauseWidget):
         idx = self._filterIndex
         filterClauseWidget.setIndex(idx)
         self._filterClauses[idx] = filterClauseWidget
-        filterClauseWidget.filterRemoved.connect(self._filterClauseRemoved)
-        filterClauseWidget.filterChanged.connect(self.filterChanged)
+        filterClauseWidget.clauseRemoved.connect(self._filterClauseRemoved)
+        filterClauseWidget.clauseChanged.connect(self.filterChanged)
         newItem = QListWidgetItem()
         newItem.setData(Qt.UserRole, idx)
         newItem.setSizeHint(filterClauseWidget.minimumSizeHint())
-        self.widget.filterListWidget.addItem(newItem);
-        self.widget.filterListWidget.setItemWidget(newItem, filterClauseWidget)
+        self.widget.filterClauseList.addItem(newItem);
+        self.widget.filterClauseList.setItemWidget(newItem, filterClauseWidget)
         self._items[idx] = newItem
         self._filterIndex += 1
-        return idx
+
+    def setSchematicFilterSet(self, filterSet):
+        self.removeSchematicFilters()
+        for clause in filterSet.clauses():
+            self.widget.schematicClauseList.setHidden(False)
+            clauseWidget = self._createFilterClauseWidget()
+            clauseWidget.setClause(clause)
+            clauseWidget.setFilterAction(FilterWidgetAction.LockFilter)
+            self._schematicClauses.append(clauseWidget)
+            newItem = QListWidgetItem()
+            newItem.setSizeHint(clauseWidget.minimumSizeHint())
+            self.widget.schematicClauseList.addItem(newItem);
+            self.widget.schematicClauseList.setItemWidget(newItem, clauseWidget)
+            self._schematicItems.append(newItem)
 
     def removeFilters(self):
         changed = False
         for index in self._filterClauses.keys():
-            self.removeFilterClause(index)
+            self._removeFilterClause(index)
             changed = True
         return changed
+
+    def removeSchematicFilters(self):
+        self.widget.schematicClauseList.setHidden(True)
+        for item in self._schematicItems:
+            self.widget.schematicClauseList.takeItem(self.widget.schematicClauseList.row(item))
+        del self._schematicClauses[:]
+        del self._schematicItems[:]
 
     def removeSelectFilters(self):
         changed = False
         for index in self._filterClauses.keys():
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.SelectFilter:
-                self.removeFilterClause(index)
+                self._removeFilterClause(index)
                 changed = True
         return changed
 
@@ -183,30 +234,30 @@ class FilterDock(ToolDockWidget):
         changed = False
         for index in self._filterClauses.keys():
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.HighlightFilter:
-                self.removeFilterClause(index)
+                self._removeFilterClause(index)
                 changed = True
         return changed
 
     def _filterClauseRemoved(self, index):
-        self.removeFilterClause(index)
+        self._removeFilterClause(index)
         self.filterChanged.emit()
 
-    def removeFilterClause(self, index):
+    def _removeFilterClause(self, index):
         if index not in self._filterClauses:
             return False
-        self.widget.filterListWidget.takeItem(self.widget.filterListWidget.row(self._items[index]))
+        self.widget.filterClauseList.takeItem(self.widget.filterClauseList.row(self._items[index]))
         self._filterClauses.pop(index)
         self._items.pop(index)
         return True
 
     def _clearFilters(self):
         for index in self._filterClauses.keys():
-            self.removeFilterClause(index)
+            self._removeFilterClause(index)
 
     def _createNewFilterClauseWidget(self):
         self.newFilterClauseWidget = self._createFilterClauseWidget()
         self.newFilterClauseWidget.setHistory(self._history)
-        self.newFilterClauseWidget.filterAdded.connect(self._addNewFilterClause)
+        self.newFilterClauseWidget.clauseAdded.connect(self._addNewFilterClause)
         self.widget.newFilterFrame.layout().addWidget(self.newFilterClauseWidget)
 
     def _createFilterClauseWidget(self):
@@ -221,21 +272,18 @@ class FilterDock(ToolDockWidget):
                 return True
         return False
 
-    def _clearFilterClicked(self):
-        self.removeFilters()
-        self.clearFilterSelected.emit()
-
     def currentFilterSet(self):
-        return self.widget.filterSetCombo.itemData(self.widget.siteCodeCombo.currentIndex())
+        if self.widget.filterSetCombo.count() > 0:
+            return self.widget.currentFilterSetKey()
+        return 'Default'
 
-    def addFilterSet(self, key, name):
-        self.widget.filterSetCombo.addItem(name, key)
-
-    def setFilterSet(self, key):
-        self.widget.filterSetCombo.setCurrentIndex(self.widget.filterSetCombo.findData(key))
-
-    def removeFilterSet(self, key):
-        self.widget.filterSetCombo.removeItem(self.widget.filterSetCombo.findData(key))
+    def setFilterSet(self, filterSet):
+        self.blockSignals(True)
+        self.widget.setFilterSet(filterSet)
+        self.removeFilters()
+        for clause in filterSet.clauses():
+            self.addFilterClause(clause)
+        self.blockSignals(False)
 
     def _filterSetChanged(self, idx):
         self.filterSetChanged.emit(self.widget.filterSetCombo.itemData(idx))
@@ -252,34 +300,38 @@ class FilterDock(ToolDockWidget):
         self._classCodes = classCodes
         self.newFilterClauseWidget.setClassCodes(classCodes)
 
-    def initFilterSets(self, filterSets):
+    def initFilterSets(self, filterSets, arkFilterSets):
         self.blockSignals(True)
-        self.addFilterSet('Default', 'Default')
-        for filterSet in filterSets:
-            if filterSet[0] != 'Default':
-                self.addFilterSet(filterSet[0], filterSet[1])
+        currentKey = self.currentFilterSet()
+        self.widget.filterSetCombo.clear()
+        self._addFilterSet(filterSets['Default'])
+        for key in filterSets:
+            filterSet = filterSets[key]
+            if filterSet.key != 'Default':
+                self._addFilterSet(filterSet)
+        if len(arkFilterSets) > 0:
+            self.widget.filterSetCombo.insertSeparator(self.widget.filterSetCombo.count())
+            for key in arkFilterSets:
+                self._addFilterSet(arkFilterSets[key])
+        self.widget.setFilterSetKey(currentKey)
         self.blockSignals(False)
 
-    def activeFilters(self):
-        return self._filterClauses
+    def _addFilterSet(self, filterSet):
+        name = filterSet.name
+        if filterSet.source == 'ark':
+            name = 'ARK: ' + name
+        if filterSet.status == 'edited':
+            name = '* ' + name
+        self.widget.filterSetCombo.addItem(name, filterSet.key)
 
-    def activeFilterSet(self):
-        fs = []
+    def filterClauses(self):
+        clauses = []
         for idx in self._filterClauses.keys():
-            fs.append(self._filterClauses[idx].settings())
-        return fs
+            clauses.append(self._filterClauses[idx].clause())
+        return clauses
 
-    def toSettings(self, settings):
-        i = 0
-        for idx in self._filterClauses.keys():
-            settings.setArrayIndex(i)
-            self._filterClauses[idx].toSettings(settings)
-            i += 1
+    def enableArkData(self, enable=True):
+        self._loadDataAction.setEnabled(enable);
 
-    def fromSettings(self, settings, count):
-        self._clearFilters()
-        for i in range(0, count):
-            settings.setArrayIndex(i)
-            flt = self._createFilterClauseWidget()
-            flt.fromSettings(settings)
-            self._addFilterClause(flt)
+    def activateArkData(self):
+        self._refreshDataAction.setEnabled(True);

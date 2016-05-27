@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_FilterSetWidget(object):
     def setupUi(self, FilterSetWidget):
         FilterSetWidget.setObjectName(_fromUtf8("FilterSetWidget"))
-        FilterSetWidget.resize(236, 184)
+        FilterSetWidget.resize(212, 248)
         self.verticalLayout = QtGui.QVBoxLayout(FilterSetWidget)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -57,11 +57,16 @@ class Ui_FilterSetWidget(object):
         self.horizontalLayout_2.setMargin(0)
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.verticalLayout.addWidget(self.newFilterFrame)
-        self.filterListWidget = QtGui.QListWidget(FilterSetWidget)
-        self.filterListWidget.setProperty("showDropIndicator", False)
-        self.filterListWidget.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
-        self.filterListWidget.setObjectName(_fromUtf8("filterListWidget"))
-        self.verticalLayout.addWidget(self.filterListWidget)
+        self.filterClauseList = QtGui.QListWidget(FilterSetWidget)
+        self.filterClauseList.setProperty("showDropIndicator", False)
+        self.filterClauseList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self.filterClauseList.setObjectName(_fromUtf8("filterClauseList"))
+        self.verticalLayout.addWidget(self.filterClauseList)
+        self.schematicClauseList = QtGui.QListWidget(FilterSetWidget)
+        self.schematicClauseList.setProperty("showDropIndicator", False)
+        self.schematicClauseList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self.schematicClauseList.setObjectName(_fromUtf8("schematicClauseList"))
+        self.verticalLayout.addWidget(self.schematicClauseList)
         self.saveFilterSetAction = QtGui.QAction(FilterSetWidget)
         self.saveFilterSetAction.setIcon(icon)
         self.saveFilterSetAction.setObjectName(_fromUtf8("saveFilterSetAction"))
@@ -75,6 +80,11 @@ class Ui_FilterSetWidget(object):
         icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/filter/exportFilterSet.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exportFilterSetAction.setIcon(icon2)
         self.exportFilterSetAction.setObjectName(_fromUtf8("exportFilterSetAction"))
+        self.reloadFilterSetAction = QtGui.QAction(FilterSetWidget)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/data/refreshData.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.reloadFilterSetAction.setIcon(icon3)
+        self.reloadFilterSetAction.setObjectName(_fromUtf8("reloadFilterSetAction"))
 
         self.retranslateUi(FilterSetWidget)
         QtCore.QMetaObject.connectSlotsByName(FilterSetWidget)
@@ -87,5 +97,6 @@ class Ui_FilterSetWidget(object):
         self.saveFilterSetAction.setText(_translate("FilterSetWidget", "Save Filter Set", None))
         self.deleteFilterSetAction.setText(_translate("FilterSetWidget", "Delete Filter Set", None))
         self.exportFilterSetAction.setText(_translate("FilterSetWidget", "Export Filter Set", None))
+        self.reloadFilterSetAction.setText(_translate("FilterSetWidget", "Reload Filter Set", None))
 
-import resources
+import resources_rc

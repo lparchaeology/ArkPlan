@@ -41,7 +41,7 @@ from ..grid.grid import GridModule
 
 from data import Data
 from plan import Plan
-from filter import Filter
+from filter_module import FilterModule
 from identify import MapToolIndentifyItems
 
 from config import Config
@@ -130,7 +130,7 @@ class ArkSpatial(Plugin):
     data = None  # Data()
     gridModule = None  # Grid()
     planModule = None  # Plan()
-    filterModule = None  # Filter()
+    filterModule = None  # FilterModule()
 
     projectGroupIndex = -1
     drawingsGroupIndex = -1
@@ -223,7 +223,7 @@ class ArkSpatial(Plugin):
         self.layerDock.toolbar.addSeparator()
         self.gridModule = GridModule(self)
         self.gridModule.initGui()
-        self.filterModule = Filter(self)
+        self.filterModule = FilterModule(self)
         self.filterModule.initGui()
         self.planModule = Plan(self)
         self.planModule.initGui()

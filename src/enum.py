@@ -24,12 +24,6 @@
  ***************************************************************************/
 """
 
-class FilterType():
-    IncludeFilter = 0
-    ExcludeFilter = 1
-    SelectFilter = 2
-    HighlightFilter = 3
-
 class MapAction():
     NoMapAction = 0
     ZoomMap = 1

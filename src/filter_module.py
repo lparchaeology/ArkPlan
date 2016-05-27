@@ -26,25 +26,26 @@
 import re, copy
 
 from PyQt4.QtCore import Qt, QObject, QRegExp, QSettings, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog, QColor
 
 from qgis.core import *
 from qgis.gui import QgsExpressionBuilderDialog, QgsMessageBar
 
 from ..libarkqgis.map_tools import ArkMapToolIndentifyFeatures
 from ..libarkqgis import layers, utils
+from ..libarkqgis.project import Project
 
 from enum import *
 from data_dialog import DataDialog
 from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
-from filter_clause_widget import FilterWidgetAction
+from filter_base import *
 from config import Config
 from plan_item import ItemKey
 
 import resources
 
-class Filter(QObject):
+class FilterModule(QObject):
 
     filterSetCleared = pyqtSignal()
 
@@ -53,16 +54,14 @@ class Filter(QObject):
     # Internal variables
     dock = None # FilterDock()
     _initialised = False
-    _dataLoaded = False
     _useGroups = False
     _filterSetGroupIndex = -1
-
-    _schematicIncludeFilter = -1
-    _schematicSelectFilter = -1
-    _schematicFilter = -1
+    _filterSets = {}  # {str: FilterSet()}
+    _arkFilterSets = {}  # {str: FilterSet()}
+    _schematicFilterSet = FilterSet()  # FilterSet()
 
     def __init__(self, project):
-        super(Filter, self).__init__(project)
+        super(FilterModule, self).__init__(project)
         self.project = project
 
     # Standard Dock methods
@@ -73,18 +72,22 @@ class Filter(QObject):
         action = self.project.addDockAction(':/plugins/ark/filter/filter.png', self.tr(u'Filter Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
 
-        self.dock.filterChanged.connect(self.applyFilters)
+        self.dock.filterChanged.connect(self._filterChanged)
+        self.dock.filterClauseAdded.connect(self._filterChanged)
+
         self.dock.buildFilterSelected.connect(self.buildFilter)
         self.dock.buildSelectionSelected.connect(self.buildSelection)
         self.dock.buildHighlightSelected.connect(self.buildHighlight)
-        self.dock.clearFilterSelected.connect(self._clearFilterSet)
+        self.dock.clearFilterSelected.connect(self.clearFilters)
         self.dock.clearFilterSelected.connect(self.filterSetCleared)
-        self.dock.loadDataSelected.connect(self.loadData)
+        self.dock.loadDataSelected.connect(self._loadArkData)
+        self.dock.refreshDataSelected.connect(self._refreshArkData)
         self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
 
-        self.dock.filterSetChanged.connect(self._loadFilterSet)
+        self.dock.filterSetChanged.connect(self.setFilterSet)
         self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
+        self.dock.reloadFilterSetSelected.connect(self._reloadFilterSetSelected)
         self.dock.deleteFilterSetSelected.connect(self._deleteFilterSetSelected)
         self.dock.exportFilterSetSelected.connect(self._exportFilterSetSelected)
 
@@ -94,36 +97,34 @@ class Filter(QObject):
         self.dock.initSiteCodes(self.project.siteCodes())
 
         # Load the Class Codes
-        codeList = set()
-        for key in Config.classCodes:
-            classCode = Config.classCodes[key]
-            if classCode['plan'] or classCode['group']:
-                codeList.add(classCode['code'])
-        codes = {}
-        for code in sorted(codeList):
-            codes[code] = code
-        self.dock.initClassCodes(codes)
+        self._loadClassCodes()
 
         # Load the saved Filter Sets
-        self.dock.initFilterSets(self._listFilterSets())
+        self._loadFilterSets()
+
+        # Respond to ARK data load
+        self._enableArkData()
+        self.project.data.dataLoaded.connect(self._activateArkData)
+
+        # Init the schematic filter set
+        self._schematicFilterSet = FilterSet.fromSchematic(self.project)
 
         self._initialised = True
-        self._clearFilterSet()
-        self.loadFilterSet('Default')
+        self.setFilterSet('Default')
         return self._initialised
 
     # Save the project
     def writeProject(self):
-        if self.dock.currentFilterSet() == 'Default':
-            self._saveFilterSet('Default', 'Default')
+        if self.currentFilterSetKey() == 'Default':
+            self._saveFilterSet('Default')
 
     # Close the project
     def closeProject(self):
+        self.project.data.dataLoaded.disconnect(self._activateArkData)
         #FIXME Doesn't clear on quit as layers already unloaded by main program!
         self.removeFilters()
         # Reset the initialisation
         self._initialised = False
-        self._dataLoaded = False
 
     # Unload the gui when the plugin is unloaded
     def unloadGui(self):
@@ -135,6 +136,29 @@ class Filter(QObject):
 
     def showDock(self, show=True):
         self.dock.menuAction().setChecked(show)
+
+    def _loadClassCodes(self):
+        # Load the Class Codes
+        codeList = set()
+        for key in Config.classCodes:
+            classCode = Config.classCodes[key]
+            if classCode['plan']:
+                codeList.add(classCode['code'])
+            elif Config.isGroupClass(classCode['code']) and self.project.data.hasClassData(classCode['code']):
+                codeList.add(classCode['code'])
+        codes = {}
+        for code in sorted(codeList):
+            codes[code] = code
+        self.dock.initClassCodes(codes)
+
+    def _enableArkData(self, enable=True):
+        if self.project.useArkDB() and self.project.arkUrl():
+            self.dock.enableArkData(enable);
+
+    def _activateArkData(self):
+        self._loadClassCodes()
+        self._loadArkFilterSets()
+        self.dock.activateArkData()
 
     # Filter methods
 
@@ -149,7 +173,7 @@ class Filter(QObject):
             return FilterType.ExcludeFilter
         return -1
 
-    def applyItemAction(self, itemKey, filterAction, widgetAction=FilterWidgetAction.RemoveFilter):
+    def applyItemAction(self, itemKey, filterAction):
         if not self._initialised or filterAction == FilterAction.NoFilterAction:
             return
 
@@ -161,7 +185,7 @@ class Filter(QObject):
         filterType = self._typeForAction(filterAction)
 
         if filterType >= 0:
-            return self.addFilterClause(filterType, itemKey, widgetAction)
+            return self.addFilterClause(filterType, itemKey)
         return -1
 
     def filterItem(self, itemKey):
@@ -191,104 +215,89 @@ class Filter(QObject):
     def applySchematicFilter(self, itemKey, filterAction):
         if not self._initialised:
             return
-        self._clearSchematicFilter()
+        self._schematicFilterSet.clearClauses()
+        cl = FilterClause()
+        cl.key = itemKey
         if ((filterAction == FilterAction.SelectFilter or filterAction == FilterAction.ExclusiveSelectFilter
              or filterAction == FilterAction.HighlightFilter or filterAction == FilterAction.ExclusiveHighlightFilter)
             and (self.hasFilterType(FilterType.IncludeFilter) or self.hasFilterType(FilterType.ExcludeFilter))):
-            self._schematicIncludeFilter = self.dock.addFilterClause(FilterType.IncludeFilter, itemKey, FilterWidgetAction.LockFilter)
-        self._schematicFilter = self.addFilterClause(self._typeForAction(filterAction), itemKey, FilterWidgetAction.LockFilter)
+            cl.action = FilterType.IncludeFilter
+            self._schematicFilterSet.addClause(cl)
+        cl.action = self._typeForAction(filterAction)
+        self._schematicFilterSet.addClause(cl)
+        self.dock.setSchematicFilterSet(self._schematicFilterSet)
+        self.project.logMessage(self._schematicFilterSet.debug(True))
+        self._applyFilters()
 
     def clearSchematicFilter(self):
-        if  self._clearSchematicFilter():
-            self.applyFilters()
+        if len(self._schematicFilterSet.clauses()) > 0:
+            self._schematicFilterSet.clearClauses()
+            self.dock.removeSchematicFilters()
+            self._applyFilters()
 
-    def _clearSchematicFilter(self):
-        changed = False
-        if self._schematicIncludeFilter >= 0:
-            self.dock.removeFilterClause(self._schematicIncludeFilter)
-            self._schematicIncludeFilter = -1
-            changed = True
-        if self._schematicFilter >= 0:
-            self.dock.removeFilterClause(self._schematicFilter)
-            self._schematicFilter = -1
-            changed = True
-        return changed
-
-    def addFilterClause(self, filterType, itemKey, widgetAction=FilterWidgetAction.RemoveFilter):
+    def addFilterClause(self, filterType, itemKey):
         if not self._initialised:
             return
-        idx = self.dock.addFilterClause(filterType, itemKey, widgetAction)
-        self.applyFilters()
+        idx = self.dock.addFilterClause(filterType, itemKey)
+        self._applyFilters()
         return idx
-
-    def removeFilterClause(self, filterIndex):
-        if not self._initialised:
-            return
-        if self.dock.removeFilterClause(filterIndex):
-            self.applyFilters()
 
     def removeFilters(self):
         if not self._initialised:
             return
         if self.dock.removeFilters():
-            self.applyFilters()
+            self._applyFilters()
 
     def removeSelectFilters(self):
         if not self._initialised:
             return
         if self.dock.removeSelectFilters():
-            self.applyFilters()
+            self._applyFilters()
 
     def removeHighlightFilters(self):
         if not self._initialised:
             return
         if self.dock.removeHighlightFilters():
-            self.applyFilters()
+            self._applyFilters()
 
     def hasFilterType(self, filterType):
         if not self._initialised:
             return False
         return self.dock.hasFilterType(filterType)
 
-    def applyFilters(self):
+    def _filterChanged(self):
+        self.currentFilterSet().setClauses(self.dock.filterClauses())
+        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self._applyFilters()
+
+    def _applyFilters(self):
         if not self._initialised:
             return
-        excludeString = ''
-        firstInclude = True
-        includeString = ''
-        firstExclude = True
-        selectString = ''
-        firstSelect = True
-        activeFilters = self.dock.activeFilters()
-        for index in activeFilters:
-            if activeFilters[index] is not None:
-                filter = activeFilters[index]
-                filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
-                if filter.filterType() == FilterType.SelectFilter:
-                    if firstSelect:
-                        firstSelect = False
-                    else:
-                        selectString += ' or '
-                    selectString += filterItemKey.filterClause()
-                elif filter.filterType() == FilterType.ExcludeFilter:
-                    if firstExclude:
-                        firstExclude = False
-                    else:
-                        excludeString += ' or '
-                    excludeString += filterItemKey.filterClause()
-                elif filter.filterType() == FilterType.IncludeFilter:
-                    if firstInclude:
-                        firstInclude = False
-                    else:
-                        includeString += ' or '
-                    includeString += filterItemKey.filterClause()
-        if includeString and excludeString:
-            self.applyFilter('(' + includeString + ') and NOT (' + excludeString + ')')
-        elif excludeString:
-            self.applyFilter('NOT (' + excludeString + ')')
+
+        # Filter
+        filterString = self.currentFilterSet().expression
+        schematicString = self._schematicFilterSet.expression
+        self.project.logMessage('Main filter = ' + filterString)
+        self.project.logMessage('Schematic filter = ' + schematicString)
+        if filterString and schematicString:
+            self.applyFilter('(' + filterString + ') or (' + schematicString + ')')
+        elif schematicString:
+            self.applyFilter(schematicString)
         else:
-            self.applyFilter(includeString)
-        self.applySelection(selectString)
+            self.applyFilter(filterString)
+
+        # Selection
+        filterString = self.currentFilterSet().selection
+        schematicString = self._schematicFilterSet.selection
+        self.project.logMessage('Main select = ' + filterString)
+        self.project.logMessage('Schematic select = ' + schematicString)
+        if filterString and schematicString:
+            self.applySelection('(' + filterString + ') or (' + schematicString + ')')
+        elif schematicString:
+            self.applySelection(schematicString)
+        else:
+            self.applySelection(filterString)
+
         self.applyHighlightFilters()
 
 
@@ -297,29 +306,34 @@ class Filter(QObject):
             return
         highlightString = ''
         firstHighlight = True
-        activeFilters = self.dock.activeFilters()
         self.project.plan.clearHighlight()
-        for index in activeFilters:
-            if activeFilters[index] is not None:
-                filter = activeFilters[index]
-                filterItemKey = self.project.data.nodesItemKey(filter.itemKey())
-                if filter.filterType() == FilterType.HighlightFilter:
-                    self.addHighlight(filterItemKey.filterClause(), filter.highlightLineColor(), filter.highlightColor())
+        self._applyHighlightClauses(self.currentFilterSet().clauses())
+        self._applyHighlightClauses(self._schematicFilterSet.clauses())
 
+    def _applyHighlightClauses(self, clauses):
+        for clause in clauses:
+            if clause.action == FilterType.HighlightFilter:
+                filterItemKey = self.project.data.nodesItemKey(clause.key)
+                self.addHighlight(filterItemKey.filterClause(), clause.lineColor(), clause.color)
 
-    def _clearFilterSet(self):
+    def clearFilters(self):
+        self._filterSets['Default'].clearClauses()
+        self.setFilterSet('Default')
+
+    def _clearFilters(self):
         self.project.plan.clearFilter()
         self.project.plan.clearSelection()
         self.project.plan.clearHighlight()
 
-
     def applyFilter(self, expression):
         if not self._initialised:
             return
+        self.project.logMessage('applyFilter = ' + expression)
         self.project.plan.applyFilter(expression)
 
 
     def applySelection(self, expression):
+        self.project.logMessage('applySelection = ' + expression)
         self.project.plan.applySelection(expression)
 
 
@@ -328,6 +342,7 @@ class Filter(QObject):
 
 
     def addHighlight(self, expression, lineColor=None, fillColor=None):
+        self.project.logMessage('Add highlight = ' + expression)
         self.project.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
 
@@ -352,10 +367,12 @@ class Filter(QObject):
             self.applyHighlight(dialog.expressionText())
 
 
-    def loadData(self):
-        self.data.loadData()
-        self.dock.enableGroupFilters(True)
-        self._dataLoaded = True
+    def _loadArkData(self):
+        self.project.data.loadData()
+
+
+    def _refreshArkData(self):
+        self.project.data.refreshData()
 
 
     def zoomFilter(self):
@@ -390,6 +407,17 @@ class Filter(QObject):
         dataDialog.groupTableView.resizeColumnsToContents()
         return dataDialog.exec_()
 
+    # Filter Set methods
+
+    def currentFilterSet(self):
+        key = self.currentFilterSetKey()
+        if key[0:4] == 'ark_':
+            return self._arkFilterSets[key]
+        return self._filterSets[key]
+
+    def currentFilterSetKey(self):
+        return self.dock.currentFilterSet()
+
     def _filterSetGroup(self, key):
         return 'filterset/' + key
 
@@ -397,62 +425,80 @@ class Filter(QObject):
         name = re.sub(r'[^\w\s]','', name)
         return re.sub(r'\s+', '', name)
 
-    def _saveFilterSet(self, key, name):
-        group = self._filterSetGroup(key)
+    def _loadFilterSets(self):
+        self._filterSets = {}
         settings = QSettings()
-        settings.remove(group)
-        settings.setValue(group + '/' + 'Name', name)
-        settings.beginWriteArray(group)
-        self.dock.toSettings(settings)
-        settings.endArray()
+        settings.beginGroup('filterset')
+        groups = settings.childGroups()
+        settings.endGroup()
+        self.project.logMessage('_loadFilterSets = ' + str(groups))
+        for group in groups:
+            self.project.logMessage('Loading FilterSet = ' + group)
+            filterSet = FilterSet.fromSettings(self.project, 'filterset', group)
+            self.project.logMessage('FilterSet = ' + filterSet.debug(True))
+            self._filterSets[filterSet.key] = filterSet
+        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
-    def _deleteFilterSet(self, key):
-        group = self._filterSetGroup(key)
-        settings = QSettings()
-        settings.remove(group)
+    def _loadArkFilterSets(self):
+        self._arkFilterSets = {}
+        filters = self.project.data.getFilters()
+        self.project.logMessage('ARK Filters = ' + str(filters))
+        for key in filters:
+            self.project.logMessage('Loading ARK FilterSet = ' + str(key) + ' ' + str(filters[key]))
+            filterSet = FilterSet.fromArk(self.project, key, filters[key])
+            self.project.logMessage('FilterSet = ' + filterSet.debug(True))
+            self._arkFilterSets[filterSet.key] = filterSet
+        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _exportFilterSet(self, key):
         pass
 
-    def _listFilterSets(self):
-        filterSets = []
-        settings = QSettings()
-        settings.beginGroup('filterset')
-        groups = settings.childGroups()
-        for group in groups:
-            settings.beginGroup(group)
-            filterSets.append([group, settings.value('Name')])
-            settings.endGroup()
-        settings.endGroup()
-        return filterSets
+    def setFilterSet(self, key='Default'):
+        if key in self._filterSets:
+            self._setFilterSet(self._filterSets[key])
+        if key in self._arkFilterSets:
+            self._setFilterSet(self._arkFilterSets[key])
 
-    def loadFilterSet(self, filterSet='Default'):
-        if filterSet in self._listFilterSets():
-            self._loadFilterSet(filterSet)
-            self.dock.setFilterSet(filterSet)
-            self.applyFilters()
+    def _setFilterSet(self, filterSet):
+        self.project.logMessage('_setFilterSet = ' + filterSet.key)
+        self.dock.setFilterSet(filterSet)
+        self.project.logMessage('FilterSet now = ' + filterSet.debug(True))
+        self._applyFilters()
 
-    def _loadFilterSet(self, key):
-        group = self._filterSetGroup(key)
-        settings = QSettings()
-        x = settings.beginReadArray(group)
-        if x > 0:
-            self.dock.fromSettings(settings, x)
-        settings.endArray()
-
-    def _saveFilterSetSelected(self, key, name):
+    def _saveFilterSetSelected(self, name):
         saveName, ok = QInputDialog.getText(None, 'Save Filter Set', 'Enter Name of Filter Set', text=name)
         if ok:
-            saveKey = self._makeKey(saveName)
-            self._saveFilterSet(saveKey, saveName)
-            if saveKey != key:
-                self.dock.addFilterSet(saveKey, saveName)
-                self.dock.setFilterSet(saveKey)
+            self._saveFilterSet(saveName)
+
+    def _saveFilterSet(self, name):
+        key = self._makeKey(name)
+        if key in self._filterSets:
+            self._filterSets[key].setClauses(self.dock.filterClauses())
+            self._filterSets[key].save()
+        else:
+            filterSet = FilterSet.fromName(self.project, 'filterset', key, name)
+            filterSet.setClauses(self.dock.filterClauses())
+            filterSet.save()
+            self._filterSets[key] = filterSet
+        if key != self.currentFilterSetKey():
+            self.currentFilterSet().reloadClauses()
+        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self.setFilterSet(key)
+
+    def _reloadFilterSetSelected(self, key):
+        if key in self._filterSets:
+            self._filterSets[key].reloadClauses()
+        if key in self._arkFilterSets:
+            self._arkFilterSets[key].reloadClauses()
+        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self.setFilterSet(key)
 
     def _deleteFilterSetSelected(self, key):
-        self._deleteFilterSet(key)
-        self.dock.removeFilterSet(key)
-        self.loadFilterSet('Default')
+        if key in self._filterSets:
+            self._filterSets[key].delete()
+            del self._filterSets[key]
+            self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+            self.setFilterSet('Default')
 
     def _exportFilterSetSelected(self, key, name):
         dialog = FilterExportDialog()

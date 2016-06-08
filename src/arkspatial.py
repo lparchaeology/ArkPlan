@@ -518,7 +518,16 @@ class ArkSpatial(Plugin):
 
     def _loadCollection(self, collection):
         lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
+        if lcs.pointsStylePath == '':
+            lcs.pointsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
+        if lcs.linesStylePath == '':
+            lcs.linesStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.linesLayerName, 'linesBaseName')
+        if lcs.polygonsStylePath == '':
+            lcs.polygonsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
         return LayerCollection(self.iface, self.projectPath(), lcs)
+
+    def _stylePath(self, collection, collectionPath, layerName, baseName):
+        return self._styleFile(collectionPath, layerName, Config.vectorGroups[collection][baseName])
 
     def _createCollectionLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):

@@ -130,7 +130,7 @@ class Plan(QObject):
         self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
         self.dock.editSourceSelected.connect(self._editSource)
         self.dock.contextChanged.connect(self._clearSchematicFilters)
-        self.dock.resetSelected.connect(self._resetSchematic)
+        self.dock.resetSchematicSelected.connect(self._resetSchematic)
 
         self.project.filterModule.filterSetCleared.connect(self._clearSchematic)
 

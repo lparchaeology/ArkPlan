@@ -238,7 +238,10 @@ class FilterModule(QObject):
     def addFilterClause(self, filterType, itemKey):
         if not self._initialised:
             return
-        idx = self.dock.addFilterClause(filterType, itemKey)
+        clause = FilterClause()
+        clause.key = itemKey
+        clause.action = filterType
+        idx = self.dock.addFilterClause(clause)
         self._applyFilters()
         return idx
 

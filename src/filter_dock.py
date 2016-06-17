@@ -169,7 +169,9 @@ class FilterDock(ToolDockWidget):
         filterClauseWidget = self._createFilterClauseWidget()
         filterClauseWidget.setClause(clause)
         filterClauseWidget.setFilterAction(FilterWidgetAction.RemoveFilter)
-        self._addFilterClause(filterClauseWidget)
+        idx = self._addFilterClause(filterClauseWidget)
+        self.filterClauseAdded.emit()
+        return idx
 
     def _addNewFilterClause(self):
         self.newFilterClauseWidget.clauseAdded.disconnect(self._addNewFilterClause)
@@ -193,6 +195,7 @@ class FilterDock(ToolDockWidget):
         self.widget.filterClauseList.setItemWidget(newItem, filterClauseWidget)
         self._items[idx] = newItem
         self._filterIndex += 1
+        return idx
 
     def setSchematicFilterSet(self, filterSet):
         self.removeSchematicFilters()

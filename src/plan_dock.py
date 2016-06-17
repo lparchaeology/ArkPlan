@@ -166,7 +166,7 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
 
         self.widget.schematicWidget.contextChanged.connect(self.contextChanged)
-        self.widget.schematicWidget.resetButton.clicked.connect(self.resetSelected)
+        self.widget.schematicWidget.resetSelected.connect(self.resetSelected)
 
     def unloadGui(self):
         self.widget.metadataWidget.unloadGui()

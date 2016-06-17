@@ -208,6 +208,8 @@ class ArkSpatial(Plugin):
         self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
         self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
         self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
+        self.layerViewAction = self.addDockAction(':/plugins/ark/tree.svg', self.tr(u'Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
+        self.layerViewAction.setChecked(True)
 
         # Init the identify tool and add to the toolbar
         self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify Items'), callback=self.triggerIdentifyAction, checkable=True)
@@ -426,6 +428,10 @@ class ArkSpatial(Plugin):
     def _configureRasterGroup(self, grp):
         self.rawDrawingDir(grp).mkpath('.')
         self.georefDrawingDir(grp).mkpath('.')
+
+    def _toggleLayerView(self, enabled):
+        self.projectLayerView.setVisible(enabled)
+        self.layerDock.adjustSize()
 
     def _triggerSettingsDialog(self):
         if self.isConfigured():

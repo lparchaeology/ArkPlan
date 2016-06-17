@@ -929,16 +929,17 @@ class Plan(QObject):
 
     def _arkStatus(self, item):
         haveArk = SearchStatus.NotFound
-        contextType = ''
+        contextType = 'None'
         contextDescription = ''
         try:
             if item in self.project.data.itemKeys['cxt']:
                 haveArk = SearchStatus.Found
                 vals = self.project.data.getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
-                contextType = vals[u'conf_field_cxttype']
-                contextDescription = vals[u'conf_field_short_desc'][0][u'current']
+                if (u'conf_field_cxttype' in vals and vals[u'conf_field_cxttype']):
+                    contextType = str(vals[u'conf_field_cxttype'])
+                if u'conf_field_short_desc' in vals:
+                    contextDescription = str(vals[u'conf_field_short_desc'][0][u'current'])
             else:
-                contextType = 'None'
                 contextDescription = 'Context not in ARK'
         except:
             haveArk = SearchStatus.Unknown

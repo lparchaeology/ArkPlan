@@ -226,7 +226,6 @@ class FilterModule(QObject):
         cl.action = self._typeForAction(filterAction)
         self._schematicFilterSet.addClause(cl)
         self.dock.setSchematicFilterSet(self._schematicFilterSet)
-        self.project.logMessage(self._schematicFilterSet.debug(True))
         self._applyFilters()
 
     def clearSchematicFilter(self):
@@ -280,8 +279,6 @@ class FilterModule(QObject):
         # Filter
         filterString = self.currentFilterSet().expression
         schematicString = self._schematicFilterSet.expression
-        self.project.logMessage('Main filter = ' + filterString)
-        self.project.logMessage('Schematic filter = ' + schematicString)
         if filterString and schematicString:
             self.applyFilter('(' + filterString + ') or (' + schematicString + ')')
         elif schematicString:
@@ -292,8 +289,6 @@ class FilterModule(QObject):
         # Selection
         filterString = self.currentFilterSet().selection
         schematicString = self._schematicFilterSet.selection
-        self.project.logMessage('Main select = ' + filterString)
-        self.project.logMessage('Schematic select = ' + schematicString)
         if filterString and schematicString:
             self.applySelection('(' + filterString + ') or (' + schematicString + ')')
         elif schematicString:
@@ -331,12 +326,10 @@ class FilterModule(QObject):
     def applyFilter(self, expression):
         if not self._initialised:
             return
-        self.project.logMessage('applyFilter = ' + expression)
         self.project.plan.applyFilter(expression)
 
 
     def applySelection(self, expression):
-        self.project.logMessage('applySelection = ' + expression)
         self.project.plan.applySelection(expression)
 
 
@@ -345,7 +338,6 @@ class FilterModule(QObject):
 
 
     def addHighlight(self, expression, lineColor=None, fillColor=None):
-        self.project.logMessage('Add highlight = ' + expression)
         self.project.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
 
@@ -414,6 +406,8 @@ class FilterModule(QObject):
 
     def currentFilterSet(self):
         key = self.currentFilterSetKey()
+        if not key:
+            return FilterSet()
         if key[0:4] == 'ark_':
             return self._arkFilterSets[key]
         return self._filterSets[key]
@@ -434,22 +428,19 @@ class FilterModule(QObject):
         settings.beginGroup('filterset')
         groups = settings.childGroups()
         settings.endGroup()
-        self.project.logMessage('_loadFilterSets = ' + str(groups))
         for group in groups:
-            self.project.logMessage('Loading FilterSet = ' + group)
             filterSet = FilterSet.fromSettings(self.project, 'filterset', group)
-            self.project.logMessage('FilterSet = ' + filterSet.debug(True))
+            self._filterSets[filterSet.key] = filterSet
+        if 'Default' not in self._filterSets:
+            filterSet = FilterSet.fromSettings(self.project, 'filterset', 'Default')
             self._filterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _loadArkFilterSets(self):
         self._arkFilterSets = {}
         filters = self.project.data.getFilters()
-        self.project.logMessage('ARK Filters = ' + str(filters))
         for key in filters:
-            self.project.logMessage('Loading ARK FilterSet = ' + str(key) + ' ' + str(filters[key]))
             filterSet = FilterSet.fromArk(self.project, key, filters[key])
-            self.project.logMessage('FilterSet = ' + filterSet.debug(True))
             self._arkFilterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
@@ -463,9 +454,7 @@ class FilterModule(QObject):
             self._setFilterSet(self._arkFilterSets[key])
 
     def _setFilterSet(self, filterSet):
-        self.project.logMessage('_setFilterSet = ' + filterSet.key)
         self.dock.setFilterSet(filterSet)
-        self.project.logMessage('FilterSet now = ' + filterSet.debug(True))
         self._applyFilters()
 
     def _saveFilterSetSelected(self, name):

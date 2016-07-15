@@ -85,14 +85,10 @@ class FilterClause():
             settings.setValue('highlightColor', self.color)
 
     def loadSettings(self, settings):
-        utils.logMessage(str(settings.childKeys()))
         self.action = int(settings.value('filterType', 0))
         siteCode = settings.value('siteCode', '')
         classCode = settings.value('classCode', '')
         filterRange = settings.value('filterRange', '')
-        utils.logMessage('siteCode = ' + siteCode)
-        utils.logMessage('classCode = ' + classCode)
-        utils.logMessage('filterRange = ' + filterRange)
         self.key = ItemKey(siteCode, classCode, filterRange)
         if settings.contains('highlightColor'):
             self.color = settings.value('highlightColor', QColor)
@@ -210,12 +206,9 @@ class FilterSet():
     def _loadSettings(self):
         settings = QSettings()
         x = settings.beginReadArray(self._group)
-        self._project.logMessage(self._group + ' = ' + str(x))
-        self._project.logMessage(str(settings.childKeys()))
         if x > 0:
             for i in range(0, x):
                 settings.setArrayIndex(i)
-                self._project.logMessage(str(settings.childKeys()))
                 clause = FilterClause.fromSettings(settings)
                 self._clauses.append(clause)
             self.status = 'loaded'

@@ -307,7 +307,8 @@ class FilterDock(ToolDockWidget):
         self.blockSignals(True)
         currentKey = self.currentFilterSet()
         self.widget.filterSetCombo.clear()
-        self._addFilterSet(filterSets['Default'])
+        if 'Default' in filterSets:
+            self._addFilterSet(filterSets['Default'])
         for key in filterSets:
             filterSet = filterSets[key]
             if filterSet.key != 'Default':

@@ -162,6 +162,9 @@ ARK Spatial will automatically organise the data under this folder. If you wish 
       <property name="wordWrap">
        <bool>true</bool>
       </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+      </property>
       <property name="buddy">
        <cstring>arkUrlEdit</cstring>
       </property>
@@ -186,7 +189,10 @@ ARK Spatial will automatically organise the data under this folder. If you wish 
     <item row="3" column="0">
      <widget class="QLineEdit" name="arkUrlEdit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+      <property name="placeholderText">
+       <string/>
       </property>
      </widget>
     </item>

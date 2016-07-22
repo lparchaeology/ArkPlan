@@ -321,7 +321,9 @@ class FilterDock(ToolDockWidget):
         self.blockSignals(False)
 
     def _addFilterSet(self, filterSet):
-        name = filterSet.name
+        if not filterSet or not filterSet.name:
+            return
+        name = str(filterSet.name)
         if filterSet.source == 'ark':
             name = 'ARK: ' + name
         if filterSet.status == 'edited':

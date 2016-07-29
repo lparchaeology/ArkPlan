@@ -93,6 +93,12 @@ class Ui_GridWidget(object):
 
         self.retranslateUi(GridWidget)
         QtCore.QMetaObject.connectSlotsByName(GridWidget)
+        GridWidget.setTabOrder(self.gridCombo, self.mapEastingSpin)
+        GridWidget.setTabOrder(self.mapEastingSpin, self.mapNorthingSpin)
+        GridWidget.setTabOrder(self.mapNorthingSpin, self.copyMapPointTool)
+        GridWidget.setTabOrder(self.copyMapPointTool, self.localEastingSpin)
+        GridWidget.setTabOrder(self.localEastingSpin, self.localNorthingSpin)
+        GridWidget.setTabOrder(self.localNorthingSpin, self.copyLocalPointTool)
 
     def retranslateUi(self, GridWidget):
         GridWidget.setWindowTitle(_translate("GridWidget", "Form", None))

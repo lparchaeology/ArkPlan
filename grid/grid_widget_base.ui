@@ -170,6 +170,15 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>gridCombo</tabstop>
+  <tabstop>mapEastingSpin</tabstop>
+  <tabstop>mapNorthingSpin</tabstop>
+  <tabstop>copyMapPointTool</tabstop>
+  <tabstop>localEastingSpin</tabstop>
+  <tabstop>localNorthingSpin</tabstop>
+  <tabstop>copyLocalPointTool</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>

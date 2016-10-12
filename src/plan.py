@@ -1072,8 +1072,11 @@ class Plan(QObject):
         for feature in self.project.plan.polygonsLayer.getFeatures():
             features.add(ItemKey(feature))
         schRequest = self._featureRequest(self._categoryClause('sch'))
+        scsRequest = self._featureRequest(self._categoryClause('scs'))
         schematics = set()
         for feature in self.project.plan.polygonsLayer.getFeatures(schRequest):
+            schematics.add(ItemKey(feature))
+        for feature in self.project.plan.polygonsLayer.getFeatures(scsRequest):
             schematics.add(ItemKey(feature))
         missing = []
         contexts = self.project.data.itemKeys['cxt']

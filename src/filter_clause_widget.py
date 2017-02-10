@@ -135,7 +135,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(clause.key.classCode))
         self.filterRangeCombo.setEditText(clause.key.itemId)
         self._setFilterType(clause.action)
-        self._colorTool.setColor(clause.color)
+        #self._colorTool.setColor(clause.color)
         self._colorTool.blockSignals(False)
         self.blockSignals(False)
 

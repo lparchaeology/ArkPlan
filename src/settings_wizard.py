@@ -43,6 +43,9 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def projectPath(self):
         return self.projectFolderEdit.text()
 
+    def projectName(self):
+        return self.projectNameEdit.text()
+
     def multiSiteProject(self):
         return self.multiSiteCheck.isChecked()
 

@@ -24,17 +24,7 @@
        <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QLabel" name="projectFolderLabel">
-         <property name="text">
-          <string>Project Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>projectFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QLabel" name="siteCodeLabel">
          <property name="text">
           <string>Default Site Code:</string>
@@ -44,61 +34,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="useArkLabel">
-         <property name="text">
-          <string>Use ARK DB:</string>
-         </property>
-         <property name="buddy">
-          <cstring>useArkCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <layout class="QHBoxLayout" name="projectFolderLayout">
-         <item>
-          <widget class="QLineEdit" name="projectFolderEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="projectFolderButton">
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>12</width>
-             <height>12</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="customStylesLabel">
-         <property name="text">
-          <string>Custom Styles Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>styleFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="2">
+       <item row="3" column="2">
         <layout class="QHBoxLayout" name="styleFolderLayout">
          <item>
           <widget class="QCheckBox" name="styleFolderCheck">
@@ -133,10 +69,43 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="2">
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="customStylesLabel">
+         <property name="text">
+          <string>Custom Styles Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>styleFolderEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="useArkLabel">
+         <property name="text">
+          <string>Use ARK DB:</string>
+         </property>
+         <property name="buddy">
+          <cstring>useArkCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="2">
         <widget class="QLineEdit" name="siteCodeEdit"/>
        </item>
-       <item row="5" column="2">
+       <item row="4" column="2">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QCheckBox" name="useArkCheck">
@@ -154,7 +123,7 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="2">
+       <item row="2" column="2">
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QCheckBox" name="multiSiteCheck">
@@ -172,7 +141,14 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0">
+       <item row="5" column="0">
+        <widget class="QLabel" name="logUpdatesLabel">
+         <property name="text">
+          <string>Log Updates:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
         <widget class="QLabel" name="multiSiteLabel">
          <property name="text">
           <string>Multi-site Project</string>
@@ -182,14 +158,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="logUpdatesLabel">
-         <property name="text">
-          <string>Log Updates:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
+       <item row="5" column="2">
         <widget class="QCheckBox" name="logUpdatesCheck">
          <property name="text">
           <string/>
@@ -413,8 +382,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>projectFolderEdit</tabstop>
-  <tabstop>projectFolderButton</tabstop>
   <tabstop>siteCodeEdit</tabstop>
   <tabstop>multiSiteCheck</tabstop>
   <tabstop>multiSiteEdit</tabstop>

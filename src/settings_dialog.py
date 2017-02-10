@@ -40,8 +40,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.setupUi(self)
 
         # Project tab settings
-        self.projectFolderEdit.setText(project.projectPath())
-        self.projectFolderButton.clicked.connect(self._selectProjectFolder)
         self.multiSiteCheck.setChecked(project.multiSiteProject())
         self.siteCodeEdit.setText(project.siteCode())
         self.styleFolderCheck.setChecked(project.useCustomStyles())
@@ -77,7 +75,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
     def accept(self):
         # Project tab settings
-        self._project.setProjectPath(self.projectFolderEdit.text())
         self._project.setMultiSiteProject(self.multiSiteCheck.isChecked())
         self._project.setSiteCode(self.siteCodeEdit.text())
         self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
@@ -93,11 +90,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setDrawingTransparency(self.drawingTransparencySpin.value())
 
         return super(SettingsDialog, self).accept()
-
-    def _selectProjectFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))
-        if folderName:
-            self.projectFolderEdit.setText(folderName)
 
     def _toggleDefaultStyle(self, useDefault):
         if useDefault:

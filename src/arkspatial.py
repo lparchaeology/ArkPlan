@@ -346,21 +346,27 @@ class ArkSpatial(Plugin):
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
         if wizard.exec_() and wizard.projectPath() and wizard.siteCode() and QDir(wizard.projectPath()).mkpath('.'):
-            self.setProjectPath(wizard.projectPath())
-            self.setMultiSiteProject(wizard.multiSiteProject())
-            self.setSiteCode(wizard.siteCode())
-            self.setUseArkDB(wizard.useArkDB())
-            self.setArkUrl(wizard.arkUrl())
 
-            self._configureVectorGroup('plan')
-            self._configureVectorGroup('grid')
-            self._configureVectorGroup('base')
+            QDir(wizard.projectPath()).mkdir('project')
+            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectName() + '.qpj')
+            if project.write(info):
 
-            self._configureRasterGroup('cxt')
-            self._configureRasterGroup('pln')
-            self._configureRasterGroup('sec')
+                self.setMultiSiteProject(wizard.multiSiteProject())
+                self.setSiteCode(wizard.siteCode())
+                self.setUseArkDB(wizard.useArkDB())
+                self.setArkUrl(wizard.arkUrl())
 
-            self._setIsConfigured(True)
+                self._configureVectorGroup('plan')
+                self._configureVectorGroup('grid')
+                self._configureVectorGroup('base')
+
+                self._configureRasterGroup('cxt')
+                self._configureRasterGroup('pln')
+                self._configureRasterGroup('sec')
+
+                self.writeProject()
+                if project.write(info):
+                    self._setIsConfigured(True)
 
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
@@ -619,10 +625,10 @@ class ArkSpatial(Plugin):
         return QDir(self.projectPath())
 
     def projectPath(self):
-        return self.readEntry('projectPath', '')
-
-    def setProjectPath(self, absolutePath):
-        self.writeEntry('projectPath', absolutePath)
+        legacy = self.readEntry('projectPath', '')
+        if legacy:
+            return legacy
+        return self.projectFilePath() + '/..'
 
     def multiSiteProject(self):
         return self.readBoolEntry('multiSiteProject', False)

@@ -44,7 +44,7 @@
       <property name="text">
        <string>This folder is usually something like &quot;Projects/TST01/GIS/&quot; where TST01 is the Site Code. The folder will be created if it does not already exist.
 
-ARK Spatial will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.
+ARK Spatial will automatically organise the data under this folder.
 </string>
       </property>
       <property name="alignment">
@@ -210,11 +210,9 @@ ARK Spatial will automatically organise the data under this folder. If you wish 
    </attribute>
    <layout class="QGridLayout" name="gridLayout_4">
     <item row="0" column="0">
-     <widget class="QLabel" name="confirmLabel">
+     <widget class="QLabel" name="projectNameLabel">
       <property name="text">
-       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.
-
-Once the project is created you can modify these settings or configure more settings in the Settings Dialog.</string>
+       <string>Please enter the name for the project file which will be saved in the /project subfolder.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -223,6 +221,34 @@ Once the project is created you can modify these settings or configure more sett
        <bool>true</bool>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="confirmLabel">
+      <property name="text">
+       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.
+
+Once the project is created you can modify these settings or configure more settings in the Settings Dialog.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="projectNameEdit"/>
+    </item>
+    <item row="3" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

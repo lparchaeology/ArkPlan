@@ -416,7 +416,7 @@ class FilterModule(QObject):
         return self.dock.currentFilterSet()
 
     def _filterSetGroup(self, key):
-        return 'filterset/' + key
+        return 'ARK.filterset/' + key
 
     def _makeKey(self, name):
         name = re.sub(r'[^\w\s]','', name)
@@ -425,14 +425,14 @@ class FilterModule(QObject):
     def _loadFilterSets(self):
         self._filterSets = {}
         settings = QSettings()
-        settings.beginGroup('filterset')
+        settings.beginGroup('ARK.filterset')
         groups = settings.childGroups()
         settings.endGroup()
         for group in groups:
-            filterSet = FilterSet.fromSettings(self.project, 'filterset', group)
+            filterSet = FilterSet.fromSettings(self.project, 'ARK.filterset', group)
             self._filterSets[filterSet.key] = filterSet
         if 'Default' not in self._filterSets:
-            filterSet = FilterSet.fromSettings(self.project, 'filterset', 'Default')
+            filterSet = FilterSet.fromName(self.project, 'ARK.filterset', 'Default', 'Default')
             self._filterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
@@ -468,7 +468,7 @@ class FilterModule(QObject):
             self._filterSets[key].setClauses(self.dock.filterClauses())
             self._filterSets[key].save()
         else:
-            filterSet = FilterSet.fromName(self.project, 'filterset', key, name)
+            filterSet = FilterSet.fromName(self.project, 'ARK.filterset', key, name)
             filterSet.setClauses(self.dock.filterClauses())
             filterSet.save()
             self._filterSets[key] = filterSet

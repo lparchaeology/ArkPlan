@@ -25,7 +25,7 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QFile, QDir, QObject, QDateTime, pyqtSignal
+from PyQt4.QtCore import Qt, QSettings, QFile, QFileInfo, QDir, QObject, QDateTime, pyqtSignal
 from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog, QMenu
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel, QgsLayerTreeNode, QgsMapLayer
@@ -239,6 +239,7 @@ class ArkSpatial(Plugin):
         self.iface.projectRead.connect(self.loadProject)
         self.iface.newProjectCreated.connect(self.closeProject)
 
+        self.project = QgsProject.instance()
         self._initialised = True
         return self._initialised
 
@@ -270,7 +271,7 @@ class ArkSpatial(Plugin):
 
     # Close the project
     def closeProject(self):
-        if self.identifyMapTool.action().isChecked():
+        if self.identifyMapTool.action() and self.identifyMapTool.action().isChecked():
             self.iface.actionPan().trigger()
         if self.isLoaded():
             self.writeProject()
@@ -347,26 +348,29 @@ class ArkSpatial(Plugin):
         wizard = SettingsWizard()
         if wizard.exec_() and wizard.projectPath() and wizard.siteCode() and QDir(wizard.projectPath()).mkpath('.'):
 
+            if (self.project.isDirty() and self.project.fileName()):
+                self.project.write()
+            self.project.clear()
+
             QDir(wizard.projectPath()).mkdir('project')
-            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectName() + '.qpj')
-            if project.write(info):
+            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectName() + '.qgs')
+            self.project.setFileName(info.filePath())
 
-                self.setMultiSiteProject(wizard.multiSiteProject())
-                self.setSiteCode(wizard.siteCode())
-                self.setUseArkDB(wizard.useArkDB())
-                self.setArkUrl(wizard.arkUrl())
+            self.setMultiSiteProject(wizard.multiSiteProject())
+            self.setSiteCode(wizard.siteCode())
+            self.setUseArkDB(wizard.useArkDB())
+            self.setArkUrl(wizard.arkUrl())
 
-                self._configureVectorGroup('plan')
-                self._configureVectorGroup('grid')
-                self._configureVectorGroup('base')
+            self._configureVectorGroup('plan')
+            self._configureVectorGroup('grid')
+            self._configureVectorGroup('base')
 
-                self._configureRasterGroup('cxt')
-                self._configureRasterGroup('pln')
-                self._configureRasterGroup('sec')
+            self._configureRasterGroup('cxt')
+            self._configureRasterGroup('pln')
+            self._configureRasterGroup('sec')
 
-                self.writeProject()
-                if project.write(info):
-                    self._setIsConfigured(True)
+            self.writeProject()
+            self._setIsConfigured(self.project.write())
 
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
@@ -628,7 +632,7 @@ class ArkSpatial(Plugin):
         legacy = self.readEntry('projectPath', '')
         if legacy:
             return legacy
-        return self.projectFilePath() + '/..'
+        return self.project.fileInfo().absolutePath() + '/..'
 
     def multiSiteProject(self):
         return self.readBoolEntry('multiSiteProject', False)

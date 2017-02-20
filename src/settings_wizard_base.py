@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'src/settings_wizard_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -106,11 +106,20 @@ class Ui_SettingsWizard(object):
         self.confirmPage.setObjectName(_fromUtf8("confirmPage"))
         self.gridLayout_4 = QtGui.QGridLayout(self.confirmPage)
         self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
+        self.projectNameLabel = QtGui.QLabel(self.confirmPage)
+        self.projectNameLabel.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
+        self.projectNameLabel.setWordWrap(True)
+        self.projectNameLabel.setObjectName(_fromUtf8("projectNameLabel"))
+        self.gridLayout_4.addWidget(self.projectNameLabel, 0, 0, 1, 1)
         self.confirmLabel = QtGui.QLabel(self.confirmPage)
-        self.confirmLabel.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
         self.confirmLabel.setWordWrap(True)
         self.confirmLabel.setObjectName(_fromUtf8("confirmLabel"))
-        self.gridLayout_4.addWidget(self.confirmLabel, 0, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.confirmLabel, 2, 0, 1, 1)
+        self.projectNameEdit = QtGui.QLineEdit(self.confirmPage)
+        self.projectNameEdit.setObjectName(_fromUtf8("projectNameEdit"))
+        self.gridLayout_4.addWidget(self.projectNameEdit, 1, 0, 1, 1)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_4.addItem(spacerItem, 3, 0, 1, 1)
         SettingsWizard.addPage(self.confirmPage)
         self.folderLabel.setBuddy(self.projectFolderEdit)
         self.siteCodeLabel.setBuddy(self.siteCodeEdit)
@@ -130,7 +139,7 @@ class Ui_SettingsWizard(object):
         self.folderPage.setSubTitle(_translate("SettingsWizard", "Please choose the folder where the project files will be stored.", None))
         self.folderLabel.setText(_translate("SettingsWizard", "This folder is usually something like \"Projects/TST01/GIS/\" where TST01 is the Site Code. The folder will be created if it does not already exist.\n"
 "\n"
-"ARK Spatial will automatically organise the data under this folder. If you wish to organise the data yourself you should choose the Advanced option on the previous page.\n"
+"ARK Spatial will automatically organise the data under this folder.\n"
 "", None))
         self.siteCodePage.setTitle(_translate("SettingsWizard", "Site Code", None))
         self.siteCodePage.setSubTitle(_translate("SettingsWizard", "Enter the Site Code for the project.", None))
@@ -142,6 +151,7 @@ class Ui_SettingsWizard(object):
         self.useArkLabel.setText(_translate("SettingsWizard", "Please tick if you will be using ARK Spatial with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ARK Spatial data with the ARK Database. Note that this setting cannot be changed later.", None))
         self.confirmPage.setTitle(_translate("SettingsWizard", "Create Project", None))
         self.confirmPage.setSubTitle(_translate("SettingsWizard", "Create your new project.", None))
+        self.projectNameLabel.setText(_translate("SettingsWizard", "Please enter the name for the project file which will be saved in the /project subfolder.", None))
         self.confirmLabel.setText(_translate("SettingsWizard", "Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.\n"
 "\n"
 "Once the project is created you can modify these settings or configure more settings in the Settings Dialog.", None))

@@ -30,23 +30,24 @@ from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QTabWidget, QToolButton
 
+from ..libarkqgis.map_tools import *
+
 import drawing_widget_base
 
 class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
 
     autoSchematicSelected = pyqtSignal()
-    featureNameChanged = pyqtSignal(str)
-    sectionChanged = pyqtSignal(object)
 
-    _cgColMax = 4
-    _cgCol = 0
-    _cgRow = 0
-    _fgColMax = 4
-    _fgCol = 0
-    _fgRow = 0
-    _sgColMax = 4
-    _sgCol = 0
-    _sgRow = 0
+    _colMax = 5
+    _planPoint = 0
+    _planLine = 0
+    _planPolygon = 0
+    _sectionPoint = 0
+    _sectionLine = 0
+    _sectionPolygon = 0
+    _basePoint = 0
+    _baseLine = 0
+    _basePolygon = 0
 
     def __init__(self, parent=None):
         super(DrawingWidget, self).__init__(parent)
@@ -54,8 +55,6 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
 
     def initGui(self):
         self.autoSchematicTool.clicked.connect(self.autoSchematicSelected)
-        self.featureNameEdit.textChanged.connect(self.featureNameChanged)
-        self.sectionCombo.currentIndexChanged.connect(self._sectionChanged)
 
     def unloadGui(self):
         pass
@@ -66,58 +65,43 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
     def closeProject(self):
         pass
 
-    def initSections(self, itemList):
-        self.sectionCombo.clear()
-        for section in sorted(itemList):
-            if section.name:
-                self.sectionCombo.addItem(section.name, section.key)
-            else:
-                self.sectionCombo.addItem('S' + section.key.itemId, section.key)
-
-    def featureName(self):
-        return self.featureNameEdit.text()
-
-    def setFeatureName(self, name):
-        self.featureNameEdit.setText(name)
-
-    def sectionKey(self):
-        return self.sectionCombo.itemData(self.sectionCombo.currentIndex())
-
-    def setSection(self, itemKey):
-        #TODO Doesn't work when it should...
-        #idx = self.sectionCombo.findData(itemKey)
-        for i in range(0, self.sectionCombo.count()):
-            if self.sectionCombo.itemData(i) == itemKey:
-                self.sectionCombo.setCurrentIndex(i)
-                return
-
     # Drawing Tools
 
-    def addDrawingTool(self, dockTab, action):
+    def addDrawingTool(self, collection, type, action):
         toolButton = QToolButton(self)
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
-        if dockTab == 'cxt':
-            self.contextToolsLayout.addWidget(toolButton, self._cgRow, self._cgCol, Qt.AlignCenter)
-            if self._cgCol == self._cgColMax:
-                self._cgRow += 1
-                self._cgCol = 0
-            else:
-                self._cgCol += 1
-        elif dockTab == 'sec':
-            self.sectionToolsLayout.addWidget(toolButton, self._sgRow, self._sgCol, Qt.AlignCenter)
-            if self._sgCol == self._sgColMax:
-                self._sgRow += 1
-                self._sgCol = 0
-            else:
-                self._sgCol += 1
-        else:
-            self.featureToolsLayout.addWidget(toolButton, self._fgRow, self._fgCol, Qt.AlignCenter)
-            if self._fgCol == self._fgColMax:
-                self._fgRow += 1
-                self._fgCol = 0
-            else:
-                self._fgCol += 1
+        if collection == 'plan':
+            if type == FeatureType.Point or type == FeatureType.Elevation:
+                self._addToolWidget(self.planPointLayout, toolButton, self._planPoint)
+                self._planPoint += 1
+            if type == FeatureType.Line or type == FeatureType.Segment:
+                self._addToolWidget(self.planLineLayout, toolButton, self._planLine)
+                self._planLine += 1
+            if type == FeatureType.Polygon:
+                self._addToolWidget(self.planPolygonLayout, toolButton, self._planPolygon)
+                self._planPolygon += 1
+        elif collection == 'section':
+            if type == FeatureType.Point or type == FeatureType.Elevation:
+                self._addToolWidget(self.sectionPointLayout, toolButton, self._sectionPoint)
+                self._sectionPoint += 1
+            if type == FeatureType.Line or type == FeatureType.Segment:
+                self._addToolWidget(self.sectionLineLayout, toolButton, self._sectionLine)
+                self._sectionLine += 1
+            if type == FeatureType.Polygon:
+                self._addToolWidget(self.sectionPolygonLayout, toolButton, self._sectionPolygon)
+                self._sectionPolygon += 1
+        elif collection == 'base':
+            if type == FeatureType.Point or type == FeatureType.Elevation:
+                self._addToolWidget(self.basePointLayout, toolButton, self._basePoint)
+                self._basePoint += 1
+            if type == FeatureType.Line or type == FeatureType.Segment:
+                self._addToolWidget(self.baseLineLayout, toolButton, self._baseLine)
+                self._baseLine += 1
+            if type == FeatureType.Polygon:
+                self._addToolWidget(self.basePolygonLayout, toolButton, self._basePolygon)
+                self._basePolygon += 1
 
-    def _sectionChanged(self, idx):
-        self.sectionChanged.emit(self.sectionCombo.itemData(idx))
+    def _addToolWidget(self, layout, toolButton, counter):
+        layout.addWidget(toolButton, counter // self._colMax, counter % self._colMax, Qt.AlignCenter)
+

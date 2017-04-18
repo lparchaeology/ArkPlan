@@ -138,8 +138,6 @@ class PlanDock(ToolDockWidget):
 
         # Cascade the child widget signals
         self.widget.drawingWidget.autoSchematicSelected.connect(self.autoSchematicSelected)
-        self.widget.drawingWidget.featureNameChanged.connect(self.featureNameChanged)
-        self.widget.drawingWidget.sectionChanged.connect(self.sectionChanged)
 
         self.widget.resetButton.clicked.connect(self.resetSelected)
         self.widget.mergeButton.clicked.connect(self.mergeSelected)
@@ -197,20 +195,8 @@ class PlanDock(ToolDockWidget):
         self.widget.snappingWidget.closeProject()
 
     # Drawing methods pass-through
-    def setFeatureName(self, name):
-        self.widget.drawingWidget.setFeatureName(name)
-
-    def initSections(self, itemList):
-        self.widget.drawingWidget.initSections(itemList)
-
-    def sectionKey(self):
-        return self.widget.drawingWidget.sectionKey()
-
-    def setSection(self, itemKey):
-        self.widget.drawingWidget.setSection(itemKey)
-
-    def addDrawingTool(self, dockTab, action):
-        self.widget.drawingWidget.addDrawingTool(dockTab, action)
+    def addDrawingTool(self, collection, type, action):
+        self.widget.drawingWidget.addDrawingTool(collection, type, action)
 
     # Schematic methods pass-through
 

@@ -138,6 +138,7 @@ class ArkSpatial(Plugin):
 
     geoLayer = None  #QgsRasterLayer()
     plan = None  # LayerCollection()
+    section = None  # LayerCollection()
     grid = None  # LayerCollection()
     base = None  # LayerCollection()
 
@@ -252,6 +253,7 @@ class ArkSpatial(Plugin):
             #Load the layer collections
             self.grid = self._loadCollection('grid')
             self.plan = self._loadCollection('plan')
+            self.section = self._loadCollection('section')
             self.base = self._loadCollection('base')
             self.drawingsGroupName = Config.rasterGroups['cxt']['layersGroupName']
             if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
@@ -283,6 +285,9 @@ class ArkSpatial(Plugin):
             if self.plan is not None:
                 self.plan.unload()
                 self.plan = None
+            if self.section is not None:
+                self.section.unload()
+                self.section = None
             if self.grid is not None:
                 self.grid.unload()
                 self.grid = None
@@ -362,6 +367,7 @@ class ArkSpatial(Plugin):
             self.setArkUrl(wizard.arkUrl())
 
             self._configureVectorGroup('plan')
+            self._configureVectorGroup('section')
             self._configureVectorGroup('grid')
             self._configureVectorGroup('base')
 
@@ -434,6 +440,7 @@ class ArkSpatial(Plugin):
             self._createCollectionMultiLayers(grp, lcs)
         else:
             self._createCollectionLayers(grp, lcs)
+        return lcs
 
     def _configureRasterGroup(self, grp):
         self.rawDrawingDir(grp).mkpath('.')
@@ -483,6 +490,8 @@ class ArkSpatial(Plugin):
         return (name == Config.projectGroupName
                 or name == self.plan.settings.collectionGroupName
                 or name == self.plan.settings.bufferGroupName
+                or name == self.section.settings.collectionGroupName
+                or name == self.section.settings.bufferGroupName
                 or name == self.grid.settings.collectionGroupName
                 or name == self.grid.settings.bufferGroupName
                 or name == self.base.settings.collectionGroupName
@@ -496,6 +505,12 @@ class ArkSpatial(Plugin):
                 or layerId == self.plan.pointsBufferId
                 or layerId == self.plan.linesBufferId
                 or layerId == self.plan.polygonsBufferId
+                or layerId == self.section.pointsLayerId
+                or layerId == self.section.linesLayerId
+                or layerId == self.section.polygonsLayerId
+                or layerId == self.section.pointsBufferId
+                or layerId == self.section.linesBufferId
+                or layerId == self.section.polygonsBufferId
                 or layerId == self.base.pointsLayerId
                 or layerId == self.base.linesLayerId
                 or layerId == self.base.polygonsLayerId
@@ -526,7 +541,7 @@ class ArkSpatial(Plugin):
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self.pluginPath() + '/styles/' + baseName + '.qml'
+        filePath = self.pluginPath + '/styles/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!
@@ -534,6 +549,8 @@ class ArkSpatial(Plugin):
 
     def _loadCollection(self, collection):
         lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
+        if (lcs.collection == ''):
+            lcs = self._configureVectorGroup(collection)
         if lcs.pointsStylePath == '':
             lcs.pointsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
         if lcs.linesStylePath == '':
@@ -699,6 +716,8 @@ class ArkSpatial(Plugin):
     def collection(self, collection):
         if collection == 'plan':
             return self.plan
+        elif collection == 'section':
+            return self.section
         elif collection == 'grid':
             return self.grid
         elif collection == 'base':

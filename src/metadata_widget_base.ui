@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>312</height>
+    <width>289</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,12 +24,12 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="6" column="0">
-    <widget class="QLabel" name="createdByLabel">
+    <widget class="QLabel" name="editorLabel">
      <property name="text">
       <string>Digitised By:</string>
      </property>
      <property name="buddy">
-      <cstring>createdByEdit</cstring>
+      <cstring>editorEdit</cstring>
      </property>
     </widget>
    </item>
@@ -111,7 +111,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="createdByEdit"/>
+    <widget class="QLineEdit" name="editorEdit"/>
    </item>
    <item row="5" column="1">
     <widget class="QLineEdit" name="commentEdit">
@@ -167,7 +167,7 @@
   <tabstop>sourceIdSpin</tabstop>
   <tabstop>sourceFileEdit</tabstop>
   <tabstop>commentEdit</tabstop>
-  <tabstop>createdByEdit</tabstop>
+  <tabstop>editorEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

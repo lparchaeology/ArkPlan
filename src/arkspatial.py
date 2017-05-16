@@ -256,7 +256,7 @@ class ArkSpatial(Plugin):
             self.section = self._loadCollection('section')
             self.base = self._loadCollection('base')
             self.drawingsGroupName = Config.rasterGroups['cxt']['layersGroupName']
-            if self.grid.initialise() and self.plan.initialise() and self.base.initialise():
+            if self.grid.initialise() and self.plan.initialise() and self.section.initialise() and self.base.initialise():
                 self.data.loadProject()
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -351,7 +351,7 @@ class ArkSpatial(Plugin):
             return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
-        if wizard.exec_() and wizard.projectPath() and wizard.siteCode() and QDir(wizard.projectPath()).mkpath('.'):
+        if wizard.exec_() and wizard.projectPath() and (wizard.projectCode() or wizard.siteCodes()) and QDir(wizard.projectPath()).mkpath('.'):
 
             if (self.project.isDirty() and self.project.fileName()):
                 self.project.write()
@@ -361,10 +361,13 @@ class ArkSpatial(Plugin):
             info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectName() + '.qgs')
             self.project.setFileName(info.filePath())
 
-            self.setMultiSiteProject(wizard.multiSiteProject())
-            self.setSiteCode(wizard.siteCode())
-            self.setUseArkDB(wizard.useArkDB())
+            self.setProjectCode(wizard.projectCode())
+            self.setSiteCodes(wizard.siteCodes())
             self.setArkUrl(wizard.arkUrl())
+
+            self.setUserName(wizard.userFullname())
+            self.setUserInitials(wizard.userInitials())
+            self.setArkUserId(wizard.arkUserId())
 
             self._configureVectorGroup('plan')
             self._configureVectorGroup('section')
@@ -461,9 +464,9 @@ class ArkSpatial(Plugin):
             self.projectGroupIndex = newIndex
 
     def _layerName(self, baseName):
-        if self.multiSiteProject():
-            return 'ARK_' + baseName
-        return self.siteCode() + '_' + baseName
+        if self.siteCode():
+            return self.siteCode() + '_' + baseName
+        return 'ARK_' + baseName
 
     def loadGeoLayer(self, geoFile, zoomToLayer=True):
         #TODO Check if already loaded, remove old one?
@@ -622,25 +625,8 @@ class ArkSpatial(Plugin):
         except:
             return ''
 
-    # Project settings
-
-    def logUpdates(self):
-        return self.readBoolEntry('logUpdates', True)
-
-    def setLogUpdates(self, logUpdates):
-        self.writeEntry('logUpdates', logUpdates)
-
-    def useArkDB(self):
-        return self.readBoolEntry('useArkDB', True)
-
-    def setUseArkDB(self, useArkDB):
-        self.writeEntry('useArkDB', useArkDB)
-
-    def arkUrl(self):
-        return self.readEntry('arkUrl', '')
-
-    def setArkUrl(self, arkUrl):
-        self.writeEntry('arkUrl', arkUrl)
+    # Project level settings
+    # TODO Move to json file
 
     def projectDir(self):
         return QDir(self.projectPath())
@@ -651,14 +637,32 @@ class ArkSpatial(Plugin):
             return legacy
         return self.project.fileInfo().absolutePath() + '/..'
 
-    def multiSiteProject(self):
-        return self.readBoolEntry('multiSiteProject', False)
+    def logUpdates(self):
+        return self.readBoolEntry('logUpdates', True)
 
-    def setMultiSiteProject(self, multiSite):
-        self.writeEntry('multiSiteProject', multiSite)
+    def setLogUpdates(self, logUpdates):
+        self.writeEntry('logUpdates', logUpdates)
+
+    def useArkDB(self):
+        return self.readBoolEntry('useArkDB', True)
+
+    def arkUrl(self):
+        return self.readEntry('arkUrl', '')
+
+    def setArkUrl(self, arkUrl):
+        self.writeEntry('arkUrl', arkUrl)
+
+    def projectCode(self):
+        return self.readEntry('projectCode', '')
+
+    def setProjectCode(self, projectCode):
+        self.writeEntry('projectCode', projectCode)
 
     def siteCode(self):
-        return self.readEntry('siteCode', '')
+        siteCode = self.siteCodes().first()
+        if siteCode:
+            return siteCode
+        return self.projectCode()
 
     def siteCodes(self):
         # TODO Make a stored list, updated via settings
@@ -667,8 +671,8 @@ class ArkSpatial(Plugin):
         vals.update(self.plan.uniqueValues(self.fieldName('site')))
         return sorted(vals)
 
-    def setSiteCode(self, siteCode):
-        self.writeEntry('siteCode', siteCode)
+    def setSiteCodes(self, siteCodes):
+        self.writeEntry('siteCodes', siteCode)
 
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
@@ -689,6 +693,25 @@ class ArkSpatial(Plugin):
         else:
             self.writeEntry('stylePath', '')
 
+    # User level settings
+
+    def userName(self):
+        return self.readEntry('userName', '')
+
+    def setUserName(self, userName):
+        self.writeEntry('userName', arkUrl)
+
+    def userInitials(self):
+        return self.readEntry('userInitials', '')
+
+    def setUserInitials(self, userInitials):
+        self.writeEntry('userInitials', arkUrl)
+
+    def arkUserId(self):
+        return self.readEntry('arkUserId', '')
+
+    def setArkUserId(self, arkUserId):
+        self.writeEntry('arkUserId', arkUrl)
 
     # Group settings
 

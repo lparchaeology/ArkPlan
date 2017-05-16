@@ -53,7 +53,7 @@ class Metadata(QObject):
         widget.sourceIdChanged.connect(self._setSourceId)
         widget.sourceFileChanged.connect(self._setSourceFile)
         widget.commentChanged.connect(self._setComment)
-        widget.createdByChanged.connect(self._setCreatedBy)
+        widget.creatorChanged.connect(self._setCreator)
         widget.validateMetadata.connect(self.validate)
 
     def siteCode(self):
@@ -157,22 +157,22 @@ class Metadata(QObject):
         self.setComment(comment)
         self.metadataChanged.emit()
 
-    def createdBy(self):
-        return self.itemFeature.createdBy
+    def editor(self):
+        return self.itemFeature.creator
 
-    def setCreatedBy(self, createdBy):
-        self.itemFeature.setCreatedBy(createdBy)
-        self._planWidget.setCreatedBy(self.createdBy())
+    def setEditor(self, editor):
+        self.itemFeature.setCreator(editor)
+        self._planWidget.setEditor(self.editor())
 
-    def _setCreatedBy(self, createdBy):
-        self.setCreatedBy(createdBy)
+    def _seteditor(self, creator):
+        self.seteditor(creator)
         self.metadataChanged.emit()
 
-    def createdOn(self):
-        return self.itemFeature.createdOn
+    def created(self):
+        return self.itemFeature.created
 
-    def setCreatedOn(self, createdOn):
-        self.itemFeature.setCreatedOn(createdOn)
+    def setCreated(self, created):
+        self.itemFeature.setCreated(created)
 
     def fromFeature(self, feature):
         self.fromItemFeature(ItemFeature(feature))
@@ -217,10 +217,10 @@ class Metadata(QObject):
             if ok and value.strip():
                 self.setSourceFile(value)
                 signalChanged = True
-        if self.createdBy() == '':
-            value, ok = QInputDialog.getText(None, 'Created By', "Please enter your full name (e.g. 'Mortimer Wheeler')")
+        if self.editor() == '':
+            value, ok = QInputDialog.getText(None, 'Editor', "Please enter your full name (e.g. 'Dorothy Garrod')")
             if ok and value.strip():
-                self.setCreatedBy(value)
+                self.setEditor(value)
                 signalChanged = True
         if signalChanged:
             self.metadataChanged.emit()

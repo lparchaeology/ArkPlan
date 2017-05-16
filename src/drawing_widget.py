@@ -102,6 +102,9 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
                 self._addToolWidget(self.basePolygonLayout, toolButton, self._basePolygon)
                 self._basePolygon += 1
 
+    def clearDrawingTools(self):
+        for (i in range(layout.count() -1, 0)
+            layout.takeAt(i)
+
     def _addToolWidget(self, layout, toolButton, counter):
         layout.addWidget(toolButton, counter // self._colMax, counter % self._colMax, Qt.AlignCenter)
-

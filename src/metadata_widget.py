@@ -45,7 +45,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
     sourceIdChanged = pyqtSignal(str)
     sourceFileChanged = pyqtSignal(str)
     commentChanged = pyqtSignal(str)
-    createdByChanged = pyqtSignal(str)
+    editorChanged = pyqtSignal(str)
     validateMetadata = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -72,7 +72,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
         self.sourceIdSpin.valueChanged.connect(self._sourceIdChanged)
         self.sourceFileEdit.editingFinished.connect(self._sourceFileChanged)
         self.commentEdit.editingFinished.connect(self._commentChanged)
-        self.createdByEdit.editingFinished.connect(self._createdByChanged)
+        self.editorEdit.editingFinished.connect(self._editorChanged)
 
     def unloadGui(self):
         pass
@@ -96,7 +96,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
         return ItemSource(self.sourceCode(), self.sourceItem(), self.sourceFile())
 
     def feature(self):
-        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), createdBy=self.createdBy())
+        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), editor=self.editor())
 
     def setSiteCode(self, siteCode):
         idx = self.siteCodeCombo.findData(siteCode)
@@ -182,14 +182,14 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
     def _commentChanged(self):
         self.commentChanged.emit(self.comment())
 
-    def setCreatedBy(self, createdBy):
-        self.createdByEdit.setText(createdBy)
+    def setEditor(self, editor):
+        self.editorEdit.setText(editor)
 
-    def createdBy(self):
-        return self.createdByEdit.text()
+    def editor(self):
+        return self.editorEdit.text()
 
-    def _createdByChanged(self):
-        self.createdByChanged.emit(self.createdBy())
+    def _editorChanged(self):
+        self.editorChanged.emit(self.editor())
 
     def validate(self):
         self.validateMetadata().emit()

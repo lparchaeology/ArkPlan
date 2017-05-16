@@ -198,6 +198,9 @@ class PlanDock(ToolDockWidget):
     def addDrawingTool(self, collection, type, action):
         self.widget.drawingWidget.addDrawingTool(collection, type, action)
 
+    def clearDrawingTools(self):
+        self.widget.drawingWidget.clearDrawingTools()
+
     # Schematic methods pass-through
 
     def activateArkData(self):

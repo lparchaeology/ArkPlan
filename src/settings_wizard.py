@@ -26,9 +26,30 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWizard, QFileDialog
+from PyQt4.QtGui import QWizard, QWizardPage, QFileDialog
 
 from settings_wizard_base import *
+
+class FolderPage(QWizardPage):
+
+    def __init__(self, parent=None):
+        super(FolderPage, self).__init__(parent)
+
+class ProjectPage(QWizardPage):
+
+    def __init__(self, parent=None):
+        super(ProjectPage, self).__init__(parent)
+        self.registerField("projectCode*", self.projectCodeEdit);
+
+class UserPage(QWizardPage):
+
+    def __init__(self, parent=None):
+        super(UserPage, self).__init__(parent)
+
+class ConfirmPage(QWizardPage):
+
+    def __init__(self, parent=None):
+        super(ConfirmPage, self).__init__(parent)
 
 class SettingsWizard(QWizard, Ui_SettingsWizard):
 
@@ -37,26 +58,32 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
         self.setupUi(self)
         self.projectFolderButton.clicked.connect(self._selectProjectFolder)
 
-    def advancedMode(self):
-        return self._advanced
-
     def projectPath(self):
         return self.projectFolderEdit.text()
+
+    def projectCode(self):
+        return self.projectCodeEdit.text()
 
     def projectName(self):
         return self.projectNameEdit.text()
 
-    def multiSiteProject(self):
-        return self.multiSiteCheck.isChecked()
-
-    def siteCode(self):
-        return self.siteCodeEdit.text()
-
-    def useArkDB(self):
-        return self.useArkCheck.isChecked()
+    def siteCodes(self):
+        return self.siteCodesEdit.text()
 
     def arkUrl(self):
         return self.arkUrlEdit.text()
+
+    def arkUserId(self):
+        return self.arkUserIdEdit.text()
+
+    def userFullname(self):
+        return self.userFullnameEdit.text()
+
+    def userInitials(self):
+        return self.userInitialsEdit.text()
+
+    def projectFile(self):
+        return self.projectFileEdit.text()
 
     def _selectProjectFolder(self):
         folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))

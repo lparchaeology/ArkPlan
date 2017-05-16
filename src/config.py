@@ -85,10 +85,10 @@ class Config():
     pluginName = u'ArkPlan'
     projectGroupName = u'Ark Spatial'
     filterSetGroupName = u'Filter Export Data'
-    bufferSuffix = '_buf'
-    logSuffix = '_log'
+    bufferSuffix = u'_buf'
+    logSuffix = u'_log'
 
-    # Field deafults to use if *not* using ARK DB, so as not to confuse normal users
+    # Field Name defaults
     fieldDefaults = {
         'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
         'class'     : QgsField('class',      QVariant.String, '',  10, 0, 'Class'),
@@ -105,13 +105,13 @@ class Config():
         'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
         'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-        'created_on': QgsField('created_on', QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'created_by': QgsField('created_by', QVariant.String, '',  20, 0, 'Created By'),
-        'updated_on': QgsField('updated_on', QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'updated_by': QgsField('updated_by', QVariant.String, '',  20, 0, 'Updated By'),
+        'created'   : QgsField('created',    QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
+        'creator'   : QgsField('creator',    QVariant.String, '',  20, 0, 'Created By'),
+        'modified'  : QgsField('modified',   QVariant.String, '',  20, 0, 'Modified On'),  # '2012-01-01T23:59:59.999Z' in UTC
+        'modifier'  : QgsField('modifier',   QVariant.String, '',  20, 0, 'Modified By'),
     }
 
-    # Field defaults to use if using ARK DB, matches field names in ARK
+    # Old field defaults for ARK1, deprecated
     arkFieldDefaults = {
         'site'      : QgsField('ste_cd',     QVariant.String, '',  10, 0, 'Site Code'),
         'class'     : QgsField('module',     QVariant.String, '',  10, 0, 'ARK Module'),
@@ -128,10 +128,10 @@ class Config():
         'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
         'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
         'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-        'created_on': QgsField('cre_on',     QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'created_by': QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By'),
-        'updated_on': QgsField('mod_on',     QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'updated_by': QgsField('mod_by',     QVariant.String, '',  20, 0, 'Updated By'),
+        'created'   : QgsField('cre_on',     QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
+        'creator'   : QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By'),
+        'modified'  : QgsField('mod_on',     QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
+        'modifier'  : QgsField('mod_by',     QVariant.String, '',  20, 0, 'Updated By'),
     }
 
     vectorGroups = {
@@ -148,16 +148,16 @@ class Config():
             'pointsBaseName'   : 'plan_pt',
             'linesBaseName'    : 'plan_pl',
             'polygonsBaseName' : 'plan_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
         },
         'section' : {
             'pathSuffix'       : 'vector/section',
             'groupName'        : 'Section Data',
             'buffer'           : True,
             'bufferGroupName'  : 'Section Edit',
-            'log'              : False,
+            'log'              : True,
             'multi'            : True,
             'pointsLabel'      : 'Section Points',
             'linesLabel'       : 'Section Lines',
@@ -165,9 +165,9 @@ class Config():
             'pointsBaseName'   : 'section_pt',
             'linesBaseName'    : 'section_pl',
             'polygonsBaseName' : 'section_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
         },
         'base' : {
             'pathSuffix'       : 'vector/base',
@@ -182,9 +182,9 @@ class Config():
             'pointsBaseName'   : 'base_pt',
             'linesBaseName'    : 'base_pl',
             'polygonsBaseName' : 'base_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created_on', 'created_by', 'updated_on', 'updated_by'],
+            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
         },
         'grid' : {
             'pathSuffix'       : 'vector/grid',
@@ -199,9 +199,9 @@ class Config():
             'pointsBaseName'   : 'grid_pt',
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
-            'pointsFields'     : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created_on', 'created_by'],
-            'linesFields'      : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created_on', 'created_by'],
-            'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created_on', 'created_by'],
+            'pointsFields'     : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
+            'linesFields'      : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
+            'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
         },
     }
 

@@ -140,6 +140,7 @@ class Plan(QObject):
 
         self.dock.loadProject(self.project)
         for collection, features in Config.featureCategories.iteritems():
+            self.dock.clearDrawingTools()
             for feature in features:
                 #TODO Select by map tool type enum
                 if feature['type'] == FeatureType.Elevation:
@@ -210,6 +211,7 @@ class Plan(QObject):
         self.metadata.setSourceCode('drw')
         self.metadata.setSourceClass(pmd.sourceClass)
         self.metadata.setSourceFile(pmd.filename)
+        self.metadata.setEditor(self.project.userName())
 
     def _loadRawPlan(self):
         dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode())
@@ -304,7 +306,7 @@ class Plan(QObject):
 
         # Update the audit attributes
         timestamp = utils.timestamp()
-        user = self.metadata.createdBy()
+        user = self.metadata.editor()
         self._preMergeBufferUpdate(self.project.plan.pointsBuffer, timestamp, user)
         self._preMergeBufferUpdate(self.project.plan.linesBuffer, timestamp, user)
         self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
@@ -418,18 +420,18 @@ class Plan(QObject):
     def _preMergeBufferUpdate(self, layer, timestamp, user):
         siteField = self.project.fieldName('site')
         classField = self.project.fieldName('class')
-        createdOnField = self.project.fieldName('created_on')
-        createdOnIdx = layer.fieldNameIndex(createdOnField)
-        createdByIdx = layer.fieldNameIndex(self.project.fieldName('created_by'))
-        updatedOnIdx = layer.fieldNameIndex(self.project.fieldName('updated_on'))
-        updatedByIdx = layer.fieldNameIndex(self.project.fieldName('updated_by'))
+        createdField = self.project.fieldName('created')
+        createdIdx = layer.fieldNameIndex(createdField)
+        creatorIdx = layer.fieldNameIndex(self.project.fieldName('creator'))
+        modifiedIdx = layer.fieldNameIndex(self.project.fieldName('modified'))
+        modifierIdx = layer.fieldNameIndex(self.project.fieldName('modifier'))
         for feature in layer.getFeatures():
-            if self._isEmpty(feature.attribute(createdOnField)):
-                layer.changeAttributeValue(feature.id(), createdOnIdx, timestamp)
-                layer.changeAttributeValue(feature.id(), createdByIdx, user)
+            if self._isEmpty(feature.attribute(createdField)):
+                layer.changeAttributeValue(feature.id(), createdIdx, timestamp)
+                layer.changeAttributeValue(feature.id(), creatorIdx, user)
             else:
-                layer.changeAttributeValue(feature.id(), updatedOnIdx, timestamp)
-                layer.changeAttributeValue(feature.id(), updatedByIdx, user)
+                layer.changeAttributeValue(feature.id(), modifiedIdx, timestamp)
+                layer.changeAttributeValue(feature.id(), modifierIdx, user)
             self.siteCodes.add(feature.attribute(siteField))
             self.classCodes.add(feature.attribute(classField))
 
@@ -1031,8 +1033,8 @@ class Plan(QObject):
             feature.setAttribute(self.project.fieldName('source_id'), self.metadata.sourceId())
             feature.setAttribute(self.project.fieldName('file'), self.metadata.sourceFile())
             feature.setAttribute(self.project.fieldName('comment'), self.metadata.comment())
-            feature.setAttribute(self.project.fieldName('created_by'), self.metadata.createdBy())
-            feature.setAttribute(self.project.fieldName('created_on'), None)
+            feature.setAttribute(self.project.fieldName('created'), self.metadata.editor())
+            feature.setAttribute(self.project.fieldName('creator'), None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 
     def _editSourceSchematic(self):

@@ -6,35 +6,310 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>474</width>
-    <height>336</height>
+    <width>554</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
+     <widget class="QWidget" name="userTab">
+      <attribute name="title">
+       <string>User</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QSpinBox" name="drawingTransparencySpin">
+           <property name="suffix">
+            <string>%</string>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>50</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="drawingTransparencyLabel">
+         <property name="text">
+          <string>Drawing Tranparency:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="userInitialsLabel">
+         <property name="text">
+          <string>Initials:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="userInitialEdit"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="userFullnameEdit"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="userFullnameLabel">
+         <property name="text">
+          <string>Full Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="arkUserIdLabel">
+         <property name="text">
+          <string>ARK User ID:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="arkUserIdEdit"/>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="projectTab">
       <attribute name="title">
        <string>Project</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="1" column="0">
-        <widget class="QLabel" name="siteCodeLabel">
+       <item row="2" column="0">
+        <widget class="QLabel" name="arkUrlLabel">
          <property name="text">
-          <string>Default Site Code:</string>
-         </property>
-         <property name="buddy">
-          <cstring>siteCodeEdit</cstring>
+          <string>ARK URL:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
+       <item row="5" column="2">
+        <layout class="QHBoxLayout" name="planDrawingFolderLayout">
+         <item>
+          <widget class="QCheckBox" name="planDrawingFolderCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="planDrawingFolderEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="planDrawingFolderButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="planDrawingFolderLabel">
+         <property name="text">
+          <string>Plan Drawings:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <layout class="QHBoxLayout" name="sectionDrawingFolderLayout">
+         <item>
+          <widget class="QCheckBox" name="sectionDrawingFolderCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="sectionDrawingFolderEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="sectionDrawingFolderButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="logUpdatesLabel">
+         <property name="text">
+          <string>Log Updates:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="projectCodeEdit"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="arkUrlEdit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="siteCodesLabel">
+         <property name="text">
+          <string>Site Code(s):</string>
+         </property>
+         <property name="buddy">
+          <cstring>siteCodesEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="siteCodesEdit"/>
+       </item>
+       <item row="8" column="2">
+        <widget class="QCheckBox" name="logUpdatesCheck">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <layout class="QHBoxLayout" name="contextDrawingFolderLayout">
+         <item>
+          <widget class="QCheckBox" name="contextDrawingFolderCheck">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="contextDrawingFolderEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="contextDrawingFolderButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="sectionDrawingFolderLabel">
+         <property name="text">
+          <string>Section Drawings:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="contextDrawingFolderLabel">
+         <property name="text">
+          <string>Context Drawings:</string>
+         </property>
+         <property name="buddy">
+          <cstring>contextDrawingFolderCheck</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="projectCodeLabel">
+         <property name="text">
+          <string>Project Code</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="styleFolderLabel">
+         <property name="text">
+          <string>Styles Folder:</string>
+         </property>
+         <property name="buddy">
+          <cstring>styleFolderEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
         <layout class="QHBoxLayout" name="styleFolderLayout">
          <item>
           <widget class="QCheckBox" name="styleFolderCheck">
@@ -69,339 +344,18 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="customStylesLabel">
-         <property name="text">
-          <string>Custom Styles Folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>styleFolderEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="useArkLabel">
-         <property name="text">
-          <string>Use ARK DB:</string>
-         </property>
-         <property name="buddy">
-          <cstring>useArkCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="siteCodeEdit"/>
-       </item>
-       <item row="4" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QCheckBox" name="useArkCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="arkUrlEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QCheckBox" name="multiSiteCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="multiSiteEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="logUpdatesLabel">
-         <property name="text">
-          <string>Log Updates:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="multiSiteLabel">
-         <property name="text">
-          <string>Multi-site Project</string>
-         </property>
-         <property name="buddy">
-          <cstring>multiSiteCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QCheckBox" name="logUpdatesCheck">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="drawingsTab">
-      <attribute name="title">
-       <string>Drawings</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QCheckBox" name="planDrawingFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="planDrawingFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="planDrawingFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="georefFolderLabel">
-         <property name="text">
-          <string>Separate georef folder:</string>
-         </property>
-         <property name="buddy">
-          <cstring>georefFolderCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="georefFolderCheck">
-         <property name="toolTip">
-          <string>Select if the raw and processed plans should be stored in separate folders.</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="planDrawingFolderLabel">
-         <property name="text">
-          <string>Plan Drawings:</string>
-         </property>
-         <property name="buddy">
-          <cstring>planDrawingFolderCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QCheckBox" name="contextDrawingFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="contextDrawingFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="contextDrawingFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QSpinBox" name="drawingTransparencySpin">
-           <property name="suffix">
-            <string>%</string>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>50</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="drawingTransparencyLabel">
-         <property name="text">
-          <string>Image tranparency:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="contextDrawingFolderLabel">
-         <property name="text">
-          <string>Context Drawings:</string>
-         </property>
-         <property name="buddy">
-          <cstring>contextDrawingFolderCheck</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>46</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QCheckBox" name="sectionDrawingFolderCheck">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="sectionDrawingFolderEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="sectionDrawingFolderButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="sectionDrawingFolderLabel">
-         <property name="text">
-          <string>Section Drawings:</string>
-         </property>
-         <property name="buddy">
-          <cstring>sectionDrawingFolderCheck</cstring>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>siteCodeEdit</tabstop>
-  <tabstop>multiSiteCheck</tabstop>
-  <tabstop>multiSiteEdit</tabstop>
+  <tabstop>siteCodesEdit</tabstop>
   <tabstop>styleFolderCheck</tabstop>
   <tabstop>styleFolderEdit</tabstop>
   <tabstop>styleFolderButton</tabstop>
-  <tabstop>useArkCheck</tabstop>
-  <tabstop>arkUrlEdit</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>drawingTransparencySpin</tabstop>
-  <tabstop>georefFolderCheck</tabstop>
-  <tabstop>contextDrawingFolderCheck</tabstop>
-  <tabstop>contextDrawingFolderEdit</tabstop>
-  <tabstop>contextDrawingFolderButton</tabstop>
-  <tabstop>planDrawingFolderCheck</tabstop>
-  <tabstop>planDrawingFolderEdit</tabstop>
-  <tabstop>planDrawingFolderButton</tabstop>
-  <tabstop>sectionDrawingFolderCheck</tabstop>
-  <tabstop>sectionDrawingFolderEdit</tabstop>
-  <tabstop>sectionDrawingFolderButton</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
@@ -457,38 +411,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>planDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDrawingFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>169</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>483</x>
-     <y>177</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>useArkCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>arkUrlEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>191</x>
-     <y>221</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>356</x>
-     <y>222</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>styleFolderCheck</sender>
    <signal>toggled(bool)</signal>
    <receiver>styleFolderEdit</receiver>
@@ -501,86 +423,6 @@
     <hint type="destinationlabel">
      <x>383</x>
      <y>180</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>planDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>planDrawingFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>169</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>170</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contextDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>contextDrawingFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>126</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>404</x>
-     <y>127</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contextDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>contextDrawingFolderButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>126</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>483</x>
-     <y>134</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>multiSiteCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>multiSiteEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>178</x>
-     <y>129</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>247</x>
-     <y>131</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sectionDrawingFolderCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>sectionDrawingFolderEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>201</x>
-     <y>205</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>228</x>
-     <y>204</y>
     </hint>
    </hints>
   </connection>

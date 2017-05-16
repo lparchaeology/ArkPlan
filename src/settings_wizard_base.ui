@@ -6,17 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
-    <height>357</height>
+    <width>704</width>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Wizard</string>
+   <string>ARK Spatial - Settings Wizard</string>
   </property>
   <property name="options">
    <set>QWizard::CancelButtonOnLeft|QWizard::NoBackButtonOnLastPage|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
-  <widget class="QWizardPage" name="welcomePage">
+  <widget class="QWizardPage" name="WelcomePage">
    <property name="title">
     <string>New Project Wizard</string>
    </property>
@@ -28,7 +28,7 @@
    </attribute>
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
-  <widget class="QWizardPage" name="folderPage">
+  <widget class="QWizardPage" name="FolderPage">
    <property name="title">
     <string>Project Folder</string>
    </property>
@@ -42,7 +42,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="folderLabel">
       <property name="text">
-       <string>This folder is usually something like &quot;Projects/TST01/GIS/&quot; where TST01 is the Site Code. The folder will be created if it does not already exist.
+       <string>This folder is usually something like &quot;Projects/TST01/GIS/&quot; where TST01 is the Project or Site Code. The folder will be created if it does not already exist.
 
 ARK Spatial will automatically organise the data under this folder.
 </string>
@@ -61,7 +61,11 @@ ARK Spatial will automatically organise the data under this folder.
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="projectFolderLayout">
       <item>
-       <widget class="QLineEdit" name="projectFolderEdit"/>
+       <widget class="QLineEdit" name="projectFolderEdit">
+        <property name="placeholderText">
+         <string>Projects/TST01/GIS/</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QToolButton" name="projectFolderButton">
@@ -75,86 +79,49 @@ ARK Spatial will automatically organise the data under this folder.
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="siteCodePage">
+  <widget class="ProjectPage" name="ProjectPage">
    <property name="title">
-    <string>Site Code</string>
+    <string>Project Details</string>
    </property>
    <property name="subTitle">
-    <string>Enter the Site Code for the project.</string>
+    <string>Enter the details for the Project. You must enter at least a Project Code. If multiple Site Codes are entered then the first Site Code will be used as the default Site Code. If no Site Code is entered, the Project Code is used instead. For an existing Project, these values should already be set.</string>
    </property>
    <attribute name="pageId">
-    <string notr="true">siteCodePage</string>
+    <string notr="true">codePage</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="3" column="0" colspan="2">
-     <widget class="QLineEdit" name="siteCodeEdit"/>
-    </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="QLabel" name="siteCodeLabel">
+    <item row="0" column="0">
+     <widget class="QLabel" name="projectCodeLabel">
       <property name="text">
-       <string>Enter the Site Code. If a Multi Site Project then enter a default Site Code.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <property name="buddy">
-       <cstring>siteCodeEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="multiSiteLabel">
-      <property name="text">
-       <string>Choose if this project will support multiple sites and site codes in the same set of spatial files.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <property name="buddy">
-       <cstring>multiSiteCheck</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QCheckBox" name="multiSiteCheck">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="arkPage">
-   <property name="title">
-    <string>ARK Database</string>
-   </property>
-   <property name="subTitle">
-    <string>Configure working with an ARK Database. This is entirely optional.</string>
-   </property>
-   <attribute name="pageId">
-    <string notr="true">arkPage</string>
-   </attribute>
-   <layout class="QGridLayout" name="gridLayout_5">
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="useArkCheck">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
+       <string>Project Code:</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
+     <widget class="QLabel" name="projectNameLabel">
+      <property name="text">
+       <string>Project Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="projectCodeEdit">
+      <property name="placeholderText">
+       <string>1234L</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="projectNameEdit">
+      <property name="placeholderText">
+       <string>Shuqba Cave, Wadi an-Natuf</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
      <widget class="QLabel" name="arkUrlLabel">
       <property name="text">
-       <string>Please enter the root path to the ARK Database that you will be using, for example &quot;http://100minories.lparchaeology.com/data/&quot;.</string>
+       <string>ARK URL (optional):</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -162,43 +129,109 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="wordWrap">
        <bool>true</bool>
       </property>
-      <property name="textInteractionFlags">
-       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-      </property>
-      <property name="buddy">
-       <cstring>arkUrlEdit</cstring>
-      </property>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="useArkLabel">
-      <property name="text">
-       <string>Please tick if you will be using ARK Spatial with an ARK Database. Choosing this option will rename various fields and files to be compatible with ARK and will enable extra functionality to link the ARK Spatial data with the ARK Database. Note that this setting cannot be changed later.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <property name="buddy">
-       <cstring>useArkCheck</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
+    <item row="7" column="1">
      <widget class="QLineEdit" name="arkUrlEdit">
       <property name="enabled">
        <bool>true</bool>
       </property>
       <property name="placeholderText">
-       <string/>
+       <string>http://www.arch.cam.ac.uk/shuqba</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="siteCodesLabel">
+      <property name="text">
+       <string>Site Code(s):</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>siteCodesEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="siteCodesEdit">
+      <property name="placeholderText">
+       <string>SHU28</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>(Entering this URL will enable extra functionality to link the ARK Spatial data with an ARK Database. An example is &quot;http://100minories.lparchaeology.com/data/&quot;.)</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="confirmPage">
+  <widget class="QWizardPage" name="UserPage">
+   <property name="title">
+    <string>User Details</string>
+   </property>
+   <property name="subTitle">
+    <string>Please enter your user details which will be recorded in the editing metadata.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">arkPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="8" column="0">
+     <widget class="QLabel" name="arkUserIdLabel">
+      <property name="text">
+       <string>ARK User ID (Optional):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="userFullnameLabel">
+      <property name="text">
+       <string>Full Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="userInitialsLabel">
+      <property name="text">
+       <string>Initials:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="userFullnameEdit">
+      <property name="placeholderText">
+       <string>Dorothy Garrod</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="userInitialEdit">
+      <property name="placeholderText">
+       <string>DG</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QLineEdit" name="arkUserIdEdit">
+      <property name="placeholderText">
+       <string>dgarrod</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="ConfirmPage">
    <property name="title">
     <string>Create Project</string>
    </property>
@@ -210,7 +243,7 @@ ARK Spatial will automatically organise the data under this folder.
    </attribute>
    <layout class="QGridLayout" name="gridLayout_4">
     <item row="0" column="0">
-     <widget class="QLabel" name="projectNameLabel">
+     <widget class="QLabel" name="projectFileLabel">
       <property name="text">
        <string>Please enter the name for the project file which will be saved in the /project subfolder.</string>
       </property>
@@ -235,7 +268,7 @@ Once the project is created you can modify these settings or configure more sett
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLineEdit" name="projectNameEdit"/>
+     <widget class="QLineEdit" name="projectFileEdit"/>
     </item>
     <item row="3" column="0">
      <spacer name="verticalSpacer">
@@ -253,25 +286,16 @@ Once the project is created you can modify these settings or configure more sett
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ProjectPage</class>
+   <extends>QWizardPage</extends>
+   <header>settings_wizard.py</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>useArkCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>arkUrlEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>211</x>
-     <y>136</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>249</x>
-     <y>192</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

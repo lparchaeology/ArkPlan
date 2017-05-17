@@ -24,47 +24,32 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWizard, QWizardPage, QFileDialog
+from PyQt4.QtGui import QWizardPage
 
-from settings_wizard_base import Ui_SettingsWizard
+class FolderPage(QWizardPage):
 
-class SettingsWizard(QWizard, Ui_SettingsWizard):
+    def initializePage(self):
+        self.registerField("projectFolder*", self.wizard().projectFolderEdit)
 
-    def __init__(self, parent=None):
-        super(SettingsWizard, self).__init__(parent)
-        self.setupUi(self)
-        self.projectFolderButton.clicked.connect(self._selectProjectFolder)
+class ProjectPage(QWizardPage):
 
-    def projectPath(self):
-        return self.projectFolderEdit.text()
+    def initializePage(self):
+        self.registerField("projectCode*", self.wizard().projectCodeEdit)
+        self.registerField("projectName*", self.wizard().projectNameEdit)
+        self.registerField("siteCodes", self.wizard().siteCodesEdit)
+        self.registerField("arkUrl", self.wizard().arkUrlEdit)
 
-    def projectCode(self):
-        return self.projectCodeEdit.text()
+class UserPage(QWizardPage):
 
-    def projectName(self):
-        return self.projectNameEdit.text()
+    def initializePage(self):
+        self.registerField("userFullname*", self.wizard().userFullnameEdit)
+        self.registerField("userInitials*", self.wizard().userInitialsEdit)
+        self.registerField("arkUserId", self.wizard().arkUserIdEdit)
 
-    def siteCodes(self):
-        return self.siteCodesEdit.text()
+class ConfirmPage(QWizardPage):
 
-    def arkUrl(self):
-        return self.arkUrlEdit.text()
-
-    def arkUserId(self):
-        return self.arkUserIdEdit.text()
-
-    def userFullname(self):
-        return self.userFullnameEdit.text()
-
-    def userInitials(self):
-        return self.userInitialsEdit.text()
-
-    def projectFile(self):
-        return self.projectFileEdit.text()
-
-    def _selectProjectFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))
-        if folderName:
-            self.projectFolderEdit.setText(folderName)
+    def initializePage(self):
+        self.registerField("projectFile*", self.wizard().projectFileEdit)
+        projectFile = self.field("projectCode") + '_' + self.field("userInitials")
+        self.setField('projectFile', projectFile)

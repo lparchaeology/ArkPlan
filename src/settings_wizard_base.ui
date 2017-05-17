@@ -28,7 +28,7 @@
    </attribute>
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
-  <widget class="QWizardPage" name="FolderPage">
+  <widget class="FolderPage" name="folderPage">
    <property name="title">
     <string>Project Folder</string>
    </property>
@@ -79,7 +79,7 @@ ARK Spatial will automatically organise the data under this folder.
     </item>
    </layout>
   </widget>
-  <widget class="ProjectPage" name="ProjectPage">
+  <widget class="ProjectPage" name="projectPage">
    <property name="title">
     <string>Project Details</string>
    </property>
@@ -95,12 +95,18 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="text">
        <string>Project Code:</string>
       </property>
+      <property name="buddy">
+       <cstring>projectCodeEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="projectNameLabel">
       <property name="text">
        <string>Project Name:</string>
+      </property>
+      <property name="buddy">
+       <cstring>projectNameEdit</cstring>
       </property>
      </widget>
     </item>
@@ -128,6 +134,9 @@ ARK Spatial will automatically organise the data under this folder.
       </property>
       <property name="wordWrap">
        <bool>true</bool>
+      </property>
+      <property name="buddy">
+       <cstring>arkUrlEdit</cstring>
       </property>
      </widget>
     </item>
@@ -172,11 +181,14 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="wordWrap">
        <bool>true</bool>
       </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+      </property>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="UserPage">
+  <widget class="UserPage" name="userPage">
    <property name="title">
     <string>User Details</string>
    </property>
@@ -192,6 +204,9 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="text">
        <string>ARK User ID (Optional):</string>
       </property>
+      <property name="buddy">
+       <cstring>arkUserIdEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="1" column="0">
@@ -199,12 +214,18 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="text">
        <string>Full Name:</string>
       </property>
+      <property name="buddy">
+       <cstring>userFullnameEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="5" column="0">
      <widget class="QLabel" name="userInitialsLabel">
       <property name="text">
        <string>Initials:</string>
+      </property>
+      <property name="buddy">
+       <cstring>userInitialsEdit</cstring>
       </property>
      </widget>
     </item>
@@ -216,7 +237,7 @@ ARK Spatial will automatically organise the data under this folder.
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QLineEdit" name="userInitialEdit">
+     <widget class="QLineEdit" name="userInitialsEdit">
       <property name="placeholderText">
        <string>DG</string>
       </property>
@@ -231,7 +252,7 @@ ARK Spatial will automatically organise the data under this folder.
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="ConfirmPage">
+  <widget class="ConfirmPage" name="confirmPage">
    <property name="title">
     <string>Create Project</string>
    </property>
@@ -253,6 +274,9 @@ ARK Spatial will automatically organise the data under this folder.
       <property name="wordWrap">
        <bool>true</bool>
       </property>
+      <property name="buddy">
+       <cstring>projectFileEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
@@ -268,7 +292,11 @@ Once the project is created you can modify these settings or configure more sett
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLineEdit" name="projectFileEdit"/>
+     <widget class="QLineEdit" name="projectFileEdit">
+      <property name="placeholderText">
+       <string>SHU28_DG</string>
+      </property>
+     </widget>
     </item>
     <item row="3" column="0">
      <spacer name="verticalSpacer">
@@ -288,12 +316,42 @@ Once the project is created you can modify these settings or configure more sett
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ConfirmPage</class>
+   <extends>QWizardPage</extends>
+   <header>settings_wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FolderPage</class>
+   <extends>QWizardPage</extends>
+   <header>settings_wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ProjectPage</class>
    <extends>QWizardPage</extends>
-   <header>settings_wizard.py</header>
+   <header>settings_wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>UserPage</class>
+   <extends>QWizardPage</extends>
+   <header>settings_wizard_page</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>projectFolderEdit</tabstop>
+  <tabstop>projectFolderButton</tabstop>
+  <tabstop>projectCodeEdit</tabstop>
+  <tabstop>projectNameEdit</tabstop>
+  <tabstop>siteCodesEdit</tabstop>
+  <tabstop>arkUrlEdit</tabstop>
+  <tabstop>userFullnameEdit</tabstop>
+  <tabstop>userInitialsEdit</tabstop>
+  <tabstop>arkUserIdEdit</tabstop>
+  <tabstop>projectFileEdit</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>

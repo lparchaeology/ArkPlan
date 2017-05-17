@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'plan/select_drawing_dialog_base.ui'
+# Form implementation generated from reading ui file 'src/select_drawing_dialog_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #

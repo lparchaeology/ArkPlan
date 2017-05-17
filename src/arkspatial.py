@@ -358,7 +358,7 @@ class ArkSpatial(Plugin):
             self.project.clear()
 
             QDir(wizard.projectPath()).mkdir('project')
-            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectName() + '.qgs')
+            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectFile() + '.qgs')
             self.project.setFileName(info.filePath())
 
             self.setProjectCode(wizard.projectCode())
@@ -659,20 +659,13 @@ class ArkSpatial(Plugin):
         self.writeEntry('projectCode', projectCode)
 
     def siteCode(self):
-        siteCode = self.siteCodes().first()
-        if siteCode:
-            return siteCode
-        return self.projectCode()
+        return self.siteCodes()[0]
 
     def siteCodes(self):
-        # TODO Make a stored list, updated via settings
-        vals = set()
-        vals.add(self.siteCode())
-        vals.update(self.plan.uniqueValues(self.fieldName('site')))
-        return sorted(vals)
+        return self.readListEntry('siteCodes', [self.projectCode()])
 
     def setSiteCodes(self, siteCodes):
-        self.writeEntry('siteCodes', siteCode)
+        self.writeEntry('siteCodes', siteCodes)
 
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
@@ -699,19 +692,19 @@ class ArkSpatial(Plugin):
         return self.readEntry('userName', '')
 
     def setUserName(self, userName):
-        self.writeEntry('userName', arkUrl)
+        self.writeEntry('userName', userName)
 
     def userInitials(self):
         return self.readEntry('userInitials', '')
 
     def setUserInitials(self, userInitials):
-        self.writeEntry('userInitials', arkUrl)
+        self.writeEntry('userInitials', userInitials)
 
     def arkUserId(self):
         return self.readEntry('arkUserId', '')
 
     def setArkUserId(self, arkUserId):
-        self.writeEntry('arkUserId', arkUrl)
+        self.writeEntry('arkUserId', arkUserId)
 
     # Group settings
 

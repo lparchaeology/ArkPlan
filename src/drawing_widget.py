@@ -103,7 +103,18 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
                 self._basePolygon += 1
 
     def clearDrawingTools(self):
-        for (i in range(layout.count() -1, 0)
+        self._clearDrawingTools(self.planPointLayout)
+        self._clearDrawingTools(self.planLineLayout)
+        self._clearDrawingTools(self.planPolygonLayout)
+        self._clearDrawingTools(self.sectionPointLayout)
+        self._clearDrawingTools(self.sectionLineLayout)
+        self._clearDrawingTools(self.sectionPolygonLayout)
+        self._clearDrawingTools(self.basePointLayout)
+        self._clearDrawingTools(self.baseLineLayout)
+        self._clearDrawingTools(self.basePolygonLayout)
+
+    def _clearDrawingTools(self, layout):
+        for i in range(layout.count() -1, 0):
             layout.takeAt(i)
 
     def _addToolWidget(self, layout, toolButton, counter):

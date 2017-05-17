@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'src/drawing_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -29,7 +29,7 @@ class Ui_DrawingWidget(object):
         self.planTab = QtGui.QWidget()
         self.planTab.setObjectName(_fromUtf8("planTab"))
         self.gridLayout = QtGui.QGridLayout(self.planTab)
-        self.gridLayout.setContentsMargins(12, 0, 12, 12)
+        self.gridLayout.setContentsMargins(12, -1, 12, 12)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.autoSchematicTool = QtGui.QToolButton(self.planTab)
         icon = QtGui.QIcon()
@@ -64,7 +64,7 @@ class Ui_DrawingWidget(object):
         self.sectionTab = QtGui.QWidget()
         self.sectionTab.setObjectName(_fromUtf8("sectionTab"))
         self.gridLayout_2 = QtGui.QGridLayout(self.sectionTab)
-        self.gridLayout_2.setContentsMargins(12, 0, 12, 12)
+        self.gridLayout_2.setContentsMargins(12, -1, 12, 12)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         spacerItem1 = QtGui.QSpacerItem(118, 121, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout_2.addItem(spacerItem1, 3, 0, 1, 2)
@@ -90,7 +90,6 @@ class Ui_DrawingWidget(object):
         self.baseTab = QtGui.QWidget()
         self.baseTab.setObjectName(_fromUtf8("baseTab"))
         self.gridLayout_3 = QtGui.QGridLayout(self.baseTab)
-        self.gridLayout_3.setMargin(0)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         spacerItem2 = QtGui.QSpacerItem(88, 134, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout_3.addItem(spacerItem2, 3, 0, 1, 2)

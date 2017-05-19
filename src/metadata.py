@@ -53,7 +53,7 @@ class Metadata(QObject):
         widget.sourceIdChanged.connect(self._setSourceId)
         widget.sourceFileChanged.connect(self._setSourceFile)
         widget.commentChanged.connect(self._setComment)
-        widget.creatorChanged.connect(self._setCreator)
+        widget.editorChanged.connect(self._setEditor)
         widget.validateMetadata.connect(self.validate)
 
     def siteCode(self):
@@ -164,8 +164,8 @@ class Metadata(QObject):
         self.itemFeature.setCreator(editor)
         self._planWidget.setEditor(self.editor())
 
-    def _seteditor(self, creator):
-        self.seteditor(creator)
+    def _setEditor(self, editor):
+        self.setEditor(editor)
         self.metadataChanged.emit()
 
     def created(self):

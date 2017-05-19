@@ -322,20 +322,20 @@ class ItemFeature():
     name = ''
     source = ItemSource()
     comment = ''
-    createdBy = ''
-    createdOn = ''
+    creator = ''
+    created = ''
 
-    def __init__(self, key=None, category=None, name=None, source=None, comment=None, createdBy=None, createdOn=None):
+    def __init__(self, key=None, category=None, name=None, source=None, comment=None, creator=None, created=None):
         if isinstance(key, QgsFeature):
             self.fromFeature(key)
         else:
-            self.setFeature(key, category, name, source, comment, createdBy, createdOn)
+            self.setFeature(key, category, name, source, comment, creator, created)
 
     def __eq__(self, other):
         if isinstance(other, ItemFeature):
             return (self.key == other.key and self.category == other.category and self.name == other.name
                     and self.source == other.source and self.comment == other.comment
-                    and self.createdBy == other.createdBy and self.createdOn == other.createdOn)
+                    and self.creator == other.creator and self.created == other.created)
         else:
             return False
 
@@ -345,13 +345,13 @@ class ItemFeature():
         return self.key < other.key
 
     def __hash__(self):
-        return hash((self.key, self.category, self.name, self.source, self.comment, self.createdBy, self.createdOn))
+        return hash((self.key, self.category, self.name, self.source, self.comment, self.creator, self.created))
 
     def __str__(self):
-        return 'ItemFeature(' + str(self.key) + ', ' +  str(self.key.category) + ', ' +  str(self.key.name) + ', ' + str(self.source) + ', ' + str(self.comment) + ', ' + str(self.createdBy) + ', ' + str(self.createdOn) + ')'
+        return 'ItemFeature(' + str(self.key) + ', ' +  str(self.key.category) + ', ' +  str(self.key.name) + ', ' + str(self.source) + ', ' + str(self.comment) + ', ' + str(self.creator) + ', ' + str(self.created) + ')'
 
     def debug(self):
-        return 'ItemFeature(' + self.key.debug() + ', ' +  utils.printable(self.category) + ', ' +  utils.printable(self.name) + ', ' + self.source.debug() + ', ' +  utils.printable(self.comment) + ', ' +  utils.printable(self.createdBy) + ', ' +  utils.printable(self.createdOn) + ')'
+        return 'ItemFeature(' + self.key.debug() + ', ' +  utils.printable(self.category) + ', ' +  utils.printable(self.name) + ', ' + self.source.debug() + ', ' +  utils.printable(self.comment) + ', ' +  utils.printable(self.creator) + ', ' +  utils.printable(self.created) + ')'
 
     def isValid(self):
         return isinstance(self.key, ItemKey) and self.key.isValid() and self.category and isinstance(self.source, ItemSource) and (self.source.isNull() or self.source.isValid())
@@ -362,9 +362,9 @@ class ItemFeature():
     def isNull(self):
         return (isinstance(self.key, ItemKey) and self.key.isNull() and self.category == '' and self.name == ''
                 and isinstance(self.source, ItemSource) and self.source.isNull()
-                and self.comment == '' and self.createdBy == '' and self.createdOn == '' )
+                and self.comment == '' and self.creator == '' and self.created == '' )
 
-    def setFeature(self, key, category, name, source, comment, createdBy, createdOn):
+    def setFeature(self, key, category, name, source, comment, creator, created):
         if isinstance(key, ItemKey):
             self.key = key
         else:
@@ -376,8 +376,8 @@ class ItemFeature():
         else:
             self.source = ItemSource()
         self.comment = utils.string(comment)
-        self.createdBy = utils.string(createdBy)
-        self.createdOn = utils.string(createdOn)
+        self.creator = utils.string(creator)
+        self.created = utils.string(created)
 
     def setCategory(self, category):
         self.category = utils.string(category)
@@ -388,11 +388,11 @@ class ItemFeature():
     def setComment(self, comment):
         self.comment = utils.string(comment)
 
-    def setCreatedBy(self, createdBy):
-        self.createdBy = utils.string(createdBy)
+    def setCreator(self, creator):
+        self.creator = utils.string(creator)
 
-    def setCreatedOn(self, createdOn):
-        self.createdOn = utils.string(createdOn)
+    def setcreated(self, created):
+        self.created = utils.string(created)
 
     def fromFeature(self, feature):
         key = ItemKey(feature)
@@ -400,9 +400,9 @@ class ItemFeature():
         name = _attribute(feature, 'name')
         source = ItemSource(feature)
         comment = _attribute(feature, 'comment')
-        createdBy = _attribute(feature, 'created_by')
-        createdOn = _attribute(feature, 'created_on')
-        self.setFeature(key, category, name, source, comment, createdBy, createdOn)
+        creator = _attribute(feature, 'creator')
+        created = _attribute(feature, 'created')
+        self.setFeature(key, category, name, source, comment, creator, created)
 
     def toFeature(self, feature):
         self.key.toFeature(feature)
@@ -410,8 +410,8 @@ class ItemFeature():
         _setAttribute(feature, 'name', self.name)
         self.source.toFeature(feature)
         _setAttribute(feature, 'comment', self.comment)
-        _setAttribute(feature, 'created_by', self.createdBy)
-        _setAttribute(feature, 'created_on', self.createdOn)
+        _setAttribute(feature, 'creator', self.creator)
+        _setAttribute(feature, 'created', self.created)
 
     def toAttributes(self):
         attrs = {}
@@ -420,6 +420,6 @@ class ItemFeature():
         _setDict(attrs, 'name', self.name)
         attrs.update(self.source.toAttributes())
         _setDict(attrs, 'comment', self.comment)
-        _setDict(attrs, 'created_by', self.createdBy)
-        _setDict(attrs, 'created_on', self.createdOn)
+        _setDict(attrs, 'creator', self.creator)
+        _setDict(attrs, 'created', self.created)
         return attrs

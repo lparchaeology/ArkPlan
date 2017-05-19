@@ -96,7 +96,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
         return ItemSource(self.sourceCode(), self.sourceItem(), self.sourceFile())
 
     def feature(self):
-        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), editor=self.editor())
+        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), creator=self.editor())
 
     def setSiteCode(self, siteCode):
         idx = self.siteCodeCombo.findData(siteCode)

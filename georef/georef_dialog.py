@@ -62,6 +62,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     gdal_translate = QFileInfo()
     gdalwarp = QFileInfo()
+    gdaladdo = QFileInfo()
     gdalCommand = ''
     gdalArgs = ''
     gdalProcess = QProcess()
@@ -83,8 +84,9 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
         self.gdal_translate.setFile(QDir(self.gdalPath()), 'gdal_translate')
         self.gdalwarp.setFile(QDir(self.gdalPath()), 'gdalwarp')
+        self.gdaladdo.setFile(QDir(self.gdalPath()), 'gdaladdo')
         self.logText('GDAL Path: ' + self.gdalPath())
-        if (not self.gdal_translate.exists() or not self.gdalwarp.exists()):
+        if (not self.gdal_translate.exists() or not self.gdalwarp.exists() or not self.gdaladdo.exists()):
             self.showStatus('ERROR: GDAL commands not found, please ensure GDAL Tools plugin is installed and has correct path set!')
             return
 
@@ -260,7 +262,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def runGeoreference(self):
         if (self.gcpWidget1.rawPoint().isNull() or self.gcpWidget2.rawPoint().isNull() or self.gcpWidget3.rawPoint().isNull() or self.gcpWidget4.rawPoint().isNull()):
-            self.showStatus('ERROR: Please set all 3 Ground Control Points!')
+            self.showStatus('ERROR: Please set all 4 Ground Control Points!')
             return
         self.enableUi(False)
         QCoreApplication.processEvents()
@@ -308,12 +310,25 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalArgs.extend(['-r', 'cubic'])
         self.gdalArgs.extend(['-t_srs', self.crt])
         self.gdalArgs.extend(['-of', 'GTiff'])
-        self.gdalArgs.extend(['-co', 'COMPRESS=LZW'])
+        self.gdalArgs.extend(['-co', 'COMPRESS=JPEG'])
+        self.gdalArgs.extend(['-co', 'JPEG_QUALITY=50'])
+        self.gdalArgs.extend(['-co', 'TILED=YES'])
         self.gdalArgs.append('-dstalpha')
         self.gdalArgs.append('-overwrite')
         self.gdalArgs.append('\"' + self.rawFile.absoluteDir().absolutePath() + '/ark_trans.tiff' + '\"')
         self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
         self.gdalCommand = self.gdalwarp.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
+        self.gdalProcess.start(self.gdalCommand)
+
+    def runOverviewStep(self):
+        self.gdalStep = 'overview'
+        self.gdalArgs = []
+        self.gdalArgs.extend(['--config', 'COMPRESS_OVERVIEW JPEG'])
+        self.gdalArgs.extend(['--config', 'INTERLEAVE_OVERVIEW PIXEL'])
+        self.gdalArgs.extend(['-r', 'cubic'])
+        self.gdalArgs.append('\"' + self.geoFile.absoluteFilePath() + '\"')
+        self.gdalArgs.append('2 4 8 16')
+        self.gdalCommand = self.gdaladdo.absoluteFilePath() + ' ' + ' '.join(self.gdalArgs)
         self.gdalProcess.start(self.gdalCommand)
 
     def gdalProcessStarted(self):
@@ -325,12 +340,18 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self._setStatusLabel(self.warpStatusLabel, ProcessStatus.Running)
             self.showStatus('Running GDAL warp command...')
             self.logText(self.gdalCommand)
+        elif (self.gdalStep == 'overview'):
+            self._setStatusLabel(self.overviewStatusLabel, ProcessStatus.Running)
+            self.showStatus('Running GDAL overview command...')
+            self.logText(self.gdalCommand)
 
     def gdalProcessFinished(self):
         if (self.gdalProcess.exitCode() != 0):
             if (self.gdalStep == 'translate'):
                 self._setStatusLabel(self.translateStatusLabel, ProcessStatus.Failure)
             elif (self.gdalStep == 'warp'):
+                self._setStatusLabel(self.warpStatusLabel, ProcessStatus.Failure)
+            elif (self.gdalStep == 'overview'):
                 self._setStatusLabel(self.warpStatusLabel, ProcessStatus.Failure)
             self.gdalStep = ''
             self.showStatus('Process failed!')
@@ -341,9 +362,14 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.runWarpStep()
         elif (self.gdalStep == 'warp'):
             self._setStatusLabel(self.warpStatusLabel, ProcessStatus.Success)
-            self.gdalStep = 'done'
+            self.gdalStep = 'overview'
             self.showStatus('GDAL warp finished')
             self.writeGcpFile()
+            self.runOverviewStep()
+        elif (self.gdalStep == 'overview'):
+            self._setStatusLabel(self.overviewStatusLabel, ProcessStatus.Success)
+            self.gdalStep = 'done'
+            self.showStatus('GDAL overview finished')
             self.enableUi(True)
             if (self.closeOnDone):
                 self.closeDialog()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>324</height>
+    <width>342</width>
+    <height>207</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,6 +66,11 @@
     </item>
     <item row="0" column="0" colspan="2">
      <widget class="QGroupBox" name="planPointGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Point</string>
       </property>
@@ -77,6 +82,11 @@
     </item>
     <item row="1" column="0" colspan="2">
      <widget class="QGroupBox" name="planLineGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Line</string>
       </property>
@@ -88,6 +98,11 @@
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QGroupBox" name="planPolygonGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Polygon</string>
       </property>
@@ -128,6 +143,11 @@
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QGroupBox" name="sectionPolygonGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Polygon</string>
       </property>
@@ -139,6 +159,11 @@
     </item>
     <item row="1" column="0" colspan="2">
      <widget class="QGroupBox" name="sectionLineGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Line</string>
       </property>
@@ -150,6 +175,11 @@
     </item>
     <item row="0" column="0" colspan="2">
      <widget class="QGroupBox" name="sectionPointGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Point</string>
       </property>
@@ -181,6 +211,11 @@
     </item>
     <item row="1" column="0" colspan="2">
      <widget class="QGroupBox" name="baseLineGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Line</string>
       </property>
@@ -192,6 +227,11 @@
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QGroupBox" name="basePolygonGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Polygon</string>
       </property>
@@ -203,6 +243,11 @@
     </item>
     <item row="0" column="0" colspan="2">
      <widget class="QGroupBox" name="basePointGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Point</string>
       </property>

@@ -71,7 +71,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     gridXField = ''
     gridYField = ''
 
-    def __init__(self, rawFile, destinationDir, crt, gridLayerName, gridX, gridY, parent=None):
+    def __init__(self, rawFile, destinationDir, crt, gridLayerName, gridX, gridY, mode='name', parent=None):
         super(GeorefDialog, self).__init__(parent)
         self.setupUi(self)
         self.m_runButton.setEnabled(False)
@@ -81,6 +81,12 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.m_typeCombo.addItem('Plan', 'pln')
         self.m_typeCombo.addItem('Section', 'sec')
         self.m_typeCombo.setCurrentIndex(0)
+
+        self.scaleCombo.addItem('1:10 (2.5m)', '2.5')
+        self.scaleCombo.addItem('1:20 (5m)', '5')
+        self.scaleCombo.addItem('1:50 (12.5m)', '12.5')
+        self.scaleCombo.addItem('1:100 (25m)', '25')
+        self.scaleCombo.setCurrentIndex(0)
 
         self.gdal_translate.setFile(QDir(self.gdalPath()), 'gdal_translate')
         self.gdalwarp.setFile(QDir(self.gdalPath()), 'gdalwarp')
@@ -134,6 +140,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.m_closeButton.clicked.connect(self.closeDialog)
         self.m_siteEdit.textChanged.connect(self.updateGeoFile)
         self.m_typeCombo.currentIndexChanged.connect(self.updateGeoFile)
+        #self.scaleCombo.currentIndexChanged.connect(self.updateScale)
         self.m_numberSpin.valueChanged.connect(self.updateGeoFile)
         self.m_suffixEdit.textChanged.connect(self.updateGeoFile)
         self.m_eastSpin.valueChanged.connect(self.updateGeoFile)
@@ -142,21 +149,31 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.m_northSpin.valueChanged.connect(self.updateGridPoints)
 
         self.rawPixmap = QPixmap(self.rawFile.absoluteFilePath())
+        w = self.rawPixmap.width()
+        h = self.rawPixmap.height()
+
         self.scene = QGraphicsScene(self)
         self.rawItem = self.scene.addPixmap(self.rawPixmap)
+        self.scene.setSceneRect(QRectF(0, 0, w, h))
+
+        self.planView.setScene(self.scene)
+        #FIXME No idea why this doesn't work!
+        self.planView.fitInView(QRectF(0, 0, w, h), Qt.KeepAspectRatioByExpanding)
+        #self.planView.setSceneRect(self.rawItem.boundingRect())
+        #scale = w / (self.planView.width() * 150.0)
+        #self.planView.scale(scale, scale)
+        #TODO Make clicks set focus of other views
+
+        self.headerView.setScene(self.scene)
+        self.headerView.fitInView(QRectF(0, 0, w, 100), Qt.KeepAspectRatioByExpanding)
+
+        self.footerView.setScene(self.scene)
+        self.footerView.fitInView(QRectF(0, h - 600, w, 550), Qt.KeepAspectRatioByExpanding)
 
         self.gcpWidget1.setScene(self.scene, 250, 100, 2)
         self.gcpWidget2.setScene(self.scene, 250, 3050, 2)
         self.gcpWidget3.setScene(self.scene, 3200, 3050, 2)
         self.gcpWidget4.setScene(self.scene, 3200, 100, 2)
-
-        self.planView.setScene(self.scene)
-        #FIXME No idea why this doesn't work!
-        #self.planView.fitInView(self.rawItem, Qt.KeepAspectRatio)
-        self.planView.setSceneRect(self.rawItem.boundingRect())
-        scale = self.rawItem.boundingRect().width() / (self.planView.width() * 150.0)
-        self.planView.scale(scale, scale)
-        #TODO Make clicks set focus of other views
 
         md = PlanMetadata()
         md.setFile(self.rawFile)
@@ -168,10 +185,13 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.logText('')
 
     def updateGridPoints(self):
-        self.gcpWidget1.setLocalPoint(QPoint(self.m_eastSpin.value(), self.m_northSpin.value() + 5))
+        #mapUnits = float(self.scaleCombo.itemData(self.scaleCombo.currentIndex()))
+        mapUnits = 5
+        self.logText(str(mapUnits))
+        self.gcpWidget1.setLocalPoint(QPoint(self.m_eastSpin.value(), self.m_northSpin.value() + mapUnits))
         self.gcpWidget2.setLocalPoint(QPoint(self.m_eastSpin.value(), self.m_northSpin.value()))
-        self.gcpWidget3.setLocalPoint(QPoint(self.m_eastSpin.value() + 5, self.m_northSpin.value()))
-        self.gcpWidget4.setLocalPoint(QPoint(self.m_eastSpin.value() + 5, self.m_northSpin.value() + 5))
+        self.gcpWidget3.setLocalPoint(QPoint(self.m_eastSpin.value() + mapUnits, self.m_northSpin.value()))
+        self.gcpWidget4.setLocalPoint(QPoint(self.m_eastSpin.value() + mapUnits, self.m_northSpin.value() + mapUnits))
 
     def updateGeoPoints(self):
         # Find the geo points for the grid points

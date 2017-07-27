@@ -14,8 +14,17 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="GeorefGraphicsView" name="gcpView">
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
      <property name="interactive">
       <bool>false</bool>
      </property>
@@ -26,13 +35,13 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="autoButton">
-       <property name="enabled">
-        <bool>false</bool>
+     <item row="2" column="3">
+      <widget class="QDoubleSpinBox" name="rawYSpin">
+       <property name="decimals">
+        <number>1</number>
        </property>
-       <property name="text">
-        <string>Auto</string>
+       <property name="maximum">
+        <double>99999.899999999994179</double>
        </property>
       </widget>
      </item>
@@ -43,13 +52,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="mapLabel">
-       <property name="text">
-        <string>Map:</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="3">
       <widget class="QLabel" name="rawLabel">
        <property name="text">
@@ -57,25 +59,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="xLabel">
-       <property name="text">
-        <string>X:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="localXSpin">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="mapXSpin">
+     <item row="2" column="2">
+      <widget class="QDoubleSpinBox" name="mapYSpin">
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -97,10 +82,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="yLabel">
+     <item row="0" column="2">
+      <widget class="QLabel" name="mapLabel">
        <property name="text">
-        <string>Y:</string>
+        <string>Map:</string>
        </property>
       </widget>
      </item>
@@ -114,8 +99,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QDoubleSpinBox" name="mapYSpin">
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="mapXSpin">
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -127,13 +112,39 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QDoubleSpinBox" name="rawYSpin">
-       <property name="decimals">
-        <number>1</number>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="localXSpin">
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
        <property name="maximum">
-        <double>99999.899999999994179</double>
+        <number>9999</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="xLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>X:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="yLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Y:</string>
        </property>
       </widget>
      </item>

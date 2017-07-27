@@ -94,6 +94,7 @@ class Plan(QObject):
         action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Drawing Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
 
+        self.dock.loadAnyFileSelected.connect(self._loadAnyPlan)
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
 
@@ -213,6 +214,11 @@ class Plan(QObject):
         self.metadata.setSourceFile(pmd.filename)
         self.metadata.setEditor(self.project.userName())
 
+    def _loadAnyPlan(self):
+        filePaths = QFileDialog.getOpenFileNames(self.dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
+        for filePath in filePaths:
+            self.georeferencePlan(QFileInfo(filePath), 'free')
+
     def _loadRawPlan(self):
         dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode())
         if (dialog.exec_()):
@@ -275,9 +281,17 @@ class Plan(QObject):
 
     # Georeference Tools
 
-    def georeferencePlan(self, rawFile):
+    def georeferencePlan(self, rawFile, mode='name'):
         pmd = PlanMetadata(rawFile)
-        georefDialog = GeorefDialog(rawFile, self.project.georefDrawingDir(pmd.sourceClass), self.project.projectCrs().authid(), self.project.grid.settings.pointsLayerName, self.project.fieldName('local_x'), self.project.fieldName('local_y'))
+        georefDialog = GeorefDialog(
+            rawFile,
+            self.project.georefDrawingDir(pmd.sourceClass),
+            self.project.projectCrs().authid(),
+            self.project.grid.settings.pointsLayerName,
+            self.project.fieldName('local_x'),
+            self.project.fieldName('local_y'),
+            mode
+        )
         if (georefDialog.exec_()):
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()

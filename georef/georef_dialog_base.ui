@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>365</width>
-    <height>797</height>
+    <width>1300</width>
+    <height>1000</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,19 +16,40 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowTitle">
-   <string>Dialog</string>
+  <property name="minimumSize">
+   <size>
+    <width>1300</width>
+    <height>1000</height>
+   </size>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+  <property name="maximumSize">
+   <size>
+    <width>1300</width>
+    <height>1000</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Grid Georeferencer</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <widget class="QSplitter" name="splitter">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="handleWidth">
+      <number>1</number>
+     </property>
+     <property name="childrenCollapsible">
+      <bool>false</bool>
+     </property>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="GeorefGraphicsView" name="planView">
+       <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+        <widget class="QGraphicsView" name="planView">
          <property name="minimumSize">
           <size>
            <width>300</width>
@@ -40,6 +61,21 @@
            <width>300</width>
            <height>320</height>
           </size>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="dragMode">
+          <enum>QGraphicsView::ScrollHandDrag</enum>
+         </property>
+         <property name="transformationAnchor">
+          <enum>QGraphicsView::NoAnchor</enum>
          </property>
         </widget>
        </item>
@@ -70,6 +106,9 @@
            <property name="text">
             <string>Site:</string>
            </property>
+           <property name="buddy">
+            <cstring>m_siteEdit</cstring>
+           </property>
           </widget>
          </item>
          <item row="2" column="1">
@@ -84,12 +123,19 @@
            <property name="text">
             <string>Type:</string>
            </property>
+           <property name="buddy">
+            <cstring>m_typeCombo</cstring>
+           </property>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QComboBox" name="m_typeCombo"/>
+          <widget class="QComboBox" name="m_typeCombo">
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="m_contextLabel">
            <property name="text">
             <string>Number:</string>
@@ -99,7 +145,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QSpinBox" name="m_numberSpin">
@@ -129,7 +175,7 @@
            </item>
           </layout>
          </item>
-         <item row="5" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="m_gridLabel">
            <property name="text">
             <string>Grid:</string>
@@ -139,12 +185,12 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="6" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QSpinBox" name="m_eastSpin">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="maximum">
               <number>9999</number>
@@ -157,7 +203,7 @@
            <item>
             <widget class="QSpinBox" name="m_northSpin">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="maximum">
               <number>9999</number>
@@ -182,18 +228,45 @@
            </item>
           </layout>
          </item>
-         <item row="6" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="m_suffixLabel">
            <property name="text">
             <string>Suffix:</string>
            </property>
+           <property name="buddy">
+            <cstring>m_suffixEdit</cstring>
+           </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="7" column="1">
           <widget class="QLineEdit" name="m_suffixEdit">
            <property name="maxLength">
             <number>1</number>
            </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="scaleLabel">
+           <property name="text">
+            <string>Scale:</string>
+           </property>
+           <property name="buddy">
+            <cstring>scaleCombo</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QComboBox" name="scaleCombo">
+           <item>
+            <property name="text">
+             <string>1:20 (5m)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1:10 (2.5m)</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -395,41 +468,107 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QStatusBar" name="statusBar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="sizeGripEnabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="GcpWidget" name="gcpWidget1" native="true"/>
+       <item row="0" column="0" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignTop">
+        <widget class="QGraphicsView" name="headerView">
+         <property name="minimumSize">
+          <size>
+           <width>900</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="interactive">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="transformationAnchor">
+          <enum>QGraphicsView::NoAnchor</enum>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
-        <widget class="GcpWidget" name="gcpWidget2" native="true"/>
+        <widget class="GcpWidget" name="gcpWidget1" native="true"/>
        </item>
        <item row="1" column="1">
+        <widget class="GcpWidget" name="gcpWidget4" native="true"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="GcpWidget" name="gcpWidget2" native="true"/>
+       </item>
+       <item row="2" column="1">
         <widget class="GcpWidget" name="gcpWidget3" native="true"/>
        </item>
-       <item row="0" column="1">
-        <widget class="GcpWidget" name="gcpWidget4" native="true"/>
+       <item row="3" column="0" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignBottom">
+        <widget class="QGraphicsView" name="footerView">
+         <property name="minimumSize">
+          <size>
+           <width>900</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="interactive">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         </property>
+         <property name="transformationAnchor">
+          <enum>QGraphicsView::NoAnchor</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QStatusBar" name="statusBar">
-     <property name="sizeGripEnabled">
-      <bool>false</bool>
-     </property>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>GeorefGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header>georef_graphics_view.h</header>
-  </customwidget>
   <customwidget>
    <class>GcpWidget</class>
    <extends>QWidget</extends>
@@ -438,13 +577,22 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>planView</tabstop>
+  <tabstop>m_fileEdit</tabstop>
+  <tabstop>m_siteEdit</tabstop>
+  <tabstop>m_typeCombo</tabstop>
+  <tabstop>scaleCombo</tabstop>
+  <tabstop>m_numberSpin</tabstop>
+  <tabstop>m_eastSpin</tabstop>
+  <tabstop>m_northSpin</tabstop>
+  <tabstop>m_suffixEdit</tabstop>
   <tabstop>m_runCloseButton</tabstop>
   <tabstop>m_runButton</tabstop>
   <tabstop>m_closeButton</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
-  <include location="Volumes/Data/Development/ArkSpatial/georef/resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

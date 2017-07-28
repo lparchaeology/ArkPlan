@@ -281,10 +281,11 @@ class Plan(QObject):
 
     # Georeference Tools
 
-    def georeferencePlan(self, rawFile, mode='name'):
-        pmd = PlanMetadata(rawFile)
+    def georeferencePlan(self, sourceFile, mode='name'):
+        pmd = PlanMetadata(sourceFile)
         georefDialog = GeorefDialog(
-            rawFile,
+            sourceFile,
+            self.project.rawDrawingDir(pmd.sourceClass),
             self.project.georefDrawingDir(pmd.sourceClass),
             self.project.projectCrs().authid(),
             self.project.grid.settings.pointsLayerName,

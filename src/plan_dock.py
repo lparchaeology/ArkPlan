@@ -121,7 +121,7 @@ class PlanDock(ToolDockWidget):
 
         self.toolbar2.setVisible(True)
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
+        self.toolbar2.addAction(QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
         self.toolbar2.addSeparator()
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPoints.svg'), self.tr(u'Edit Points in Buffer'), self.editPointsSelected)

@@ -46,6 +46,16 @@ class ProcessStatus():
     Success = 2
     Failure = 3
 
+class Scale():
+
+    OneToTen = 0
+    OneToTwenty = 1
+    OneToFifty = 2
+    OneToOneHundred = 3
+
+    Label = ['1:10 (2.5m)', '1:20 (5m)', '1:50 (12.5m)', '1:100 (25m)']
+    Factor = [2.5, 5, 12.5, 25]
+
 class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     # Internal variables
@@ -54,7 +64,8 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     crt = 'EPSG:27700'
 
     #TODO Get from settings
-    destinationDir = QDir()
+    georefDir = QDir()
+    inputFile = QFileInfo()
     rawFile = QFileInfo()
     pointFile = QFileInfo()
     geoFile = QFileInfo()
@@ -71,16 +82,18 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     gridXField = ''
     gridYField = ''
 
-    def __init__(self, rawFile, destinationDir, crt, gridLayerName, gridX, gridY, mode='name', parent=None):
+    def __init__(self, inputFile, rawDir, georefDir, crt, gridLayerName, gridX, gridY, mode='name', parent=None):
         super(GeorefDialog, self).__init__(parent)
         self.setupUi(self)
-        self.m_runButton.setEnabled(False)
-        self.m_runCloseButton.setEnabled(False)
 
-        self.m_typeCombo.addItem('Context', 'cxt')
-        self.m_typeCombo.addItem('Plan', 'pln')
-        self.m_typeCombo.addItem('Section', 'sec')
-        self.m_typeCombo.setCurrentIndex(0)
+        self.processButton.setEnabled(False)
+        self.saveButton.setEnabled(False)
+        self.runButton.setEnabled(False)
+
+        self.typeCombo.addItem('Context', 'cxt')
+        self.typeCombo.addItem('Plan', 'pln')
+        self.typeCombo.addItem('Section', 'sec')
+        self.typeCombo.setCurrentIndex(0)
 
         self.scaleCombo.addItem('1:10 (2.5m)', '2.5')
         self.scaleCombo.addItem('1:20 (5m)', '5')
@@ -99,7 +112,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self._setStatusLabel(self.loadStatusLabel, ProcessStatus.Running)
         self.crt = crt
         self.rawFile = rawFile
-        self.destinationDir = destinationDir
+        self.georefDir = georefDir
         self.logText('Raw File: \'' + self.rawFile.absoluteFilePath() + '\'')
         if (not self.rawFile.exists()):
             self.showStatus('ERROR: Raw file not found! File path was ' + self.rawFile.absoluteFilePath())
@@ -109,7 +122,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.logText('GCP File: \'' + self.pointFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.logText('GCP file found, will be used for default ground control points')
-        self.geoFile = QFileInfo(self.destinationDir, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
+        self.geoFile = QFileInfo(self.georefDir, self.rawFile.completeBaseName() + self.geoSuffix + '.tif')
         self.logText('Geo File: \'' + self.geoFile.absoluteFilePath() + '\'')
         if (self.pointFile.exists()):
             self.showStatus('Warning: Georeferenced file found, will be overwritten with new file!')
@@ -126,8 +139,9 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
         self._setStatusLabel(self.loadStatusLabel, ProcessStatus.Success)
 
-        self.m_runButton.setEnabled(True)
-        self.m_runCloseButton.setEnabled(True)
+        self.processButton.setEnabled(True)
+        self.saveButton.setEnabled(True)
+        self.runButton.setEnabled(True)
 
         self.gdalProcess.started.connect(self.gdalProcessStarted)
         self.gdalProcess.finished.connect(self.gdalProcessFinished)
@@ -135,12 +149,13 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gdalProcess.readyReadStandardError.connect(self.gdalProcessError)
 
         # Init the gui
-        self.m_runButton.clicked.connect(self.run)
-        self.m_runCloseButton.clicked.connect(self.runClose)
-        self.m_closeButton.clicked.connect(self.closeDialog)
-        self.m_siteEdit.textChanged.connect(self.updateGeoFile)
-        self.m_typeCombo.currentIndexChanged.connect(self.updateGeoFile)
-        #self.scaleCombo.currentIndexChanged.connect(self.updateScale)
+        self.processButton.clicked.connect(self.process)
+        self.saveButton.clicked.connect(self.saveRawFile)
+        self.runButton.clicked.connect(self.run)
+        self.closeButton.clicked.connect(self.closeDialog)
+        self.siteEdit.textChanged.connect(self.updateGeoFile)
+        self.typeCombo.currentIndexChanged.connect(self.updateGeoFile)
+        self.scaleCombo.currentIndexChanged.connect(self.updateScale)
         self.m_numberSpin.valueChanged.connect(self.updateGeoFile)
         self.m_suffixEdit.textChanged.connect(self.updateGeoFile)
         self.m_eastSpin.valueChanged.connect(self.updateGeoFile)
@@ -156,19 +171,9 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.rawItem = self.scene.addPixmap(self.rawPixmap)
         self.scene.setSceneRect(QRectF(0, 0, w, h))
 
-        self.planView.setScene(self.scene)
-        #FIXME No idea why this doesn't work!
-        self.planView.fitInView(QRectF(0, 0, w, h), Qt.KeepAspectRatioByExpanding)
-        #self.planView.setSceneRect(self.rawItem.boundingRect())
-        #scale = w / (self.planView.width() * 150.0)
-        #self.planView.scale(scale, scale)
-        #TODO Make clicks set focus of other views
-
-        self.headerView.setScene(self.scene)
-        self.headerView.fitInView(QRectF(0, 0, w, 100), Qt.KeepAspectRatioByExpanding)
-
-        self.footerView.setScene(self.scene)
-        self.footerView.fitInView(QRectF(0, h - 600, w, 550), Qt.KeepAspectRatioByExpanding)
+        self.planView.setSceneView(self.scene, QRectF(0, 0, w, h))
+        self.headerView.setSceneView(self.scene, QRectF(0, 0, w, 200))
+        self.footerView.setSceneView(self.scene, QRectF(100, h - 600, w - 200, 500))
 
         self.gcpWidget1.setScene(self.scene, 250, 100, 2)
         self.gcpWidget2.setScene(self.scene, 250, 3050, 2)
@@ -183,6 +188,9 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         if (self.pointFile.exists()):
             self.loadGcpFile()
             self.logText('')
+
+    def updateScale(self):
+        index = self.scaleCombo.currentIndex()
 
     def updateGridPoints(self):
         #mapUnits = float(self.scaleCombo.itemData(self.scaleCombo.currentIndex()))
@@ -210,11 +218,11 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.geoFile = QFileInfo(self.geoFile.absoluteDir(), self.metadata().baseName() + self.geoSuffix + '.tif')
 
     def enableUi(self, status):
-        self.m_runButton.setEnabled(status)
-        self.m_closeButton.setEnabled(status)
-        self.m_runCloseButton.setEnabled(status)
-        self.m_siteEdit.setEnabled(status)
-        self.m_typeCombo.setEnabled(status)
+        self.runButton.setEnabled(status)
+        self.closeButton.setEnabled(status)
+        self.processButton.setEnabled(status)
+        self.siteEdit.setEnabled(status)
+        self.typeCombo.setEnabled(status)
         self.m_numberSpin.setEnabled(status)
         self.m_suffixEdit.setEnabled(status)
         self.m_eastSpin.setEnabled(status)
@@ -231,8 +239,8 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def setMetadata(self, md):
         self.m_fileEdit.setText(self.rawFile.baseName())
-        self.m_siteEdit.setText(md.siteCode)
-        self.m_typeCombo.setCurrentIndex(self.m_typeCombo.findData(md.sourceClass))
+        self.siteEdit.setText(md.siteCode)
+        self.typeCombo.setCurrentIndex(self.typeCombo.findData(md.sourceClass))
         if md.sourceId is not None:
             self.m_numberSpin.setValue(md.sourceId)
         else:
@@ -247,9 +255,19 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.m_northSpin.setValue(0)
         self.m_suffixEdit.setText(md.suffix)
 
+    def drawingType(self):
+        return self.typeCombo.itemData(self.typeCombo.currentIndex())
+
     def metadata(self):
         md = PlanMetadata()
-        md.setMetadata(self.m_siteEdit.text(), self.m_typeCombo.itemData(self.m_typeCombo.currentIndex()), self.m_numberSpin.value(), self.m_eastSpin.value(), self.m_northSpin.value(), self.m_suffixEdit.text())
+        md.setMetadata(
+            self.siteEdit.text(),
+            self.drawingType(),
+            self.m_numberSpin.value(),
+            self.m_eastSpin.value(),
+            self.m_northSpin.value(),
+            self.m_suffixEdit.text()
+        )
         return md
 
     def geoRefFile(self):
@@ -270,7 +288,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.closeOnDone = False
         self.runGeoreference()
 
-    def runClose(self):
+    def process(self):
         self.closeOnDone = True
         self.runGeoreference()
 

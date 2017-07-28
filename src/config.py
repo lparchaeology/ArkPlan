@@ -208,15 +208,19 @@ class Config():
     rasterGroups = {
         'cxt' : {
             'groupName'        : 'Contexts',
+            'name'             : 'Context',
             'pathSuffix'       : 'raster/context',
             'layersGroupName'  : 'Drawings',
+            'scale'            : 'Drawings',
         },
         'pln' : {
+            'name'             : 'Plan',
             'groupName'        : 'Plans',
             'pathSuffix'       : 'raster/plan',
             'layersGroupName'  : 'Drawings',
         },
         'sec' : {
+            'name'             : 'Section',
             'groupName'        : 'Sections',
             'pathSuffix'       : 'raster/section',
             'layersGroupName'  : 'Drawings',

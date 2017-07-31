@@ -85,24 +85,24 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="1" column="0">
-          <widget class="QLabel" name="m_fileLabel">
+          <widget class="QLabel" name="inputFileLabel">
            <property name="text">
-            <string>Plan file:</string>
+            <string>Input File:</string>
            </property>
            <property name="buddy">
-            <cstring>m_fileEdit</cstring>
+            <cstring>inputFileEdit</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="m_fileEdit">
+          <widget class="QLineEdit" name="inputFileEdit">
            <property name="readOnly">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="m_siteLabel">
+          <widget class="QLabel" name="siteLabel">
            <property name="text">
             <string>Site:</string>
            </property>
@@ -119,7 +119,7 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="m_typeLabel">
+          <widget class="QLabel" name="typeLabel">
            <property name="text">
             <string>Type:</string>
            </property>
@@ -136,19 +136,19 @@
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="m_contextLabel">
+          <widget class="QLabel" name="contextLabel">
            <property name="text">
             <string>Number:</string>
            </property>
            <property name="buddy">
-            <cstring>m_numberSpin</cstring>
+            <cstring>numberSpin</cstring>
            </property>
           </widget>
          </item>
          <item row="5" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QSpinBox" name="m_numberSpin">
+            <widget class="QSpinBox" name="numberSpin">
              <property name="toolTip">
               <string>Context Number</string>
              </property>
@@ -176,19 +176,19 @@
           </layout>
          </item>
          <item row="6" column="0">
-          <widget class="QLabel" name="m_gridLabel">
+          <widget class="QLabel" name="gridLabel">
            <property name="text">
             <string>Grid:</string>
            </property>
            <property name="buddy">
-            <cstring>m_eastSpin</cstring>
+            <cstring>eastSpin</cstring>
            </property>
           </widget>
          </item>
          <item row="6" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
-            <widget class="QSpinBox" name="m_eastSpin">
+            <widget class="QSpinBox" name="eastSpin">
              <property name="readOnly">
               <bool>false</bool>
              </property>
@@ -201,7 +201,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="m_northSpin">
+            <widget class="QSpinBox" name="northSpin">
              <property name="readOnly">
               <bool>false</bool>
              </property>
@@ -229,17 +229,17 @@
           </layout>
          </item>
          <item row="7" column="0">
-          <widget class="QLabel" name="m_suffixLabel">
+          <widget class="QLabel" name="suffixLabel">
            <property name="text">
             <string>Suffix:</string>
            </property>
            <property name="buddy">
-            <cstring>m_suffixEdit</cstring>
+            <cstring>suffixEdit</cstring>
            </property>
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QLineEdit" name="m_suffixEdit">
+          <widget class="QLineEdit" name="suffixEdit">
            <property name="maxLength">
             <number>1</number>
            </property>
@@ -257,6 +257,68 @@
          </item>
          <item row="4" column="1">
           <widget class="QComboBox" name="scaleCombo"/>
+         </item>
+         <item row="11" column="1">
+          <widget class="QCheckBox" name="addToMapCheck">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QCheckBox" name="cropCheck">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="cropLabel">
+           <property name="text">
+            <string>Crop:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="addToMapLabel">
+           <property name="text">
+            <string>Add to Map:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="rawFileLabel">
+           <property name="text">
+            <string>Raw File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLineEdit" name="rawFileEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="geoFileLabel">
+           <property name="text">
+            <string>Georef File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QLineEdit" name="geoFileEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -379,14 +441,14 @@
          <item row="1" column="1">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Crop Image</string>
+            <string>Crop Raw Image</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Translate Image</string>
+            <string>Translate Raw Image</string>
            </property>
           </widget>
          </item>
@@ -415,14 +477,14 @@
          <item row="0" column="1">
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Load Image</string>
+            <string>Load Raw Image</string>
            </property>
           </widget>
          </item>
          <item row="4" column="1">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Generate Overviews</string>
+            <string>Generate Image Overviews</string>
            </property>
           </widget>
          </item>
@@ -451,7 +513,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QProgressBar" name="m_progressBar">
+        <widget class="QProgressBar" name="progressBar">
          <property name="value">
           <number>0</number>
          </property>
@@ -590,14 +652,18 @@
  </customwidgets>
  <tabstops>
   <tabstop>planView</tabstop>
-  <tabstop>m_fileEdit</tabstop>
+  <tabstop>inputFileEdit</tabstop>
   <tabstop>siteEdit</tabstop>
   <tabstop>typeCombo</tabstop>
   <tabstop>scaleCombo</tabstop>
-  <tabstop>m_numberSpin</tabstop>
-  <tabstop>m_eastSpin</tabstop>
-  <tabstop>m_northSpin</tabstop>
-  <tabstop>m_suffixEdit</tabstop>
+  <tabstop>numberSpin</tabstop>
+  <tabstop>eastSpin</tabstop>
+  <tabstop>northSpin</tabstop>
+  <tabstop>suffixEdit</tabstop>
+  <tabstop>rawFileEdit</tabstop>
+  <tabstop>geoFileEdit</tabstop>
+  <tabstop>cropCheck</tabstop>
+  <tabstop>addToMapCheck</tabstop>
   <tabstop>processButton</tabstop>
   <tabstop>saveButton</tabstop>
   <tabstop>runButton</tabstop>

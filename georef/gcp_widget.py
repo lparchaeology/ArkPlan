@@ -30,8 +30,9 @@ from PyQt4.QtCore import Qt, pyqtSignal, QPoint, QPointF
 from PyQt4.QtGui import QWidget, QPen
 from PyQt4 import uic
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPoint, QgsMessageLog
 
+from gcp import GroundControlPoint
 import gcp_widget_base
 
 class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
@@ -39,9 +40,7 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
     rawPointChanged = pyqtSignal(QPointF)
 
     # Internal variables
-    _localPoint = QPoint()
-    _mapPoint = QgsPoint()
-    _rawPoint = QPointF()
+    _gcp =  GroundControlPoint()
 
     _gridEditable = False
     _mapEditable = False
@@ -59,51 +58,64 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
         self.gcpView.scale(scale, scale)
         self._gcpItem = self.gcpView.scene().addEllipse(-1.5, -1.5, 3.0, 3.0, QPen(Qt.red))
         self._gcpItem.setVisible(False)
-        self.gcpView.pointSelected.connect(self.setRawPoint)
-        self.rawXSpin.valueChanged.connect(self.setRawX)
-        self.rawYSpin.valueChanged.connect(self.setRawY)
+        self.gcpView.pointSelected.connect(self.setRaw)
+        self.rawXSpin.valueChanged.connect(self._setRawX)
+        self.rawYSpin.valueChanged.connect(self._setRawY)
 
-    def localPoint(self):
-        return self._localPoint
+    def gcp(self):
+        return self._gcp
 
-    def setLocalPoint(self, localPoint):
-        self._localPoint = localPoint
-        self.localXSpin.setValue(localPoint.x())
-        self.localYSpin.setValue(localPoint.y())
+    def setGcp(self, gcp):
+        self._gcp = gcp
+        self._update()
 
-    def mapPoint(self):
-        return self._mapPoint
+    def setGeo(self, local, map):
+        self._log('setGeo')
+        self._gcp.setLocal(local)
+        self._gcp.setMap(map)
+        self._updateGeo()
 
-    def setMapPoint(self, mapPoint):
-        self._mapPoint = mapPoint
-        self.mapXSpin.setValue(mapPoint.x())
-        self.mapYSpin.setValue(mapPoint.y())
+    def setRaw(self, raw):
+        self._gcp.setRaw(raw)
+        self._updateRaw()
 
-    def rawPoint(self):
-        return self._rawPoint
+    def _updateGeo(self):
+        self._log('_updateGeo')
+        self._log(self._gcp.local().x())
+        self._log(self._gcp.local().y())
+        self._log(self._gcp.map().x())
+        self._log(self._gcp.map().y())
+        self.localX.setNum(self._gcp.local().x())
+        self.localY.setNum(self._gcp.local().y())
+        self.mapX.setNum(self._gcp.map().x())
+        self.mapY.setNum(self._gcp.map().y())
+        self._log(self.localX.text())
+        self._log(self.localY.text())
+        self._log(self.mapX.text())
+        self._log(self.mapY.text())
 
-    def setRawPoint(self, rawPoint):
-        self._rawPoint = rawPoint
-        self.rawXSpin.setValue(rawPoint.x())
-        self.rawYSpin.setValue(rawPoint.y())
+    def _updateRaw(self):
+        self.rawXSpin.setValue(self._gcp.raw().x())
+        self.rawYSpin.setValue(self._gcp.raw().y())
         self._updateGcpItem()
 
-    def setRawX(self, x):
-        if (x != self._rawPoint.x()):
-            self._rawPoint.setX(x)
-            self.rawXSpin.setValue(x)
+    def _setRawX(self, x):
+        if (x != self._gcp.raw().x()):
+            self._gcp.raw().setX(x)
             self._updateGcpItem()
 
-    def setRawY(self, y):
-        if (y != self._rawPoint.y()):
-            self._rawPoint.setY(y)
-            self.rawYSpin.setValue(y)
+    def _setRawY(self, y):
+        if (y != self._gcp.raw().y()):
+            self._gcp.raw().setY(y)
             self._updateGcpItem()
 
     def _updateGcpItem(self):
-        if (not self._rawPoint.isNull()):
-            self._gcpItem.setPos(self._rawPoint)
-            self._gcpItem.setVisible(True)
-        else:
+        if (self._gcp.raw().isNull()):
             self._gcpItem.setVisible(False)
+        else:
+            self._gcpItem.setPos(self._gcp.raw())
+            self._gcpItem.setVisible(True)
         # TODO if outside view then center on point
+
+    def _log(self, msg):
+        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)

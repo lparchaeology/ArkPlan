@@ -282,18 +282,17 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, sourceFile, mode='name'):
-        pmd = PlanMetadata(sourceFile)
-        georefDialog = GeorefDialog(
-            sourceFile,
-            self.project.rawDrawingDir(pmd.sourceClass),
-            self.project.georefDrawingDir(pmd.sourceClass),
-            self.project.projectCrs().authid(),
-            self.project.grid.settings.pointsLayerName,
-            self.project.fieldName('local_x'),
-            self.project.fieldName('local_y'),
-            mode
-        )
-        if (georefDialog.exec_()):
+        config = Config.rasterGroups
+        for group in config:
+            config[group]['raw'] = self.project.rawDrawingDir(group)
+            config[group]['georef'] = self.project.georefDrawingDir(group)
+            config[group]['suffix'] = '_r'
+            config[group]['crs'] = self.project.projectCrs()
+            config[group]['grid'] = self.project.grid.pointsLayer
+            config[group]['local_x'] = self.project.fieldName('local_x')
+            config[group]['local_y'] = self.project.fieldName('local_y')
+        georefDialog = GeorefDialog(config)
+        if georefDialog.loadImage(sourceFile) and georefDialog.exec_():
             geoFile = georefDialog.geoRefFile()
             md = georefDialog.metadata()
             md.filename = geoFile.fileName()

@@ -26,7 +26,7 @@
 
 import os
 
-from PyQt4.QtCore import Qt, QPoint, QPointF
+from PyQt4.QtCore import Qt, QPointF
 
 from qgis.core import QgsPoint
 
@@ -55,30 +55,35 @@ class GroundControl():
 
     def isValid(self):
         for index in self._points:
-            if !self._point[index].isValid():
+            if not self._point[index].isValid():
                 return false
         return true
 
     def isNull(self):
         for index in self._points:
-            if !self._point[index].isNull():
+            if not self._point[index].isNull():
                 return false
         return true
+
+    def asCsv(self):
+        csv = 'mapX,mapY,pixelX,pixelY,enable\n'
+        for index in sorted(self._points):
+            csv += self._points[index].asCsv() + '\n'
 
 class GroundControlPoint():
 
     _raw = QPointF()
     _map = QgsPoint()
-    _local = QPoint()
+    _local = QPointF()
     _enabled = True
 
-    def __init__(self, raw, map, enabled=True):
+    def __init__(self, raw=QPointF(), map=QgsPoint(), enabled=True):
         self.setRaw(raw)
         self.setMap(map)
         self.setEnabled(enabled)
 
     def isValid(self):
-        return !self._map.isNull() and !self._map.isNull()
+        return not self._map.isNull() and not self._map.isNull()
 
     def isNull(self):
         return self._map.isNull() and self._map.isNull()
@@ -112,3 +117,6 @@ class GroundControlPoint():
 
     def setEnabled(self, enabled):
         self._enabled = enabled
+
+    def asCsv(self):
+        return ','.join([str(self._map.x()), str(self._map.y()), str(self._raw.x()), str(self._raw.y()), str(int(self._enabled))])

@@ -48,27 +48,20 @@
      <item row="0" column="1">
       <widget class="QLabel" name="localLabel">
        <property name="text">
-        <string>Local:</string>
+        <string>Local Grid</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
      <item row="0" column="3">
       <widget class="QLabel" name="rawLabel">
        <property name="text">
-        <string>Raw:</string>
+        <string>Raw Image</string>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QDoubleSpinBox" name="mapYSpin">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -85,40 +78,10 @@
      <item row="0" column="2">
       <widget class="QLabel" name="mapLabel">
        <property name="text">
-        <string>Map:</string>
+        <string>Map</string>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="localYSpin">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="mapXSpin">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.998999999952503</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="localXSpin">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="maximum">
-        <number>9999</number>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -148,6 +111,97 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="localX">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="indent">
+        <number>5</number>
+       </property>
+       <property name="buddy">
+        <cstring>rawXSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="localY">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="indent">
+        <number>5</number>
+       </property>
+       <property name="buddy">
+        <cstring>rawYSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="mapX">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="indent">
+        <number>5</number>
+       </property>
+       <property name="buddy">
+        <cstring>rawXSpin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="mapY">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="indent">
+        <number>5</number>
+       </property>
+       <property name="buddy">
+        <cstring>rawYSpin</cstring>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -159,6 +213,11 @@
    <header>georef_graphics_view.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>gcpView</tabstop>
+  <tabstop>rawXSpin</tabstop>
+  <tabstop>rawYSpin</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

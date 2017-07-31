@@ -24,36 +24,54 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QFileInfo, QPointF, QProcess, QSettings, QDir, QTextStream, QFile, QIODevice, QCoreApplication, pyqtSignal
+from PyQt4.QtCore import Qt, QObject, QFileInfo, QPointF, QProcess, QSettings, QDir, QTextStream, QFile, QIODevice, QCoreApplication, pyqtSignal
 from PyQt4.QtGui import QPixmap
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPoint, QgsMessageLog
 
 from gcp import *
 
 class ProcessStatus():
 
+    # ProcessStatus enum
     Unknown = 0
     Running = 1
     Success = 2
     Failure = 3
+    Label = ['Unknown', 'Running', 'Success', 'Failure']
+
+class Scale():
+
+    # Scale enum
+    OneToTen = 0
+    OneToTwenty = 1
+    OneToFifty = 2
+    OneToOneHundred = 3
+    Scale = [0, 1, 2, 3]
+    Label = ['1:10 (2.5m)', '1:20 (5m)', '1:50 (12.5m)', '1:100 (25m)']
+    Factor = [2.5, 5, 12.5, 25]
 
 class Georeferencer(QObject):
 
+    # Step enum
     Start = 0
     Crop = 1
     Translate = 2
     Warp = 3
     Overview = 4
-    Stop = 0
+    Stop = 5
+    Step = [0, 1, 2, 3, 4, 5]
+    Label = ['Start', 'Crop', 'Translate', 'Warp', 'Overview', 'Stop']
 
+    # Georeferencer.Step, ProcessStatus
     status = pyqtSignal(int, int)
+    # Georeferencer.Step, Message
     error = pyqtSignal(int, str)
 
     # Internal variables
-    _tmpDir = QDir()
+    _debug = True
     _gdalDir = QDir()
-    _step = Georeferencer.Start
+    _step = 0
     _translate = QFileInfo()
     _warp = QFileInfo()
     _overview = QFileInfo()
@@ -68,19 +86,20 @@ class Georeferencer(QObject):
     _translateFile = QFileInfo()
     _geoFile = QFileInfo()
 
-    def __init__(self, tmpDir):
+    def __init__(self, parent=None):
+        super(Georeferencer, self).__init__(parent)
 
-        self._tmpDir = tmpDir
-        self._cropFile.setFile(self._tmpDir, '.georef_crop.png')
-        self._translateFile = QFileInfo(self._tmpDir, + '.georef_translate.tiff')
+        self._cropFile.setFile(QDir.tempPath() + '.ark_georef_crop.png')
+        self._translateFile = QFileInfo(QDir.tempPath() + '.ark_georef_translate.tiff')
 
         self._gdalDir = QDir(self.gdalPath())
-        self.log('GDAL Path: ' + self._gdalDir.absolutePath())
-        self._translate.setFile(gdalDir, 'gdal_translate')
-        self._warp.setFile(gdalDir, 'gdalwarp')
-        self._overview.setFile(gdalDir, 'gdaladdo')
+        if self._debug:
+            self.log('GDAL Path: ' + self._gdalDir.absolutePath())
+        self._translate.setFile(self._gdalDir, 'gdal_translate')
+        self._warp.setFile(self._gdalDir, 'gdalwarp')
+        self._overview.setFile(self._gdalDir, 'gdaladdo')
         if (not self._translate.exists() or not self._warp.exists() or not self._overview.exists()):
-            self.showStatus('ERROR: GDAL commands not found, please ensure GDAL Tools plugin is installed and has correct path set!')
+            self._signalError('GDAL commands not found, please ensure GDAL Tools plugin is installed and has correct path set!')
             return
 
         self._process.started.connect(self._processStarted)
@@ -88,21 +107,25 @@ class Georeferencer(QObject):
         self._process.error.connect(self._processError)
         self._process.readyReadStandardError.connect(self._processError)
 
+    def step(self):
+        return self._step
+
     def run(self, gc, rawFile, pointFile, geoFile):
-        self._gc = gc
-        if (!self._gc.isValid()):
+        self._step = Georeferencer.Start
+        if (not gc.isValid()):
             self._signalError('Invalid ground control points.')
             return
+        self._gc = gc
 
-        self._rawFile = rawFile
-        if (not self._rawFile.exists()):
+        if (not rawFile.exists()):
             self._signalError('Raw file not found.')
             return
+        self._rawFile = rawFile
 
         self._pointFile = pointFile
         self._geoFile = geoFile
 
-        if (False):
+        if (self._debug):
             self.log('Raw File: \'' + self._rawFile.absoluteFilePath() + '\'')
             self.log('GCP File: \'' + self._pointFile.absoluteFilePath() + '\'')
             self.log('Geo File: \'' + self._geoFile.absoluteFilePath() + '\'')
@@ -111,6 +134,8 @@ class Georeferencer(QObject):
         self._runCropStep()
 
     def _runCropStep(self):
+        if self._debug:
+            self.log('Crop')
         self._step = Georeferencer.Crop
         self._args = []
         self._command = ''
@@ -123,7 +148,7 @@ class Georeferencer(QObject):
         if image.isNull():
             self._signalError('Cropping of raw image failed.')
             return
-        if !image.save(self._cropFile.absoluteFilePath(), 'PNG', 100):
+        if not image.save(self._cropFile.absoluteFilePath(), 'PNG', 100):
             self._signalError('Saving of cropped image failed.')
             return
         self._runTranslateStep()
@@ -147,7 +172,7 @@ class Georeferencer(QObject):
         self._args = []
         self._args.extend(['-order', '1'])
         self._args.extend(['-r', 'cubic'])
-        self._args.extend(['-t_srs', self._crt])
+        self._args.extend(['-t_srs', self._gc.crt])
         self._args.extend(['-of', 'GTiff'])
         self._args.extend(['-co', 'COMPRESS=JPEG'])
         self._args.extend(['-co', 'JPEG_QUALITY=50'])
@@ -172,24 +197,15 @@ class Georeferencer(QObject):
 
     def _processStarted(self):
         self._signalStatus(ProcessStatus.Running)
-        self.log(self._command)
+        if self._debug:
+            self.log(self.Label[self._step])
+            self.log(self._command)
 
     def _processFinished(self):
-        if (self._process.exitCode() != 0):
-            if (self._step == Georeferencer.Translate):
-                self._signalError('Translation failed.')
-            elif (self._step == Georeferencer.Warp):
-                self._signalError('Warp failed.')
-            elif (self._step == Georeferencer.Overview):
-                self._signalError('Overview failed.')
-            self._step = Georeferencer.Stop
-            return
-
         self._signalStatus(ProcessStatus.Success)
         if (self._step == Georeferencer.Translate):
             self._runWarpStep()
         elif (self._step == Georeferencer.Warp):
-            self._step = Georeferencer.Overview
             self._runOverviewStep()
         elif (self._step == Georeferencer.Overview):
             self.writeGcpFile(self._gc, self._pointFile.absoluteFilePath())
@@ -207,7 +223,7 @@ class Georeferencer(QObject):
         self.error.emit(self._step, msg)
 
     @staticmethod
-    def gdalPath(self):
+    def gdalPath():
         return QSettings().value('/GdalTools/gdalPath', '/usr/bin')
 
     @staticmethod
@@ -215,7 +231,7 @@ class Georeferencer(QObject):
         QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
 
     @staticmethod
-    def loadGcpFile(self, path):
+    def loadGcpFile(path):
         inFile = QFile(path)
         if (not inFile.open(QIODevice.ReadOnly | QIODevice.Text)):
             return 'ERROR: Unable to open GCP file for reading'
@@ -251,10 +267,5 @@ class Georeferencer(QObject):
         if (not outFile.open(QIODevice.WriteOnly | QIODevice.Text)):
             return 'Unable to open GCP file for writing'
         outStream = QTextStream(outFile)
-        outStream << 'mapX,mapY,pixelX,pixelY,enable\n'
-        for index in sorted(gcp.points()):
-            point = gcp.point(index)
-            line = ','.join([str(point.map().x()), str(point.map().y()), str(point.raw().x()), str(point.raw().y()), str(int(point.enabled()))])
-            outStream << line << '\n'
+        outStream << gcp.asCsv()
         outFile.close()
-        return ''

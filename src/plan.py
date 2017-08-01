@@ -140,16 +140,16 @@ class Plan(QObject):
         self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
 
         self.dock.loadProject(self.project)
+        self.dock.clearDrawingTools()
         for collection, features in Config.featureCategories.iteritems():
-            self.dock.clearDrawingTools()
             for feature in features:
                 #TODO Select by map tool type enum
-                if feature['type'] == FeatureType.Elevation:
-                    self.addElevationTool(collection, feature['class'], feature['category'], feature['name'], QIcon())
-                elif feature['category'] == 'scs':
+                if feature['category'] == 'scs':
                     self.addSectionSchematicTool(collection, feature['class'], feature['category'], feature['name'], QIcon())
                 else:
-                    self.addDrawingTool(collection, feature['class'], feature['category'], feature['name'], QIcon(), feature['type'])
+                    if 'query' not in feature:
+                        feature['query'] = None
+                    self.addDrawingTool(collection, feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
                 if feature['definitive'] == True:
                     self._definitiveCategories.add(feature['category'])
 
@@ -302,15 +302,20 @@ class Plan(QObject):
     # Layer Methods
 
     def mergeBuffers(self):
+        self._mergeBuffers(self.project.plan)
+        self._mergeBuffers(self.project.section)
+
+    def _mergeBuffers(self, collection):
         # Check the layers are writable
-        if not self.project.plan.isWritable():
-            self.project.showCriticalMessage('Plan layers are not writable! Please correct the permissions and log out.', 0)
+        name = collection.settings.collectionGroupName
+        if not collection.isWritable():
+            self.project.showCriticalMessage(name + ' layers are not writable! Please correct the permissions and log out.', 0)
             return
 
         # Check the buffers contain valid data
-        errors = self._preMergeBufferCheck(self.project.plan.pointsBuffer)
-        errors.extend(self._preMergeBufferCheck(self.project.plan.linesBuffer))
-        errors.extend(self._preMergeBufferCheck(self.project.plan.polygonsBuffer))
+        errors = self._preMergeBufferCheck(collection.pointsBuffer)
+        errors.extend(self._preMergeBufferCheck(collection.linesBuffer))
+        errors.extend(self._preMergeBufferCheck(collection.polygonsBuffer))
         if len(errors) > 0:
             dialog = ErrorDialog()
             dialog.loadErrors(errors)
@@ -321,20 +326,20 @@ class Plan(QObject):
         # Update the audit attributes
         timestamp = utils.timestamp()
         user = self.metadata.editor()
-        self._preMergeBufferUpdate(self.project.plan.pointsBuffer, timestamp, user)
-        self._preMergeBufferUpdate(self.project.plan.linesBuffer, timestamp, user)
-        self._preMergeBufferUpdate(self.project.plan.polygonsBuffer, timestamp, user)
+        self._preMergeBufferUpdate(collection.pointsBuffer, timestamp, user)
+        self._preMergeBufferUpdate(collection.linesBuffer, timestamp, user)
+        self._preMergeBufferUpdate(collection.polygonsBuffer, timestamp, user)
 
         # Finally actually merge the data
-        if self.project.plan.mergeBuffers('Merge plan data', self.project.logUpdates(), timestamp):
-            self.project.showInfoMessage('Plan data successfully merged.')
+        if collection.mergeBuffers('Merge data', self.project.logUpdates(), timestamp):
+            self.project.showInfoMessage(name + ' data successfully merged.')
             self._logItemAction(self.metadata.itemFeature.key, 'Merge Buffers', timestamp)
             if self._editSchematic:
                 self._editSchematic = False
                 self.dock.activateSchematicCheck()
                 self._findContext()
         else:
-            self.project.showCriticalMessage('Plan data merge failed! Some data has not been saved, please check your data.', 5)
+            self.project.showCriticalMessage(name + ' data merge failed! Some data has not been saved, please check your data.', 5)
 
     def _preMergeBufferCheck(self, layer):
         siteField = self.project.fieldName('site')
@@ -457,7 +462,7 @@ class Plan(QObject):
 
     # Drawing tools
 
-    def _newMapToolAction(self, classCode, category, toolName, icon):
+    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType, query=None):
         data = {}
         data['class'] = classCode
         data['category'] = category
@@ -465,26 +470,7 @@ class Plan(QObject):
         action.setData(data)
         action.setToolTip(toolName)
         action.setCheckable(True)
-        return action
 
-    def _newMapTool(self, toolName, featureType, buffer, action):
-        mapTool = ArkMapToolAddFeature(self.project.iface, buffer, featureType, toolName)
-        mapTool.setAction(action)
-        mapTool.setPanningEnabled(True)
-        mapTool.setZoomingEnabled(True)
-        mapTool.setSnappingEnabled(True)
-        mapTool.setShowSnappableVertices(True)
-        mapTool.activated.connect(self.mapToolActivated)
-        return mapTool
-
-    def _addMapTool(self, collection, category, type, mapTool, action):
-        action.triggered.connect(self.validateFeature)
-        self.dock.addDrawingTool(collection, type, action)
-        self.actions[category] = action
-        self.mapTools[category] = mapTool
-
-    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType):
-        action = self._newMapToolAction(classCode, category, toolName, icon)
         layer = None
         if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
             layer = self.project.collection(collection).linesBuffer
@@ -492,25 +478,35 @@ class Plan(QObject):
             layer = self.project.collection(collection).polygonsBuffer
         else:
             layer = self.project.collection(collection).pointsBuffer
-        mapTool = self._newMapTool(toolName, featureType, layer, action)
-        self._addMapTool(collection, category, featureType, mapTool, action)
 
-    def addSectionSchematicTool(self, collection, classCode, category, toolName, icon, featureType):
-        action = self._newMapToolAction(classCode, category, toolName, icon)
-        geom = self._sectionLineGeometry(self.dock.sectionKey())
-        mapTool = ArkMapToolSectionSchematic(self.project.iface, geom, self.project.collection(collection).polygonsBuffer, toolName)
+        if category == 'scs':
+            geom = self._sectionLineGeometry(self.dock.sectionKey())
+            mapTool = ArkMapToolSectionSchematic(self.project.iface, geom, layer, toolName)
+        else:
+            mapTool = ArkMapToolAddFeature(self.project.iface, layer, featureType, toolName)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
-        mapTool.setAttributeQuery(Config.fieldName('id'), QVariant.Int, 0, 'Context Number', 'Please enter the Context Number:', 0, 99999)
+        mapTool.setSnappingEnabled(True)
+        mapTool.setShowSnappableVertices(True)
         mapTool.activated.connect(self.mapToolActivated)
-        self._addMapTool(collection, category, FeatureType.Polygon, mapTool, action)
+        if query is not None:
+            query = Config.attributeQuery[query]
+            mapTool.setAttributeQuery(
+                query['attribute'],
+                query['type'],
+                query['default'],
+                query['title'],
+                query['label'],
+                query['min'],
+                query['max'],
+                query['decimals']
+            )
 
-    def addElevationTool(self, collection, classCode, category, toolName, icon):
-        action = self._newMapToolAction(classCode, category, toolName, icon)
-        mapTool = self._newMapTool(toolName, FeatureType.Point, self.project.collection(collection).pointsBuffer, action)
-        mapTool.setAttributeQuery('elevation', QVariant.Double, 0.0, 'Add Elevation', 'Please enter the elevation in meters (m):', -10000, 10000, 2)
-        self._addMapTool(collection, category, FeatureType.Elevation, mapTool, action)
+        action.triggered.connect(self.validateFeature)
+        self.dock.addDrawingTool(collection, featureType, action)
+        self.actions[category] = action
+        self.mapTools[category] = mapTool
 
     def mapToolActivated(self):
         for mapTool in self.mapTools.values():

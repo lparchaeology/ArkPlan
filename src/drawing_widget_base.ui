@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>342</width>
-    <height>207</height>
+    <width>346</width>
+    <height>316</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TabWidget</string>
+   <string>DrawingWidget</string>
   </property>
   <property name="currentIndex">
    <number>0</number>
@@ -30,41 +30,52 @@
     <property name="bottomMargin">
      <number>12</number>
     </property>
-    <item row="3" column="1">
-     <widget class="QToolButton" name="autoSchematicTool">
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto Schematic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <item row="6" column="0" colspan="3">
+     <widget class="QGroupBox" name="planPolygonGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
-      <property name="text">
-       <string>...</string>
+      <property name="title">
+       <string>Polygon</string>
       </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/plugins/ark/plan/autoSchematic.png</normaloff>:/plugins/ark/plan/autoSchematic.png</iconset>
+      <property name="flat">
+       <bool>true</bool>
       </property>
+      <layout class="QGridLayout" name="planPolygonLayout">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="autoSchematiclLabel">
+           <property name="text">
+            <string>Auto Schematic:</string>
+           </property>
+           <property name="buddy">
+            <cstring>autoSchematicTool</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="autoSchematicTool">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto Schematic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/plugins/ark/plan/autoSchematic.png</normaloff>:/plugins/ark/plan/autoSchematic.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </item>
-    <item row="4" column="0" colspan="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="autoSchematiclLabel">
-      <property name="text">
-       <string>Auto Schematic:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
+    <item row="4" column="0" colspan="3">
      <widget class="QGroupBox" name="planPointGroup">
       <property name="font">
        <font>
@@ -80,7 +91,7 @@
       <layout class="QGridLayout" name="planPointLayout"/>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
+    <item row="5" column="0" colspan="3">
      <widget class="QGroupBox" name="planLineGroup">
       <property name="font">
        <font>
@@ -96,20 +107,37 @@
       <layout class="QGridLayout" name="planLineLayout"/>
      </widget>
     </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="QGroupBox" name="planPolygonGroup">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
+    <item row="8" column="0" colspan="3">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="title">
-       <string>Polygon</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+     </spacer>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="contextLabel">
+      <property name="text">
+       <string>Context:</string>
       </property>
-      <layout class="QGridLayout" name="planPolygonLayout"/>
+      <property name="buddy">
+       <cstring>contextSpin</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QSpinBox" name="contextSpin">
+      <property name="toolTip">
+       <string>Source ID</string>
+      </property>
+      <property name="maximum">
+       <number>99999</number>
+      </property>
      </widget>
     </item>
    </layout>
@@ -128,20 +156,33 @@
     <property name="bottomMargin">
      <number>12</number>
     </property>
-    <item row="3" column="0" colspan="2">
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+    <item row="0" column="0">
+     <widget class="QLabel" name="sectionLabel">
+      <property name="text">
+       <string>Section:</string>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>118</width>
-        <height>121</height>
-       </size>
+      <property name="buddy">
+       <cstring>sectionSpin</cstring>
       </property>
-     </spacer>
+     </widget>
     </item>
-    <item row="2" column="0" colspan="2">
+    <item row="1" column="0" colspan="3">
+     <widget class="QGroupBox" name="sectionPointGroup">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Point</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+      <layout class="QGridLayout" name="sectionPointLayout"/>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="3">
      <widget class="QGroupBox" name="sectionPolygonGroup">
       <property name="font">
        <font>
@@ -157,7 +198,7 @@
       <layout class="QGridLayout" name="sectionPolygonLayout"/>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
+    <item row="2" column="0" colspan="3">
      <widget class="QGroupBox" name="sectionLineGroup">
       <property name="font">
        <font>
@@ -173,20 +214,27 @@
       <layout class="QGridLayout" name="sectionLineLayout"/>
      </widget>
     </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QGroupBox" name="sectionPointGroup">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
+    <item row="4" column="0" colspan="3">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="title">
-       <string>Point</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>118</width>
+        <height>121</height>
+       </size>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+     </spacer>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QSpinBox" name="sectionSpin">
+      <property name="toolTip">
+       <string>Source ID</string>
       </property>
-      <layout class="QGridLayout" name="sectionPointLayout"/>
+      <property name="maximum">
+       <number>99999</number>
+      </property>
      </widget>
     </item>
    </layout>
@@ -260,6 +308,11 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>contextSpin</tabstop>
+  <tabstop>autoSchematicTool</tabstop>
+  <tabstop>sectionSpin</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>

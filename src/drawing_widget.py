@@ -72,7 +72,7 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
         toolButton.setFixedWidth(40)
         toolButton.setDefaultAction(action)
         if collection == 'plan':
-            if type == FeatureType.Point or type == FeatureType.Elevation:
+            if type == FeatureType.Point:
                 self._addToolWidget(self.planPointLayout, toolButton, self._planPoint)
                 self._planPoint += 1
             if type == FeatureType.Line or type == FeatureType.Segment:
@@ -82,7 +82,7 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
                 self._addToolWidget(self.planPolygonLayout, toolButton, self._planPolygon)
                 self._planPolygon += 1
         elif collection == 'section':
-            if type == FeatureType.Point or type == FeatureType.Elevation:
+            if type == FeatureType.Point:
                 self._addToolWidget(self.sectionPointLayout, toolButton, self._sectionPoint)
                 self._sectionPoint += 1
             if type == FeatureType.Line or type == FeatureType.Segment:
@@ -92,7 +92,7 @@ class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
                 self._addToolWidget(self.sectionPolygonLayout, toolButton, self._sectionPolygon)
                 self._sectionPolygon += 1
         elif collection == 'base':
-            if type == FeatureType.Point or type == FeatureType.Elevation:
+            if type == FeatureType.Point:
                 self._addToolWidget(self.basePointLayout, toolButton, self._basePoint)
                 self._basePoint += 1
             if type == FeatureType.Line or type == FeatureType.Segment:

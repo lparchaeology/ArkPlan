@@ -25,14 +25,15 @@
 """
 
 import os
+from copy import deepcopy
 
 from PyQt4.QtCore import Qt, QPointF
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPoint, QgsMessageLog
 
 class GroundControl():
 
-    crt = 'EPSG:27700'
+    crs = 'EPSG:27700'
     _points = {}
 
     def points(self):
@@ -55,20 +56,18 @@ class GroundControl():
 
     def isValid(self):
         for index in self._points:
-            if not self._point[index].isValid():
-                return false
-        return true
-
-    def isNull(self):
-        for index in self._points:
-            if not self._point[index].isNull():
-                return false
-        return true
+            if not self._points[index].isValid():
+                return False
+        return True
 
     def asCsv(self):
         csv = 'mapX,mapY,pixelX,pixelY,enable\n'
         for index in sorted(self._points):
             csv += self._points[index].asCsv() + '\n'
+        return csv
+
+    def _log(self, msg):
+        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
 
 class GroundControlPoint():
 
@@ -77,40 +76,65 @@ class GroundControlPoint():
     _local = QPointF()
     _enabled = True
 
-    def __init__(self, raw=QPointF(), map=QgsPoint(), enabled=True):
+    def __init__(self, raw=None, map=None, enabled=True):
         self.setRaw(raw)
         self.setMap(map)
         self.setEnabled(enabled)
 
     def isValid(self):
-        return not self._map.isNull() and not self._map.isNull()
+        return self.isRawSet() and self.isMapSet()
 
-    def isNull(self):
-        return self._map.isNull() and self._map.isNull()
+    def isRawSet(self):
+        return self._raw is not None
 
     def raw(self):
-        return self._raw
+        if self._raw is None:
+            return QPointF()
+        else:
+            return self._raw
 
     def setRaw(self, raw):
-        self._raw = raw
+        if raw is None:
+            self._raw = None
+        else:
+            self._raw = raw
 
     def setRawX(self, x):
+        if self._raw is None:
+            self._raw = QPointF()
         self._raw.setX(x)
 
     def setRawY(self, y):
+        if self._raw is None:
+            self._raw = QPointF()
         self._raw.setY(y)
 
+    def isMapSet(self):
+        return self._raw is not None
+
     def map(self):
-        return self._map
+        if self._map is None:
+            return QgsPoint()
+        else:
+            return self._map
 
     def setMap(self, map):
-        self._map = map
+        if map is None:
+            self._map = None
+        else:
+            self._map = map
 
     def local(self):
-        return self._local
+        if self._local is None:
+            return QPointF()
+        else:
+            return self._local
 
     def setLocal(self, local):
-        self._local = local
+        if local is None:
+            self._local = None
+        else:
+            self._local = local
 
     def isEnabled(self):
         return self._enabled
@@ -119,4 +143,7 @@ class GroundControlPoint():
         self._enabled = enabled
 
     def asCsv(self):
-        return ','.join([str(self._map.x()), str(self._map.y()), str(self._raw.x()), str(self._raw.y()), str(int(self._enabled))])
+        return ','.join([str(self.map().x()), str(self.map().y()), str(self.raw().x()), str(self.raw().y()), str(int(self._enabled))])
+
+    def _log(self, msg):
+        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)

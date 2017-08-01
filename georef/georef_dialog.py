@@ -80,10 +80,10 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.northSpin.valueChanged.connect(self._updateGeoreference)
 
     def loadImage(self, inputFile):
-        self._setStatusLabel(self.loadStatusLabel, ProcessStatus.Running)
+        self._setStatusLabel('load', ProcessStatus.Running)
         if (not inputFile.exists()):
             self._showStatus('ERROR: Input file not found! File path was ' + inputFile.absoluteFilePath())
-            self._setStatusLabel(self.loadStatusLabel, ProcessStatus.Failure)
+            self._setStatusLabel('load', ProcessStatus.Failure)
             return false
 
         self._inputFile = inputFile
@@ -111,7 +111,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
         md = PlanMetadata()
         md.setFile(self._inputFile)
-        self.inputFileEdit.setText(self._inputFile.baseName())
+        self.inputFileName.setText(self._inputFile.baseName())
         self.siteEdit.setText(md.siteCode)
         self.typeCombo.setCurrentIndex(self.typeCombo.findData(md.sourceClass))
         if md.sourceId is not None:
@@ -129,10 +129,33 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.suffixEdit.setText(md.suffix)
         self._updateFileNames(md)
         self._updateGeoPoints()
+        pointFile = self.pointFile()
+        if pointFile.exists():
+            self._loadGcp(pointFile.absoluteFilePath())
 
-        self._setStatusLabel(self.loadStatusLabel, ProcessStatus.Success)
+        self._setStatusLabel('load', ProcessStatus.Success)
         QCoreApplication.processEvents()
         return True
+
+    def _loadGcp(self, path):
+        gc = Georeferencer.loadGcpFile(path)
+        gcTo = GroundControl()
+        for index in gc.points():
+            gcp = gc.point(index)
+            if gcp.map() == self.gcpWidget1.gcp().map():
+                gcTo.setPoint(1, gcp.raw())
+            elif gcp.map() == self.gcpWidget2.gcp().map():
+                gcTo.setPoint(2, gcp.raw())
+            elif gcp.map() == self.gcpWidget3.gcp().map():
+                gcTo.setPoint(3, gcp.raw())
+            elif gcp.map() == self.gcpWidget4.gcp().map():
+                gcTo.setPoint(4, gcp.raw())
+
+        if gcTo.isValid() and len(gcTo.points()) == 4:
+            self.gcpWidget1.setRaw(gcTo.point(1).raw())
+            self.gcpWidget2.setRaw(gcTo.point(2).raw())
+            self.gcpWidget3.setRaw(gcTo.point(3).raw())
+            self.gcpWidget4.setRaw(gcTo.point(4).raw())
 
     def _updateGeoPoints(self):
         mapUnits = Scale.Factor[self.drawingScale()]
@@ -140,29 +163,32 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         local2 = QPointF(self.eastSpin.value(), self.northSpin.value())
         local3 = QPointF(self.eastSpin.value() + mapUnits, self.northSpin.value())
         local4 = QPointF(self.eastSpin.value() + mapUnits, self.northSpin.value() + mapUnits)
-        gridLayer = self._types[self.drawingType()]['grid']
+
+        if self.drawingType() == 'sec':
+            self.gcpWidget1.setGeo(local1, QgsPoint(local1))
+            self.gcpWidget2.setGeo(local2, QgsPoint(local2))
+            self.gcpWidget3.setGeo(local3, QgsPoint(local3))
+            self.gcpWidget4.setGeo(local4, QgsPoint(local4))
+            return
+
+        typ = self._type()
+        gridLayer = typ['grid']
         features = gridLayer.getFeatures()
-        localX = self._types[self.drawingType()]['local_x']
-        localX = gridLayer.fieldNameIndex(localX)
-        localY = self._types[self.drawingType()]['local_y']
-        localY = gridLayer.fieldNameIndex(localY)
+        localX = gridLayer.fieldNameIndex(typ['local_x'])
+        localY = gridLayer.fieldNameIndex(typ['local_y'])
         for feature in features:
             local = QPoint(feature.attributes()[localX], feature.attributes()[localY])
             map = feature.geometry().asPoint()
             if local == local1:
-                self._log('Is 1')
                 self.gcpWidget1.setGeo(local, map)
             elif local == local2:
-                self._log('Is 2')
                 self.gcpWidget2.setGeo(local, map)
             elif local == local3:
-                self._log('Is 3')
                 self.gcpWidget3.setGeo(local, map)
             elif local == local4:
-                self._log('Is 4')
                 self.gcpWidget4.setGeo(local, map)
 
-    def _updateGeoreference(self):
+    def metadata(self):
         md = PlanMetadata()
         md.setMetadata(
             self.siteEdit.text(),
@@ -172,12 +198,16 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.northSpin.value(),
             self.suffixEdit.text()
         )
+        return md
+
+    def _updateGeoreference(self):
+        md = self.metadata()
         self._updateFileNames(md)
         self._updateGeoPoints()
 
     def _updateFileNames(self, md):
-        self.rawFileEdit.setText(md.baseName() + '.tif')
-        self.geoFileEdit.setText(md.baseName() + self._types[self.drawingType()]['suffix'] + '.tif')
+        self.rawFileName.setText(md.baseName())
+        self.geoFileName.setText(md.baseName() + self._type()['suffix'])
 
     def _toggleUi(self, status):
         self.processButton.setEnabled(status)
@@ -208,15 +238,32 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     def drawingScale(self):
         return self.scaleCombo.itemData(self.scaleCombo.currentIndex())
 
-    def geoFileName(self):
-        return self.geoFileEdit.text()
+    def rawFile(self):
+        return QFileInfo(self._type()['raw'], self.rawFileName.text() + '.' + self._inputFile.suffix())
+
+    def pointFile(self):
+        return QFileInfo(self._type()['raw'], self.rawFileName.text() + '.' + self._inputFile.suffix() + '.points')
+
+    def geoFile(self):
+        return QFileInfo(self._type()['geo'], self.geoFileName.text() + '.tif')
+        return self.geoFileEdit.text() + '.tif'
+
+    def _type(self):
+        return self._types[self.drawingType()]
 
     def _updateStatus(self, step, status):
-        self._setStatusLabel(self.loadStatusLabel, status)
+        self._setStatusLabel(step, status)
+        self._showStatus(Georeferencer.Label[step] + ': ' + ProcessStatus.Label[status])
+        if  step == Georeferencer.Stop and status == ProcessStatus.Success:
+            if self._closeOnDone:
+                self._close()
+            else:
+                self._toggleUi(True)
 
     def _updateError(self, step, msg):
-        self._setStatusLabel(self.loadStatusLabel, status)
+        self._setStatusLabel(step, ProcessStatus.Failure)
         self._showStatus(msg)
+        self._toggleUi(True)
 
     def _showStatus(self, text):
         self.statusBar.showMessage(text)
@@ -225,8 +272,18 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
 
     def _save(self):
-        # Save raw, save points if set
-        pass
+        self._copyInputFile()
+        self._saveGcp()
+        self._close()
+
+    def _copyInputFile(self):
+        if self.inputFileName.text() != self.rawFileName.text() or self._inputFile.dir() != self._type()['raw']:
+            QFile.copy(self._inputFile.absoluteFilePath(), self.rawFile().absoluteFilePath())
+
+    def _saveGcp(self):
+        gc = self._gc()
+        if (gc.isValid()):
+            Georeferencer.writeGcpFile(gc, self.pointFile().absoluteFilePath())
 
     def _run(self):
         self._runGeoreference(False)
@@ -240,19 +297,46 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         else:
             self.reject()
 
+    def _gc(self):
+        gc = GroundControl()
+        gc.crs = self._type()['crs']
+        gc.setPoint(1, self.gcpWidget1.gcp())
+        gc.setPoint(2, self.gcpWidget2.gcp())
+        gc.setPoint(3, self.gcpWidget3.gcp())
+        gc.setPoint(4, self.gcpWidget4.gcp())
+        return gc
+
     def _runGeoreference(self, closeOnDone):
-        if (self.gcpWidget1.gcp().isNull() or self.gcpWidget2.gcp().isNull() or self.gcpWidget3.gcp().isNull() or self.gcpWidget4.gcp().isNull()):
+        self._closeOnDone = closeOnDone
+        gc = self._gc()
+        if (not gc.isValid()):
             self._showStatus('ERROR: Please set all 4 Ground Control Points!')
             return
         self._toggleUi(False)
+        self._copyInputFile()
         QCoreApplication.processEvents()
-        self._georeferencer.run()
-        if closeOnDone:
+        self._georeferencer.run(gc, self.rawFile(), self.pointFile(), self.geoFile())
+
+    def _finished(self, step, status):
+        if  step == Georeferencer.Stop and status == ProcessStatus.Success and self._closeOnDone:
             self._close()
         else:
             self._toggleUi(True)
 
-    def _setStatusLabel(self, label, status):
+    def _setStatusLabel(self, step, status):
+        if step == 'load':
+            label = self.loadStatusLabel
+        elif step == Georeferencer.Crop:
+            label = self.cropStatusLabel
+        elif step == Georeferencer.Translate:
+            label = self.translateStatusLabel
+        elif step == Georeferencer.Warp:
+            label = self.warpStatusLabel
+        elif step == Georeferencer.Overview:
+            label = self.overviewStatusLabel
+        else:
+            return
+
         if status == ProcessStatus.Success:
             label.setPixmap(QPixmap(':/plugins/ark/georef/success.png'))
         elif status == ProcessStatus.Failure:

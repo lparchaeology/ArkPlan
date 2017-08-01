@@ -40,7 +40,7 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
     rawPointChanged = pyqtSignal(QPointF)
 
     # Internal variables
-    _gcp =  GroundControlPoint()
+    _gcp =  None
 
     _gridEditable = False
     _mapEditable = False
@@ -51,6 +51,7 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
     def __init__(self, parent=None):
         super(GcpWidget, self).__init__(parent)
         self.setupUi(self)
+        self._gcp = GroundControlPoint()
 
     def setScene(self, scene, centerX=0, centerY=0, scale=1):
         self.gcpView.setScene(scene)
@@ -70,7 +71,6 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
         self._update()
 
     def setGeo(self, local, map):
-        self._log('setGeo')
         self._gcp.setLocal(local)
         self._gcp.setMap(map)
         self._updateGeo()
@@ -79,20 +79,15 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
         self._gcp.setRaw(raw)
         self._updateRaw()
 
+    def _update(self):
+        self._updateGeo()
+        self._updateRaw()
+
     def _updateGeo(self):
-        self._log('_updateGeo')
-        self._log(self._gcp.local().x())
-        self._log(self._gcp.local().y())
-        self._log(self._gcp.map().x())
-        self._log(self._gcp.map().y())
         self.localX.setNum(self._gcp.local().x())
         self.localY.setNum(self._gcp.local().y())
         self.mapX.setNum(self._gcp.map().x())
         self.mapY.setNum(self._gcp.map().y())
-        self._log(self.localX.text())
-        self._log(self.localY.text())
-        self._log(self.mapX.text())
-        self._log(self.mapY.text())
 
     def _updateRaw(self):
         self.rawXSpin.setValue(self._gcp.raw().x())
@@ -101,20 +96,20 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
 
     def _setRawX(self, x):
         if (x != self._gcp.raw().x()):
-            self._gcp.raw().setX(x)
+            self._gcp.setRawX(x)
             self._updateGcpItem()
 
     def _setRawY(self, y):
         if (y != self._gcp.raw().y()):
-            self._gcp.raw().setY(y)
+            self._gcp.setRawY(y)
             self._updateGcpItem()
 
     def _updateGcpItem(self):
-        if (self._gcp.raw().isNull()):
-            self._gcpItem.setVisible(False)
-        else:
+        if (self._gcp.isRawSet()):
             self._gcpItem.setPos(self._gcp.raw())
             self._gcpItem.setVisible(True)
+        else:
+            self._gcpItem.setVisible(False)
         # TODO if outside view then center on point
 
     def _log(self, msg):

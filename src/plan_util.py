@@ -43,15 +43,29 @@ class PlanMetadata:
             self.setFile(fileInfo)
 
     def setMetadata(self, siteCode, sourceClass, sourceId=None, easting=None, northing=None, suffix=''):
-        self.siteCode = siteCode
-        self.sourceClass = sourceClass
-        self.sourceId = sourceId
-        self.easting = easting
-        self.northing = northing
-        self.suffix = suffix
+        self.siteCode = siteCode.strip()
+        self.sourceClass = sourceClass.strip()
+        if sourceId is not None and sourceId > 0:
+            self.sourceId = sourceId
+        else:
+            self.sourceId = None
+        if sourceClass == 'cxt' or sourceClass == 'pln' or sourceClass == 'top':
+            self.easting = easting
+            self.northing = northing
+        else:
+            self.easting = None
+            self.northing = None
+        self.suffix = suffix.strip()
         self.filename = ''
 
     def setFile(self, fileInfo):
+        self.siteCode = ''
+        self.sourceClass = ''
+        self.name = ''
+        self.sourceId = None
+        self.easting = None
+        self.northing = None
+        self.suffix = ''
         self.filename = fileInfo.fileName()
         elements = string.split(fileInfo.completeBaseName(), '_')
         if (self.filename and len(elements) >= 2):
@@ -80,10 +94,6 @@ class PlanMetadata:
                 suffixPos = 2
             else:
                 self.name = 'Unknown'
-                self.sourceId = None
-                self.easting = None
-                self.northing = None
-                self.suffix = None
                 return
             if (len(elements) >= suffixPos + 1):
                 location = elements[suffixPos]
@@ -102,7 +112,7 @@ class PlanMetadata:
         name = self.sourceClass + '_' + self.siteCode
         if (self.sourceId > 0):
             name = name + '_' + str(self.sourceId)
-        if (self.easting > 0 and self.northing > 0):
+        if self.easting != None and self.northing != None:
             name = name + '_' + str(self.easting).zfill(3) + 'e' + str(self.northing).zfill(3) + 'n'
         if self.suffix:
             name = name + '_' + self.suffix

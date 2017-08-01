@@ -285,15 +285,15 @@ class Plan(QObject):
         config = Config.rasterGroups
         for group in config:
             config[group]['raw'] = self.project.rawDrawingDir(group)
-            config[group]['georef'] = self.project.georefDrawingDir(group)
+            config[group]['geo'] = self.project.georefDrawingDir(group)
             config[group]['suffix'] = '_r'
-            config[group]['crs'] = self.project.projectCrs()
+            config[group]['crs'] = self.project.projectCrs().authid()
             config[group]['grid'] = self.project.grid.pointsLayer
             config[group]['local_x'] = self.project.fieldName('local_x')
             config[group]['local_y'] = self.project.fieldName('local_y')
         georefDialog = GeorefDialog(config)
         if georefDialog.loadImage(sourceFile) and georefDialog.exec_():
-            geoFile = georefDialog.geoRefFile()
+            geoFile = georefDialog.geoFile()
             md = georefDialog.metadata()
             md.filename = geoFile.fileName()
             self._setPlanMetadata(md)

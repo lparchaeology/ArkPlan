@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TabWidget</string>
+   <string>PlanWidget</string>
   </property>
   <property name="currentIndex">
    <number>0</number>
@@ -38,16 +38,13 @@
          <x>0</x>
          <y>0</y>
          <width>394</width>
-         <height>229</height>
+         <height>271</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="margin">
          <number>0</number>
         </property>
-        <item>
-         <widget class="MetadataWidget" name="metadataWidget" native="true"/>
-        </item>
         <item>
          <widget class="DrawingWidget" name="drawingWidget" native="true"/>
         </item>
@@ -67,30 +64,6 @@
        </layout>
       </widget>
      </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="resetButton">
-        <property name="toolTip">
-         <string>Clear unsaved changes from work layers</string>
-        </property>
-        <property name="text">
-         <string>Reset</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="mergeButton">
-        <property name="toolTip">
-         <string>Move new context to main layers</string>
-        </property>
-        <property name="text">
-         <string>Merge</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
    </layout>
   </widget>
@@ -198,12 +171,6 @@
   </widget>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>MetadataWidget</class>
-   <extends>QWidget</extends>
-   <header>metadata_widget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>DrawingWidget</class>
    <extends>QWidget</extends>

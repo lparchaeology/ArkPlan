@@ -138,6 +138,7 @@ class Config():
         'plan' : {
             'pathSuffix'       : 'vector/plan',
             'groupName'        : 'Plan Data',
+            'class'            : 'cxt',
             'buffer'           : True,
             'bufferGroupName'  : 'Plan Edit',
             'log'              : True,
@@ -155,6 +156,7 @@ class Config():
         'section' : {
             'pathSuffix'       : 'vector/section',
             'groupName'        : 'Section Data',
+            'class'            : 'sec',
             'buffer'           : True,
             'bufferGroupName'  : 'Section Edit',
             'log'              : True,
@@ -172,6 +174,7 @@ class Config():
         'base' : {
             'pathSuffix'       : 'vector/base',
             'groupName'        : 'Base Data',
+            'class'            : 'ste',
             'buffer'           : True,
             'bufferGroupName'  : 'Base Edit',
             'log'              : False,
@@ -189,6 +192,7 @@ class Config():
         'grid' : {
             'pathSuffix'       : 'vector/grid',
             'groupName'        : 'Grid Data',
+            'class'            : '',
             'buffer'           : False,
             'bufferGroupName'  : '',
             'log'              : False,

@@ -28,21 +28,14 @@ import os
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QDockWidget, QTabWidget, QMenu, QAction, QIcon, QToolButton
+from PyQt4.QtGui import QIcon
 
 from qgis.core import QgsProject
 
 from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.snapping import *
 
-import plan_widget_base
-
-class PlanWidget(QTabWidget, plan_widget_base.Ui_PlanWidget):
-
-    def __init__(self, parent=None):
-        super(PlanWidget, self).__init__(parent)
-        self.setupUi(self)
-
+from plan_widget import *
 
 class PlanDock(ToolDockWidget):
 
@@ -59,8 +52,6 @@ class PlanDock(ToolDockWidget):
     selectPointsSelected = pyqtSignal()
     selectLinesSelected = pyqtSignal()
     selectPolygonsSelected = pyqtSignal()
-    featureNameChanged = pyqtSignal(str)
-    sectionChanged = pyqtSignal(object)
     resetSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
@@ -89,7 +80,7 @@ class PlanDock(ToolDockWidget):
     resetSchematicSelected = pyqtSignal()
     schematicReportSelected = pyqtSignal()
 
-    _iface = None # QgsisInterface()
+    _iface = None # QgsInterface()
     _snappingAction = None  # ProjectSnappingAction()
     _interAction = None  # IntersectionSnappingAction()
     _topoAction = None  # TopologicalEditingAction()
@@ -133,16 +124,14 @@ class PlanDock(ToolDockWidget):
         self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectPolygons.svg'), self.tr(u'Select Polygons in Buffer'), self.selectPolygonsSelected)
 
         # Init the child widgets
-        self.widget.metadataWidget.initGui()
-        self.widget.drawingWidget.initGui()
+        self.widget.drawingWidget.initGui(iface)
         self.widget.schematicWidget.initGui()
         self.widget.snappingWidget.initGui()
 
         # Cascade the child widget signals
-        self.widget.drawingWidget.autoSchematicSelected.connect(self.autoSchematicSelected)
-
-        self.widget.resetButton.clicked.connect(self.resetSelected)
-        self.widget.mergeButton.clicked.connect(self.mergeSelected)
+        self.widget.drawingWidget.planFeatureWidget.autoToolSelected.connect(self.autoSchematicSelected)
+        self.widget.drawingWidget.resetButton.clicked.connect(self.resetSelected)
+        self.widget.drawingWidget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.loadArkData.connect(self.loadArkData)
         self.widget.schematicWidget.mapActionChanged.connect(self.mapActionChanged)
@@ -164,12 +153,10 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.copySourceSelected.connect(self.copySourceSelected)
         self.widget.schematicWidget.cloneSourceSelected.connect(self.cloneSourceSelected)
         self.widget.schematicWidget.editSourceSelected.connect(self.editSourceSelected)
-
         self.widget.schematicWidget.contextChanged.connect(self.contextChanged)
         self.widget.schematicWidget.resetSelected.connect(self.resetSchematicSelected)
 
     def unloadGui(self):
-        self.widget.metadataWidget.unloadGui()
         self.widget.drawingWidget.unloadGui()
         self.widget.schematicWidget.unloadGui()
         self.widget.snappingWidget.unloadGui()
@@ -184,24 +171,23 @@ class PlanDock(ToolDockWidget):
 
     # Load the project settings when project is loaded
     def loadProject(self, project):
-        self.widget.metadataWidget.loadProject(project)
         self.widget.drawingWidget.loadProject(project)
         self.widget.schematicWidget.loadProject(project)
         self.widget.snappingWidget.loadProject(project)
 
     # Close the project
     def closeProject(self):
-        self.widget.metadataWidget.closeProject()
         self.widget.drawingWidget.closeProject()
         self.widget.schematicWidget.closeProject()
         self.widget.snappingWidget.closeProject()
 
     # Drawing methods pass-through
-    def addDrawingTool(self, collection, type, action):
-        self.widget.drawingWidget.addDrawingTool(collection, type, action)
 
-    def clearDrawingTools(self):
-        self.widget.drawingWidget.clearDrawingTools()
+    def source(self):
+        return self.widget.drawingWidget.source()
+
+    def setSource(self, source):
+        self.widget.drawingWidget.setSource(source)
 
     # Schematic methods pass-through
 

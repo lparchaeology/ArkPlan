@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2016 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,143 +22,100 @@
  ***************************************************************************/
 """
 
-import string
+from qgis.core import QgsFeature
 
-from PyQt4.QtCore import QObject, pyqtSignal, QPyNullVariant
-from PyQt4.QtGui import QInputDialog
+from ..libarkqgis import utils
 
-from plan_item import ItemFeature
+from config import Config
+from item import *
 
-class Source(QObject):
+class Source():
+    _sourceCode = ''
+    _item = Item()
+    _filename = ''
 
-    def __init__(self, planWidget, parent=None):
-        super(Metadata, self).__init__(parent)
+    def __init__(self, sourceCode=None, item=None, filename=None):
+        if isinstance(sourceCode, QgsFeature):
+            self.fromFeature(sourceCode)
+        else:
+            self.setSource(sourceCode, item, filename)
 
-    def siteCode(self):
-        return self.itemFeature.key.siteCode
+    def __eq__(self, other):
+        return (isinstance(other, Source)
+                and self._code == other.sourceCode
+                and self._item == other.item
+                and self._filename == other.filename)
 
-    def setSiteCode(self, siteCode):
-        self.itemFeature.key.setSiteCode(siteCode)
-        self.itemFeature.source.key.setSiteCode(siteCode)
-        self._planWidget.setSiteCode(self.siteCode())
+    def __hash__(self):
+        return hash((self._code, self._item, self._filename))
 
-    def _setSiteCode(self, siteCode):
-        self.setSiteCode(siteCode)
-        self.metadataChanged.emit()
+    def __str__(self):
+        return 'Source(' + str(self._code) + ', ' + str(self._item) + ', ' +  str(self._filename) + ')'
+
+    def debug(self):
+        return 'Source(' + utils.printable(self._code) + ', ' +  self._item.debug() + ', ' +  utils.printable(self._filename) + ')'
+
+    def isValid(self):
+        if self._code == '':
+            return False
+        if Config.sourceCodes[self._code]['sourceItem']:
+            return self._item.isValid()
+        return isinstance(self._item, Item) and (self._item.isValid() or self._item.isNull())
+
+    def isInvalid(self):
+        return not self.isValid()
+
+    def isNull(self):
+        return self._code == '' and isinstance(item, Item) and self._item.isNull() and self._filename == ''
+
+    def label(self):
+        return Config.sourceCodes[self._code]['label']
+
+    def setSource(self, sourceCode, item, filename):
+        self._code = utils.string(sourceCode)
+        if isinstance(item, Item):
+            self._item = item
+        else:
+            self._item = Item()
+        self._filename = utils.string(filename)
 
     def sourceCode(self):
-        return self.itemFeature.source.sourceCode
+        return self._code
 
     def setSourceCode(self, sourceCode):
-        self.itemFeature.source.setSourceCode(sourceCode)
-        self._planWidget.setSourceCode(self.sourceCode())
+        self._code = utils.string(sourceCode)
 
-    def _setSourceCode(self, sourceCode):
-        self.setSourceCode(sourceCode)
-        self.metadataChanged.emit()
+    def item(self):
+        return self._item
 
-    def sourceClass(self):
-        return self.itemFeature.source.key.classCode
+    def setItem(self, item):
+        self._item = item
 
-    def setSourceClass(self, sourceClass):
-        self.itemFeature.source.setSourceClass(sourceClass)
-        self._planWidget.setSourceClass(self.sourceClass())
+    def filename(self):
+        return self._filename
 
-    def _setSourceClass(self, sourceClass):
-        self.setSourceClass(sourceClass)
-        self.metadataChanged.emit()
+    def setFilename(self, filename):
+        self._filename = utils.string(filename)
 
-    def sourceId(self):
-        return self.itemFeature.source.key.itemId
+    def attributes(self):
+        attrs = {}
+        attrs = self._item.toAttributes()
+        _setDict(attrs, 'source_cd', self.sourceCode())
+        _setDict(attrs, 'source_cl', self.item().classCode())
+        _setDict(attrs, 'source_id', self.item().itemId())
+        _setDict(attrs, 'file', self.filename())
+        return attrs
 
-    def setSourceId(self, sourceId):
-        self.itemFeature.source.setSourceId(sourceId)
-        self._planWidget.setSourceId(self.sourceId())
-
-    def _setSourceId(self, sourceId):
-        self.setSourceId(sourceId)
-        self.metadataChanged.emit()
-
-    def sourceFile(self):
-        return self.itemFeature.source.filename
-
-    def setSourceFile(self, sourceFile):
-        self.itemFeature.source.setFilename(sourceFile)
-        self._planWidget.setSourceFile(self.sourceFile())
-
-    def _setSourceFile(self, sourceFile):
-        self.setSourceFile(sourceFile)
-        self.metadataChanged.emit()
-
-    def comment(self):
-        return self.itemFeature.comment
-
-    def setComment(self, comment):
-        self.itemFeature.setComment(comment)
-        self._planWidget.setComment(self.comment())
-
-    def _setComment(self, comment):
-        self.setComment(comment)
-        self.metadataChanged.emit()
-
-    def editor(self):
-        return self.itemFeature.creator
-
-    def setEditor(self, editor):
-        self.itemFeature.setCreator(editor)
-        self._planWidget.setEditor(self.editor())
-
-    def _setEditor(self, editor):
-        self.setEditor(editor)
-        self.metadataChanged.emit()
-
-    def fromFeature(self, feature):
-        self.fromItemFeature(ItemFeature(feature))
-
-    def fromItemFeature(self, feature):
-        self.setSiteCode(feature.key.siteCode)
-        self.setClassCode(feature.key.classCode)
-        self.setItemId(feature.key.itemId)
-        self.setComment(feature.comment)
-        self.setSourceCode(feature.source.sourceCode)
-        self.setSourceClass(feature.source.key.classCode)
-        self.setSourceId(feature.source.key.itemId)
-        self.setSourceFile(feature.source.filename)
-
-    def validate(self):
-        signalChanged = False
-        if self.siteCode() == '':
-            value, ok = QInputDialog.getText(None, 'Site Code', 'Please enter a valid Site Code')
-            if ok and value.strip():
-                self.setSiteCode(value)
-                signalChanged = True
-        if self.classCode() == '':
-            self.setClassCode(self._planWidget.classCode())
-        if self.itemId() == '':
-            value = 0
-            ok = False
-            value, ok = QInputDialog.getInt(None, 'Item ID', 'Please enter a valid Item ID', 1, 1, 99999)
-            if ok and value > 0:
-                self.setItemId(str(value))
-                signalChanged = True
-        if self.sourceCode() == '':
-            self.setSourceCode(self._planWidget.sourceCode())
-        if self.sourceClass() == '':
-            self.setSourceClass(self._planWidget.sourceClass())
-        if self.sourceCode() != 'svy' and self.sourceId() == '':
-            value, ok = QInputDialog.getInt(None, 'Source ID', 'Please enter a valid Source ID Number', 1, 1, 99999)
-            if ok and value > 0:
-                self.setSourceId(str(value))
-                signalChanged = True
-        if (self.sourceCode() == 'svy' and self.sourceFile() == ''):
-            value, ok = QInputDialog.getText(None, 'Source File', "Please enter the source file name")
-            if ok and value.strip():
-                self.setSourceFile(value)
-                signalChanged = True
-        if self.editor() == '':
-            value, ok = QInputDialog.getText(None, 'Editor', "Please enter your full name (e.g. 'Dorothy Garrod')")
-            if ok and value.strip():
-                self.setEditor(value)
-                signalChanged = True
-        if signalChanged:
-            self.metadataChanged.emit()
+    def setAttributes(self, attributes):
+        if 'source_cd' in attributes:
+            self.setSourceCode(attributes['source_cd'])
+        if 'file' in attributes:
+            self.setFilename(attributes['file'])
+        attr = {}
+        if 'site' in attributes:
+            attr['site'] = attributes['site']
+        if 'source_cl' in attributes:
+            attr['class'] = attributes['source_cl']
+        if 'source_id' in attributes:
+            attr['id'] = attributes['source_id']
+        self._item.setAttributes(attr)

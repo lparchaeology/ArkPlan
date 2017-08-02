@@ -36,14 +36,11 @@ class Ui_PlanWidget(object):
         self.drawingScrollArea.setWidgetResizable(True)
         self.drawingScrollArea.setObjectName(_fromUtf8("drawingScrollArea"))
         self.drawingScrollAreaContents = QtGui.QWidget()
-        self.drawingScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 394, 229))
+        self.drawingScrollAreaContents.setGeometry(QtCore.QRect(0, 0, 394, 271))
         self.drawingScrollAreaContents.setObjectName(_fromUtf8("drawingScrollAreaContents"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.drawingScrollAreaContents)
         self.verticalLayout_2.setMargin(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.metadataWidget = MetadataWidget(self.drawingScrollAreaContents)
-        self.metadataWidget.setObjectName(_fromUtf8("metadataWidget"))
-        self.verticalLayout_2.addWidget(self.metadataWidget)
         self.drawingWidget = DrawingWidget(self.drawingScrollAreaContents)
         self.drawingWidget.setObjectName(_fromUtf8("drawingWidget"))
         self.verticalLayout_2.addWidget(self.drawingWidget)
@@ -51,15 +48,6 @@ class Ui_PlanWidget(object):
         self.verticalLayout_2.addItem(spacerItem)
         self.drawingScrollArea.setWidget(self.drawingScrollAreaContents)
         self.verticalLayout.addWidget(self.drawingScrollArea)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.resetButton = QtGui.QPushButton(self.drawingTab)
-        self.resetButton.setObjectName(_fromUtf8("resetButton"))
-        self.horizontalLayout.addWidget(self.resetButton)
-        self.mergeButton = QtGui.QPushButton(self.drawingTab)
-        self.mergeButton.setObjectName(_fromUtf8("mergeButton"))
-        self.horizontalLayout.addWidget(self.mergeButton)
-        self.verticalLayout.addLayout(self.horizontalLayout)
         PlanWidget.addTab(self.drawingTab, _fromUtf8(""))
         self.checkingTab = QtGui.QWidget()
         self.checkingTab.setObjectName(_fromUtf8("checkingTab"))
@@ -113,16 +101,11 @@ class Ui_PlanWidget(object):
         QtCore.QMetaObject.connectSlotsByName(PlanWidget)
 
     def retranslateUi(self, PlanWidget):
-        PlanWidget.setWindowTitle(_translate("PlanWidget", "TabWidget", None))
-        self.resetButton.setToolTip(_translate("PlanWidget", "Clear unsaved changes from work layers", None))
-        self.resetButton.setText(_translate("PlanWidget", "Reset", None))
-        self.mergeButton.setToolTip(_translate("PlanWidget", "Move new context to main layers", None))
-        self.mergeButton.setText(_translate("PlanWidget", "Merge", None))
+        PlanWidget.setWindowTitle(_translate("PlanWidget", "PlanWidget", None))
         PlanWidget.setTabText(PlanWidget.indexOf(self.drawingTab), _translate("PlanWidget", "Drawing", None))
         PlanWidget.setTabText(PlanWidget.indexOf(self.checkingTab), _translate("PlanWidget", "Checking", None))
         PlanWidget.setTabText(PlanWidget.indexOf(self.toolsTab), _translate("PlanWidget", "Tools", None))
 
 from drawing_widget import DrawingWidget
-from metadata_widget import MetadataWidget
 from schematic_widget import SchematicWidget
 from snapping_widget import SnappingWidget

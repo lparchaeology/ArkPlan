@@ -24,99 +24,50 @@
  ***************************************************************************/
 """
 
-import os
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QTabWidget, QToolButton
-
-from ..libarkqgis.map_tools import *
+from PyQt4.QtGui import QWidget
 
 import drawing_widget_base
 
-class DrawingWidget(QTabWidget, drawing_widget_base.Ui_DrawingWidget):
-
-    autoSchematicSelected = pyqtSignal()
-
-    _colMax = 5
-    _planPoint = 0
-    _planLine = 0
-    _planPolygon = 0
-    _sectionPoint = 0
-    _sectionLine = 0
-    _sectionPolygon = 0
-    _basePoint = 0
-    _baseLine = 0
-    _basePolygon = 0
+class DrawingWidget(QWidget, drawing_widget_base.Ui_DrawingWidget):
 
     def __init__(self, parent=None):
         super(DrawingWidget, self).__init__(parent)
         self.setupUi(self)
 
-    def initGui(self):
-        self.autoSchematicTool.clicked.connect(self.autoSchematicSelected)
+    def initGui(self, iface):
+        self.sourceWidget.initGui()
+        self.planFeatureWidget.initGui(iface, 'plan')
+        self.sectionFeatureWidget.initGui(iface, 'section')
+        self.siteFeatureWidget.initGui(iface, 'base')
+        self.sourceWidget.sourceChanged.connect(self._updateSource)
 
     def unloadGui(self):
-        pass
+        self.sourceWidget.unloadGui()
+        self.planFeatureWidget.unloadGui()
+        self.sectionFeatureWidget.unloadGui()
+        self.siteFeatureWidget.unloadGui()
+        self.sourceWidget.sourceChanged.disconnect(self._updateSource)
 
     def loadProject(self, project):
-        pass
+        self.sourceWidget.loadProject(project)
+        self.planFeatureWidget.loadProject(project, 'plan')
+        self.sectionFeatureWidget.loadProject(project, 'section')
+        self.siteFeatureWidget.loadProject(project, 'base')
 
     def closeProject(self):
-        pass
+        self.sourceWidget.closeProject()
+        self.planFeatureWidget.closeProject()
+        self.sectionFeatureWidget.closeProject()
+        self.siteFeatureWidget.closeProject()
 
     # Drawing Tools
 
-    def addDrawingTool(self, collection, type, action):
-        toolButton = QToolButton(self)
-        toolButton.setFixedWidth(40)
-        toolButton.setDefaultAction(action)
-        if collection == 'plan':
-            if type == FeatureType.Point:
-                self._addToolWidget(self.planPointLayout, toolButton, self._planPoint)
-                self._planPoint += 1
-            if type == FeatureType.Line or type == FeatureType.Segment:
-                self._addToolWidget(self.planLineLayout, toolButton, self._planLine)
-                self._planLine += 1
-            if type == FeatureType.Polygon:
-                self._addToolWidget(self.planPolygonLayout, toolButton, self._planPolygon)
-                self._planPolygon += 1
-        elif collection == 'section':
-            if type == FeatureType.Point:
-                self._addToolWidget(self.sectionPointLayout, toolButton, self._sectionPoint)
-                self._sectionPoint += 1
-            if type == FeatureType.Line or type == FeatureType.Segment:
-                self._addToolWidget(self.sectionLineLayout, toolButton, self._sectionLine)
-                self._sectionLine += 1
-            if type == FeatureType.Polygon:
-                self._addToolWidget(self.sectionPolygonLayout, toolButton, self._sectionPolygon)
-                self._sectionPolygon += 1
-        elif collection == 'base':
-            if type == FeatureType.Point:
-                self._addToolWidget(self.basePointLayout, toolButton, self._basePoint)
-                self._basePoint += 1
-            if type == FeatureType.Line or type == FeatureType.Segment:
-                self._addToolWidget(self.baseLineLayout, toolButton, self._baseLine)
-                self._baseLine += 1
-            if type == FeatureType.Polygon:
-                self._addToolWidget(self.basePolygonLayout, toolButton, self._basePolygon)
-                self._basePolygon += 1
+    def setSource(self, source):
+        self.sourceWidget.setSource(source)
 
-    def clearDrawingTools(self):
-        self._clearDrawingTools(self.planPointLayout)
-        self._clearDrawingTools(self.planLineLayout)
-        self._clearDrawingTools(self.planPolygonLayout)
-        self._clearDrawingTools(self.sectionPointLayout)
-        self._clearDrawingTools(self.sectionLineLayout)
-        self._clearDrawingTools(self.sectionPolygonLayout)
-        self._clearDrawingTools(self.basePointLayout)
-        self._clearDrawingTools(self.baseLineLayout)
-        self._clearDrawingTools(self.basePolygonLayout)
-
-    def _clearDrawingTools(self, layout):
-        if layout.count():
-            for i in range(layout.count() - 1, 0):
-                layout.takeAt(i)
-
-    def _addToolWidget(self, layout, toolButton, counter):
-        layout.addWidget(toolButton, counter // self._colMax, counter % self._colMax, Qt.AlignCenter)
+    def _updateSource(self):
+        source = self.sourceWidget.source()
+        self.planFeatureWidget.setSource(source)
+        self.sectionFeatureWidget.setSource(source)
+        self.siteFeatureWidget.setSource(source)

@@ -66,12 +66,6 @@ class Plan(QObject):
     # Internal variables
     initialised = False
 
-    actions = {}
-    mapTools = {}
-    currentMapTool = None
-
-    siteCodes = {}
-    classCodes = {}
     metadata = None  # Metadata()
 
     _definitiveCategories = set()
@@ -136,20 +130,10 @@ class Plan(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
-        self.siteCodes = set(self.project.siteCodes())
-        self.classCodes = set(self.project.plan.uniqueValues(self.project.fieldName('class')))
-
         self.dock.loadProject(self.project)
-        self.dock.clearDrawingTools()
+
         for collection, features in Config.featureCategories.iteritems():
             for feature in features:
-                #TODO Select by map tool type enum
-                if feature['category'] == 'scs':
-                    self.addSectionSchematicTool(collection, feature['class'], feature['category'], feature['name'], QIcon())
-                else:
-                    if 'query' not in feature:
-                        feature['query'] = None
-                    self.addDrawingTool(collection, feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
                 if feature['definitive'] == True:
                     self._definitiveCategories.add(feature['category'])
 
@@ -161,8 +145,8 @@ class Plan(QObject):
                 fd.close()
 
         # TODO Think of a better way...
-        self.metadata = Metadata(self.dock.widget.metadataWidget)
-        self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
+        #self.metadata = Metadata(self.dock.widget.sourceWidget)
+        #self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
         self.project.data.dataLoaded.connect(self.dock.activateArkData)
 
@@ -178,16 +162,12 @@ class Plan(QObject):
         self._clearSchematicFilters()
         # TODO Unload the drawing tools!
         self.dock.closeProject()
-        self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
-        self.project.data.dataLoaded.disconnect(self.dock.activateArkData)
+        #self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
+        #self.project.data.dataLoaded.disconnect(self.dock.activateArkData)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
-        for action in self.actions.values():
-            if action.isChecked():
-                action.setChecked(False)
-
         # Reset the initialisation
         self.initialised = False
 
@@ -451,8 +431,6 @@ class Plan(QObject):
             else:
                 layer.changeAttributeValue(feature.id(), modifiedIdx, timestamp)
                 layer.changeAttributeValue(feature.id(), modifierIdx, user)
-            self.siteCodes.add(feature.attribute(siteField))
-            self.classCodes.add(feature.attribute(classField))
 
     def resetBuffers(self):
         self.project.plan.resetBuffers('Clear Buffers')
@@ -461,81 +439,6 @@ class Plan(QObject):
             self.dock.activateSchematicCheck()
 
     # Drawing tools
-
-    def addDrawingTool(self, collection, classCode, category, toolName, icon, featureType, query=None):
-        data = {}
-        data['class'] = classCode
-        data['category'] = category
-        action = QAction(icon, category, self.dock)
-        action.setData(data)
-        action.setToolTip(toolName)
-        action.setCheckable(True)
-
-        layer = None
-        if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            layer = self.project.collection(collection).linesBuffer
-        elif featureType == FeatureType.Polygon:
-            layer = self.project.collection(collection).polygonsBuffer
-        else:
-            layer = self.project.collection(collection).pointsBuffer
-
-        if category == 'scs':
-            geom = self._sectionLineGeometry(self.dock.sectionKey())
-            mapTool = ArkMapToolSectionSchematic(self.project.iface, geom, layer, toolName)
-        else:
-            mapTool = ArkMapToolAddFeature(self.project.iface, layer, featureType, toolName)
-        mapTool.setAction(action)
-        mapTool.setPanningEnabled(True)
-        mapTool.setZoomingEnabled(True)
-        mapTool.setSnappingEnabled(True)
-        mapTool.setShowSnappableVertices(True)
-        mapTool.activated.connect(self.mapToolActivated)
-        if query is not None:
-            query = Config.attributeQuery[query]
-            mapTool.setAttributeQuery(
-                query['attribute'],
-                query['type'],
-                query['default'],
-                query['title'],
-                query['label'],
-                query['min'],
-                query['max'],
-                query['decimals']
-            )
-
-        action.triggered.connect(self.validateFeature)
-        self.dock.addDrawingTool(collection, featureType, action)
-        self.actions[category] = action
-        self.mapTools[category] = mapTool
-
-    def mapToolActivated(self):
-        for mapTool in self.mapTools.values():
-            if mapTool.action().isChecked():
-                if not mapTool.layer().isEditable():
-                    mapTool.layer().startEditing()
-                self.setMapToolAttributes(mapTool)
-
-    def updateMapToolAttributes(self):
-        for mapTool in self.mapTools.values():
-            if mapTool.action().isChecked():
-                self.setMapToolAttributes(mapTool)
-
-    def setMapToolAttributes(self, mapTool):
-        if mapTool is None:
-            return
-        toolData = mapTool.action().data()
-        if toolData['class'] != self.metadata.classCode():
-            self.metadata.setItemId('')
-        self.metadata.setClassCode(toolData['class'])
-        self.metadata.setCategory(toolData['category'])
-        mapTool.setDefaultAttributes(self.metadata.itemFeature.toAttributes())
-
-    def validateFeature(self):
-        if self.metadata.sourceClass() == self.metadata.classCode() and self.metadata.sourceId().isdigit() and int(self.metadata.sourceId()) <= 0:
-            self.metadata.setSourceId(self.metadata.itemId())
-        self.metadata.validate()
-        if self.metadata.sourceClass() == self.metadata.classCode() and self.metadata.sourceId().isdigit() and int(self.metadata.sourceId()) <= 0:
-            self.metadata.setSourceId(self.metadata.itemId())
 
     def _autoSchematicSelected(self):
         self.actions['sch'].trigger()

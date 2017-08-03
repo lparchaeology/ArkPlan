@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -47,7 +45,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
             self.styleFolderEdit.setEnabled(True)
             self.styleFolderButton.setEnabled(True)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
-        self.useArkCheck.setChecked(project.useArkDB())
         self.arkUrlEdit.setText(project.arkUrl())
         if project.isConfigured():
             self.useArkCheck.setEnabled(False)
@@ -56,21 +53,21 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         # Drawings tab settings
         self.drawingTransparencySpin.setValue(project.drawingTransparency())
         self.georefFolderCheck.setChecked(project.useGeorefFolder())
-        self.contextDrawingFolderCheck.setChecked(project.useCustomPath('cxt'))
-        if project.useCustomPath('cxt'):
+        self.contextDrawingFolderCheck.setChecked(project.useCustomPath('context'))
+        if project.useCustomPath('context'):
             self.contextDrawingFolderEdit.setEnabled(True)
             self.contextDrawingFolderButton.setEnabled(True)
-        self.contextDrawingFolderEdit.setText(project.rasterGroupPath('cxt'))
+        self.contextDrawingFolderEdit.setText(project.drawingPath('context'))
         self.contextDrawingFolderButton.clicked.connect(self._selectContextDrawingFolder)
-        if project.useCustomPath('pln'):
+        if project.useCustomPath('plan'):
             self.planDrawingFolderEdit.setEnabled(True)
             self.planDrawingFolderButton.setEnabled(True)
-        self.planDrawingFolderEdit.setText(project.rasterGroupPath('pln'))
+        self.planDrawingFolderEdit.setText(project.drawingPath('plan'))
         self.planDrawingFolderButton.clicked.connect(self._selectPlanDrawingFolder)
-        if project.useCustomPath('sec'):
+        if project.useCustomPath('section'):
             self.sectionDrawingFolderEdit.setEnabled(True)
             self.sectionDrawingFolderButton.setEnabled(True)
-        self.sectionDrawingFolderEdit.setText(project.rasterGroupPath('sec'))
+        self.sectionDrawingFolderEdit.setText(project.drawingPath('section'))
         self.sectionDrawingFolderButton.clicked.connect(self._selectSectionDrawingFolder)
 
     def accept(self):
@@ -78,14 +75,13 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setMultiSiteProject(self.multiSiteCheck.isChecked())
         self._project.setSiteCode(self.siteCodeEdit.text())
         self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
-        self._project.setUseArkDB(self.useArkCheck.isChecked())
         self._project.setArkUrl(self.arkUrlEdit.text())
         self._project.setLogUpdates(self.logUpdatesCheck.isChecked())
 
         # Drawings tab settings
-        self._project.setRasterGroupPath('cxt', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
-        self._project.setRasterGroupPath('pln', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
-        self._project.setRasterGroupPath('sec', self.sectionDrawingFolderCheck.isChecked(), self.sectionDrawingFolderEdit.text())
+        self._project.setDrawingPath('context', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
+        self._project.setDrawingPath('plan', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
+        self._project.setDrawingPath('section', self.sectionDrawingFolderCheck.isChecked(), self.sectionDrawingFolderEdit.text())
         self._project.setUseGeorefFolder(self.georefFolderCheck.isChecked())
         self._project.setDrawingTransparency(self.drawingTransparencySpin.value())
 

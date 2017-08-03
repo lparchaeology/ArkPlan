@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -33,55 +31,6 @@ from ..libarkqgis.project import Project
 
 class Config():
 
-    @classmethod
-    def useArkDB(cls):
-        return Project.readBoolEntry(cls.pluginName, 'useArkDB', True)
-
-    @classmethod
-    def fields(cls):
-        if cls.useArkDB():
-            return cls.arkFieldDefaults
-        else:
-            return cls.fieldDefaults
-
-    @classmethod
-    def field(cls, fieldKey):
-        if cls.useArkDB():
-            return cls.arkFieldDefaults[fieldKey]
-        else:
-            return cls.fieldDefaults[fieldKey]
-
-    @classmethod
-    def fieldName(cls, fieldKey):
-        try:
-            if cls.useArkDB():
-                return cls.arkFieldDefaults[fieldKey].name()
-            else:
-                return cls.fieldDefaults[fieldKey].name()
-        except:
-            return ''
-
-    @classmethod
-    def isGroupClass(cls, classCode):
-        try:
-            return Config.classCodes[classCode]['group']
-        except IndexError:
-            return False
-
-    @classmethod
-    def parentClass(cls, classCode):
-        try:
-            return Config.classCodes[classCode]['parent']
-        except IndexError:
-            return ''
-
-    @classmethod
-    def childClass(cls, classCode):
-        try:
-            return Config.classCodes[classCode]['child']
-        except IndexError:
-            return ''
-
     pluginName = u'ArkPlan'
     projectGroupName = u'Ark Spatial'
     filterSetGroupName = u'Filter Export Data'
@@ -89,56 +38,270 @@ class Config():
     logSuffix = u'_log'
 
     # Field Name defaults
-    fieldDefaults = {
-        'site'      : QgsField('site',       QVariant.String, '',  10, 0, 'Site Code'),
-        'class'     : QgsField('class',      QVariant.String, '',  10, 0, 'Class'),
-        'id'        : QgsField('id',         QVariant.Int,    '',   5, 0, 'ID'),
-        'name'      : QgsField('name',       QVariant.String, '',  10, 0, 'Name'),
-        'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
-        'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
-        'source_cd' : QgsField('source_cd',  QVariant.String, '',  10, 0, 'Source Code'),
-        'source_cl' : QgsField('source_cl',  QVariant.String, '',  10, 0, 'Source Class'),
-        'source_id' : QgsField('source_id',  QVariant.Int,    '',   5, 0, 'Source ID'),
-        'file'      : QgsField('file',       QVariant.String, '', 100, 0, 'Source File'),
-        'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
-        'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
-        'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
-        'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
-        'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-        'created'   : QgsField('created',    QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'creator'   : QgsField('creator',    QVariant.String, '',  20, 0, 'Created By'),
-        'modified'  : QgsField('modified',   QVariant.String, '',  20, 0, 'Modified On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'modifier'  : QgsField('modifier',   QVariant.String, '',  20, 0, 'Modified By'),
+    fields = {
+        'site' : {
+            'attribute' : 'site',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Site Code',
+            'query'     : 'Please enter the Site Code:',
+        },
+        'class' : {
+            'attribute' : 'class',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Class Code',
+            'query'     : 'Please enter the Class Code:',
+        },
+        'id' : {
+            'attribute' : 'id',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'ID',
+            'query'     : 'Please enter the ID:',
+        },
+        'label' : {
+            'attribute' : 'label',
+            'type'      : QVariant.String,
+            'len'       : 20,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Label',
+            'query'     : 'Please enter the Label:',
+        },
+        'category' : {
+            'attribute' : 'category',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Category',
+            'query'     : 'Please enter the Category:',
+        },
+        'elevation' : {
+            'attribute' : 'elevation',
+            'type'      : QVariant.Double,
+            'len'       : 10,
+            'decimals'  : 3,
+            'min'       : -20000,
+            'max'       : 20000,
+            'default'   : 0.0,
+            'label'     : 'Elevation',
+            'query'     : 'Please enter the elevation in meters (m):',
+        },
+        'source_cd' : {
+            'attribute' : 'source_cd',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Source Code',
+            'query'     : 'Please enter the Source Code:',
+        },
+        'source_cl' : {
+            'attribute' : 'source_cl',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Source Class',
+            'query'     : 'Please enter the Source Class:',
+        },
+        'source_id' : {
+            'attribute' : 'source_id',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Source ID',
+            'query'     : 'Please enter the Source ID:',
+        },
+        'file' : {
+            'attribute' : 'file',
+            'type'      : QVariant.String,
+            'len'       : 10,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Source File',
+            'query'     : 'Please enter the Source File:',
+        },
+        'local_x' : {
+            'attribute' : 'local_x',
+            'type'      : QVariant.Double,
+            'len'       : 10,
+            'decimals'  : 3,
+            'min'       : -20000,
+            'max'       : 20000,
+            'default'   : 0.0,
+            'label'     : 'Local Grid X',
+            'query'     : '',
+        },
+        'local_y' : {
+            'attribute' : 'local_y',
+            'type'      : QVariant.Double,
+            'len'       : 10,
+            'decimals'  : 3,
+            'min'       : -20000,
+            'max'       : 20000,
+            'default'   : 0.0,
+            'label'     : 'Local Grid Y',
+            'query'     : '',
+        },
+        'map_x' : {
+            'attribute' : 'map_x',
+            'type'      : QVariant.Double,
+            'len'       : 10,
+            'decimals'  : 3,
+            'min'       : -20000,
+            'max'       : 20000,
+            'default'   : 0.0,
+            'label'     : 'Map X',
+            'query'     : '',
+        },
+        'map_y' : {
+            'attribute' : 'map_y',
+            'type'      : QVariant.Double,
+            'len'       : 10,
+            'decimals'  : 3,
+            'min'       : -20000,
+            'max'       : 20000,
+            'default'   : 0.0,
+            'label'     : 'Map Y',
+            'query'     : '',
+        },
+        'comment' : {
+            'attribute' : 'comment',
+            'type'      : QVariant.String,
+            'len'       : 256,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Comment',
+            'query'     : 'Please enter the Comment:',
+        },
+        'created' : {
+            'attribute' : 'created',
+            'type'      : QVariant.String,  # '2012-01-01T23:59:59.999Z' in UTC
+            'len'       : 20,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Created On',
+            'query'     : '',
+        },
+        'creator' : {
+            'attribute' : 'creator',
+            'type'      : QVariant.String,
+            'len'       : 20,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Created By',
+            'query'     : '',
+        },
+        'modified' : {
+            'attribute' : 'modified',
+            'type'      : QVariant.String,  # '2012-01-01T23:59:59.999Z' in UTC
+            'len'       : 20,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Modified On',
+            'query'     : '',
+        },
+        'modifier' : {
+            'attribute' : 'modifier',
+            'type'      : QVariant.String,
+            'len'       : 20,
+            'decimals'  : 0,
+            'min'       : None,
+            'max'       : None,
+            'default'   : None,
+            'label'     : 'Modified By',
+            'query'     : '',
+        },
     }
 
-    # Old field defaults for ARK1, deprecated
-    arkFieldDefaults = {
-        'site'      : QgsField('ste_cd',     QVariant.String, '',  10, 0, 'Site Code'),
-        'class'     : QgsField('module',     QVariant.String, '',  10, 0, 'ARK Module'),
-        'id'        : QgsField('item_no',    QVariant.Int,    '',   5, 0, 'ARK Item Number'),
-        'name'      : QgsField('name',       QVariant.String, '',  10, 0, 'Name'),
-        'category'  : QgsField('category',   QVariant.String, '',  10, 0, 'Category'),
-        'elevation' : QgsField('elevation',  QVariant.Double, '',  10, 3, 'Elevation'),
-        'source_cd' : QgsField('source_cd',  QVariant.String, '',  10, 0, 'Source Code'),
-        'source_cl' : QgsField('source_mod', QVariant.String, '',  10, 0, 'Source Module'),
-        'source_id' : QgsField('source_no',  QVariant.Int,    '',   5, 0, 'Source Item Number'),
-        'file'      : QgsField('file',       QVariant.String, '', 100, 0, 'File'),
-        'local_x'   : QgsField('local_x',    QVariant.Double, '',  10, 3, 'Local Grid X'),
-        'local_y'   : QgsField('local_y',    QVariant.Double, '',  10, 3, 'Local Grid Y'),
-        'map_x'     : QgsField('map_x',      QVariant.Double, '',  10, 3, 'Map X'),
-        'map_y'     : QgsField('map_y',      QVariant.Double, '',  10, 3, 'Map Y'),
-        'comment'   : QgsField('comment',    QVariant.String, '', 100, 0, 'Comment'),
-        'created'   : QgsField('cre_on',     QVariant.String, '',  20, 0, 'Created On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'creator'   : QgsField('cre_by',     QVariant.String, '',  20, 0, 'Created By'),
-        'modified'  : QgsField('mod_on',     QVariant.String, '',  20, 0, 'Updated On'),  # '2012-01-01T23:59:59.999Z' in UTC
-        'modifier'  : QgsField('mod_by',     QVariant.String, '',  20, 0, 'Updated By'),
-    }
+    pointsFieldsDefault = [
+        'site',
+        'class',
+        'id',
+        'label',
+        'category',
+        'elevation',
+        'source_cd',
+        'source_cl',
+        'source_id',
+        'file',
+        'comment',
+        'created',
+        'creator',
+        'modified',
+        'modifier'
+    ]
 
-    vectorGroups = {
+    layersFieldsDefaults = [
+        'site',
+        'class',
+        'id',
+        'label',
+        'category',
+        'source_cd',
+        'source_cl',
+        'source_id',
+        'file',
+        'comment',
+        'created',
+        'creator',
+        'modified',
+        'modifier',
+    ]
+
+    gridFieldsDefaults = [
+        'site',
+        'label',
+        'local_x',
+        'local_y',
+        'map_x',
+        'map_y',
+        'created',
+        'creator',
+    ]
+
+    collections = {
         'plan' : {
-            'pathSuffix'       : 'vector/plan',
+            'path'             : 'vector/plan',
             'groupName'        : 'Plan Data',
-            'class'            : 'cxt',
+            'edit'             : True,
+            'class'            : 'context',
             'buffer'           : True,
             'bufferGroupName'  : 'Plan Edit',
             'log'              : True,
@@ -149,16 +312,17 @@ class Config():
             'pointsBaseName'   : 'plan_pt',
             'linesBaseName'    : 'plan_pl',
             'polygonsBaseName' : 'plan_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'pointsFields'     : pointsFieldsDefault,
+            'linesFields'      : layersFieldsDefaults,
+            'polygonsFields'   : layersFieldsDefaults,
         },
         'section' : {
-            'pathSuffix'       : 'vector/section',
+            'path'             : 'vector/section',
             'groupName'        : 'Section Data',
-            'class'            : 'sec',
-            'buffer'           : True,
-            'bufferGroupName'  : 'Section Edit',
+            'edit'             : True,
+            'class'            : 'section',
+            'buffer'           : False,
+            'bufferGroupName'  : '',
             'log'              : True,
             'multi'            : True,
             'pointsLabel'      : 'Section Points',
@@ -167,31 +331,33 @@ class Config():
             'pointsBaseName'   : 'section_pt',
             'linesBaseName'    : 'section_pl',
             'polygonsBaseName' : 'section_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+            'pointsFields'     : pointsFieldsDefault,
+            'linesFields'      : layersFieldsDefaults,
+            'polygonsFields'   : layersFieldsDefaults,
         },
-        'base' : {
-            'pathSuffix'       : 'vector/base',
-            'groupName'        : 'Base Data',
-            'class'            : 'ste',
-            'buffer'           : True,
-            'bufferGroupName'  : 'Base Edit',
-            'log'              : False,
-            'multi'            : False,
-            'pointsLabel'      : 'Base Points',
-            'linesLabel'       : 'Base Lines',
-            'polygonsLabel'    : 'Base Polygons',
-            'pointsBaseName'   : 'base_pt',
-            'linesBaseName'    : 'base_pl',
-            'polygonsBaseName' : 'base_pg',
-            'pointsFields'     : ['site', 'class', 'id', 'name', 'category', 'elevation', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'linesFields'      : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
-            'polygonsFields'   : ['site', 'class', 'id', 'name', 'category', 'source_cd', 'source_cl', 'source_id', 'file', 'comment', 'created', 'creator', 'modified', 'modifier'],
+        'site' : {
+            'path'             : 'vector/site',
+            'groupName'        : 'Site Data',
+            'edit'             : True,
+            'class'            : 'site',
+            'buffer'           : False,
+            'bufferGroupName'  : '',
+            'log'              : True,
+            'multi'            : True,
+            'pointsLabel'      : 'Site Points',
+            'linesLabel'       : 'Site Lines',
+            'polygonsLabel'    : 'Site Polygons',
+            'pointsBaseName'   : 'site_pt',
+            'linesBaseName'    : 'site_pl',
+            'polygonsBaseName' : 'site_pg',
+            'pointsFields'     : pointsFieldsDefault,
+            'linesFields'      : layersFieldsDefaults,
+            'polygonsFields'   : layersFieldsDefaults,
         },
         'grid' : {
-            'pathSuffix'       : 'vector/grid',
+            'path'             : 'vector/grid',
             'groupName'        : 'Grid Data',
+            'edit'             : False,
             'class'            : '',
             'buffer'           : False,
             'bufferGroupName'  : '',
@@ -203,331 +369,302 @@ class Config():
             'pointsBaseName'   : 'grid_pt',
             'linesBaseName'    : 'grid_pl',
             'polygonsBaseName' : 'grid_pg',
-            'pointsFields'     : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
-            'linesFields'      : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
-            'polygonsFields'   : ['site', 'name', 'local_x', 'local_y', 'map_x', 'map_y', 'created', 'creator'],
+            'pointsFields'     : gridFieldsDefaults,
+            'linesFields'      : gridFieldsDefaults,
+            'polygonsFields'   : gridFieldsDefaults,
         },
     }
 
-    rasterGroups = {
-        'cxt' : {
+    drawings = {
+        'context' : {
             'name'             : 'Context',
             'groupName'        : 'Contexts',
-            'pathSuffix'       : 'raster/context',
+            'path'             : 'raster/context',
             'layersGroupName'  : 'Drawings',
         },
-        'pln' : {
+        'plan' : {
             'name'             : 'Plan',
             'groupName'        : 'Plans',
-            'pathSuffix'       : 'raster/plan',
+            'path'             : 'raster/plan',
             'layersGroupName'  : 'Drawings',
         },
-        'sec' : {
+        'section' : {
             'name'             : 'Section',
             'groupName'        : 'Sections',
-            'pathSuffix'       : 'raster/section',
+            'path'             : 'raster/section',
             'layersGroupName'  : 'Drawings',
         },
     }
 
-    sourceCodesOrder = ['drw', 'unc', 'svy', 'skt', 'gph', 'cln', 'mod', 'inf', 'cre', 'oth']
     sourceCodes = {
-        'drw' : {
-            'code'             : 'drw',
+        'drawing' : {
+            'code'             : 'drawing',
             'label'            : 'Checked Drawing',
             'sourceItem'       : True,
         },
-        'unc' : {
-            'code'             : 'unc',
+        'unchecked' : {
+            'code'             : 'unchecked',
             'label'            : 'Unchecked Drawing',
             'sourceItem'       : True,
         },
-        'svy' : {
-            'code'             : 'svy',
+        'survey' : {
+            'code'             : 'survey',
             'label'            : 'Survey Data',
             'sourceItem'       : False,
         },
-        'skt' : {
-            'code'             : 'skt',
+        'sketch' : {
+            'code'             : 'sketch',
             'label'            : 'Sketch',
             'sourceItem'       : True,
         },
-        'gph' : {
-            'code'             : 'gph',
+        'geophoto' : {
+            'code'             : 'geophoto',
             'label'            : 'Georeferenced Photo',
             'sourceItem'       : True,
         },
-        'cln' : {
-            'code'             : 'cln',
+        'photo' : {
+            'code'             : 'photo',
+            'label'            : 'Photo',
+            'sourceItem'       : True,
+        },
+        'cloned' : {
+            'code'             : 'cloned',
             'label'            : 'Cloned from Source',
             'sourceItem'       : True,
         },
-        'mod' : {
-            'code'             : 'mod',
+        'modified' : {
+            'code'             : 'modified',
             'label'            : 'Modified from Source',
             'sourceItem'       : True,
         },
-        'inf' : {
-            'code'             : 'inf',
+        'inferred' : {
+            'code'             : 'inferred',
             'label'            : 'Inferred from Source',
             'sourceItem'       : True,
         },
-        'cre' : {
-            'code'             : 'cre',
+        'creator' : {
+            'code'             : 'creator',
             'label'            : 'Creator',
             'sourceItem'       : False,
         },
-        'oth' : {
-            'code'             : 'oth',
+        'client' : {
+            'code'             : 'client',
+            'label'            : 'Client',
+            'sourceItem'       : False,
+        },
+        'other' : {
+            'code'             : 'other',
             'label'            : 'Other',
             'sourceItem'       : False,
         },
     }
+    sourceCodesOrder = ['drawing', 'unchecked', 'survey', 'sketch', 'geophoto', 'photo', 'cloned', 'modified', 'inferred', 'creator', 'client', 'other']
 
     # 'code'  = Class Code
     # 'label' = Name label
-    # 'plan' = If can be drawn in the plan data
-    # 'source' = If can be used as a source in the plan data
+    # 'collection' = If can be drawn as vector data
     # 'drawing' = If is a drawing in own right
+    # 'source' = If can be used as a source in the plan data
     # 'group' = If is a group of other classes
     # 'parent' = The parent group (optional)
     # 'child' = The child group (optional)
     classCodes = {
-        'cxt' : {
-            'code'             : 'cxt',
-            'label'            : 'Context',
-            'plan'             : True,
-            'source'           : True,
-            'drawing'          : True,
-            'group'            : False,
-            'parent'           : 'grp',
-        },
-        'sgr' : {
-            'code'             : 'sgr',
-            'label'            : 'Sub-group',
-            'plan'             : False,
-            'source'           : False,
-            'drawing'          : False,
-            'group'            : True,
-            'parent'           : 'grp',
-            'child'            : 'cxt',
-        },
-        'grp' : {
-            'code'             : 'grp',
-            'label'            : 'Group',
-            'plan'             : False,
-            'source'           : False,
-            'drawing'          : False,
-            'group'            : True,
-            'parent'           : 'sgr',
-            'child'            : 'grp',
-        },
-        'pln' : {
-            'code'             : 'pln',
-            'label'            : 'Plan',
-            'plan'             : False,
-            'source'           : True,
-            'drawing'          : True,
-            'group'            : False,
-        },
-        'rgf' : {
-            'code'             : 'rgf',
-            'label'            : 'Find',
-            'plan'             : True,
-            'source'           : True,
-            'drawing'          : False,
-            'group'            : False,
-        },
-        'sec' : {
-            'code'             : 'sec',
-            'label'            : 'Section',
-            'plan'             : True,
-            'source'           : True,
-            'drawing'          : True,
-            'group'            : False,
-        },
-        'smp' : {
-            'code'             : 'smp',
-            'label'            : 'Sample',
-            'plan'             : True,
-            'source'           : False,
-            'drawing'          : False,
-            'group'            : False,
-        },
-        'sph' : {
-            'code'             : 'sph',
-            'label'            : 'Photo',
-            'plan'             : False,
-            'source'           : False,
-            'drawing'          : False,
-            'group'            : False,
-        },
-        'tmb' : {
-            'code'             : 'tmb',
-            'label'            : 'Timber',
-            'plan'             : True,
-            'source'           : False,
-            'drawing'          : False,
-            'group'            : False,
-        },
-    }
-
-    attributeQuery = {
-        'name' : {
-            'attribute' : 'name',
-            'type'      : QVariant.String,
-            'default'   : '',
-            'min'       : None,
-            'max'       : None,
-            'decimals'  : None,
-            'title'     : 'Feature Name',
-            'label'     : 'Please enter the name of the feature:',
-        },
-        'comment' : {
-            'attribute' : 'comment',
-            'type'      : QVariant.String,
-            'default'   : '',
-            'min'       : None,
-            'max'       : None,
-            'decimals'  : None,
-            'title'     : 'Feature Name',
-            'label'     : 'Please enter the name of the feature:',
-        },
-        'elevation' : {
-            'attribute' : 'elevation',
-            'type'      : QVariant.Double,
-            'default'   : 0.0,
-            'min'       : -20000,
-            'max'       : 20000,
-            'decimals'  : 2,
-            'title'     : 'Add Elevation',
-            'label'     : 'Please enter the elevation in meters (m):',
-        },
         'context' : {
-            'attribute' : 'id',
-            'type'      : QVariant.Int,
-            'default'   : 0,
-            'min'       : 0,
-            'max'       : 99999,
-            'decimals'  : 0,
-            'title'     : 'Context Number',
-            'label'     : 'Please enter the Context Number:',
+            'code'             : 'context',
+            'label'            : 'Context',
+            'collection'       : True,
+            'drawing'          : True,
+            'source'           : True,
+            'group'            : False,
+            'parent'           : 'group',
+            'child'            : '',
+            'ark1'             : 'cxt',
         },
-        'section' : {
-            'attribute' : 'id',
-            'type'      : QVariant.Int,
-            'default'   : 0,
-            'min'       : 0,
-            'max'       : 99999,
-            'decimals'  : 0,
-            'title'     : 'Section Number',
-            'label'     : 'Please enter the Section Number:',
+        'subgroup' : {
+            'code'             : 'subgroup',
+            'label'            : 'Sub-group',
+            'collection'       : False,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : True,
+            'parent'           : 'group',
+            'child'            : 'context',
+            'ark1'             : 'sgr',
+        },
+        'group' : {
+            'code'             : 'group',
+            'label'            : 'Group',
+            'collection'       : False,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : True,
+            'parent'           : 'subgroup',
+            'child'            : 'group',
+            'ark1'             : 'grp',
+        },
+        'plan' : {
+            'code'             : 'plan',
+            'label'            : 'Plan',
+            'collection'       : False,
+            'drawing'          : True,
+            'source'           : True,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'pln',
         },
         'find' : {
-            'attribute' : 'id',
-            'type'      : QVariant.Int,
-            'default'   : 0,
-            'min'       : 0,
-            'max'       : 99999,
-            'decimals'  : 0,
-            'title'     : 'Find Number',
-            'label'     : 'Please enter the Find Number:',
+            'code'             : 'find',
+            'label'            : 'Find',
+            'collection'       : True,
+            'drawing'          : False,
+            'source'           : True,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'rgf',
         },
-        'trench' : {
-            'attribute' : 'id',
-            'type'      : QVariant.Int,
-            'default'   : 0,
-            'min'       : 0,
-            'max'       : 99999,
-            'decimals'  : 0,
-            'title'     : 'Trench Number',
-            'label'     : 'Please enter the Trench Number:',
+        'section' : {
+            'code'             : 'section',
+            'label'            : 'Section',
+            'collection'       : True,
+            'drawing'          : True,
+            'source'           : True,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'sec',
         },
         'sample' : {
-            'attribute' : 'id',
-            'type'      : QVariant.Int,
-            'default'   : 0,
-            'min'       : 0,
-            'max'       : 99999,
-            'decimals'  : 0,
-            'title'     : 'Sample Number',
-            'label'     : 'Please enter the Sample Number:',
+            'code'             : 'sample',
+            'label'            : 'Sample',
+            'collection'       : True,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'smp',
+        },
+        'photo' : {
+            'code'             : 'photo',
+            'label'            : 'Photo',
+            'collection'       : False,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'sph',
+        },
+        'timber' : {
+            'code'             : 'timber',
+            'label'            : 'Timber',
+            'collection'       : True,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'tmb',
+        },
+        'site' : {
+            'code'             : 'site',
+            'label'            : 'Site',
+            'collection'       : True,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'ste',
+        },
+        'trench' : {
+            'code'             : 'trench',
+            'label'            : 'Trench',
+            'collection'       : True,
+            'drawing'          : False,
+            'source'           : False,
+            'group'            : False,
+            'parent'           : '',
+            'child'            : '',
+            'ark1'             : 'tch',
         },
     }
 
     featureCategories = {
         'plan' : [
-            {'class': 'cxt', 'category': 'lvl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Level',           'query': 'elevation'},
-            {'class': 'cxt', 'category': 'lvu', 'type': FeatureType.Point,   'definitive': False, 'name': 'Underside Level', 'query': 'elevation'},
-            {'class': 'rgf', 'category': 'rgf', 'type': FeatureType.Point,   'definitive': False, 'name': 'Registered Find', 'query': 'find'},
-            {'class': 'smp', 'category': 'spl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Sample',          'query': 'sample'},
+            {'class': 'context', 'category': 'lvl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Level',           'query': 'elevation'},
+            {'class': 'context', 'category': 'lvu', 'type': FeatureType.Point,   'definitive': False, 'name': 'Underside Level', 'query': 'elevation'},
+            {'class': 'find',    'category': 'rgf', 'type': FeatureType.Point,   'definitive': False, 'name': 'Registered Find', 'query': 'id'},
+            {'class': 'sample',  'category': 'smp', 'type': FeatureType.Point,   'definitive': False, 'name': 'Sample',          'query': 'id'},
 
-            {'class': 'cxt', 'category': 'ext', 'type': FeatureType.Line,    'definitive': True,  'name': 'Extent'},
-            {'class': 'cxt', 'category': 'veg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Vertical Edge'},
-            {'class': 'cxt', 'category': 'ueg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Uncertain Edge'},
-            {'class': 'cxt', 'category': 'loe', 'type': FeatureType.Line,    'definitive': True,  'name': 'Limit of Excavation'},
-            {'class': 'cxt', 'category': 'trn', 'type': FeatureType.Line,    'definitive': True,  'name': 'Truncation'},
-            {'class': 'cxt', 'category': 'vtr', 'type': FeatureType.Line,    'definitive': True,  'name': 'Vertical Truncation'},
-            {'class': 'cxt', 'category': 'bos', 'type': FeatureType.Line,    'definitive': False, 'name': 'Break of Slope'},
-            {'class': 'cxt', 'category': 'vbs', 'type': FeatureType.Line,    'definitive': False, 'name': 'Vertical Break of Slope'},
-            {'class': 'cxt', 'category': 'hch', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Hachure'},
-            {'class': 'cxt', 'category': 'unc', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Undercut'},
-            {'class': 'cxt', 'category': 'ros', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Return of Slope'},
+            {'class': 'context', 'category': 'ext', 'type': FeatureType.Line,    'definitive': True,  'name': 'Extent'},
+            {'class': 'context', 'category': 'veg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Vertical Edge'},
+            {'class': 'context', 'category': 'ueg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Uncertain Edge'},
+            {'class': 'context', 'category': 'loe', 'type': FeatureType.Line,    'definitive': True,  'name': 'Limit of Excavation'},
+            {'class': 'context', 'category': 'trn', 'type': FeatureType.Line,    'definitive': True,  'name': 'Truncation'},
+            {'class': 'context', 'category': 'vtr', 'type': FeatureType.Line,    'definitive': True,  'name': 'Vertical Truncation'},
+            {'class': 'context', 'category': 'bos', 'type': FeatureType.Line,    'definitive': False, 'name': 'Break of Slope'},
+            {'class': 'context', 'category': 'vbs', 'type': FeatureType.Line,    'definitive': False, 'name': 'Vertical Break of Slope'},
+            {'class': 'context', 'category': 'hch', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Hachure'},
+            {'class': 'context', 'category': 'unc', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Undercut'},
+            {'class': 'context', 'category': 'ros', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Return of Slope'},
 
-            {'class': 'cxt', 'category': 'ash', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Ash',  },
-            {'class': 'cxt', 'category': 'bne', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Bone', },
-            {'class': 'cxt', 'category': 'brk', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Brick',},
-            {'class': 'cxt', 'category': 'cbm', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'CBM',  },
-            {'class': 'cxt', 'category': 'cha', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Charcol'},
-            {'class': 'cxt', 'category': 'clk', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Chalk'},
-            {'class': 'cxt', 'category': 'coi', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Coin'},
-            {'class': 'cxt', 'category': 'fli', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Flint'},
-            {'class': 'cxt', 'category': 'gls', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Glass'},
-            {'class': 'cxt', 'category': 'irn', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Iron'},
-            {'class': 'cxt', 'category': 'mtr', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Mortar'},
-            {'class': 'cxt', 'category': 'pot', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Pot'},
-            {'class': 'cxt', 'category': 'ren', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Render'},
-            {'class': 'cxt', 'category': 'sto', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Stone'},
-            {'class': 'cxt', 'category': 'til', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Tile'},
-            {'class': 'cxt', 'category': 'tim', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Timber'},
-            {'class': 'cxt', 'category': 'wst', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Wood Stain'},
-            {'class': 'cxt', 'category': 'sch', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Schematic'},
+            {'class': 'context', 'category': 'ash', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Ash'},
+            {'class': 'context', 'category': 'bne', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Bone'},
+            {'class': 'context', 'category': 'brk', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Brick'},
+            {'class': 'context', 'category': 'cbm', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'CBM'},
+            {'class': 'context', 'category': 'cha', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Charcol'},
+            {'class': 'context', 'category': 'clk', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Chalk'},
+            {'class': 'context', 'category': 'coi', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Coin'},
+            {'class': 'context', 'category': 'fli', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Flint'},
+            {'class': 'context', 'category': 'gls', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Glass'},
+            {'class': 'context', 'category': 'irn', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Iron'},
+            {'class': 'context', 'category': 'mtr', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Mortar'},
+            {'class': 'context', 'category': 'pot', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Pot'},
+            {'class': 'context', 'category': 'ren', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Render'},
+            {'class': 'context', 'category': 'sto', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Stone'},
+            {'class': 'context', 'category': 'til', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Tile'},
+            {'class': 'context', 'category': 'tim', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Timber'},
+            {'class': 'context', 'category': 'wst', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Wood Stain'},
+            {'class': 'context', 'category': 'sch', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Schematic'},
         ],
 
         'section' : [
-            {'class': 'sec', 'category': 'slv', 'type': FeatureType.Point,   'definitive': False, 'name': 'Section Level', 'query': 'elevation'},
-            {'class': 'sec', 'category': 'lbl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Label',         'query': 'name'},
-            {'class': 'sec', 'category': 'txt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Label',         'query': 'comment'},
+            {'class': 'section', 'category': 'slv', 'type': FeatureType.Point,   'definitive': False, 'name': 'Section Level', 'query': 'elevation'},
+            {'class': 'section', 'category': 'lbl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Label',         'query': 'label'},
+            {'class': 'section', 'category': 'txt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Comment',       'query': 'comment'},
 
-            {'class': 'sec', 'category': 'sln', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Section Line'},
-            {'class': 'sec', 'category': 'int', 'type': FeatureType.Line,    'definitive': True,  'name': 'Interface'},
-            {'class': 'cxt', 'category': 'cut', 'type': FeatureType.Line,    'definitive': True,  'name': 'Cut',           'query': 'context'},
-            {'class': 'sec', 'category': 'ueg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Uncertain Edge'},
-            {'class': 'sec', 'category': 'tip', 'type': FeatureType.Line,    'definitive': False, 'name': 'Tipline'},
-            {'class': 'sec', 'category': 'loe', 'type': FeatureType.Line,    'definitive': True,  'name': 'Limit of Excavation'},
-            {'class': 'sec', 'category': 'trn', 'type': FeatureType.Line,    'definitive': True,  'name': 'Truncation'},
+            {'class': 'section', 'category': 'sln', 'type': FeatureType.Segment, 'definitive': False, 'name': 'Section Line'},
+            {'class': 'section', 'category': 'int', 'type': FeatureType.Line,    'definitive': True,  'name': 'Interface'},
+            {'class': 'context', 'category': 'cut', 'type': FeatureType.Line,    'definitive': True,  'name': 'Cut',           'query': 'id'},
+            {'class': 'section', 'category': 'ueg', 'type': FeatureType.Line,    'definitive': True,  'name': 'Uncertain Edge'},
+            {'class': 'section', 'category': 'tip', 'type': FeatureType.Line,    'definitive': False, 'name': 'Tipline'},
+            {'class': 'section', 'category': 'loe', 'type': FeatureType.Line,    'definitive': True,  'name': 'Limit of Excavation'},
+            {'class': 'section', 'category': 'trn', 'type': FeatureType.Line,    'definitive': True,  'name': 'Truncation'},
 
-            {'class': 'cxt', 'category': 'fil', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Fill',          'query': 'context'},
-            {'class': 'cxt', 'category': 'dep', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Deposit',       'query': 'context'},
+            {'class': 'context', 'category': 'fil', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Fill',          'query': 'id'},
+            {'class': 'context', 'category': 'dep', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Deposit',       'query': 'id'},
         ],
 
-        'base' : [
-            {'class': 'ste', 'category': 'ste', 'type': FeatureType.Point,   'definitive': False, 'name': 'Site Location'},
-            {'class': 'ste', 'category': 'bpt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Base Point',         'query': 'name'},
-            {'class': 'ste', 'category': 'stn', 'type': FeatureType.Point,   'definitive': False, 'name': 'Base Station',       'query': 'elevation'},
-            {'class': 'ste', 'category': 'bhl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Borehole',           'query': 'name'},
-            {'class': 'ste', 'category': 'lvl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Level',              'query': 'elevation'},
-            {'class': 'ste', 'category': 'tbm', 'type': FeatureType.Point,   'definitive': False, 'name': 'TBM',                'query': 'elevation'},
-            {'class': 'ste', 'category': 'tgt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Target',             'query': 'elevation'},
+        'site' : [
+            {'class': 'site',    'category': 'ste', 'type': FeatureType.Point,   'definitive': False, 'name': 'Site Location'},
+            {'class': 'site',    'category': 'bpt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Base Point',         'query': 'label'},
+            {'class': 'site',    'category': 'stn', 'type': FeatureType.Point,   'definitive': False, 'name': 'Base Station',       'query': 'elevation'},
+            {'class': 'site',    'category': 'bhl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Borehole',           'query': 'label'},
+            {'class': 'site',    'category': 'lvl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Level',              'query': 'elevation'},
+            {'class': 'site',    'category': 'tbm', 'type': FeatureType.Point,   'definitive': False, 'name': 'TBM',                'query': 'elevation'},
+            {'class': 'site',    'category': 'tgt', 'type': FeatureType.Point,   'definitive': False, 'name': 'Target',             'query': 'elevation'},
 
-            {'class': 'ste', 'category': 'bln', 'type': FeatureType.Line,    'definitive': False, 'name': 'Baseline'},
-            {'class': 'sec', 'category': 'sln', 'type': FeatureType.Line,    'definitive': False, 'name': 'Section Line',       'query': 'section'},
+            {'class': 'site',    'category': 'bln', 'type': FeatureType.Line,    'definitive': False, 'name': 'Baseline'},
+            {'class': 'section', 'category': 'sln', 'type': FeatureType.Line,    'definitive': False, 'name': 'Section Line',       'query': 'id'},
 
-            {'class': 'ste', 'category': 'red', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Site Red Line'},
-            {'class': 'tch', 'category': 'tcp', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Trench (Proposed)',  'query': 'trench'},
-            {'class': 'tch', 'category': 'tch', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Trench (Excavated)', 'query': 'trench'},
-            {'class': 'ste', 'category': 'ara', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Area'},
-            {'class': 'ste', 'category': 'pnl', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Panel'},
-            {'class': 'ste', 'category': 'tpt', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Test Pit'},
+            {'class': 'site',    'category': 'red', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Site Red Line'},
+            {'class': 'trench',  'category': 'tcp', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Trench (Proposed)',  'query': 'id'},
+            {'class': 'trench',  'category': 'tch', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Trench (Excavated)', 'query': 'id'},
+            {'class': 'site',    'category': 'ara', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Area'},
+            {'class': 'site',    'category': 'pnl', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Panel'},
+            {'class': 'site',    'category': 'tpt', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Test Pit'},
         ]
     }

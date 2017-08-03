@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -29,7 +27,7 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QWidget
 
 from config import Config
-from plan_item import ItemKey
+from item import Item
 
 from select_item_widget_base import *
 
@@ -80,13 +78,13 @@ class SelectItemWidget(QWidget, Ui_SelectItemWidget):
         return self.itemIdEdit.text()
 
     def item(self):
-        return ItemKey(self.siteCode(), self.classCode(), self.itemId())
+        return Item(self.siteCode(), self.classCode(), self.itemId())
 
-    def setItem(self, itemKey):
-        if isinstance(itemKey, ItemKey) and itemKey.isValid():
-            self.siteCodeCombo.setCurrentIndex(self.siteCodeCombo.findData(itemKey.siteCode))
-            self.classCodeCombo.setCurrentIndex(self.classCodeCombo.findData(itemKey.classCode))
-            self.itemIdEdit.setText(itemKey.itemId)
+    def setItem(self, item):
+        if isinstance(item, Item) and item.isValid():
+            self.siteCodeCombo.setCurrentIndex(self.siteCodeCombo.findData(item.siteCode()))
+            self.classCodeCombo.setCurrentIndex(self.classCodeCombo.findData(item.classCode()))
+            self.itemIdEdit.setText(item.itemId())
 
     def _siteCodeIndexChanged(self, idx):
         self.siteCodeChanged.emit(self.siteCodeCombo.itemData(idx))

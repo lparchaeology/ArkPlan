@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-03-11
-        git sha              : $Format:%H$
-        copyright            : 2016 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -40,7 +38,7 @@ from ..pyARK.ark import Ark
 from enum import *
 from data_dock import DataDock
 from config import Config
-from plan_item import ItemKey
+from item import Item
 from credentials_dialog import CredentialsDialog
 
 import resources
@@ -58,16 +56,16 @@ class ItemModel(TableModel):
                 for field in self._fields:
                     self._nullRecord[field] = ''
                 for record in reader:
-                    key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
-                    self._addItem(key, record)
+                    item = Item(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
+                    self._addItem(item, record)
 
-    def getItem(self, itemKey):
-        return self.getRecord('key', itemKey)
+    def getItem(self, item):
+        return self.getRecord('item', item)
 
-    def _addItem(self, key, itemRecord):
+    def _addItem(self, item, itemRecord):
         record = {}
         record.update(self._nullRecord)
-        record.update({'key' : key})
+        record.update({'item' : item})
         record.update(itemRecord)
         self._table.append(record)
 
@@ -87,13 +85,13 @@ class Data(QObject):
     _ark = None
     _indexLoaded = False
     _dataMode = ''
-    _prevItem = ItemKey()
+    _prevItem = Item()
 
     _mapAction = MapAction.MoveMap
     _filterAction = FilterAction.ExclusiveHighlightFilter
     _drawingAction = DrawingAction.NoDrawingAction
 
-    itemKeys = {} # {classCode: [ItemKey]}
+    items = {} # {classCode: [Item]}
 
     def __init__(self, project):
         super(Data, self).__init__(project)
@@ -166,7 +164,7 @@ class Data(QObject):
 
     def hasClassData(self, classCode):
         try:
-            return (len(self.itemKeys[classCode]) > 0)
+            return (len(self.items[classCode]) > 0)
         except:
             return False
 
@@ -175,7 +173,7 @@ class Data(QObject):
 
     def _loadOfflineData(self):
         for classCode in Config.classCodes.keys():
-            keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
+            keyFields = Item('site', 'class', 'id')
             filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
             if classCode in self._classDataModels:
                 self._classDataModels[classCode].clear()
@@ -190,12 +188,12 @@ class Data(QObject):
 
     def _loadOfflineLinks(self, table):
         for record in table:
-            parentItem = record['key']
+            parentItem = record['item']
             siteCode = record['ste_cd']
             childModule = record['child_module']
             children = str(record['children']).split()
             for child in children:
-                childItem = ItemKey(siteCode, childModule, child)
+                childItem = Item(siteCode, childModule, child)
                 self._linkModel.addChild(parentItem, childItem)
 
     def _createArkSession(self):
@@ -205,9 +203,9 @@ class Data(QObject):
 
     def _loadIndex(self):
         self._indexLoaded = False
-        self.itemKeys = {}
+        self.items = {}
         for classCode in Config.classCodes.keys():
-            self.itemKeys[classCode] = []
+            self.items[classCode] = []
             if not self._loadOfflineClassIndex(classCode):
                 self._loadOnlineClassIndex(classCode)
         self.dock.setItemNavEnabled(self._indexLoaded)
@@ -216,16 +214,16 @@ class Data(QObject):
         filePath = self.project.projectPath() + '/data/' + self.project.siteCode() + '_' + classCode + '.csv'
         if QFile.exists(filePath):
             with open(filePath) as csvFile:
-                keyFields = ItemKey(self.project.fieldName('site'), self.project.fieldName('class'), self.project.fieldName('id'))
-                keys = set()
+                keyFields = Item('site', 'class', 'id')
+                items = set()
                 reader = csv.DictReader(csvFile)
                 fields = reader.fieldnames
                 for record in reader:
-                    key = ItemKey(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
-                    keys.add(key)
-            self.itemKeys[classCode] = sorted(keys)
-            self.project.logMessage('Offline Item Keys ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
-            if len(self.itemKeys[classCode]) > 0:
+                    item = Item(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
+                    items.add(item)
+            self.items[classCode] = sorted(items)
+            self.project.logMessage('Offline Item Keys ' + classCode + ' = ' + str(len(self.items[classCode])))
+            if len(self.items[classCode]) > 0:
                 self._indexLoaded = True
                 return True
         return False
@@ -244,63 +242,63 @@ class Data(QObject):
             self.project.logMessage(response.raw)
         else:
             lst = response.data[classCode]
-            keys = set()
+            items = set()
             for record in lst:
-                key = ItemKey(record['ste_cd'], classCode, record[classCode + '_no'])
-                if key.isValid():
-                    keys.add(key)
-            self.itemKeys[classCode] = sorted(keys)
-            self.project.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.itemKeys[classCode])))
-            if (len(self.itemKeys[classCode]) > 0):
+                item = Item(record['ste_cd'], classCode, record[classCode + '_no'])
+                if item.isValid():
+                    items.add(item)
+            self.items[classCode] = sorted(items)
+            self.project.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.items[classCode])))
+            if (len(self.items[classCode]) > 0):
                 self._indexLoaded = True
                 return True
         return False
 
-    def haveItem(self, itemKey):
+    def haveItem(self, item):
         try:
-            return itemKey in self.project.data.itemKeys[itemKey.classCode]
+            return item in self.project.data.items[item.classCode()]
         except KeyError:
             return False
 
     def firstItem(self, classCode):
         try:
-            return self.itemKeys[classCode][0]
+            return self.items[classCode][0]
         except KeyError:
-            return ItemKey()
+            return Item()
 
     def lastItem(self, classCode):
         try:
-            return self.itemKeys[classCode][-1]
+            return self.items[classCode][-1]
         except KeyError:
-            return ItemKey()
+            return Item()
 
-    def prevItem(self, itemKey):
+    def prevItem(self, item):
         idx = -1
         try:
-            if itemKey.isValid():
-                idx = bisect.bisect_left(self.itemKeys[itemKey.classCode], itemKey) - 1
-            if idx >= 0 and idx < len(self.itemKeys[itemKey.classCode]) - 1:
-                return self.itemKeys[itemKey.classCode][idx]
+            if item.isValid():
+                idx = bisect.bisect_left(self.items[item.classCode()], item) - 1
+            if idx >= 0 and idx < len(self.items[item.classCode()]) - 1:
+                return self.items[item.classCode()][idx]
         except:
             pass
-        return ItemKey()
+        return Item()
 
-    def nextItem(self, itemKey):
+    def nextItem(self, item):
         idx = -1
-        if itemKey.isValid():
-            idx = bisect.bisect(self.itemKeys[itemKey.classCode], itemKey)
-        if idx >= 0 and idx < len(self.itemKeys[itemKey.classCode]) - 1:
-            return self.itemKeys[itemKey.classCode][idx]
-        return ItemKey()
+        if item.isValid():
+            idx = bisect.bisect(self.items[item.classCode()], item)
+        if idx >= 0 and idx < len(self.items[item.classCode()]) - 1:
+            return self.items[item.classCode()][idx]
+        return Item()
 
-    def openItem(self, itemKey):
+    def openItem(self, item):
         if not self.project.arkUrl():
             self.project.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
-        elif not self.haveItem(itemKey):
+        elif not self.haveItem(item):
             self.project.showWarningMessage('Item not in ARK.')
         else:
-            mod_cd = itemKey.classCode + '_cd'
-            item_cd = itemKey.siteCode + '_' + itemKey.itemId
+            mod_cd = item.classCode() + '_cd'
+            item_cd = item.siteCode() + '_' + item.itemId()
             url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
             try:
                 webbrowser.get().open_new_tab(url)
@@ -308,59 +306,59 @@ class Data(QObject):
                 QApplication.clipboard().setText(url)
                 self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
-    def _getOnlineLinks(self, itemKey, linkClassCode):
+    def _getOnlineLinks(self, item, linkClassCode):
         if not self.project.arkUrl():
             return []
-        xmi = unicode('conf_field_' + itemKey.classCode + linkClassCode + 'xmi')
-        data = self.getItemFields(itemKey, [xmi])
+        xmi = unicode('conf_field_' + item.classCode() + linkClassCode + 'xmi')
+        data = self.getItemFields(item, [xmi])
         items = []
         try:
             for link in data[xmi]:
                 itemkey = link[u'xmi_itemkey']
                 itemvalue = link[u'xmi_itemvalue'].split(u'_')
-                item = ItemKey(itemvalue[0], itemkey[:3], itemvalue[1])
+                item = Item(itemvalue[0], itemkey[:3], itemvalue[1])
                 items.append(item)
         except:
             return []
         return items
 
-    def getItemData(self, itemKey):
+    def getItemData(self, item):
         try:
-            return self._classDataModels[itemKey.classCode].getItem(itemKey)
+            return self._classDataModels[item.classCode()].getItem(item)
         except KeyError:
             return {}
 
-    def childItems(self, itemKey):
-        if not itemKey or itemKey.isInvalid() or not Config.isGroupClass(itemKey.classCode):
+    def childItems(self, item):
+        if not item or item.isInvalid() or not Config.fields[item.classCode()]['group']:
             return []
         children = []
-        for item in itemKey.toList():
+        for item in item.toList():
             children.extend(self._linkModel.getChildren(item))
         if len(children) > 0:
             return children
-        for item in itemKey.toList():
-            children.extend(self._getOnlineLinks(itemKey, Config.childClass(itemKey.classCode)))
+        for item in item.toList():
+            children.extend(self._getOnlineLinks(item, Config.fields[item.classCode()]['child']))
         return children
 
-    def nodesItemKey(self, parentItemKey):
-        if not self._indexLoaded or not parentItemKey or parentItemKey.isInvalid() or not Config.isGroupClass(parentItemKey.classCode):
-            return parentItemKey
+    def nodesItem(self, parentItem):
+        if not self._indexLoaded or not parentItem or parentItem.isInvalid() or not Config.fields[item.classCode()]['group']:
+            return parentItem
         else:
-            return self.nodesItemKey(self.childrenItemKey(parentItemKey))
+            return self.nodesItem(self.childrenItem(parentItem))
 
-    def childrenItemKey(self, parentItemKey):
-        if not parentItemKey or parentItemKey.isInvalid() or not Config.isGroupClass(parentItemKey.classCode):
-            return ItemKey()
+    def childrenItem(self, parentItem):
+        if not parentItem or parentItem.isInvalid() or not Config.fields[item.classCode()]['group']:
+            return Item()
         childIdSet = set()
-        for parent in parentItemKey.toList():
+        for parent in parentItem.toList():
             children = self.childItems(parent)
             for child in children:
-                childIdSet.add(child.itemId)
-        return ItemKey(parentItemKey.siteCode, Config.childClass(parentItemKey.classCode), childIdSet)
+                childIdSet.add(child.itemId())
+        return Item(parentItem.siteCode(), Config.fields[parentItem.classCode()]['child'], childIdSet)
 
-    def parentItem(self, itemKey):
+    def parentItem(self, item):
         # TODO Get from ARK
-        return self._linkModel.getParent(itemKey)
+        return self._linkModel.getParent(item)
 
     def getFilters(self):
         if self._ark is None:
@@ -382,27 +380,27 @@ class Data(QObject):
             utils.logMessage(response.message)
             utils.logMessage(response.raw)
         else:
-            for key in response.data:
-                res = response.data[key]
-                item = ItemKey()
+            for item in response.data:
+                res = response.data[item]
+                item = Item()
                 item.fromArkKey(res['itemkey'], res['itemval'])
                 utils.logMessage(item.debug())
                 if item.isValid():
                     items.append(item)
         return sorted(items)
 
-    def getItemFields(self, itemKey, fields):
-        if self._ark is None or itemKey is None or itemKey.isInvalid():
+    def getItemFields(self, item, fields):
+        if self._ark is None or item is None or item.isInvalid():
             return {}
-        response = self._ark.getFields(itemKey.classCode + '_cd', itemKey.itemValue(), fields)
+        response = self._ark.getFields(item.classCode() + '_cd', item.itemValue(), fields)
         if response.error:
             utils.logMessage(response.url)
             utils.logMessage(response.message)
             utils.logMessage(response.raw)
         return response.data
 
-    def getItemSubform(self, itemKey, subform):
-        if self._ark is None or itemKey is None or itemKey.isInvalid():
+    def getItemSubform(self, item, subform):
+        if self._ark is None or item is None or item.isInvalid():
             return {}
         if response.error:
             utils.logMessage(response.url)
@@ -428,7 +426,7 @@ class Data(QObject):
         self._prevItem = item
         url = ''
         if item.isValid() and self.haveItem(item):
-            url = self._ark.transcludeSubformUrl(item.classCode + '_cd', item.itemValue(), item.classCode + '_apisum')
+            url = self._ark.transcludeSubformUrl(item.classCode() + '_cd', item.itemValue(), item.classCode() + '_apisum')
         self.dock.setItemUrl(url)
 
     def _value(self, value):
@@ -497,7 +495,7 @@ class Data(QObject):
                 item_key = parts[-2]
                 item_value = parts[-1].split('_')
         if item_key and len(item_value) == 2:
-            item = ItemKey(item_value[0], item_key[:3], item_value[1])
+            item = Item(item_value[0], item_key[:3], item_value[1])
             if self.haveItem(item):
                 self.dock.setItem(item)
                 self._itemChanged()

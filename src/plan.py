@@ -40,7 +40,9 @@ from select_drawing_dialog import SelectDrawingDialog
 
 from enum import *
 from plan_util import *
-from plan_item import *
+from item import Item
+from feature import Feature
+from source import Source
 from plan_map_tools import *
 from config import Config
 from metadata import Metadata
@@ -172,7 +174,7 @@ class Plan(QObject):
         if pmd.sourceId > 0:
             self.metadata.setItemId(pmd.sourceId)
             self.metadata.setSourceId(pmd.sourceId)
-        self.metadata.setSourceCode('drw')
+        self.metadata.setSourceCode('drawing')
         self.metadata.setSourceClass(pmd.sourceClass)
         self.metadata.setSourceFile(pmd.filename)
         self.metadata.setEditor(self.project.userName())
@@ -183,25 +185,25 @@ class Plan(QObject):
             self.georeferencePlan(QFileInfo(filePath), 'free')
 
     def _loadRawPlan(self):
-        dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode())
+        dialog = SelectDrawingDialog(self.project, 'context', self.project.siteCode())
         if (dialog.exec_()):
             for filePath in dialog.selectedFiles():
                 self.georeferencePlan(QFileInfo(filePath))
 
     def _loadGeoPlan(self):
-        dialog = SelectDrawingDialog(self.project, 'cxt', self.project.siteCode(), True)
+        dialog = SelectDrawingDialog(self.project, 'context', self.project.siteCode(), True)
         if (dialog.exec_()):
             for filePath in dialog.selectedFiles():
                 geoFile = QFileInfo(filePath)
                 self._setPlanMetadata(PlanMetadata(geoFile))
                 self.project.loadGeoLayer(geoFile)
 
-    def loadDrawing(self, itemKey, zoomToDrawing=True):
-        if not Config.classCodes[itemKey.classCode]['drawing']:
+    def loadDrawing(self, item, zoomToDrawing=True):
+        if not Config.classCodes[item.classCode()]['drawing']:
             return
-        drawingDir = self.project.georefDrawingDir(itemKey.classCode)
+        drawingDir = self.project.georefDrawingDir(item.classCode())
         drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        name = itemKey.name()
+        name = item.name()
         nameList = []
         nameList.append(name + '.png')
         nameList.append(name + '.tif')
@@ -215,24 +217,24 @@ class Plan(QObject):
             self._setPlanMetadata(PlanMetadata(drawing))
             self.project.loadGeoLayer(drawing, zoomToDrawing)
 
-    def loadSourceDrawings(self, itemKey, clearDrawings=False):
-        if itemKey.isInvalid():
+    def loadSourceDrawings(self, item, clearDrawings=False):
+        if item.isInvalid():
             return
         sourceKeys = set()
-        sourceKeys.add(itemKey)
-        itemRequest = itemKey.featureRequest()
+        sourceKeys.add(item)
+        itemRequest = item.featureRequest()
         for feature in self.project.plan.polygonsLayer.getFeatures(itemRequest):
-            itemSource = ItemSource(feature)
-            if itemSource.key.isValid():
-                sourceKeys.add(itemSource.key)
+            source = Source(feature)
+            if source.item().isValid():
+                sourceKeys.add(source.item())
         for feature in self.project.plan.linesLayer.getFeatures(itemRequest):
-            itemSource = ItemSource(feature)
-            if itemSource.key.isValid():
-                sourceKeys.add(itemSource.key)
+            source = Source(feature)
+            if source.item.isValid():
+                sourceKeys.add(source.item())
         for feature in self.project.plan.pointsLayer.getFeatures(itemRequest):
-            itemSource = ItemSource(feature)
-            if itemSource.key.isValid():
-                sourceKeys.add(itemSource.key)
+            source = Source(feature)
+            if source.item().isValid():
+                sourceKeys.add(source.item())
         if clearDrawings and len(sourceKeys) > 0:
             self.project.clearDrawings()
         for sourceKey in sorted(sourceKeys):
@@ -245,16 +247,16 @@ class Plan(QObject):
     # Georeference Tools
 
     def georeferencePlan(self, sourceFile, mode='name'):
-        config = Config.rasterGroups
-        for group in config:
-            config[group]['raw'] = self.project.rawDrawingDir(group)
-            config[group]['geo'] = self.project.georefDrawingDir(group)
-            config[group]['suffix'] = '_r'
-            config[group]['crs'] = self.project.projectCrs().authid()
-            config[group]['grid'] = self.project.grid.pointsLayer
-            config[group]['local_x'] = self.project.fieldName('local_x')
-            config[group]['local_y'] = self.project.fieldName('local_y')
-        georefDialog = GeorefDialog(config)
+        drawings = Config.drawings
+        for drawing in drawings:
+            drawings[drawing]['raw'] = self.project.rawDrawingDir(group)
+            drawings[drawing]['geo'] = self.project.georefDrawingDir(group)
+            drawings[drawing]['suffix'] = '_r'
+            drawings[drawing]['crs'] = self.project.projectCrs().authid()
+            drawings[drawing]['grid'] = self.project.grid.pointsLayer
+            drawings[drawing]['local_x'] = 'local_x'
+            drawings[drawing]['local_y'] = 'local_y'
+        georefDialog = GeorefDialog(drawings)
         if georefDialog.loadImage(sourceFile) and georefDialog.exec_():
             geoFile = georefDialog.geoFile()
             md = georefDialog.metadata()
@@ -296,7 +298,7 @@ class Plan(QObject):
         # Finally actually merge the data
         if collection.mergeBuffers('Merge data', self.project.logUpdates(), timestamp):
             self.project.showInfoMessage(name + ' data successfully merged.')
-            self._logItemAction(self.metadata.itemFeature.key, 'Merge Buffers', timestamp)
+            self._logItemAction(self.metadata.feature().item(), 'Merge Buffers', timestamp)
             if self._editSchematic:
                 self._editSchematic = False
                 self.dock.activateSchematicCheck()
@@ -305,15 +307,6 @@ class Plan(QObject):
             self.project.showCriticalMessage(name + ' data merge failed! Some data has not been saved, please check your data.', 5)
 
     def _preMergeBufferCheck(self, layer):
-        siteField = self.project.fieldName('site')
-        classField = self.project.fieldName('class')
-        idField = self.project.fieldName('id')
-        categoryField = self.project.fieldName('category')
-        sourceCodeField = self.project.fieldName('source_cd')
-        sourceClassField = self.project.fieldName('source_cl')
-        sourceIdField = self.project.fieldName('source_id')
-        fileField = self.project.fieldName('file')
-        commentField = self.project.fieldName('comment')
         errors = []
         row = 0
         for feature in layer.getFeatures():
@@ -345,48 +338,49 @@ class Plan(QObject):
                     error.message = err.what()
                     errors.append(copy.deepcopy(error))
             # Key attributes that must always be populated
-            if self._isEmpty(feature.attribute(siteField)):
-                error.field = siteField
+            if self._isEmpty(feature.attribute('site')):
+                error.field = 'site'
                 error.message = 'Site Code is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute(classField)):
-                error.field = classField
+            if self._isEmpty(feature.attribute('class')):
+                error.field = 'class'
                 error.message = 'Class Code is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute(idField)):
-                error.field = idField
+            if self._isEmpty(feature.attribute('id')):
+                error.field = 'id'
                 error.message = 'ID is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute(categoryField)):
-                error.field = categoryField
+            if self._isEmpty(feature.attribute('category')):
+                error.field = 'category'
                 error.message = 'Category is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute(sourceCodeField)):
-                error.field = sourceCodeField
+            if self._isEmpty(feature.attribute('source_cd')):
+                error.field = 'source_cd'
                 error.message = 'Source Code is required'
                 error.ignore = True
                 #errors.append(copy.deepcopy(error))
             # Source attributes required depend on the source type
-            if feature.attribute(sourceCodeField) == 'cre' or feature.attribute(sourceCodeField) == 'oth':
-                if self._isEmpty(feature.attribute(commentField)):
-                    error.field = sourceCodeField
+            if feature.attribute('source_cd') == 'creator' or feature.attribute('source_cd') == 'other':
+                if self._isEmpty(feature.attribute('comment')):
+                    error.field = 'source_cd'
                     error.message = 'Comment is required for Source type of Creator or Other'
                     error.ignore = True
                     #errors.append(copy.deepcopy(error))
-            elif feature.attribute(sourceCodeField) == 'svy':
-                if self._isEmpty(feature.attribute(fileField)):
-                    error.field = sourceCodeField
+            elif feature.attribute('source_cd') == 'survey':
+                if self._isEmpty(feature.attribute('file')):
+                    error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Survey'
                     error.ignore = True
                     #errors.append(copy.deepcopy(error))
             else: # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
-                if (feature.attribute(sourceCodeField) == 'drw' or feature.attribute(sourceCodeField) == 'unc') and self._isEmpty(feature.attribute(fileField)):
-                    error.field = sourceCodeField
+                if ((feature.attribute('source_cd') == 'drawing' or feature.attribute('source_cd') == 'unchecked')
+                    and self._isEmpty(feature.attribute('file'))):
+                    error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Drawing'
                     error.ignore = True
                     #errors.append(copy.deepcopy(error))
-                if (self._isEmpty(feature.attribute(sourceClassField)) or self._isEmpty(feature.attribute(sourceIdField))):
-                    error.field = sourceCodeField
+                if (self._isEmpty(feature.attribute('source_cl')) or self._isEmpty(feature.attribute('source_id'))):
+                    error.field = 'source_cd'
                     error.message = 'Source Class and ID is required'
                     error.ignore = True
                     #errors.append(copy.deepcopy(error))
@@ -400,15 +394,12 @@ class Plan(QObject):
         return False
 
     def _preMergeBufferUpdate(self, layer, timestamp, user):
-        siteField = self.project.fieldName('site')
-        classField = self.project.fieldName('class')
-        createdField = self.project.fieldName('created')
-        createdIdx = layer.fieldNameIndex(createdField)
-        creatorIdx = layer.fieldNameIndex(self.project.fieldName('creator'))
-        modifiedIdx = layer.fieldNameIndex(self.project.fieldName('modified'))
-        modifierIdx = layer.fieldNameIndex(self.project.fieldName('modifier'))
+        createdIdx = layer.fieldNameIndex('created')
+        creatorIdx = layer.fieldNameIndex('creator')
+        modifiedIdx = layer.fieldNameIndex('modified')
+        modifierIdx = layer.fieldNameIndex('modifier')
         for feature in layer.getFeatures():
-            if self._isEmpty(feature.attribute(createdField)):
+            if self._isEmpty(feature.attribute('created')):
                 layer.changeAttributeValue(feature.id(), createdIdx, timestamp)
                 layer.changeAttributeValue(feature.id(), creatorIdx, user)
             else:
@@ -429,76 +420,76 @@ class Plan(QObject):
         confirm, ok = QInputDialog.getText(None, title, label, text='')
         return ok and confirm == str(itemId)
 
-    def _logItemAction(self, key, action, timestamp=None):
+    def _logItemAction(self, item, action, timestamp=None):
         if self.project.plan.settings.log:
             if not timestamp:
                 timestamp = utils.timestamp()
             fd = open(self._itemLogPath, 'a')
-            fd.write(utils.doublequote(timestamp) + ',' + utils.doublequote(action) + ',' + key.toCsv() + '\n')
+            fd.write(utils.doublequote(timestamp) + ',' + utils.doublequote(action) + ',' + item.toCsv() + '\n')
             fd.close()
 
-    def editInBuffers(self, itemKey):
-        #if self._confirmDelete(itemKey.itemId, 'Confirm Move Item'):
-            request = itemKey.featureRequest()
+    def editInBuffers(self, item):
+        #if self._confirmDelete(item.itemId(), 'Confirm Move Item'):
+            request = item.featureRequest()
             timestamp = utils.timestamp()
             action = 'Edit Item'
             if self.project.plan.moveFeatureRequestToBuffers(request, action, self.project.logUpdates(), timestamp):
-                self._logItemAction(itemKey, action, timestamp)
-                self._metadataFromBuffers(itemKey)
+                self._logItemAction(item, action, timestamp)
+                self._metadataFromBuffers(item)
 
-    def deleteItem(self, itemKey):
-        if self._confirmDelete(itemKey.itemId, 'Confirm Delete Item'):
-            request = itemKey.featureRequest()
+    def deleteItem(self, item):
+        if self._confirmDelete(item.itemId(), 'Confirm Delete Item'):
+            request = item.featureRequest()
             timestamp = utils.timestamp()
             action = 'Delete Item'
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
-                self._logItemAction(itemKey, action, timestamp)
+                self._logItemAction(item, action, timestamp)
 
-    def applyItemActions(self, itemKey, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
+    def applyItemActions(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
         if drawingAction != DrawingAction.NoDrawingAction:
-            self.loadSourceDrawings(itemKey, drawingAction == DrawingAction.LoadDrawings)
+            self.loadSourceDrawings(item, drawingAction == DrawingAction.LoadDrawings)
 
         if filterAction != FilterAction.NoFilterAction:
-            self.project.filterModule.applyItemAction(itemKey, filterAction)
+            self.project.filterModule.applyItemAction(item, filterAction)
 
         if mapAction == MapAction.ZoomMap:
-            self._zoomToItem(itemKey)
+            self._zoomToItem(item)
         elif mapAction == MapAction.PanMap:
-            self._panToItem(itemKey)
+            self._panToItem(item)
         elif mapAction == MapAction.MoveMap:
-            self._moveToItem(itemKey)
+            self._moveToItem(item)
         self.project.mapCanvas().refresh()
 
-    def showItem(self, itemKey, loadDrawings=True, zoom=True):
-        self.project.showMessage('Loading ' + itemKey.itemLabel())
-        self.project.filterModule.filterItem(itemKey)
+    def showItem(self, item, loadDrawings=True, zoom=True):
+        self.project.showMessage('Loading ' + item.itemLabel())
+        self.project.filterModule.filterItem(item)
         if loadDrawings:
-            self.loadSourceDrawings(itemKey, True)
+            self.loadSourceDrawings(item, True)
         if zoom:
-            self._zoomToItem(itemKey)
+            self._zoomToItem(item)
 
-    def panToItem(self, itemKey, highlight=False):
+    def panToItem(self, item, highlight=False):
         if highlight:
-            self.project.filterModule.highlightItem(itemKey)
-        self._panToItem(itemKey)
+            self.project.filterModule.highlightItem(item)
+        self._panToItem(item)
         self.project.mapCanvas().refresh()
 
-    def zoomToItem(self, itemKey, highlight=False):
+    def zoomToItem(self, item, highlight=False):
         if highlight:
-            self.project.filterModule.highlightItem(itemKey)
-        self._zoomToItem(itemKey)
+            self.project.filterModule.highlightItem(item)
+        self._zoomToItem(item)
         self.project.mapCanvas().refresh()
 
-    def moveToItem(self, itemKey, highlight=False):
+    def moveToItem(self, item, highlight=False):
         ret = -1
         if highlight:
-            ret = self.project.filterModule.highlightItem(itemKey)
-        self._moveToItem(itemKey)
+            ret = self.project.filterModule.highlightItem(item)
+        self._moveToItem(item)
         self.project.mapCanvas().refresh()
         return ret
 
-    def _moveToItem(self, itemKey):
-        self._moveToExtent(self.itemExtent(itemKey))
+    def _moveToItem(self, item):
+        self._moveToExtent(self.itemExtent(item))
 
     def _moveToExtent(self, extent):
         if extent is None or extent.isNull() or extent.isEmpty():
@@ -510,16 +501,16 @@ class Plan(QObject):
         else:
             self._panToExtent(extent)
 
-    def _panToItem(self, itemKey):
-        self._panToExtent(self.itemExtent(itemKey))
+    def _panToItem(self, item):
+        self._panToExtent(self.itemExtent(item))
 
     def _panToExtent(self, extent):
         if extent == None or extent.isNull() or extent.isEmpty():
             return
         self.project.mapCanvas().setCenter(extent.center())
 
-    def _zoomToItem(self, itemKey):
-        self._zoomToExtent(self.itemExtent(itemKey))
+    def _zoomToItem(self, item):
+        self._zoomToExtent(self.itemExtent(item))
 
     def _zoomToExtent(self, extent):
         if extent == None or extent.isNull() or extent.isEmpty():
@@ -527,24 +518,24 @@ class Plan(QObject):
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
 
-    def filterItem(self, itemKey):
-        self.project.filterModule.filterItem(itemKey)
+    def filterItem(self, item):
+        self.project.filterModule.filterItem(item)
         self.project.mapCanvas().refresh()
 
-    def excludeFilterItem(self, itemKey):
-        self.project.filterModule.excludeItem(itemKey)
+    def excludeFilterItem(self, item):
+        self.project.filterModule.excludeItem(item)
         self.project.mapCanvas().refresh()
 
-    def highlightItem(self, itemKey):
-        self.project.filterModule.highlightItem(itemKey)
+    def highlightItem(self, item):
+        self.project.filterModule.highlightItem(item)
         self.project.mapCanvas().refresh()
 
-    def addHighlightItem(self, itemKey):
-        self.project.filterModule.addHighlightItem(itemKey)
+    def addHighlightItem(self, item):
+        self.project.filterModule.addHighlightItem(item)
         self.project.mapCanvas().refresh()
 
-    def itemExtent(self, itemKey):
-        requestKey = self.project.data.nodesItemKey(itemKey)
+    def itemExtent(self, item):
+        requestKey = self.project.data.nodesItem(item)
         request = requestKey.featureRequest()
         points = self._requestAsLayer(request, self.project.plan.pointsLayer, 'points')
         lines = self._requestAsLayer(request, self.project.plan.linesLayer, 'lines')
@@ -578,21 +569,21 @@ class Plan(QObject):
         features = layers.getAllFeaturesRequest(request, self.project.plan.linesLayer)
         lst = []
         for feature in features:
-            lst.append(ItemFeature(feature))
+            lst.append(Feature(feature))
         lst.sort()
         return lst
 
-    def _sectionLineGeometry(self, itemKey):
-        if itemKey and itemKey.isValid():
-            request = self._categoryRequest(itemKey, 'sln')
+    def _sectionLineGeometry(self, item):
+        if item and item.isValid():
+            request = self._categoryRequest(item, 'sln')
             features = layers.getAllFeaturesRequest(request, self.project.plan.linesLayer)
             for feature in features:
                 return QgsGeometry(feature.geometry())
         return QgsGeometry()
 
-    def _sectionChanged(self, itemKey):
+    def _sectionChanged(self, item):
         try:
-            self.mapTools['scs'].setSectionGeometry(self._sectionLineGeometry(itemKey))
+            self.mapTools['scs'].setSectionGeometry(self._sectionLineGeometry(item))
         except:
             pass
 
@@ -632,10 +623,10 @@ class Plan(QObject):
     # Feature Request Methods
 
     def _eqClause(self, field, value):
-        return utils.eqClause(self.project.fieldName(field), value)
+        return utils.eqClause(field, value)
 
     def _neClause(self, field, value):
-        return utils.neClause(self.project.fieldName(field), value)
+        return utils.neClause(field, value)
 
     def _categoryClause(self, category):
         return self._eqClause('category', category)
@@ -648,14 +639,14 @@ class Plan(QObject):
         request.setFilterExpression(expr)
         return request
 
-    def _itemRequest(self, itemKey):
-        return self._featureRequest(itemKey.filterClause())
+    def _itemRequest(self, item):
+        return self._featureRequest(item.filterClause())
 
-    def _categoryRequest(self, itemKey, category):
-        return self._featureRequest(itemKey.filterClause() + ' and ' + self._categoryClause(category))
+    def _categoryRequest(self, item, category):
+        return self._featureRequest(item.filterClause() + ' and ' + self._categoryClause(category))
 
-    def _notCategoryRequest(self, itemKey, category):
-        return self._featureRequest(itemKey.filterClause() + ' and ' + self._notCategoryClause(category))
+    def _notCategoryRequest(self, item, category):
+        return self._featureRequest(item.filterClause() + ' and ' + self._notCategoryClause(category))
 
     def _classItemsRequest(self, siteCode, classCode):
         return self._featureRequest(self._eqClause('site', siteCode)+ ' and ' + self._eqClause('class', classCode))
@@ -675,13 +666,13 @@ class Plan(QObject):
         self._drawingAction = drawingAction
 
     def _openContextData(self):
-        self.openItemInArk(self.dock.contextItemKey())
+        self.openItemInArk(self.dock.contextItem())
 
     def _openSourceContextData(self):
-        self.openItemInArk(self.dock.sourceItemKey())
+        self.openItemInArk(self.dock.sourceItem())
 
-    def openItemInArk(self, itemKey):
-        self.project.data.openItem(itemKey)
+    def openItemInArk(self, item):
+        self.project.data.openItem(item)
 
     def _resetSchematic(self):
         self._clearSchematic()
@@ -699,36 +690,36 @@ class Plan(QObject):
         self.project.filterModule.clearSchematicFilter()
 
     def _firstContext(self):
-        self._findContext(self.project.data.firstItem('cxt'))
+        self._findContext(self.project.data.firstItem('context'))
 
     def _lastContext(self):
-        self._findContext(self.project.data.lastItem('cxt'))
+        self._findContext(self.project.data.lastItem('context'))
 
     def _prevContext(self):
-        self._findContext(self.project.data.prevItem(self.dock.contextItemKey()))
+        self._findContext(self.project.data.prevItem(self.dock.contextItem()))
 
     def _nextContext(self):
-        self._findContext(self.project.data.nextItem(self.dock.contextItemKey()))
+        self._findContext(self.project.data.nextItem(self.dock.contextItem()))
 
     def _prevMissing(self):
-        context = self.dock.contextItemKey()
+        context = self.dock.contextItem()
         idx = 0
         if context.isValid():
-            idx = bisect.bisect_left(self.project.data.itemKeys['cxt'], context)
+            idx = bisect.bisect_left(self.project.data.items['context'], context)
         schematics = self._getAllSchematicItems()
         for prv in reversed(range(idx)):
-            item = self.project.data.itemKeys['cxt'][prv]
+            item = self.project.data.items['context'][prv]
             if item not in schematics:
                 self._findContext(item)
                 return
 
     def _nextMissing(self):
-        context = self.dock.contextItemKey()
+        context = self.dock.contextItem()
         idx = 0
         if context.isValid():
-            idx = bisect.bisect(self.project.data.itemKeys['cxt'], context)
+            idx = bisect.bisect(self.project.data.items['context'], context)
         schematics = self._getAllSchematicItems()
-        for item in self.project.data.itemKeys['cxt'][idx:]:
+        for item in self.project.data.items['context'][idx:]:
             if item not in schematics:
                 self._findContext(item)
                 return
@@ -737,7 +728,7 @@ class Plan(QObject):
         features = self._getAllSchematicFeatures()
         items = set()
         for feature in features:
-            item = ItemKey(feature)
+            item = Item(feature)
             items.add(item)
         return sorted(items)
 
@@ -747,26 +738,26 @@ class Plan(QObject):
 
     def _editSchematicContext(self):
         self._editSchematic = True
-        self.editInBuffers(self.dock.contextItemKey())
+        self.editInBuffers(self.dock.contextItem())
         self.dock.widget.setCurrentIndex(0)
 
     def _deleteSectionSchematic(self):
-        itemKey = self.dock.contextItemKey()
-        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + str(itemKey.itemId) + '\n\nPlease enter the item ID to confirm.'
-        if self._confirmDelete(itemKey.itemId, 'Confirm Delete Section Schematic', label):
-            request = self._categoryRequest(itemKey, 'scs')
+        item = self.dock.contextItem()
+        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + str(item.itemId()) + '\n\nPlease enter the item ID to confirm.'
+        if self._confirmDelete(item.itemId(), 'Confirm Delete Section Schematic', label):
+            request = self._categoryRequest(item, 'scs')
             timestamp = utils.timestamp()
             action = 'Delete Section Schematic'
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
-                self._logItemAction(itemKey, action, timestamp)
-            self._findContext(itemKey)
+                self._logItemAction(item, action, timestamp)
+            self._findContext(item)
 
     def _arkStatus(self, item):
         haveArk = SearchStatus.NotFound
         contextType = 'None'
         contextDescription = ''
         try:
-            if item in self.project.data.itemKeys['cxt']:
+            if item in self.project.data.items['context']:
                 haveArk = SearchStatus.Found
                 vals = self.project.data.getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
                 if (u'conf_field_cxttype' in vals and vals[u'conf_field_cxttype']):
@@ -797,11 +788,11 @@ class Plan(QObject):
             return SearchStatus.NotFound
         return SearchStatus.Found
 
-    def _findContext(self, context=ItemKey()):
+    def _findContext(self, context=Item()):
         self._clearSchematicFilters()
 
         if not context.isValid():
-            context = self.dock.contextItemKey()
+            context = self.dock.contextItem()
 
         self.project.filterModule.applySchematicFilter(context, self._filterAction)
         self.applyItemActions(context, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
@@ -827,15 +818,15 @@ class Plan(QObject):
             haveSectionSchematic = SearchStatus.NotFound
 
         self.dock.setContext(context, haveArk, contextType, contextDescription, haveFeature, haveSchematic, haveSectionSchematic)
-        self.metadata.setItemId(context.itemId)
+        self.metadata.setItemId(context.itemId())
 
     def _editSource(self):
-        self.editInBuffers(self.dock.sourceItemKey())
+        self.editInBuffers(self.dock.sourceItem())
         self.dock.widget.setCurrentIndex(0)
 
-    def _findSource(self, source=ItemKey()):
+    def _findSource(self, source=Item()):
         if not source.isValid():
-            source = self.dock.sourceItemKey()
+            source = self.dock.sourceItem()
 
         self.project.filterModule.applySchematicFilter(source, self._filterAction)
         self.applyItemActions(source, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
@@ -846,8 +837,8 @@ class Plan(QObject):
 
         self.dock.setSourceContext(source, haveArk, contextType, contextDescription, haveFeature, haveSchematic)
 
-    def _attribute(self, feature, fieldName):
-        val = feature.attribute(self.project.fieldName(fieldName))
+    def _attribute(self, feature, attribute):
+        val = feature.attribute(attribute)
         if val == NULL:
             return None
         else:
@@ -856,30 +847,30 @@ class Plan(QObject):
     def _copyFeatureMetadata(self, feature):
         self.metadata.setSiteCode(self._attribute(feature, 'site'))
         self.metadata.setComment(self._attribute(feature, 'comment'))
-        self.metadata.setClassCode('cxt')
+        self.metadata.setClassCode('context')
         self.metadata.setItemId(self.dock.context())
-        self.metadata.setSourceCode('cln')
-        self.metadata.setSourceClass('cxt')
+        self.metadata.setSourceCode('cloned')
+        self.metadata.setSourceClass('context')
         self.metadata.setSourceId(self.dock.sourceContext())
         self.metadata.setSourceFile('')
 
     def _copySourceSchematic(self):
         self.metadata.validate()
-        request = self._categoryRequest(self.dock.sourceItemKey(), 'sch')
+        request = self._categoryRequest(self.dock.sourceItem(), 'sch')
         features = layers.getAllFeaturesRequest(request, self.project.plan.polygonsLayer)
         for feature in features:
-            feature.setAttribute(self.project.fieldName('site'), self.metadata.siteCode())
-            feature.setAttribute(self.project.fieldName('class'), 'cxt')
-            feature.setAttribute(self.project.fieldName('id'), self.dock.context())
-            feature.setAttribute(self.project.fieldName('name'), None)
-            feature.setAttribute(self.project.fieldName('category'), 'sch')
-            feature.setAttribute(self.project.fieldName('source_cd'), self.metadata.sourceCode())
-            feature.setAttribute(self.project.fieldName('source_cl'), self.metadata.sourceClass())
-            feature.setAttribute(self.project.fieldName('source_id'), self.metadata.sourceId())
-            feature.setAttribute(self.project.fieldName('file'), self.metadata.sourceFile())
-            feature.setAttribute(self.project.fieldName('comment'), self.metadata.comment())
-            feature.setAttribute(self.project.fieldName('created'), self.metadata.editor())
-            feature.setAttribute(self.project.fieldName('creator'), None)
+            feature.setAttribute('site', self.metadata.siteCode())
+            feature.setAttribute('class', 'context')
+            feature.setAttribute('id', self.dock.context())
+            feature.setAttribute('label', None)
+            feature.setAttribute('category', 'sch')
+            feature.setAttribute('source_cd', self.metadata.sourceCode())
+            feature.setAttribute('source_cl', self.metadata.sourceClass())
+            feature.setAttribute('source_id', self.metadata.sourceId())
+            feature.setAttribute('file', self.metadata.sourceFile())
+            feature.setAttribute('comment', self.metadata.comment())
+            feature.setAttribute('created', self.metadata.editor())
+            feature.setAttribute('creator', None)
             self.project.plan.polygonsBuffer.addFeature(feature)
 
     def _editSourceSchematic(self):
@@ -900,25 +891,25 @@ class Plan(QObject):
     def _showSchematicReport(self):
         features = set()
         for feature in self.project.plan.pointsLayer.getFeatures():
-            features.add(ItemKey(feature))
+            features.add(Item(feature))
         for feature in self.project.plan.linesLayer.getFeatures():
-            features.add(ItemKey(feature))
+            features.add(Item(feature))
         for feature in self.project.plan.polygonsLayer.getFeatures():
-            features.add(ItemKey(feature))
+            features.add(Item(feature))
         schRequest = self._featureRequest(self._categoryClause('sch'))
         scsRequest = self._featureRequest(self._categoryClause('scs'))
         schematics = set()
         for feature in self.project.plan.polygonsLayer.getFeatures(schRequest):
-            schematics.add(ItemKey(feature))
+            schematics.add(Item(feature))
         for feature in self.project.plan.polygonsLayer.getFeatures(scsRequest):
-            schematics.add(ItemKey(feature))
+            schematics.add(Item(feature))
         missing = []
-        contexts = self.project.data.itemKeys['cxt']
+        contexts = self.project.data.items['context']
         for context in contexts:
             if context not in schematics:
                 row = {}
-                row['Site Code'] = context.siteCode
-                row['Context'] = context.itemId
+                row['Site Code'] = context.siteCode()
+                row['Context'] = context.itemId()
                 itemData = self.project.data.getItemData(context)
                 try:
                     row['Type'] = itemData['context_type']

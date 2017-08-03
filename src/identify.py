@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -32,7 +30,8 @@ from qgis.core import *
 from qgis.gui import QgsMapTool, QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from config import Config
-from plan_item import ItemKey, ItemSource
+from item import Item
+from source import Source
 
 def _quote(string):
     return "'" + string + "'"
@@ -78,17 +77,17 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         items = set()
         for result in results:
             feature = result.mFeature
-            siteCode = feature.attribute(self._project.fieldName('site'))
-            classCode = feature.attribute(self._project.fieldName('class'))
-            itemId = feature.attribute(self._project.fieldName('id'))
-            items.add(ItemKey(siteCode, classCode, itemId))
+            siteCode = feature.attribute('site')
+            classCode = feature.attribute('class')
+            itemId = feature.attribute('id')
+            items.add(Item(siteCode, classCode, itemId))
         action = QAction('Plan Items', self._menu)
         action.setData('top')
         self._menu.addAction(action)
         site = ''
         for item in sorted(items):
-            if item.siteCode != site:
-                site = item.siteCode
+            if item.siteCode() != site:
+                site = item.siteCode()
                 self._menu.addSeparator()
                 action = QAction('Site ' + site + ':', self._menu)
                 action.setData('top')
@@ -136,7 +135,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         if not isinstance(item, IdentifyItemAction):
             return
-        request = item.itemKey.featureRequest()
+        request = item.item.featureRequest()
         for feature in self._project.plan.polygonsLayer.getFeatures(request):
             self._addHighlight(self._project.mapCanvas(), feature.geometry(), self._project.plan.polygonsLayer)
         for feature in self._project.plan.linesLayer.getFeatures(request):
@@ -157,32 +156,32 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         hl.setMinWidth(minWidth)
         self._highlights.append(hl)
 
-    def _zoom(self, itemKey):
-        self._project.planModule.zoomToItem(itemKey, highlight=True)
+    def _zoom(self, item):
+        self._project.planModule.zoomToItem(item, highlight=True)
 
-    def _pan(self, itemKey):
-        self._project.planModule.moveToItem(itemKey, highlight=True)
+    def _pan(self, item):
+        self._project.planModule.moveToItem(item, highlight=True)
 
-    def _filterItem(self, itemKey):
-        self._project.planModule.filterItem(itemKey)
+    def _filterItem(self, item):
+        self._project.planModule.filterItem(item)
 
-    def _excludeFilterItem(self, itemKey):
-        self._project.planModule.excludeFilterItem(itemKey)
+    def _excludeFilterItem(self, item):
+        self._project.planModule.excludeFilterItem(item)
 
-    def _highlightItem(self, itemKey):
-        self._project.planModule.highlightItem(itemKey)
+    def _highlightItem(self, item):
+        self._project.planModule.highlightItem(item)
 
-    def _addHighlightItem(self, itemKey):
-        self._project.planModule.addHighlightItem(itemKey)
+    def _addHighlightItem(self, item):
+        self._project.planModule.addHighlightItem(item)
 
-    def _openDrawings(self, itemKey):
-        self._project.planModule.loadDrawing(itemKey)
+    def _openDrawings(self, item):
+        self._project.planModule.loadDrawing(item)
 
-    def _editInBuffers(self, itemKey):
-        self._project.planModule.editInBuffers(itemKey)
+    def _editInBuffers(self, item):
+        self._project.planModule.editInBuffers(item)
 
-    def _delete(self, itemKey):
-        self._project.planModule.deleteItem(itemKey)
+    def _delete(self, item):
+        self._project.planModule.deleteItem(item)
 
 class ClipboardAction(QAction):
 
@@ -200,10 +199,10 @@ class OpenArkAction(QAction):
 
     _url = ''
 
-    def __init__(self, arkUrl, itemKey, label, parent=None):
+    def __init__(self, arkUrl, item, label, parent=None):
         super(OpenArkAction, self).__init__(label, parent)
-        mod_cd = itemKey.classCode + '_cd'
-        item = itemKey.siteCode + '_' + itemKey.itemId
+        mod_cd = item.classCode() + '_cd'
+        item = item.siteCode() + '_' + item.itemId()
         self._url = arkUrl + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
         self.triggered.connect(self._open)
 
@@ -227,25 +226,25 @@ class IdentifyItemAction(QAction):
     addHighlightItemSelected = pyqtSignal(object)
     openDrawingsSelected = pyqtSignal(object)
 
-    itemKey = ItemKey()
+    item = Item()
 
     _iface = None
 
-    def __init__(self, itemKey, project, parent=None):
+    def __init__(self, item, project, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
         self._iface = project.iface
-        self.itemKey = itemKey
-        self.setText(itemKey.itemLabel())
+        self.item = item
+        self.setText(item.itemLabel())
         menu = QMenu()
         sourceSet = set()
         area = []
         haveSchematic = False
         sectionSchematics = []
-        for feature in project.plan.polygonsLayer.getFeatures(itemKey.featureRequest()):
-            category = feature.attribute(project.fieldName('category'))
+        for feature in project.plan.polygonsLayer.getFeatures(item.featureRequest()):
+            category = feature.attribute('category')
             if category == 'sch' or category == 'scs':
                 haveSchematic = True
-                source = ItemSource()
+                source = Source()
                 source.fromFeature(feature)
                 if source.isValid():
                     sourceSet.add(source)
@@ -255,7 +254,7 @@ class IdentifyItemAction(QAction):
         for source in sourceSet:
             if source.sourceCode not in sourceDict:
                 sourceDict[source.sourceCode] = set()
-            sourceDict[source.sourceCode].add(source.key)
+            sourceDict[source.sourceCode].add(source.items)
         self.zoomAction = QAction('Zoom to Item', parent)
         self.zoomAction.triggered.connect(self._zoomToItem)
         menu.addAction(self.zoomAction)
@@ -274,8 +273,8 @@ class IdentifyItemAction(QAction):
         self.addHighlightAction = QAction('Add Item to Selection', parent)
         self.addHighlightAction.triggered.connect(self._addHighlightItem)
         menu.addAction(self.addHighlightAction)
-        if project.useArkDB() and project.arkUrl():
-            self.linkAction = OpenArkAction(project.arkUrl(), itemKey, 'Open in ARK', parent)
+        if project.arkUrl():
+            self.linkAction = OpenArkAction(project.arkUrl(), item, 'Open in ARK', parent)
             menu.addAction(self.linkAction)
         self.drawingAction = QAction('Open Drawings', parent)
         self.drawingAction.triggered.connect(self._openDrawings)
@@ -292,28 +291,28 @@ class IdentifyItemAction(QAction):
             for sourceCode in sourceDict.keys():
                 menu.addAction(Config.sourceCodes[sourceCode]['label'] + ':')
                 sources = sorted(sourceDict[sourceCode])
-                for itemKey in sources:
-                    if itemKey.isValid():
-                        menu.addAction(itemKey.itemLabel())
+                for item in sources:
+                    if item.isValid():
+                        menu.addAction(item.itemLabel())
         elif haveSchematic:
             menu.addAction('Unknown Source')
         else:
             menu.addAction('No Schematic')
-        if itemKey.classCode == 'cxt':
-            subItem = project.data.parentItem(itemKey)
+        if item.classCode() == 'context':
+            subItem = project.data.parentItem(item)
             if subItem and subItem.isValid():
                 menu.addSeparator()
                 grpItem = project.data.parentItem(subItem)
-                if project.useArkDB() and project.arkUrl():
-                    self.subAction = OpenArkAction(project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId), parent)
+                if project.arkUrl():
+                    self.subAction = OpenArkAction(project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId()), parent)
                     menu.addAction(self.subAction)
                     if grpItem:
-                        self.grpAction = OpenArkAction(project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId), parent)
+                        self.grpAction = OpenArkAction(project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId()), parent)
                         menu.addAction(self.grpAction)
                 else:
-                    menu.addAction('Sub-group: ' + str(subItem.itemId))
+                    menu.addAction('Sub-group: ' + str(subItem.itemId()))
                     if grpItem:
-                        menu.addAction('Group: ' + str(grpItem.itemId))
+                        menu.addAction('Group: ' + str(grpItem.itemId()))
         if len(area) > 0:
             menu.addSeparator()
             tot = 0
@@ -331,28 +330,28 @@ class IdentifyItemAction(QAction):
         self.setMenu(menu)
 
     def _editItem(self):
-        self.editItemSelected.emit(self.itemKey)
+        self.editItemSelected.emit(self.item)
 
     def _deleteItem(self):
-        self.deleteItemSelected.emit(self.itemKey)
+        self.deleteItemSelected.emit(self.item)
 
     def _panToItem(self):
-        self.panToItemSelected.emit(self.itemKey)
+        self.panToItemSelected.emit(self.item)
 
     def _zoomToItem(self):
-        self.zoomToItemSelected.emit(self.itemKey)
+        self.zoomToItemSelected.emit(self.item)
 
     def _filterItem(self):
-        self.filterItemSelected.emit(self.itemKey)
+        self.filterItemSelected.emit(self.item)
 
     def _excludeFilterItem(self):
-        self.excludeFilterItemSelected.emit(self.itemKey)
+        self.excludeFilterItemSelected.emit(self.item)
 
     def _highlightItem(self):
-        self.highlightItemSelected.emit(self.itemKey)
+        self.highlightItemSelected.emit(self.item)
 
     def _addHighlightItem(self):
-        self.addHighlightItemSelected.emit(self.itemKey)
+        self.addHighlightItemSelected.emit(self.item)
 
     def _openDrawings(self):
-        self.openDrawingsSelected.emit(self.itemKey)
+        self.openDrawingsSelected.emit(self.item)

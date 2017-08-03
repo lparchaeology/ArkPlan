@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015, 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -35,7 +33,7 @@ from qgis.gui import QgsColorButtonV2
 from ..libarkqgis.project import Project
 from ..libarkqgis.utils import *
 
-from plan_item import ItemKey
+from item import Item
 from filter_base import *
 
 import filter_clause_widget_base
@@ -123,7 +121,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
 
     def clause(self):
         cl = FilterClause()
-        cl.key = ItemKey(self.siteCode(), self.classCode(), self.filterRange())
+        cl.item = Item(self.siteCode(), self.classCode(), self.filterRange())
         cl.action = self.filterType()
         cl.color = self.color()
         return cl
@@ -131,9 +129,9 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
     def setClause(self, clause):
         self.blockSignals(True)
         self._colorTool.blockSignals(True)
-        self._siteCode = clause.key.siteCode
-        self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(clause.key.classCode))
-        self.filterRangeCombo.setEditText(clause.key.itemId)
+        self._siteCode = clause.item.siteCode()
+        self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(clause.item.classCode()))
+        self.filterRangeCombo.setEditText(clause.item.itemId())
         self._setFilterType(clause.action)
         #self._colorTool.setColor(clause.color)
         self._colorTool.blockSignals(False)

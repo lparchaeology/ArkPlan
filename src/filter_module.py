@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -41,7 +39,6 @@ from filter_export_dialog import FilterExportDialog
 from filter_dock import FilterDock
 from filter_base import *
 from config import Config
-from plan_item import ItemKey
 
 import resources
 
@@ -144,7 +141,7 @@ class FilterModule(QObject):
             classCode = Config.classCodes[key]
             if classCode['plan']:
                 codeList.add(classCode['code'])
-            elif Config.isGroupClass(classCode['code']) and self.project.data.hasClassData(classCode['code']):
+            elif Config.fields[classCode['code']]['group'] and self.project.data.hasClassData(classCode['code']):
                 codeList.add(classCode['code'])
         codes = {}
         for code in sorted(codeList):
@@ -152,7 +149,7 @@ class FilterModule(QObject):
         self.dock.initClassCodes(codes)
 
     def _enableArkData(self, enable=True):
-        if self.project.useArkDB() and self.project.arkUrl():
+        if self.project.arkUrl():
             self.dock.enableArkData(enable);
 
     def _activateArkData(self):
@@ -173,7 +170,7 @@ class FilterModule(QObject):
             return FilterType.ExcludeFilter
         return -1
 
-    def applyItemAction(self, itemKey, filterAction):
+    def applyItemAction(self, item, filterAction):
         if not self._initialised or filterAction == FilterAction.NoFilterAction:
             return
 
@@ -185,39 +182,39 @@ class FilterModule(QObject):
         filterType = self._typeForAction(filterAction)
 
         if filterType >= 0:
-            return self.addFilterClause(filterType, itemKey)
+            return self.addFilterClause(filterType, item)
         return -1
 
-    def filterItem(self, itemKey):
+    def filterItem(self, item):
         if not self._initialised:
             return
         self.dock.removeFilters()
-        ret = self.addFilterClause(FilterType.IncludeFilter, itemKey)
+        ret = self.addFilterClause(FilterType.IncludeFilter, item)
         self.zoomFilter()
         return ret
 
-    def excludeItem(self, itemKey):
+    def excludeItem(self, item):
         if not self._initialised:
             return
-        return self.addFilterClause(FilterType.ExcludeFilter, itemKey)
+        return self.addFilterClause(FilterType.ExcludeFilter, item)
 
-    def highlightItem(self, itemKey):
+    def highlightItem(self, item):
         if not self._initialised:
             return
         self.dock.removeHighlightFilters()
-        return self.addFilterClause(FilterType.HighlightFilter, itemKey)
+        return self.addFilterClause(FilterType.HighlightFilter, item)
 
-    def addHighlightItem(self, itemKey):
+    def addHighlightItem(self, item):
         if not self._initialised:
             return
-        return self.addFilterClause(FilterType.HighlightFilter, itemKey)
+        return self.addFilterClause(FilterType.HighlightFilter, item)
 
-    def applySchematicFilter(self, itemKey, filterAction):
+    def applySchematicFilter(self, item, filterAction):
         if not self._initialised:
             return
         self._schematicFilterSet.clearClauses()
         cl = FilterClause()
-        cl.key = itemKey
+        cl.item = item
         if ((filterAction == FilterAction.SelectFilter or filterAction == FilterAction.ExclusiveSelectFilter
              or filterAction == FilterAction.HighlightFilter or filterAction == FilterAction.ExclusiveHighlightFilter)
             and (self.hasFilterType(FilterType.IncludeFilter) or self.hasFilterType(FilterType.ExcludeFilter))):
@@ -234,11 +231,11 @@ class FilterModule(QObject):
             self.dock.removeSchematicFilters()
             self._applyFilters()
 
-    def addFilterClause(self, filterType, itemKey):
+    def addFilterClause(self, filterType, item):
         if not self._initialised:
             return
         clause = FilterClause()
-        clause.key = itemKey
+        clause.item = item
         clause.action = filterType
         idx = self.dock.addFilterClause(clause)
         self._applyFilters()
@@ -311,8 +308,8 @@ class FilterModule(QObject):
     def _applyHighlightClauses(self, clauses):
         for clause in clauses:
             if clause.action == FilterType.HighlightFilter:
-                filterItemKey = self.project.data.nodesItemKey(clause.key)
-                self.addHighlight(filterItemKey.filterClause(), clause.lineColor(), clause.color)
+                filterItem = self.project.data.nodesItem(clause.item)
+                self.addHighlight(filterItem.filterClause(), clause.lineColor(), clause.color)
 
     def clearFilters(self):
         self._filterSets['Default'].clearClauses()
@@ -375,7 +372,7 @@ class FilterModule(QObject):
 
 
     def showIdentifyDialog(self, feature):
-        context = feature.attribute(self.project.fieldName('id'))
+        context = feature.attribute('id')
         self.showDataDialogList([context])
 
 
@@ -513,7 +510,7 @@ class FilterModule(QObject):
         mem.startEditing()
         fi = layer.getFeatures()
         for feature in fi:
-            if feature.attribute(self.project.fieldName('category')) == 'sch':
+            if feature.attribute('category') == 'sch':
                 mem.addFeature(feature)
         mem.commitChanges()
         mem = layers.addLayerToLegend(self.project.iface, mem, self._filterSetGroupIndex)

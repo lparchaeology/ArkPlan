@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -29,19 +27,19 @@ import string
 from PyQt4.QtCore import QObject, pyqtSignal, QPyNullVariant
 from PyQt4.QtGui import QInputDialog
 
-from plan_item import ItemFeature
+from feature import Feature
 
 class Metadata(QObject):
 
     metadataChanged = pyqtSignal()
 
-    itemFeature = ItemFeature()
+    feature = Feature()
     _planWidget = None  # MetadataWidget
 
     def __init__(self, planWidget, parent=None):
         super(Metadata, self).__init__(parent)
         self._planWidget = planWidget
-        self.itemFeature = planWidget.feature()
+        self.feature = planWidget.feature()
         self._connectWidget(self._planWidget)
 
     def _connectWidget(self, widget):
@@ -57,11 +55,11 @@ class Metadata(QObject):
         widget.validateMetadata.connect(self.validate)
 
     def siteCode(self):
-        return self.itemFeature.key.siteCode
+        return self.feature.item().siteCode()
 
     def setSiteCode(self, siteCode):
-        self.itemFeature.key.setSiteCode(siteCode)
-        self.itemFeature.source.key.setSiteCode(siteCode)
+        self.feature.item().setSiteCode(siteCode)
+        self.feature.source().item().setSiteCode(siteCode)
         self._planWidget.setSiteCode(self.siteCode())
 
     def _setSiteCode(self, siteCode):
@@ -69,10 +67,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def classCode(self):
-        return self.itemFeature.key.classCode
+        return self.feature.item().classCode()
 
     def setClassCode(self, classCode):
-        self.itemFeature.key.setClassCode(classCode)
+        self.feature.item().setClassCode(classCode)
         self._planWidget.setClassCode(self.classCode())
 
     def _setClassCode(self, classCode):
@@ -80,10 +78,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def itemId(self):
-        return self.itemFeature.key.itemId
+        return self.feature.item().itemId()
 
     def setItemId(self, itemId):
-        self.itemFeature.key.setItemId(itemId)
+        self.feature.item().setItemId(itemId)
         self._planWidget.setItemId(self.itemId())
 
     def _setItemId(self, itemId):
@@ -91,22 +89,22 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def category(self):
-        return self.itemFeature.category
+        return self.feature.category()
 
     def setCategory(self, category):
-        self.itemFeature.setCategory(category)
+        self.feature.setCategory(category)
 
-    def name(self):
-        return self.itemFeature.name
+    def label(self):
+        return self.feature.label()
 
     def setName(self, name):
-        self.itemFeature.setName(name)
+        self.feature.setName(name)
 
     def sourceCode(self):
-        return self.itemFeature.source.sourceCode
+        return self.feature.source().sourceCode()
 
     def setSourceCode(self, sourceCode):
-        self.itemFeature.source.setSourceCode(sourceCode)
+        self.feature.source().setSourceCode(sourceCode)
         self._planWidget.setSourceCode(self.sourceCode())
 
     def _setSourceCode(self, sourceCode):
@@ -114,10 +112,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def sourceClass(self):
-        return self.itemFeature.source.key.classCode
+        return self.feature.source().item().classCode()
 
     def setSourceClass(self, sourceClass):
-        self.itemFeature.source.setSourceClass(sourceClass)
+        self.feature.source().setSourceClass(sourceClass)
         self._planWidget.setSourceClass(self.sourceClass())
 
     def _setSourceClass(self, sourceClass):
@@ -125,10 +123,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def sourceId(self):
-        return self.itemFeature.source.key.itemId
+        return self.feature.source().item().itemId()
 
     def setSourceId(self, sourceId):
-        self.itemFeature.source.setSourceId(sourceId)
+        self.feature.source().setSourceId(sourceId)
         self._planWidget.setSourceId(self.sourceId())
 
     def _setSourceId(self, sourceId):
@@ -136,10 +134,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def sourceFile(self):
-        return self.itemFeature.source.filename
+        return self.feature.source().filename()
 
     def setSourceFile(self, sourceFile):
-        self.itemFeature.source.setFilename(sourceFile)
+        self.feature.source().setFilename(sourceFile)
         self._planWidget.setSourceFile(self.sourceFile())
 
     def _setSourceFile(self, sourceFile):
@@ -147,10 +145,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def comment(self):
-        return self.itemFeature.comment
+        return self.feature.comment()
 
     def setComment(self, comment):
-        self.itemFeature.setComment(comment)
+        self.feature.setComment(comment)
         self._planWidget.setComment(self.comment())
 
     def _setComment(self, comment):
@@ -158,10 +156,10 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def editor(self):
-        return self.itemFeature.creator
+        return self.feature.creator()
 
     def setEditor(self, editor):
-        self.itemFeature.setCreator(editor)
+        self.feature.setCreator(editor)
         self._planWidget.setEditor(self.editor())
 
     def _setEditor(self, editor):
@@ -169,23 +167,23 @@ class Metadata(QObject):
         self.metadataChanged.emit()
 
     def created(self):
-        return self.itemFeature.created
+        return self.feature.created()
 
     def setCreated(self, created):
-        self.itemFeature.setCreated(created)
+        self.feature.setCreated(created)
 
     def fromFeature(self, feature):
-        self.fromItemFeature(ItemFeature(feature))
+        self.fromItemFeature(Feature(feature))
 
     def fromItemFeature(self, feature):
-        self.setSiteCode(feature.key.siteCode)
-        self.setClassCode(feature.key.classCode)
-        self.setItemId(feature.key.itemId)
-        self.setComment(feature.comment)
-        self.setSourceCode(feature.source.sourceCode)
-        self.setSourceClass(feature.source.key.classCode)
-        self.setSourceId(feature.source.key.itemId)
-        self.setSourceFile(feature.source.filename)
+        self.setSiteCode(feature.item().siteCode())
+        self.setClassCode(feature.item().classCode())
+        self.setItemId(feature.item().itemId())
+        self.setComment(feature.comment())
+        self.setSourceCode(feature.source().sourceCode())
+        self.setSourceClass(feature.source().item.classCode())
+        self.setSourceId(feature.source().item().itemId())
+        self.setSourceFile(feature.source().filename())
 
     def validate(self):
         signalChanged = False

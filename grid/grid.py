@@ -146,8 +146,8 @@ class GridModule(QObject):
         names = set()
         default = None
         for feature in self.project.grid.pointsLayer.getFeatures():
-            name = (feature.attribute(self.project.fieldName('site')),
-                    feature.attribute(self.project.fieldName('name')))
+            name = (feature.attribute('site'),
+                    feature.attribute('name'))
             names.add(name)
             if not default:
                 default = name
@@ -159,7 +159,7 @@ class GridModule(QObject):
 
     def initialiseGrid(self, siteCode, gridName):
         prevFilter = self.project.grid.filter
-        expr = utils.eqClause(self.project.fieldName('site'), siteCode) + ' and ' + utils.eqClause(self.project.fieldName('name'), gridName)
+        expr = utils.eqClause('site', siteCode) + ' and ' + utils.eqClause('name', gridName)
         self.project.grid.applyFilter(expr)
         if self.project.grid.pointsLayer.featureCount() < 2:
             self.project.grid.applyFilter(prevFilter)
@@ -181,8 +181,8 @@ class GridModule(QObject):
 
     def transformPoints(self, feature):
         mapPoint = feature.geometry().asPoint()
-        localX = feature.attribute(self.project.fieldName('local_x'))
-        localY = feature.attribute(self.project.fieldName('local_y'))
+        localX = feature.attribute('local_x')
+        localY = feature.attribute('local_y')
         localPoint = QgsPoint(localX, localY)
         return mapPoint, localPoint
 
@@ -259,10 +259,10 @@ class GridModule(QObject):
 
     def createGrid(self, siteCode, gridName, mapPoint1, localPoint1, mapPoint2, localPoint2, localOrigin, localTerminus, xInterval, yInterval):
         localTransformer = LinearTransformer(localPoint1, mapPoint1, localPoint2, mapPoint2)
-        local_x = self.project.fieldName('local_x')
-        local_y = self.project.fieldName('local_y')
-        map_x = self.project.fieldName('map_x')
-        map_y = self.project.fieldName('map_y')
+        local_x = 'local_x'
+        local_y = 'local_y'
+        map_x = 'map_x'
+        map_y = 'map_y'
 
         points = self.project.grid.pointsLayer
         if (points is None or not points.isValid()):
@@ -296,10 +296,10 @@ class GridModule(QObject):
 
     def _attributes(self, layer, site, name):
         attributes = {}
-        attributes[layer.fieldNameIndex(self.project.fieldName('site'))] = site
-        attributes[layer.fieldNameIndex(self.project.fieldName('name'))] = name
-        attributes[layer.fieldNameIndex(self.project.fieldName('created_on'))] = utils.timestamp()
-        attributes[layer.fieldNameIndex(self.project.fieldName('created_by'))] = 'Grid Tool'
+        attributes[layer.fieldNameIndex('site')] = site
+        attributes[layer.fieldNameIndex('name')] = name
+        attributes[layer.fieldNameIndex('created_on')] = utils.timestamp()
+        attributes[layer.fieldNameIndex('created_by')] = 'Grid Tool'
         return attributes
 
     def _setAttributes(self, feature, attributes):
@@ -420,10 +420,10 @@ class GridModule(QObject):
     def updateLayerCoordinates(self, layer, updateGeometry, createMapFields):
         if (not self.initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
             return False
-        local_x = self.project.fieldName('local_x')
-        local_y = self.project.fieldName('local_y')
-        map_x = self.project.fieldName('map_x')
-        map_y = self.project.fieldName('map_y')
+        local_x = 'local_x'
+        local_y = 'local_y'
+        map_x = 'map_x'
+        map_y = 'map_y'
         if layer.startEditing():
             if layer.fieldNameIndex(local_x) < 0:
                 layer.dataProvider().addAttributes([self.project.field('local_x')])

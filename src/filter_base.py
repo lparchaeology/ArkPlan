@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-06-01
-        git sha              : $Format:%H$
-        copyright            : 2016 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -32,7 +30,7 @@ from ..libarkqgis import utils
 from ..libarkqgis.project import Project
 
 from config import Config
-from plan_item import ItemKey
+from item import Item
 
 class FilterType():
     IncludeFilter = 0
@@ -60,16 +58,16 @@ class FilterWidgetAction():
 
 class FilterClause():
 
-    key = ItemKey()
+    item = Item()
     action = FilterType.IncludeFilter
     color = Project.highlightLineColor()
     _viewIdx = -1
 
     def __str__(self):
-        return 'FilterClause(' + FilterType.name(self.action) + ', ' + str(self.key.siteCode) + ', ' +  str(self.key.classCode) + ', ' +  str(self.key.itemId) + ', ' + self.color.name() + ')'
+        return 'FilterClause(' + FilterType.name(self.action) + ', ' + str(self.item.siteCode()) + ', ' +  str(self.item.classCode()) + ', ' +  str(self.item.itemId()) + ', ' + self.color.name() + ')'
 
     def debug(self):
-        return 'FilterClause(' + FilterType.name(self.action) + ', ' + utils.printable(self.key.siteCode) + ', ' +  utils.printable(self.key.classCode) + ', ' +  utils.printable(self.key.itemId) + ', ' + self.color.name() + ')'
+        return 'FilterClause(' + FilterType.name(self.action) + ', ' + utils.printable(self.item.siteCode()) + ', ' +  utils.printable(self.item.classCode()) + ', ' +  utils.printable(self.item.itemId()) + ', ' + self.color.name() + ')'
 
     def lineColor(self):
         color = QColor(self.color) # force deep copy
@@ -78,9 +76,9 @@ class FilterClause():
 
     def saveSettings(self, settings):
         settings.setValue('filterType', self.action)
-        settings.setValue('siteCode', self.key.siteCode)
-        settings.setValue('classCode', self.key.classCode)
-        settings.setValue('filterRange', self.key.itemId)
+        settings.setValue('siteCode', self.item.siteCode())
+        settings.setValue('classCode', self.item.classCode())
+        settings.setValue('filterRange', self.item.itemId())
         if self.color.isValid():
             settings.setValue('highlightColor', self.color)
 
@@ -89,17 +87,17 @@ class FilterClause():
         siteCode = settings.value('siteCode', '')
         classCode = settings.value('classCode', '')
         filterRange = settings.value('filterRange', '')
-        self.key = ItemKey(siteCode, classCode, filterRange)
+        self.item = Item(siteCode, classCode, filterRange)
         if settings.contains('highlightColor'):
             self.color = settings.value('highlightColor', QColor)
 
     def loadItems(self, items):
-        self.key = items[0]
+        self.item = items[0]
         ids = []
         for item in items:
-            if (item.siteCode == self.key.siteCode and item.classCode == self.key.classCode):
-                ids.append(item.itemId)
-        self.key.setItemId(sorted(ids))
+            if (item.siteCode() == self.item.siteCode() and item.classCode() == self.item.classCode()):
+                ids.append(item.itemId())
+        self.item.setItemId(sorted(ids))
 
     @staticmethod
     def fromSettings(settings):
@@ -122,7 +120,7 @@ class FilterSet():
     status = '' # created/loaded/edited/?
     expression = ''
     selection = ''
-    _clauses = [] # [ItemKey()]
+    _clauses = [] # [Item()]
     _group = ''
     _project = None  # Project()
 
@@ -220,9 +218,9 @@ class FilterSet():
         for item in items:
             if item.siteCode not in siteItems:
                 siteItems[item.siteCode] = {}
-            if item.classCode not in siteItems[item.siteCode]:
-                siteItems[item.siteCode][item.classCode] = []
-            siteItems[item.siteCode][item.classCode].append(item)
+            if item.classCode() not in siteItems[item.siteCode()]:
+                siteItems[item.siteCode()][item.classCode()] = []
+            siteItems[item.siteCode()][item.classCode()].append(item)
         for siteCode in siteItems:
             for classCode in siteItems[siteCode]:
                 if Config.classCodes[classCode]['plan'] or Config.classCodes[classCode]['group']:
@@ -240,25 +238,25 @@ class FilterSet():
         selectString = ''
         firstSelect = True
         for clause in self._clauses:
-            filterItemKey = self._project.data.nodesItemKey(clause.key)
+            filterItem = self._project.data.nodesItem(clause.key)
             if clause.action == FilterType.SelectFilter:
                 if firstSelect:
                     firstSelect = False
                 else:
                     selectString += ' or '
-                selectString += filterItemKey.filterClause()
+                selectString += filterItem.filterClause()
             elif clause.action == FilterType.ExcludeFilter:
                 if firstExclude:
                     firstExclude = False
                 else:
                     excludeString += ' or '
-                excludeString += filterItemKey.filterClause()
+                excludeString += filterItem.filterClause()
             elif clause.action == FilterType.IncludeFilter:
                 if firstInclude:
                     firstInclude = False
                 else:
                     includeString += ' or '
-                includeString += filterItemKey.filterClause()
+                includeString += filterItem.filterClause()
         if includeString and excludeString:
             self.expression = '(' + includeString + ') and NOT (' + excludeString + ')'
         elif excludeString:

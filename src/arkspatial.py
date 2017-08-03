@@ -72,7 +72,7 @@ class ArkSpatial(Plugin):
     plan = None  # LayerCollection()
     section = None  # LayerCollection()
     grid = None  # LayerCollection()
-    base = None  # LayerCollection()
+    site = None  # LayerCollection()
 
     projectLayerView = None  # QgsLayerTreeView()
     layerDock = None  # ToolDockWidget()
@@ -198,9 +198,9 @@ class ArkSpatial(Plugin):
             self.grid = self._loadCollection('grid')
             self.plan = self._loadCollection('plan')
             self.section = self._loadCollection('section')
-            self.base = self._loadCollection('base')
-            self.drawingsGroupName = Config.rasterGroups['cxt']['layersGroupName']
-            if self.grid.initialise() and self.plan.initialise() and self.section.initialise() and self.base.initialise():
+            self.site = self._loadCollection('site')
+            self.drawingsGroupName = Config.drawings['context']['layersGroupName']
+            if self.grid.initialise() and self.plan.initialise() and self.section.initialise() and self.site.initialise():
                 self.data.loadProject()
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -235,9 +235,9 @@ class ArkSpatial(Plugin):
             if self.grid is not None:
                 self.grid.unload()
                 self.grid = None
-            if self.base is not None:
-                self.base.unload()
-                self.base = None
+            if self.site is not None:
+                self.site.unload()
+                self.site = None
             self._loaded = False
 
     # Unload the plugin
@@ -319,14 +319,14 @@ class ArkSpatial(Plugin):
             self.setUserInitials(wizard.userInitials())
             self.setArkUserId(wizard.arkUserId())
 
-            self._configureVectorGroup('plan')
-            self._configureVectorGroup('section')
-            self._configureVectorGroup('grid')
-            self._configureVectorGroup('base')
+            self._configureCollection('grid')
+            self._configureCollection('plan')
+            self._configureCollection('section')
+            self._configureCollection('site')
 
-            self._configureRasterGroup('cxt')
-            self._configureRasterGroup('pln')
-            self._configureRasterGroup('sec')
+            self._configureDrawing('context')
+            self._configureDrawing('pln')
+            self._configureDrawing('sec')
 
             self.writeProject()
             self._setIsConfigured(self.project.write())
@@ -338,9 +338,9 @@ class ArkSpatial(Plugin):
         else:
             return True
 
-    def _configureVectorGroup(self, grp):
-        config = Config.vectorGroups[grp]
-        path = config['pathSuffix']
+    def _configureCollection(self, grp):
+        config = Config.collections[grp]
+        path = config['path']
         bufferPath = path + '/buffer'
         logPath = path + '/log'
         QDir(self.projectPath() + '/' + path).mkpath('.')
@@ -395,7 +395,7 @@ class ArkSpatial(Plugin):
             self._createCollectionLayers(grp, lcs)
         return lcs
 
-    def _configureRasterGroup(self, grp):
+    def _configureDrawing(self, grp):
         self.rawDrawingDir(grp).mkpath('.')
         self.georefDrawingDir(grp).mkpath('.')
 
@@ -447,8 +447,8 @@ class ArkSpatial(Plugin):
                 or name == self.section.settings.bufferGroupName
                 or name == self.grid.settings.collectionGroupName
                 or name == self.grid.settings.bufferGroupName
-                or name == self.base.settings.collectionGroupName
-                or name == self.base.settings.bufferGroupName
+                or name == self.site.settings.collectionGroupName
+                or name == self.site.settings.bufferGroupName
                 or name == self.drawingsGroupName)
 
     def isArkLayer(self, layerId):
@@ -464,12 +464,12 @@ class ArkSpatial(Plugin):
                 or layerId == self.section.pointsBufferId
                 or layerId == self.section.linesBufferId
                 or layerId == self.section.polygonsBufferId
-                or layerId == self.base.pointsLayerId
-                or layerId == self.base.linesLayerId
-                or layerId == self.base.polygonsLayerId
-                or layerId == self.base.pointsBufferId
-                or layerId == self.base.linesBufferId
-                or layerId == self.base.polygonsBufferId
+                or layerId == self.site.pointsLayerId
+                or layerId == self.site.linesLayerId
+                or layerId == self.site.polygonsLayerId
+                or layerId == self.site.pointsBufferId
+                or layerId == self.site.linesBufferId
+                or layerId == self.site.polygonsBufferId
                 or layerId == self.grid.pointsLayerId
                 or layerId == self.grid.linesLayerId
                 or layerId == self.grid.polygonsLayerId
@@ -503,7 +503,7 @@ class ArkSpatial(Plugin):
     def _loadCollection(self, collection):
         lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
         if (lcs.collection == ''):
-            lcs = self._configureVectorGroup(collection)
+            lcs = self._configureCollection(collection)
         if lcs.pointsStylePath == '':
             lcs.pointsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
         if lcs.linesStylePath == '':
@@ -513,7 +513,7 @@ class ArkSpatial(Plugin):
         return LayerCollection(self.iface, self.projectPath(), lcs)
 
     def _stylePath(self, collection, collectionPath, layerName, baseName):
-        return self._styleFile(collectionPath, layerName, Config.vectorGroups[collection][baseName])
+        return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])
 
     def _createCollectionLayers(self, collection, settings):
         if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
@@ -538,7 +538,7 @@ class ArkSpatial(Plugin):
                                    self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):
-        fieldKeys = self._vectorGroupDefault(collection, fieldsKey)
+        fieldKeys = self._collectionDefault(collection, fieldsKey)
         fields = QgsFields()
         for fieldKey in fieldKeys:
             fields.append(self.field(fieldKey))
@@ -561,19 +561,8 @@ class ArkSpatial(Plugin):
     # Field settings
 
     def field(self, fieldKey):
-        if self.useArkDB():
-            return Config.arkFieldDefaults[fieldKey]
-        else:
-            return Config.fieldDefaults[fieldKey]
-
-    def fieldName(self, fieldKey):
-        try:
-            if self.useArkDB():
-                return Config.arkFieldDefaults[fieldKey].name()
-            else:
-                return Config.fieldDefaults[fieldKey].name()
-        except:
-            return ''
+        config = Config.fields[fieldKey]
+        return QgsField(config['attribute'], config['type'], '', config['len'], config['decimals'], config['label'])
 
     # Project level settings
     # TODO Move to json file
@@ -592,9 +581,6 @@ class ArkSpatial(Plugin):
 
     def setLogUpdates(self, logUpdates):
         self.writeEntry('logUpdates', logUpdates)
-
-    def useArkDB(self):
-        return self.readBoolEntry('useArkDB', True)
 
     def arkUrl(self):
         return self.readEntry('arkUrl', '')
@@ -658,25 +644,25 @@ class ArkSpatial(Plugin):
 
     # Group settings
 
-    def _vectorGroupDefault(self, group, key):
-        return Config.vectorGroups[group][key]
+    def _collectionDefault(self, group, key):
+        return Config.collections[group][key]
 
-    def _rasterGroupDefault(self, group, key):
-        return Config.rasterGroups[group][key]
+    def _drawingDefault(self, group, key):
+        return Config.drawings[group][key]
 
-    def _rasterGroupEntry(self, group, key, default=None):
+    def _drawingEntry(self, group, key, default=None):
         if default is None:
-            default = self._rasterGroupDefault(group, key)
+            default = self._drawingDefault(group, key)
         return self.readEntry(group + '/' + key, default)
 
-    def _rasterGroupBoolEntry(self, group, key, default=None):
+    def _drawingBoolEntry(self, group, key, default=None):
         if default is None:
-            default = self._rasterGroupDefault(group, key)
+            default = self._drawingDefault(group, key)
         return self.readBoolEntry(group + '/' + key, default)
 
-    def _setRasterGroupEntry(self, group, key, value, default=None):
+    def _setdrawingEntry(self, group, key, value, default=None):
         if default is None:
-            default = self._rasterGroupDefault(group, key)
+            default = self._drawingDefault(group, key)
         self.setEntry(group + '/' + key, value, default)
 
     def collection(self, collection):
@@ -686,35 +672,35 @@ class ArkSpatial(Plugin):
             return self.section
         elif collection == 'grid':
             return self.grid
-        elif collection == 'base':
-            return self.base
+        elif collection == 'site':
+            return self.site
 
     # Raster Drawings settings
 
-    def rasterGroupDir(self, group):
-        return QDir(self.rasterGroupPath(group))
+    def drawingDir(self, group):
+        return QDir(self.drawingPath(group))
 
-    def rasterGroupPath(self, group):
+    def drawingPath(self, group):
         if self.useCustomPath(group):
-            return self._rasterGroupEntry(group, 'pathSuffix')
+            return self._drawingEntry(group, 'path')
         else:
-            return self.projectPath() + '/' + Config.rasterGroups[group]['pathSuffix']
+            return self.projectPath() + '/' + Config.drawings[group]['path']
 
-    def setRasterGroupPath(self, group, useCustomPath, absolutePath):
-        self._setRasterGroupEntry(group, 'useCustomPath', useCustomPath, False)
+    def setDrawingPath(self, group, useCustomPath, absolutePath):
+        self._setDrawingEntry(group, 'useCustomPath', useCustomPath, False)
         if useCustomPath:
-            self._setRasterGroupEntry(group, 'pathSuffix', absolutePath)
+            self._setDrawingEntry(group, 'path', absolutePath)
         else:
-            self._setRasterGroupEntry(group, 'pathSuffix', '')
+            self._setDrawingEntry(group, 'path', '')
 
     def useCustomPath(self, group):
-        return self._rasterGroupBoolEntry(group, 'useCustomPath', False)
+        return self._drawingBoolEntry(group, 'useCustomPath', False)
 
     def rawDrawingDir(self, group):
         return QDir(self.rawDrawingPath(group))
 
     def rawDrawingPath(self, group):
-        return self.rasterGroupPath(group)
+        return self.drawingPath(group)
 
     def georefDrawingDir(self, group):
         return QDir(self.georefDrawingPath(group))
@@ -751,7 +737,7 @@ class ArkSpatial(Plugin):
     # Show Items Tool
 
     def _showItem(self):
-        classCodes = sorted(set(self.plan.uniqueValues(self.fieldName('class'))))
+        classCodes = sorted(set(self.plan.uniqueValues('class')))
         dialog = SelectItemDialog(self.siteCodes(), self.siteCode(), classCodes, self.iface.mainWindow())
         if dialog.exec_():
             self.planModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())

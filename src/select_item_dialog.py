@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-02-10
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -59,8 +57,8 @@ class SelectItemDialog(QDialog, Ui_SelectItemDialog):
     def item(self):
         return self.itemWidget.item()
 
-    def setItem(self, itemKey):
-        return self.itemWidget.setItem(itemKey)
+    def setItem(self, item):
+        return self.itemWidget.setItem(item)
 
     def loadDrawings(self):
         return self.loadDrawingCheck.isChecked()

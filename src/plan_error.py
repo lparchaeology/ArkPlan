@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -31,7 +29,7 @@ from PyQt4.QtGui import QDialog, QApplication
 from ..libarkqgis import utils
 from ..libarkqgis.models import TableModel
 
-from plan_item import ItemFeature
+from feature import Feature
 
 from error_dialog_base import *
 
@@ -40,7 +38,7 @@ class PlanError:
     layer = ''
     row = -1
     fid = -1
-    feature = ItemFeature()
+    feature = Feature()
     field = ''
     message = ''
     ignore = False

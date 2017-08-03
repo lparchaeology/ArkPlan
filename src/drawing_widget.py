@@ -39,7 +39,7 @@ class DrawingWidget(QWidget, drawing_widget_base.Ui_DrawingWidget):
         self.sourceWidget.initGui()
         self.planFeatureWidget.initGui(iface, 'plan')
         self.sectionFeatureWidget.initGui(iface, 'section')
-        self.siteFeatureWidget.initGui(iface, 'base')
+        self.siteFeatureWidget.initGui(iface, 'site')
         self.sourceWidget.sourceChanged.connect(self._updateSource)
 
     def unloadGui(self):
@@ -53,7 +53,7 @@ class DrawingWidget(QWidget, drawing_widget_base.Ui_DrawingWidget):
         self.sourceWidget.loadProject(project)
         self.planFeatureWidget.loadProject(project, 'plan')
         self.sectionFeatureWidget.loadProject(project, 'section')
-        self.siteFeatureWidget.loadProject(project, 'base')
+        self.siteFeatureWidget.loadProject(project, 'site')
 
     def closeProject(self):
         self.sourceWidget.closeProject()

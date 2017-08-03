@@ -80,7 +80,7 @@ class SourceWidget(QWidget, source_widget_base.Ui_SourceWidget):
         self.sourceFileEdit.setText(source.sourceFile())
 
         self._setSiteCode(source.item().siteCode())
-        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item.classCode()))
+        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item().classCode()))
         self.sourceIdEdit.setText(source.item().itemId())
 
         self.blockSignals(False)

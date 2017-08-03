@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2016 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -38,21 +36,21 @@ def _value(value):
         return None
     return value
 
-def _setAttribute(feature, field, value):
+def _setAttribute(feature, attribute, value):
     try:
-        feature.setAttribute(Config.fieldName(field), _value(value))
+        feature.setAttribute(attribute, _value(value))
     except:
         pass
 
-def _setDict(toDict, field, value):
+def _setDict(toDict, attribute, value):
     try:
-        toDict[Config.fieldName(field)] = _value(value)
+        toDict[attribute] = _value(value)
     except:
         pass
 
-def _attribute(feature, field):
+def _attribute(feature, attribute):
     try:
-        return feature.attribute(Config.fieldName(field))
+        return feature.attribute(attribute)
     except:
         return None
 
@@ -205,8 +203,7 @@ class Item():
     def filterClause(self):
         if self.isInvalid():
             return ''
-        clause = '("' + Config.fieldName('site') + '" = \'' + self._siteCode + '\''
-        clause = clause + ' and "' + Config.fieldName('class') + '" = \'' + self._classCode + '\''
+        clause = '("site" = \'' + self._siteCode + '\'' + ' and "class" = \'' + self._classCode + '\''
         subs = self._itemId.split()
         if len(subs) == 0:
             clause += ')'
@@ -218,12 +215,11 @@ class Item():
                 first = False
             else:
                 clause = clause + ' or '
-            field = Config.fieldName('id')
             if sub.find('-') >= 0:
                 vals = sub.split('-')
-                clause = clause + ' ("' + field + '" >= ' + vals[0] + ' and "' + field + '" <= ' + vals[1] + ')'
+                clause = clause + ' ("id" >= ' + vals[0] + ' and "id" <= ' + vals[1] + ')'
             else:
-                clause = clause + '"' + field + '" = ' + sub
+                clause = clause + '"id" = ' + sub
         clause += '))'
         return clause
 

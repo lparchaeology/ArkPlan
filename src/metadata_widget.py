@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -31,7 +29,9 @@ from PyQt4.QtGui import QGroupBox
 from qgis.core import NULL
 
 from config import Config
-from plan_item import *
+from item import Item
+from feature import Feature
+from source import Source
 
 import metadata_widget_base
 
@@ -87,16 +87,16 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
         pass
 
     def item(self):
-        return ItemKey(self.siteCode(), self.classCode(), self.itemId())
+        return Item(self.siteCode(), self.classCode(), self.itemId())
 
     def sourceItem(self):
-        return ItemKey(self.siteCode(), self.sourceClass(), self.sourceId())
+        return Item(self.siteCode(), self.sourceClass(), self.sourceId())
 
     def source(self):
-        return ItemSource(self.sourceCode(), self.sourceItem(), self.sourceFile())
+        return Source(self.sourceCode(), self.sourceItem(), self.sourceFile())
 
     def feature(self):
-        return ItemFeature(key=self.item(), source=self.source(), comment=self.comment(), creator=self.editor())
+        return Feature(item=self.item(), source=self.source(), comment=self.comment(), creator=self.editor())
 
     def setSiteCode(self, siteCode):
         idx = self.siteCodeCombo.findData(siteCode)

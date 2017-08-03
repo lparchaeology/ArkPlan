@@ -202,16 +202,16 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         mapTool.setShowSnappableVertices(True)
         mapTool.activated.connect(self._mapToolActivated)
         if query is not None:
-            query = Config.attributeQuery[query]
+            field = Config.fields[query]
             mapTool.setAttributeQuery(
-                query['attribute'],
-                query['type'],
-                query['default'],
-                query['title'],
-                query['label'],
-                query['min'],
-                query['max'],
-                query['decimals']
+                field['attribute'],
+                field['type'],
+                field['default'],
+                field['label'],
+                field['query'],
+                field['min'],
+                field['max'],
+                field['decimals']
             )
 
         self._addToolButton(action, featureType)
@@ -238,7 +238,7 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
             self.metadata.setItemId('')
         self.metadata.setClassCode(toolData['class'])
         self.metadata.setCategory(toolData['category'])
-        mapTool.setDefaultAttributes(self.metadata.itemFeature.toAttributes())
+        mapTool.setDefaultAttributes(self.metadata.feature.toAttributes())
 
     def _clearDrawingTools(self):
         self._clearDrawingTools(self.pointToolLayout)
@@ -297,8 +297,8 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         else:
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
-                if (feature.attribute(self.project.fieldName('id')) == self.itemId()
-                    and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories):
+                if (feature.attribute('id') == self.itemId()
+                    and feature.attribute('category') in self._definitiveCategories):
                     definitiveFeatures.append(feature)
         if len(definitiveFeatures) <= 0:
             return
@@ -306,7 +306,7 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         if len(schematicFeatures) <= 0:
             return
         schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
-        attrs = md.itemFeature.toAttributes()
+        attrs = md.feature.toAttributes()
         for attr in attrs.keys():
             schematic.setAttribute(attr, attrs[attr])
         outLayer.beginEditCommand("Add Auto Schematic")

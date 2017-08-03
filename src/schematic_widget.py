@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -36,7 +34,7 @@ from ..libarkqgis.dock import ToolDockWidget
 from ..libarkqgis.event_filters import ReturnPressedFilter
 
 from enum import *
-from plan_item import ItemKey
+from item import Item
 
 import schematic_widget_base
 
@@ -121,7 +119,7 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         pass
 
     def loadProject(self, project):
-        if project.useArkDB() and project.arkUrl():
+        if project.arkUrl():
             self.loadArkTool.setEnabled(True)
         self._enableArkNav(False)
         self.siteCodeCombo.clear()
@@ -140,21 +138,21 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
     def siteCode(self):
         return self.siteCodeCombo.itemData(self.siteCodeCombo.currentIndex())
 
-    def contextItemKey(self):
-        return ItemKey(self.siteCode(), 'cxt', self.context())
+    def contextItem(self):
+        return Item(self.siteCode(), 'context', self.context())
 
     def context(self):
         return self.contextSpin.value()
 
     def resetContext(self):
-        self.setContext(ItemKey())
+        self.setContext(Item())
 
     def setContext(self, context, foundArkData=SearchStatus.Unknown, contextType='', contextDescription='', foundFeatureData=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown, foundSectionSchematic=SearchStatus.Unknown):
         self.resetSourceContext()
         if context.isValid():
             self._contextSearchStatus = SearchStatus.Found
             self.blockSignals(True)
-            self.contextSpin.setValue(int(context.itemId))
+            self.contextSpin.setValue(int(context.itemId()))
             self._setContextStatus(foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic)
             self.blockSignals(False)
         else:
@@ -186,18 +184,18 @@ class SchematicWidget(QWidget, schematic_widget_base.Ui_SchematicWidget):
         self._enableSource(foundSchematic == SearchStatus.NotFound, self.context() + 1)
         self.deleteSectionButton.setEnabled(foundSectionSchematic == SearchStatus.Found)
 
-    def sourceItemKey(self):
-        return ItemKey(self.siteCode(), 'cxt', self.sourceContext())
+    def sourceItem(self):
+        return Item(self.siteCode(), 'context', self.sourceContext())
 
     def sourceContext(self):
         return self.sourceContextSpin.value()
 
     def resetSourceContext(self):
-        self.setSourceContext(ItemKey())
+        self.setSourceContext(Item())
 
     def setSourceContext(self, context, foundArk=SearchStatus.Unknown, contextType='', contextDescription='', foundFeature=SearchStatus.Unknown, foundSchematic=SearchStatus.Unknown):
         if context.isValid():
-            self.sourceContextSpin.setValue(int(context.itemId))
+            self.sourceContextSpin.setValue(int(context.itemId()))
             self._setSourceStatus(foundArk, contextType, contextDescription, foundFeature, foundSchematic)
         else:
             self.sourceContextSpin.setValue(0)

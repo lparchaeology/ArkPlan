@@ -160,8 +160,8 @@ class PlanDock(ToolDockWidget):
         self.widget.setCurrentIndex(1)
         self.widget.schematicWidget.contextSpin.setFocus()
 
-    def contextItemKey(self):
-        return self.widget.schematicWidget.contextItemKey()
+    def contextItem(self):
+        return self.widget.schematicWidget.contextItem()
 
     def context(self):
         return self.widget.schematicWidget.context()
@@ -175,8 +175,8 @@ class PlanDock(ToolDockWidget):
     def contextStatus(self):
         return self.widget.schematicWidget.contextStatus()
 
-    def sourceItemKey(self):
-        return self.widget.schematicWidget.sourceItemKey()
+    def sourceItem(self):
+        return self.widget.schematicWidget.sourceItem()
 
     def sourceContext(self):
         return self.widget.schematicWidget.sourceContext()

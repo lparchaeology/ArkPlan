@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-03-11
-        git sha              : $Format:%H$
-        copyright            : 2016 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -36,7 +34,7 @@ from ..libarkqgis import utils
 from enum import *
 from action_settings import ActionSettingsTool
 from config import Config
-from plan_item import ItemKey
+from item import Item
 
 import data_widget_base
 
@@ -153,22 +151,22 @@ class DataDock(ToolDockWidget):
             self.widget.siteCodeCombo.addItem(site)
 
     def item(self):
-        return ItemKey(self.siteCode(), self.classCode(), self.itemId())
+        return Item(self.siteCode(), self.classCode(), self.itemId())
 
     def setItem(self, item):
         if item.isInvalid():
             return
         self.blockSignals(True)
-        idx = self.widget.siteCodeCombo.findData(item.siteCode)
+        idx = self.widget.siteCodeCombo.findData(item.siteCode())
         if idx >= 0:
             self.widget.siteCodeCombo.setCurrentIndex(idx)
 
-        idx = self.widget.classCodeCombo.findData(item.classCode)
+        idx = self.widget.classCodeCombo.findData(item.classCode())
         if idx >= 0:
             self.widget.classCodeCombo.setCurrentIndex(idx)
 
-        if (item.itemId.isdigit() and int(item.itemId) >= 0):
-            self.widget.itemIdSpin.setValue(int(item.itemId))
+        if (item.itemId().isdigit() and int(item.itemId()) >= 0):
+            self.widget.itemIdSpin.setValue(int(item.itemId()))
         else:
             self.widget.itemIdSpin.setValue(0)
         self.blockSignals(False)

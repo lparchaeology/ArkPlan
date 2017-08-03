@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -26,9 +24,10 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QToolButton, QIcon
+from PyQt4.QtGui import QWidget, QToolButton, QIcon, QLabel
 
 from ..libarkqgis.map_tools import *
+from ..libarkqgis import geometry
 
 from audit import Audit
 from config import Config
@@ -49,11 +48,12 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
     _actions = {}
     _mapTools = {}
     _currentMapTool = None
-    _pointsBuffer = None
-    _linesBuffer = None
-    _polygonsBuffer = None
+    _pointsLayer = None
+    _linesLayer = None
+    _polygonsLayer = None
     _iface = None
-    _colMax = 5
+    _definitiveCategories = set()
+    _colMax = 6
     _pointTool = 0
     _lineTool = 0
     _polygonTool = 0
@@ -69,14 +69,34 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
             if classCode['source']:
                 self.classCombo.addItem(classCode['label'], classCode['code'])
 
+        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/editPoints.svg', u'Points Node Tool', self._editPointsLayer)
+        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg', u'Points Select Tool', self._selectPointsLayer)
+
+        self._addStandardTool(FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer)
+        self._addStandardTool(FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer)
+
+        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg', u'Polygons Node Tool', self._editPolygonsLayer)
+        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg', u'Polygons Select Tool', self._selectPolygonsLayer)
+        # TODO Make generic somehow
+        if collection == 'plan':
+            self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg', u'Auto-Schematic Tool', self._autoSchematicSelected)
+
+        self._addToolSpacer(self.pointToolLayout)
+        self._pointTool = self._colMax
+        self._addToolSpacer(self.lineToolLayout)
+        self._lineTool = self._colMax
+        self._addToolSpacer(self.polygonToolLayout)
+        self._polygonTool = self._colMax
+
         for feature in Config.featureCategories[collection]:
             if 'query' not in feature:
                 feature['query'] = None
             self._addDrawingTool(feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
+            if feature['definitive'] == True:
+                self._definitiveCategories.add(feature['category'])
 
-        self.idSpin.valueChanged.connect(self.featureChanged)
+        self.idEdit.editingFinished.connect(self.featureChanged)
         self.commentEdit.editingFinished.connect(self.featureChanged)
-        self.autoTool.clicked.connect(self.autoToolSelected)
 
     def unloadGui(self):
         for action in self._actions.values():
@@ -85,9 +105,10 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
 
 
     def loadProject(self, project, collection):
-        self._pointsBuffer = project.collection(collection).pointsBuffer
-        self._linesBuffer = project.collection(collection).linesBuffer
-        self._polygonsBuffer = project.collection(collection).polygonsBuffer
+        collection = project.collection(collection)
+        self._pointsLayer = collection.pointsBuffer if collection.pointsBuffer else collection.pointsLayer
+        self._linesLayer = collection.linesBuffer if collection.linesBuffer else collection.linesLayer
+        self._polygonsLayer = collection.polygonsBuffer if collection.polygonsBuffer else collection.polygonsLayer
 
     def closeProject(self):
         pass
@@ -113,11 +134,7 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         if idx >= 0:
             self.siteCodeCombo.setCurrentIndex(idx)
         self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item.classCode()))
-        sourceId = source.item().itemId()
-        if (isinstance(sourceId, int) and sourceId >=0) or (isinstance(sourceId, str) and sourceId.isdigit() and int(sourceId) >= 0):
-            self.sourceIdSpin.setValue(int(sourceId))
-        else:
-            self.sourceIdSpin.setValue(0)
+        self.sourceIdEdit.setText(source.item().itemId())
 
         self.blockSignals(False)
 
@@ -128,12 +145,37 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         return self.classCodeCombo.itemData(self.sourceClassCombo.currentIndex())
 
     def _itemId(self):
-        return str(self.itemIdSpin.value())
+        return self.idEdit.text().strip()
+
+    def _label(self):
+        return self.commentEdit.text().strip()
 
     def _comment(self):
-        return self.commentEdit.text()
+        return self.commentEdit.text().strip()
 
     # Drawing Tools
+
+    def _addToolButton(self, action, featureType):
+        toolButton = QToolButton(self)
+        toolButton.setFixedWidth(30)
+        toolButton.setFixedHeight(30)
+        toolButton.setDefaultAction(action)
+        if featureType == FeatureType.Point:
+            self._addToolWidget(self.pointToolLayout, toolButton, self._pointTool)
+            self._pointTool += 1
+        elif featureType == FeatureType.Line or featureType == FeatureType.Segment:
+            self._addToolWidget(self.lineToolLayout, toolButton, self._lineTool)
+            self._lineTool += 1
+        elif featureType == FeatureType.Polygon:
+            self._addToolWidget(self.polygonToolLayout, toolButton, self._polygonTool)
+            self._polygonTool += 1
+
+    def _addStandardTool(self, featureType, icon, tooltip, slot=None):
+        action = QAction(QIcon(icon), '', self)
+        action.setToolTip(tooltip)
+        action.setCheckable(False)
+        action.triggered.connect(slot)
+        self._addToolButton(action, featureType)
 
     def _addDrawingTool(self, classCode, category, toolName, icon, featureType, query=None):
         data = {}
@@ -146,11 +188,11 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
 
         layer = None
         if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            layer = self._linesBuffer
+            layer = self._linesLayer
         elif featureType == FeatureType.Polygon:
-            layer = self._polygonsBuffer
+            layer = self._polygonsLayer
         else:
-            layer = self._pointsBuffer
+            layer = self._pointsLayer
 
         mapTool = ArkMapToolAddFeature(self._iface, layer, featureType, toolName)
         mapTool.setAction(action)
@@ -172,31 +214,19 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
                 query['decimals']
             )
 
-        toolButton = QToolButton(self)
-        toolButton.setFixedWidth(40)
-        toolButton.setDefaultAction(action)
-        if featureType == FeatureType.Point:
-            self._addToolWidget(self.pointToolLayout, toolButton, self._pointTool)
-            self._pointTool += 1
-        if featureType == FeatureType.Line or featureType == FeatureType.Segment:
-            self._addToolWidget(self.lineToolLayout, toolButton, self._lineTool)
-            self._lineTool += 1
-        if featureType == FeatureType.Polygon:
-            self._addToolWidget(self.polygonToolLayout, toolButton, self._polygonTool)
-            self._polygonTool += 1
-
+        self._addToolButton(action, featureType)
         self._actions[category] = action
         self._mapTools[category] = mapTool
 
     def _mapToolActivated(self):
-        for mapTool in self.mapTools.values():
+        for mapTool in self._mapTools.values():
             if mapTool.action().isChecked():
                 if not mapTool.layer().isEditable():
                     mapTool.layer().startEditing()
                 self._setMapToolAttributes(mapTool)
 
     def _updateMapToolAttributes(self):
-        for mapTool in self.mapTools.values():
+        for mapTool in self._mapTools.values():
             if mapTool.action().isChecked():
                 self._setMapToolAttributes(mapTool)
 
@@ -222,3 +252,64 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
 
     def _addToolWidget(self, layout, toolButton, counter):
         layout.addWidget(toolButton, counter // self._colMax, counter % self._colMax, Qt.AlignCenter)
+
+    def _addToolSpacer(self, layout):
+        while layout.columnCount() < self._colMax:
+            label = QLabel()
+            layout.addWidget(label, 0, layout.columnCount() % self._colMax)
+
+    def _editLayer(self, layer):
+        self._iface.setActiveLayer(layer)
+        if not layer.isEditable():
+            layer.startEditing()
+        self._iface.actionNodeTool().trigger()
+
+    def _editPointsLayer(self):
+        self._editLayer(self._pointsLayer)
+
+    def _editLinesLayer(self):
+        self._editLayer(self._linesLayer)
+
+    def _editPolygonsLayer(self):
+        self._editLayer(self._polygonsLayer)
+
+    def _selectLayer(self, layer):
+        self._iface.setActiveLayer(layer)
+        self._iface.actionSelect().trigger()
+
+    def _selectPointsLayer(self):
+        self._selectLayer(self._pointsLayer)
+
+    def _selectLinesLayer(self):
+        self._selectLayer(self._linesLayer)
+
+    def _selectPolygonsLayer(self):
+        self._selectLayer(self._polygonsLayer)
+
+    def _autoSchematicSelected(self):
+        self.actions['sch'].trigger()
+        self._autoSchematic(self.metadata, self._linesLayer, self._polygonsLayer)
+
+    def _autoSchematic(self, md, inLayer, outLayer):
+        definitiveFeatures = []
+        if inLayer.selectedFeatureCount() > 0:
+            definitiveFeatures = inLayer.selectedFeatures()
+        else:
+            featureIter = inLayer.getFeatures()
+            for feature in featureIter:
+                if (feature.attribute(self.project.fieldName('id')) == self.itemId()
+                    and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories):
+                    definitiveFeatures.append(feature)
+        if len(definitiveFeatures) <= 0:
+            return
+        schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
+        if len(schematicFeatures) <= 0:
+            return
+        schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
+        attrs = md.itemFeature.toAttributes()
+        for attr in attrs.keys():
+            schematic.setAttribute(attr, attrs[attr])
+        outLayer.beginEditCommand("Add Auto Schematic")
+        outLayer.addFeature(schematic)
+        outLayer.endEditCommand()
+        self.project.mapCanvas().refresh()

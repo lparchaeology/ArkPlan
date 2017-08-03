@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>165</height>
+    <height>135</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>SourceWidget</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="siteLabel">
      <property name="text">
@@ -40,14 +43,7 @@
       <widget class="QComboBox" name="sourceClassCombo"/>
      </item>
      <item>
-      <widget class="QSpinBox" name="sourceIdSpin">
-       <property name="toolTip">
-        <string>Source ID</string>
-       </property>
-       <property name="maximum">
-        <number>99999</number>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="sourceIdEdit"/>
      </item>
     </layout>
    </item>

@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -33,7 +31,6 @@ from PyQt4.QtGui import QIcon
 from qgis.core import QgsProject
 
 from ..libarkqgis.dock import ToolDockWidget
-from ..libarkqgis.snapping import *
 
 from plan_widget import *
 
@@ -45,13 +42,6 @@ class PlanDock(ToolDockWidget):
     loadGeoFileSelected = pyqtSignal()
 
     # Drawing Signals
-    autoSchematicSelected = pyqtSignal()
-    editPointsSelected = pyqtSignal()
-    editLinesSelected = pyqtSignal()
-    editPolygonsSelected = pyqtSignal()
-    selectPointsSelected = pyqtSignal()
-    selectLinesSelected = pyqtSignal()
-    selectPolygonsSelected = pyqtSignal()
     resetSelected = pyqtSignal()
     mergeSelected = pyqtSignal()
 
@@ -80,11 +70,6 @@ class PlanDock(ToolDockWidget):
     resetSchematicSelected = pyqtSignal()
     schematicReportSelected = pyqtSignal()
 
-    _iface = None # QgsInterface()
-    _snappingAction = None  # ProjectSnappingAction()
-    _interAction = None  # IntersectionSnappingAction()
-    _topoAction = None  # TopologicalEditingAction()
-
     def __init__(self, parent=None):
         super(PlanDock, self).__init__(PlanWidget(), parent)
 
@@ -102,26 +87,10 @@ class PlanDock(ToolDockWidget):
         self.toolbar.addAction(iface.actionZoomNext())
 
         self.toolbar.addSeparator()
-        self._snappingAction = ProjectSnappingAction(self)
-        self._snappingAction.setInterface(iface)
-        self.toolbar.addAction(self._snappingAction)
-        self._interAction = IntersectionSnappingAction(self)
-        self.toolbar.addAction(self._interAction)
-        self._topoAction = TopologicalEditingAction(self)
-        self.toolbar.addAction(self._topoAction)
 
-        self.toolbar2.setVisible(True)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
-        self.toolbar2.addSeparator()
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPoints.svg'), self.tr(u'Edit Points in Buffer'), self.editPointsSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editLines.svg'), self.tr(u'Edit Lines in Buffer'), self.editLinesSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/editPolygons.svg'), self.tr(u'Edit Polygons in Buffer'), self.editPolygonsSelected)
-        self.toolbar2.addSeparator()
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectPoints.svg'), self.tr(u'Select Points in Buffer'), self.selectPointsSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectLines.svg'), self.tr(u'Select Lines in Buffer'), self.selectLinesSelected)
-        self.toolbar2.addAction(QIcon(':/plugins/ark/plan/selectPolygons.svg'), self.tr(u'Select Polygons in Buffer'), self.selectPolygonsSelected)
+        self.toolbar.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
+        self.toolbar.addAction(QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
+        self.toolbar.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
 
         # Init the child widgets
         self.widget.drawingWidget.initGui(iface)
@@ -129,7 +98,6 @@ class PlanDock(ToolDockWidget):
         self.widget.snappingWidget.initGui()
 
         # Cascade the child widget signals
-        self.widget.drawingWidget.planFeatureWidget.autoToolSelected.connect(self.autoSchematicSelected)
         self.widget.drawingWidget.resetButton.clicked.connect(self.resetSelected)
         self.widget.drawingWidget.mergeButton.clicked.connect(self.mergeSelected)
 
@@ -161,12 +129,6 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.unloadGui()
         self.widget.snappingWidget.unloadGui()
         del self.widget.snappingWidget
-        self._snappingAction.unload()
-        del self._snappingAction
-        self._interAction.unload()
-        del self._interAction
-        self._topoAction.unload()
-        del self._topoAction
         super(PlanDock, self).unloadGui()
 
     # Load the project settings when project is loaded

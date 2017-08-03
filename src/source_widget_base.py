@@ -25,8 +25,9 @@ except AttributeError:
 class Ui_SourceWidget(object):
     def setupUi(self, SourceWidget):
         SourceWidget.setObjectName(_fromUtf8("SourceWidget"))
-        SourceWidget.resize(287, 165)
+        SourceWidget.resize(287, 135)
         self.gridLayout = QtGui.QGridLayout(SourceWidget)
+        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.siteLabel = QtGui.QLabel(SourceWidget)
         self.siteLabel.setObjectName(_fromUtf8("siteLabel"))
@@ -42,10 +43,9 @@ class Ui_SourceWidget(object):
         self.sourceClassCombo = QtGui.QComboBox(SourceWidget)
         self.sourceClassCombo.setObjectName(_fromUtf8("sourceClassCombo"))
         self.horizontalLayout_2.addWidget(self.sourceClassCombo)
-        self.sourceIdSpin = QtGui.QSpinBox(SourceWidget)
-        self.sourceIdSpin.setMaximum(99999)
-        self.sourceIdSpin.setObjectName(_fromUtf8("sourceIdSpin"))
-        self.horizontalLayout_2.addWidget(self.sourceIdSpin)
+        self.sourceIdEdit = QtGui.QLineEdit(SourceWidget)
+        self.sourceIdEdit.setObjectName(_fromUtf8("sourceIdEdit"))
+        self.horizontalLayout_2.addWidget(self.sourceIdEdit)
         self.gridLayout.addLayout(self.horizontalLayout_2, 1, 1, 1, 1)
         self.sourceCodeLabel = QtGui.QLabel(SourceWidget)
         self.sourceCodeLabel.setObjectName(_fromUtf8("sourceCodeLabel"))
@@ -72,7 +72,6 @@ class Ui_SourceWidget(object):
         SourceWidget.setWindowTitle(_translate("SourceWidget", "SourceWidget", None))
         self.siteLabel.setText(_translate("SourceWidget", "Site Code:", None))
         self.sourceIdLabel.setText(_translate("SourceWidget", "Source ID:", None))
-        self.sourceIdSpin.setToolTip(_translate("SourceWidget", "Source ID", None))
         self.sourceCodeLabel.setText(_translate("SourceWidget", "Source Type:", None))
         self.sourceFileLabel.setText(_translate("SourceWidget", "Source File:", None))
 

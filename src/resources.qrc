@@ -27,6 +27,7 @@
     <file alias="selectPoints.svg">../resources/mActionSelectPoint.svg</file>
     <file alias="selectLines.svg">../resources/mActionSelectLine.svg</file>
     <file alias="selectPolygons.svg">../resources/mActionSelectPolygon.svg</file>
+    <file alias="addPolygons.svg">../resources/mActionAddPolygon.svg</file>
     <file alias="search.svg">../resources/mActionSearch.svg</file>
     <file alias="zoomToItem.svg">../resources/mActionZoomToSelected.svg</file>
     <file alias="drawPlans.png">../resources/draw-freehand.png</file>

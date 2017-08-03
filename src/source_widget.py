@@ -55,7 +55,7 @@ class SourceWidget(QWidget, source_widget_base.Ui_SourceWidget):
         self.siteCodeCombo.currentIndexChanged.connect(self.sourceChanged)
         self.sourceCodeCombo.currentIndexChanged.connect(self.sourceChanged)
         self.sourceClassCombo.currentIndexChanged.connect(self.sourceChanged)
-        self.sourceIdSpin.valueChanged.connect(self.sourceChanged)
+        self.sourceIdEdit.editingFinished.connect(self.sourceChanged)
         self.sourceFileEdit.editingFinished.connect(self.sourceChanged)
 
     def unloadGui(self):
@@ -81,13 +81,10 @@ class SourceWidget(QWidget, source_widget_base.Ui_SourceWidget):
 
         self._setSiteCode(source.item().siteCode())
         self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item.classCode()))
-        sourceId = source.item().itemId()
-        if (isinstance(sourceId, int) and sourceId >=0) or (isinstance(sourceId, str) and sourceId.isdigit() and int(sourceId) >= 0):
-            self.sourceIdSpin.setValue(int(sourceId))
-        else:
-            self.sourceIdSpin.setValue(0)
+        self.sourceIdEdit.setText(source.item().itemId())
 
         self.blockSignals(False)
+        self.sourceChanged.emit()
 
     def _setSiteCode(self, siteCode):
         idx = self.siteCodeCombo.findData(siteCode)
@@ -107,7 +104,7 @@ class SourceWidget(QWidget, source_widget_base.Ui_SourceWidget):
         return self.sourceClassCombo.itemData(self.sourceClassCombo.currentIndex())
 
     def _sourceId(self):
-        return str(self.sourceIdSpin.value())
+        return self.sourceIdEdit.text().strip()
 
     def _sourceFile(self):
-        return self.sourceFileEdit.text()
+        return self.sourceFileEdit.text().strip()

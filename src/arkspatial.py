@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -25,17 +23,17 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QFile, QFileInfo, QDir, QObject, QDateTime, pyqtSignal
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget, QProgressBar, QApplication, QInputDialog, QMenu
+from PyQt4.QtCore import Qt, QFile, QFileInfo, QDir
+from PyQt4.QtGui import  QIcon, QAction, QDockWidget
 
-from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsSnapper, QgsMessageLog, QgsFields, QgsLayerTreeModel, QgsLayerTreeNode, QgsMapLayer
-from qgis.gui import QgsMessageBar, QgsLayerTreeView, QgsLayerTreeViewMenuProvider, QgsLayerTreeViewDefaultActions
+from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsFields, QgsLayerTreeModel, QgsMapLayer
+from qgis.gui import QgsLayerTreeView
 
 from ..libarkqgis.plugin import Plugin
 from ..libarkqgis.layercollection import *
-from ..libarkqgis import utils, layers
+from ..libarkqgis import layers
 from ..libarkqgis.dock import ToolDockWidget
-from ..libarkqgis.snapping import LayerSnappingAction
+from ..libarkqgis.snapping import *
 
 from ..grid.grid import GridModule
 
@@ -45,78 +43,12 @@ from filter_module import FilterModule
 from identify import MapToolIndentifyItems
 
 from config import Config
+from layer_tree_menu import LayerTreeMenu
 from settings_wizard import SettingsWizard
 from settings_dialog import SettingsDialog
 from select_item_dialog import SelectItemDialog
 
 import resources
-
-class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
-
-    _iface = None
-    _view = None
-
-    def __init__(self, project, view):
-        QgsLayerTreeViewMenuProvider.__init__(self)
-        self._project = project
-        self._view = view
-
-        # Default actions
-        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._project.mapCanvas())
-        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._project.mapCanvas())
-        self._featureCount = self._view.defaultActions().actionShowFeatureCount(self._project.mapCanvas())
-        self._remove = self._view.defaultActions().actionRemoveGroupOrLayer(self._project.mapCanvas())
-        self._rename = self._view.defaultActions().actionRenameGroupOrLayer(self._project.mapCanvas())
-
-        # Custom actions
-        self._removeDrawings = QAction('Remove All Drawings', view)
-        self._removeDrawings.triggered.connect(self._project.clearDrawings)
-
-        self._openAttributes = QAction(Project.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
-        self._openAttributes.triggered.connect(self._showAttributeTable)
-
-        self._openProperties = QAction(project.tr('&Properties'), view)
-        self._openProperties.triggered.connect(self._showLayerProperties)
-
-    def createContextMenu(self):
-        if not self._view.currentNode():
-            return None
-        menu = QMenu()
-        node = self._view.currentNode()
-        if node.nodeType() == QgsLayerTreeNode.NodeGroup:
-            menu.addAction(self._zoomGroup)
-            if not self._project.isArkGroup(node.name()):
-                menu.addAction(self._rename)
-                menu.addAction(self._remove)
-            if node.name() == self._project.drawingsGroupName:
-                menu.addAction(self._removeDrawings)
-        elif node.nodeType() == QgsLayerTreeNode.NodeLayer:
-            menu.addAction(self._zoomLayer)
-            if node.layer().type() == QgsMapLayer.VectorLayer:
-                menu.addAction(self._featureCount)
-                menu.addAction(self._openAttributes)
-            layerId = node.layerId()
-            parent = node.parent()
-            if parent.nodeType() == QgsLayerTreeNode.NodeGroup and parent.name() == self._project.drawingsGroupName:
-                menu.addAction(self._removeDrawings)
-            if not self._project.isArkLayer(layerId):
-                menu.addSeparator()
-                menu.addAction(self._rename)
-                menu.addAction(self._remove)
-                if not QgsProject.instance().layerIsEmbedded(layerId):
-                    menu.addAction(self._openProperties)
-        return menu
-
-    def _showAttributeTable(self):
-        node = self._view.currentNode()
-        if node.nodeType() == QgsLayerTreeNode.NodeLayer and node.layer().type() == QgsMapLayer.VectorLayer:
-            self._project.iface.showAttributeTable(node.layer())
-
-    def _showLayerProperties(self):
-        node = self._view.currentNode()
-        if node.nodeType() == QgsLayerTreeNode.NodeLayer:
-            self._project.iface.showLayerProperties(node.layer())
-
 
 class ArkSpatial(Plugin):
     """QGIS Plugin Implementation."""
@@ -150,12 +82,24 @@ class ArkSpatial(Plugin):
     _loaded = False
     _layerSnappingAction = None  # LayerSnappingAction()
     _userDocks = []
+    _snappingAction = None  # ProjectSnappingAction()
+    _interAction = None  # IntersectionSnappingAction()
+    _topoAction = None  # TopologicalEditingAction()
 
     def __init__(self, iface, pluginPath):
         super(ArkSpatial, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
                                          Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))
+
+        # TODO Make own plugin!
+        self._snappingAction = ProjectSnappingAction(iface.mainWindow())
+        self._snappingAction.setInterface(iface)
+        self.iface.addToolBarIcon(self._snappingAction)
+        self._interAction = IntersectionSnappingAction(iface.mainWindow())
+        self.iface.addToolBarIcon(self._interAction)
+        self._topoAction = TopologicalEditingAction(iface.mainWindow())
+        self.iface.addToolBarIcon(self._topoAction)
 
     def isInitialised(self):
         return self._initialised
@@ -313,6 +257,12 @@ class ArkSpatial(Plugin):
             self._initialised = False
 
         self.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
+        self._snappingAction.unload()
+        del self._snappingAction
+        self._interAction.unload()
+        del self._interAction
+        self._topoAction.unload()
+        del self._topoAction
 
         # Unload this dock and uninitialise
         del self.projectLayerView

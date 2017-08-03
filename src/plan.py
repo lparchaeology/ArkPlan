@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -31,7 +29,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog, QApplication
 from qgis.core import *
 
 from ..libarkqgis.map_tools import *
-from ..libarkqgis import utils, layers, geometry
+from ..libarkqgis import utils, layers
 
 from ..georef.georef_dialog import GeorefDialog
 
@@ -68,8 +66,6 @@ class Plan(QObject):
 
     metadata = None  # Metadata()
 
-    _definitiveCategories = set()
-
     _editSchematic = False
 
     _mapAction = MapAction.MoveMap
@@ -92,13 +88,6 @@ class Plan(QObject):
         self.dock.loadRawFileSelected.connect(self._loadRawPlan)
         self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
 
-        self.dock.autoSchematicSelected.connect(self._autoSchematicSelected)
-        self.dock.editPointsSelected.connect(self._editPointsLayer)
-        self.dock.editLinesSelected.connect(self._editLinesLayer)
-        self.dock.editPolygonsSelected.connect(self._editPolygonsLayer)
-        self.dock.selectPointsSelected.connect(self._selectPointsLayer)
-        self.dock.selectLinesSelected.connect(self._selectLinesLayer)
-        self.dock.selectPolygonsSelected.connect(self._selectPolygonsLayer)
         self.dock.resetSelected.connect(self.resetBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
@@ -132,11 +121,6 @@ class Plan(QObject):
         # Assume layers are loaded and filters cleared
         self.dock.loadProject(self.project)
 
-        for collection, features in Config.featureCategories.iteritems():
-            for feature in features:
-                if feature['definitive'] == True:
-                    self._definitiveCategories.add(feature['category'])
-
         if self.project.plan.settings.log:
             self._itemLogPath = self.project.projectPath() + '/' + self.project.plan.settings.collectionPath + '/log/itemLog.csv'
             if not QFile.exists(self._itemLogPath):
@@ -168,12 +152,11 @@ class Plan(QObject):
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
-        # Reset the initialisation
-        self.initialised = False
-
         # Unload the dock
         self.dock.unloadGui()
         del self.dock
+        # Reset the initialisation
+        self.initialised = False
 
     def run(self, checked):
         if checked and self.initialised:
@@ -439,57 +422,6 @@ class Plan(QObject):
             self.dock.activateSchematicCheck()
 
     # Drawing tools
-
-    def _autoSchematicSelected(self):
-        self.actions['sch'].trigger()
-        self._autoSchematic(self.metadata, self.project.plan.linesBuffer, self.project.plan.polygonsBuffer)
-
-    def _autoSchematic(self, md, inLayer, outLayer):
-        definitiveFeatures = []
-        if inLayer.selectedFeatureCount() > 0:
-            definitiveFeatures = inLayer.selectedFeatures()
-        else:
-            featureIter = inLayer.getFeatures()
-            for feature in featureIter:
-                if str(feature.attribute(self.project.fieldName('id'))) == str(md.itemId()) and feature.attribute(self.project.fieldName('category')) in self._definitiveCategories:
-                    definitiveFeatures.append(feature)
-        if len(definitiveFeatures) <= 0:
-            return
-        schematicFeatures = geometry.polygonizeFeatures(definitiveFeatures, outLayer.pendingFields())
-        if len(schematicFeatures) <= 0:
-            return
-        schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
-        attrs = md.itemFeature.toAttributes()
-        for attr in attrs.keys():
-            schematic.setAttribute(attr, attrs[attr])
-        outLayer.beginEditCommand("Add Auto Schematic")
-        outLayer.addFeature(schematic)
-        outLayer.endEditCommand()
-        self.project.mapCanvas().refresh()
-
-    def _editPointsLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.pointsBuffer)
-        self.project.iface.actionNodeTool().trigger()
-
-    def _editLinesLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.linesBuffer)
-        self.project.iface.actionNodeTool().trigger()
-
-    def _editPolygonsLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
-        self.project.iface.actionNodeTool().trigger()
-
-    def _selectPointsLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.pointsBuffer)
-        self.project.iface.actionSelect().trigger()
-
-    def _selectLinesLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.linesBuffer)
-        self.project.iface.actionSelect().trigger()
-
-    def _selectPolygonsLayer(self):
-        self.project.iface.setActiveLayer(self.project.plan.polygonsBuffer)
-        self.project.iface.actionSelect().trigger()
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item', label=None):
         if not label:

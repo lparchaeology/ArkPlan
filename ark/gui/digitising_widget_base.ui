@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DrawingWidget</class>
- <widget class="QWidget" name="DrawingWidget">
+ <class>DigitisingWidget</class>
+ <widget class="QWidget" name="DigitisingWidget">
   <property name="windowTitle">
-   <string>DrawingWidget</string>
+   <string>DigitisingWidget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="sizeConstraint">
@@ -13,14 +13,14 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QScrollArea" name="drawingScrollArea">
+    <widget class="QScrollArea" name="digitisingScrollArea">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="drawingScrollAreaContents">
+     <widget class="QWidget" name="digitisingScrollAreaContents">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="sizeConstraint">
         <enum>QLayout::SetMinAndMaxSize</enum>
@@ -45,7 +45,7 @@
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="planDrawingWidget">
+         <widget class="QWidget" name="planDigitisingWidget">
           <attribute name="title">
            <string>Plan</string>
           </attribute>
@@ -80,7 +80,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="sectionDrawingWidget">
+         <widget class="QWidget" name="sectionDigitisingWidget">
           <attribute name="title">
            <string>Section</string>
           </attribute>
@@ -109,7 +109,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="siteDrawingWidget">
+         <widget class="QWidget" name="siteDigitisingWidget">
           <attribute name="title">
            <string>Site</string>
           </attribute>

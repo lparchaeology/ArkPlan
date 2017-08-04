@@ -26,8 +26,8 @@ from PyQt4.QtCore import QVariant
 
 from qgis.core import QgsField, QgsMessageLog
 
-from ..libarkqgis.map_tools import FeatureType
-from ..libarkqgis.project import Project
+from ark.lib.map_tools import FeatureType
+from ark.lib.project import Project
 
 class Config():
 

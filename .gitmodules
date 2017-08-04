@@ -1,3 +1,3 @@
 [submodule "libarkqgis"]
-	path = libarkqgis
-	url = git@github.com:lparchaeology/libarkqgis.git
+    path = ark/lib
+    url = git@github.com:lparchaeology/libarkqgis.git

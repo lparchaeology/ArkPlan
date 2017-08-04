@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/plugins/ark" >
+        <file alias="snapEnable.png">resources/snap-node.png</file>
+        <file alias="snapLayerAll.png">resources/iconLayerAll.png</file>
+        <file alias="snapLayerCurrent.png">resources/iconLayerCurrent.png</file>
+        <file alias="snapLayerSelected.png">resources/iconLayerSelected.png</file>
+        <file alias="snapVertex.png">resources/iconSnapVertex.png</file>
+        <file alias="snapSegment.png">resources/iconSnapSegment.png</file>
+        <file alias="snapVertexSegment.png">resources/iconSnapVertexSegment.png</file>
+        <file alias="snapIntersections.png">resources/snap-intersection.png</file>
+        <file alias="topologicalEditing.png">resources/snap-extension.png</file>
+    </qresource>
+</RCC>

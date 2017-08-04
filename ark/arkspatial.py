@@ -29,24 +29,24 @@ from PyQt4.QtGui import  QIcon, QAction, QDockWidget
 from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsFields, QgsLayerTreeModel, QgsMapLayer
 from qgis.gui import QgsLayerTreeView
 
-from ..libarkqgis.plugin import Plugin
-from ..libarkqgis.layercollection import *
-from ..libarkqgis import layers
-from ..libarkqgis.dock import ToolDockWidget
-from ..libarkqgis.snapping import *
+from ark.lib.plugin import Plugin
+from ark.lib.layercollection import *
+from ark.lib import layers
+from ark.lib.dock import ToolDockWidget
+from ark.lib.snapping import *
 
-from ..grid.grid import GridModule
+from ark.grid.grid import GridModule
 
-from data import Data
+from ark.core.data import Data
 from plan import Plan
 from filter_module import FilterModule
 from identify import MapToolIndentifyItems
-
 from config import Config
-from layer_tree_menu import LayerTreeMenu
-from settings_wizard import SettingsWizard
-from settings_dialog import SettingsDialog
-from select_item_dialog import SelectItemDialog
+
+from ark.gui.layer_tree_menu import LayerTreeMenu
+from ark.gui.settings_wizard import SettingsWizard
+from ark.gui.settings_dialog import SettingsDialog
+from ark.gui.select_item_dialog import SelectItemDialog
 
 import resources
 
@@ -325,8 +325,8 @@ class ArkSpatial(Plugin):
             self._configureCollection('site')
 
             self._configureDrawing('context')
-            self._configureDrawing('pln')
-            self._configureDrawing('sec')
+            self._configureDrawing('plan')
+            self._configureDrawing('section')
 
             self.writeProject()
             self._setIsConfigured(self.project.write())

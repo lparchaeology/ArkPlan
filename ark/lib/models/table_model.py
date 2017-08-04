@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                ARK Spatial
-                    A QGIS plugin for Archaeological Recording.
+                                ARK QGIS
+                        A QGIS utilities library.
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
@@ -20,19 +20,35 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- This script initializes the plugin, making it known to QGIS.
 """
 
-import os.path
-import ark
-from ark.lib.utils import debug
+import csv
 
-# noinspection PyPep8Naming
-def classFactory(iface):  # pylint: disable=invalid-name
-    """Load ArkSpatial class from file arkspatial.
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex
 
-    :param iface: A QGIS interface instance.
-    :type iface: QgsInterface
-    """
-    #
-    return ArkSpatial(iface, os.path.dirname(__file__))
+from table_model import TableModel
+
+class ParentChildModel(TableModel):
+
+    def __init__(self, parent=None):
+        super(TableModel, self).__init__(parent)
+        self._fields = ['parent', 'child']
+        self._nullRecord = {'parent' : None, 'child' : None}
+
+    def addChild(self, parent, child):
+        self.deleteRecords('child', child)
+        record = {'parent' : parent, 'child' : child}
+        self._table.append(record)
+
+    def getChildren(self, parent):
+        children = []
+        for record in self._table:
+            if record['parent'] == parent:
+                children.append(record['child'])
+        return children
+
+    def getParent(self, child):
+        for record in self._table:
+            if record['child'] == child:
+                return record['parent']
+        return None

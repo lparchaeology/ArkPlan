@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+Digitising# -*- coding: utf-8 -*-
 """
 /***************************************************************************
                                 ARK Spatial
@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -27,12 +25,12 @@
 from PyQt4 import uic
 from PyQt4.QtGui import QWidget
 
-import drawing_widget_base
+import digitising_widget_base
 
-class DrawingWidget(QWidget, drawing_widget_base.Ui_DrawingWidget):
+class DigitisingWidget(QWidget, digitising_widget_base.Ui_DigitisingWidget):
 
     def __init__(self, parent=None):
-        super(DrawingWidget, self).__init__(parent)
+        super(DigitisingWidget, self).__init__(parent)
         self.setupUi(self)
 
     def initGui(self, iface):

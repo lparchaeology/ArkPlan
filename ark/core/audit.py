@@ -22,9 +22,7 @@
  ***************************************************************************/
 """
 
-from ..libarkqgis import utils
-
-from item import *
+from ark.lib import utils
 
 class Audit():
     _creator = ''
@@ -84,10 +82,10 @@ class Audit():
 
     def attributes(self):
         attrs = {}
-        _setDict(attrs, 'creator', self.creator())
-        _setDict(attrs, 'created', self.created())
-        _setDict(attrs, 'modifier', self.modifier())
-        _setDict(attrs, 'modified', self.modified())
+        attrs['creator'] = utils.strip(self.creator())
+        attrs['created'] = utils.strip(self.created())
+        attrs['modifier'] = utils.strip(self.modifier())
+        attrs['modified'] = utils.strip(self.modified())
         return attrs
 
     def setAttributes(self, attributes):

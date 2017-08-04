@@ -31,20 +31,9 @@ from ..libarkqgis import utils
 
 from config import Config
 
-def _value(value):
-    if isinstance(value, str) and value.strip() == '':
-        return None
-    return value
-
 def _setAttribute(feature, attribute, value):
     try:
-        feature.setAttribute(attribute, _value(value))
-    except:
-        pass
-
-def _setDict(toDict, attribute, value):
-    try:
-        toDict[attribute] = _value(value)
+        feature.setAttribute(attribute, utils.strip(value))
     except:
         pass
 
@@ -164,9 +153,9 @@ class Item():
 
     def attributes(self):
         attrs = {}
-        _setDict(attrs, 'site', self._siteCode)
-        _setDict(attrs, 'class', self._classCode)
-        _setDict(attrs, 'id', self._itemId)
+        attrs['site'] = utils.strip(self._siteCode)
+        attrs['class'] = utils.strip(self._classCode)
+        attrs['id'] = utils.strip(self._itemId)
         return attrs
 
     def setAttributes(self, attributes):

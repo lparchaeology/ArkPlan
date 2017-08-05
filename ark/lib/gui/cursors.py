@@ -10,6 +10,9 @@
         email                : ark@lparchaeology.com
         copyright            : 2017 by John Layt
         email                : john@layt.net
+        copyright            : 2010 by Jürgen E. Fischer
+        copyright            : 2007 by Marco Hugentobler
+        copyright            : 2006 by Martin Dobias
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,36 +25,29 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtGui import QCursor, QPixmap
 
+_capture_point_cursor_xpm = [
+    "16 16 3 1",
+    " »     c None",
+    ".»     c #000000",
+    "+»     c #FFFFFF",
+    "                ",
+    "       +.+      ",
+    "      ++.++     ",
+    "     +.....+    ",
+    "    +.     .+   ",
+    "   +.   .   .+  ",
+    "  +.    .    .+ ",
+    " ++.    .    .++",
+    " ... ...+... ...",
+    " ++.    .    .++",
+    "  +.    .    .+ ",
+    "   +.   .   .+  ",
+    "   ++.     .+   ",
+    "    ++.....+    ",
+    "      ++.++     ",
+    "       +.+      "
+]
 
-class LayerComboBox(QComboBox):
-
-    layerChanged = pyqtSignal()
-
-    _layerType = None
-    _geometryType = None
-    _iface = None
-
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
-
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+CapturePointCursor = QCursor(QPixmap(_capture_point_cursor_xpm), 8, 8)

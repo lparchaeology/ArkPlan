@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,96 +22,16 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal, QFileInfo, QFile, QSettings
-from PyQt4.QtGui import QDialog, QComboBox, QDialogButtonBox, QColor
-from PyQt4.QtXml import QDomImplementation, QDomDocument
+from PyQt4.QtCore import QFile, QFileInfo
+from PyQt4.QtXml import QDomDocument, QDomImplementation
+from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsLayerTreeGroup, QgsMapLayer, QgsMapLayerRegistry,
+                       QgsProject, QgsVectorFileWriter, QgsVectorLayer)
 
-from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorLayer, QgsVectorFileWriter, QgsProject, QgsLayerTreeGroup, NULL, QgsFeature, QgsFeatureRequest
-from qgis.gui import QgsHighlight
-
-import utils
-from project import Project
-from canvas_items import GeometryHighlight, FeatureHighlight
-
-# Layer Widgets
-
-class ArkLayerComboBox(QComboBox):
-
-    layerChanged = pyqtSignal()
-
-    _layerType = None
-    _geometryType = None
-    _iface = None
-
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
-
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+import ..utils
 
 
-class ArkSelectLayerDialog(QDialog):
-
-    def __init__(self, iface, text='', label='', layerType=None, geometryType=None, parent=None):
-
-        self.setWindowTitle(self.tr("Select Layer"))
-
-        self._dialogLayout = QtGui.QVBoxLayout(self)
-
-        if text:
-            self._textLabel = QtGui.QLabel(self)
-            self._textLabel.setText(text)
-            self._dialogLayout.addWidget(self._textLabel)
-
-        if (label or not text):
-            self._comboLabel = QtGui.QLabel(self)
-            if label:
-                self._comboLabel.setText(label)
-            elif not text:
-                self._comboLabel.setText(self.tr('Layer:'))
-            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
-            self._comboLayout = QtGui.QHBoxLayout()
-            self._comboLayout.addWidget(self._comboLabel)
-            self._comboLayout.addWidget(self._comboBox)
-            self._dialogLayout.addLayout(self._comboLayout)
-        else:
-            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
-            self._dialogLayout.addWidget(self._comboBox)
-
-        self._buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)
-        self._buttonBox.accepted.connect(self.accept)
-        self._buttonBox.rejected.connect(self.reject)
-        self._comboLayout.addWidget(self._buttonBox)
-
-    def layer(self):
-        return QgsMapLayerRegistry.instance().mapLayer(self.layerId())
-
-    def layerName(self):
-        return self.layerComboBox.currentText()
-
-    def layerId(self):
-        return self.layerComboBox.itemData(self.layerComboBox.currentIndex())
-
-
-# Layer management utilities
-
-# Try find a style file to match a layer
 def styleFilePath(layerPath, layerName, customStylePath, customStyleName, defaultStylePath, defaultStyleName):
+    # Try find a style file to match a layer
     # First see if the layer itself has a default style saved
     if layerPath and layerName:
         filePath = layerPath + '/' + layerName + '.qml'
@@ -132,8 +50,10 @@ def styleFilePath(layerPath, layerName, customStylePath, customStyleName, defaul
     # If we didn't anythign then don't use a style
     return ''
 
+
 def shapeFilePath(layerPath, layerName):
     return layerPath + '/' + layerName + '.shp'
+
 
 def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
@@ -142,6 +62,7 @@ def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbolo
     layer = QgsVectorLayer(filePath, name, 'ogr')
     loadStyle(layer, styleURI, symbology)
     return layer
+
 
 def createMemoryLayer(name, wkbType, crs, fields=None, styleURI=None, symbology=None):
     uri = wkbToMemoryType(wkbType) + "?crs=" + crs.authid() + "&index=yes"
@@ -153,6 +74,7 @@ def createMemoryLayer(name, wkbType, crs, fields=None, styleURI=None, symbology=
             layer.dataProvider().addAttributes([QgsField('id', QVariant.String, '', 10, 0, 'ID')])
         loadStyle(layer, styleURI, symbology)
     return layer
+
 
 def copyFeatures(fromLayer, toLayer, selected=False):
     toLayer.startEditing()
@@ -166,6 +88,7 @@ def copyFeatures(fromLayer, toLayer, selected=False):
     toLayer.commitChanges()
     return toLayer
 
+
 def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
@@ -174,9 +97,11 @@ def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
         return createShapefile(filePath, name, layer.wkbType(), layer.crs(), layer.dataProvider().fields(), styleURI, symbology)
     return QgsVectorLayer()
 
+
 def duplicateAsShapefile(layer, filePath, name, selected=False):
     shp = cloneAsShapefile(layer, filePath, name)
     return copyFeatures(layer, shp, selected)
+
 
 def cloneAsMemoryLayer(layer, name, styleURI=None, symbology=None):
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
@@ -192,9 +117,11 @@ def cloneAsMemoryLayer(layer, name, styleURI=None, symbology=None):
         return mem
     return QgsVectorLayer()
 
+
 def duplicateAsMemoryLayer(layer, name, selected=False):
     mem = cloneAsMemoryLayer(layer, name)
     return copyFeatures(layer, mem, selected)
+
 
 def loadStyle(layer, styleURI=None, symbology=None, fromLayer=None):
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
@@ -204,6 +131,7 @@ def loadStyle(layer, styleURI=None, symbology=None, fromLayer=None):
             layer.readSymbology(symbology, '')
         elif fromLayer and fromLayer.isValid() and fromLayer.type() == QgsMapLayer.VectorLayer:
             copySymbology(fromLayer, layer)
+
 
 def getSymbology(source):
     di = QDomImplementation()
@@ -215,8 +143,10 @@ def getSymbology(source):
     source.writeSymbology(rootNode, doc, '')
     return rootNode
 
+
 def copySymbology(source, dest):
     dest.readSymbology(getSymbology(source), '')
+
 
 def getGroupIndex(iface, groupName):
     groupIndex = -1
@@ -226,6 +156,7 @@ def getGroupIndex(iface, groupName):
             groupIndex = i
         i += 1
     return groupIndex
+
 
 def createLayerGroup(iface, groupName, parentGroupName=''):
     groupIndex = getGroupIndex(iface, groupName)
@@ -237,11 +168,13 @@ def createLayerGroup(iface, groupName, parentGroupName=''):
             return iface.legendInterface().addGroup(groupName, True, parentGroupIndex)
     return iface.legendInterface().addGroup(groupName, True)
 
+
 def getLayerId(layerName):
     layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
     if (len(layerList) > 0):
         return layerList[0].id()
     return None
+
 
 def addLayerToLegend(iface, layer, group=-1):
     if (layer is not None and layer.isValid()):
@@ -252,6 +185,7 @@ def addLayerToLegend(iface, layer, group=-1):
         iface.legendInterface().setLayerExpanded(ret, False)
         return ret
     return layer
+
 
 def wkbToMemoryType(wkbType):
     if (wkbType == QGis.WKBPoint):
@@ -280,6 +214,7 @@ def wkbToMemoryType(wkbType):
         return 'multipolygon'
     return 'unknown'
 
+
 def getAllFeaturesRequest(featureRequest, layer):
     # Stash the current selection
     selection = []
@@ -301,6 +236,7 @@ def getAllFeaturesRequest(featureRequest, layer):
     if len(selection) > 0:
         layer.select(selection)
     return features
+
 
 def addFeatures(features, layer, undoMessage='Add features to layer', log=False, logLayer=None, timestamp=None):
     ok = False
@@ -364,6 +300,7 @@ def addFeatures(features, layer, undoMessage='Add features to layer', log=False,
     if subset:
         layer.setSubsetString(subset)
     return ok
+
 
 def copyFeatureRequest(featureRequest, fromLayer, toLayer, undoMessage='Copy features', log=False, logLayer=None, timestamp=None):
     ok = False
@@ -435,8 +372,10 @@ def copyFeatureRequest(featureRequest, fromLayer, toLayer, undoMessage='Copy fea
         toLayer.setSubsetString(toSubset)
     return ok
 
+
 def copyAllFeatures(fromLayer, toLayer, undoMessage='Copy features', log=False, logLayer=None, timestamp=None):
     return copyFeatureRequest(QgsFeatureRequest(), fromLayer, toLayer, undoMessage, log, logLayer, timestamp)
+
 
 def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete features', log=False, logLayer=None, timestamp=None):
     ok = False
@@ -503,8 +442,10 @@ def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete features', l
         layer.setSubsetString(subset)
     return ok
 
+
 def deleteAllFeatures(layer, undoMessage='Delete features', log=False, logLayer=None, timestamp=None):
     return deleteFeatureRequest(QgsFeatureRequest(), layer, undoMessage, log, logLayer, timestamp)
+
 
 def childGroupIndex(parentGroupName, childGroupName):
     root = QgsProject.instance().layerTreeRoot()
@@ -518,7 +459,8 @@ def childGroupIndex(parentGroupName, childGroupName):
         if isinstance(child, QgsLayerTreeGroup) and child.name() == childGroupName:
             break
         idx += 1
-    return  idx
+    return idx
+
 
 def insertChildGroup(parentGroupName, childGroupName, childIndex):
     root = QgsProject.instance().layerTreeRoot()
@@ -528,6 +470,7 @@ def insertChildGroup(parentGroupName, childGroupName, childIndex):
     if parent is None:
         return None
     return parent.insertGroup(childIndex, childGroupName)
+
 
 def moveChildGroup(parentGroupName, childGroupName, childIndex):
     root = QgsProject.instance().layerTreeRoot()
@@ -543,6 +486,7 @@ def moveChildGroup(parentGroupName, childGroupName, childIndex):
     parent.insertChildNode(childIndex, cloneChild)
     parent.removeChildNode(child)
 
+
 def collapseChildren(groupName):
     root = QgsProject.instance().layerTreeRoot()
     if root is None:
@@ -553,6 +497,7 @@ def collapseChildren(groupName):
     for child in group.children():
         child.setExpanded(False)
 
+
 def applyFilter(iface, layer, expression):
     if (layer is None or not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer):
         return
@@ -561,18 +506,22 @@ def applyFilter(iface, layer, expression):
     layer.updateExtents()
     iface.legendInterface().refreshLayerSymbology(layer)
 
+
 def applyFilterRequest(layer, request):
     applyFilter(request.filterExpression().dump())
+
 
 def applySelection(layer, expression):
     request = QgsFeatureRequest().setFilterExpression(expression)
     applySelectionRequest(layer, request)
+
 
 def applySelectionRequest(layer, request):
     if (layer is None or not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer):
         return
     fit = layer.getFeatures(request)
     layer.setSelectedFeatures([f.id() for f in fit])
+
 
 def uniqueValues(layer, fieldName):
     res = set()
@@ -582,6 +531,7 @@ def uniqueValues(layer, fieldName):
             if val != NULL:
                 res.add(val)
     return res
+
 
 def updateAttribute(layer, attribute, value, expression=None):
     idx = layer.fieldNameIndex(attribute)
@@ -593,11 +543,14 @@ def updateAttribute(layer, attribute, value, expression=None):
     for f in fit:
         layer.changeAttributeValue(f.id(), idx, value)
 
+
 def isValid(layer):
     return (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer)
 
+
 def isInvalid(layer):
     return not isValid(layer)
+
 
 def isWritable(layer):
     if isInvalid(layer) or len(layer.vectorJoins()) > 0:
@@ -612,21 +565,3 @@ def isWritable(layer):
                 and shxFile.exists() and shxFile.isWritable()
                 and dbfFile.exists() and dbfFile.isWritable())
     return True
-
-def addHighlight(canvas, featureOrGeometry, layer, lineColor=None, fillColor=None, buff=None, minWidth=None):
-    # TODO Open bug report for QgsHighlight sip not having QgsFeature constructor.
-    #hl = QgsHighlight(canvas, featureOrGeometry, layer)
-    hl = None
-    if isinstance(featureOrGeometry, QgsFeature):
-        hl = FeatureHighlight(canvas, featureOrGeometry, layer)
-        if minWidth:
-            hl.setMinWidth(minWidth)
-    elif isinstance(featureOrGeometry, QgsGeometry):
-        hl = GeometryHighlight(canvas, featureOrGeometry, layer)
-    if lineColor:
-        hl.setLineColor(lineColor)
-    if fillColor:
-        hl.setFillColor(fillColor)
-    if buff:
-        hl.setBuffer(buff)
-    return hl

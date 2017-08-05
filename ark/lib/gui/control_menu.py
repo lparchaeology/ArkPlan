@@ -22,36 +22,28 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QMenu
 
 
-class LayerComboBox(QComboBox):
+class ControlMenu(QMenu):
 
-    layerChanged = pyqtSignal()
+    """Menu that triggers action when Ctrl-Enter or Ctrl-Left-Mouse pressed."""
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def __init__(self, parent=None):
+        super(ControlMenu, self).__init__(parent)
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+    def keyPressEvent(self, e):
+        action = self.activeAction()
+        if ((e.key() == Qt.Key_Return or e.key() == Qt.Key_Enter)
+                and e.modifiers() == Qt.ControlModifier and action is not None and action.isEnabled()):
+            action.trigger()
+        else:
+            super(ControlMenu, self).keyPressEvent(e)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    def mouseReleaseEvent(self, e):
+        action = self.activeAction()
+        if e.modifiers() == Qt.ControlModifier and action is not None and action.isEnabled():
+            action.trigger()
+        else:
+            super(ControlMenu, self).mouseReleaseEvent(e)

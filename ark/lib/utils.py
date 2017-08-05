@@ -24,21 +24,17 @@
 
 import re
 
-from PyQt4.QtCore import Qt, QDateTime, QRegExp, QRectF
+from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
+from qgis.core import NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
 
-from qgis.core import NULL, QgsMessageLog, QgsGeometry, QgsPoint, QgsFeatureRequest, QgsFeature
-
-# Maths utilities
 
 def bound(minVal, val, maxVal):
     return max(min(val, maxVal), minVal)
 
-# Datetime utilities
 
 def timestamp():
     return QDateTime.currentDateTimeUtc().toString(Qt.ISODate)
 
-# String utilities
 
 def printable(val):
     if val is None or val == NULL:
@@ -61,10 +57,12 @@ def printable(val):
         return 'QgsFeatureRequest(' + val.filterExpression().dump() + ')'
     return str(val).strip()
 
+
 def string(val):
     if val is None or val == NULL:
         return ''
     return str(val).strip()
+
 
 def strip(value):
     if isinstance(value, str):
@@ -73,14 +71,18 @@ def strip(value):
             return None
     return value
 
+
 def quote(val):
     return "'" + str(val) + "'"
+
 
 def doublequote(val):
     return '"' + str(val) + '"'
 
+
 def csv(values):
     return ','.join(csvValue(value) for value in values)
+
 
 def csvValue(value):
     if isinstance(value, str) or isinstance(value, unicode):
@@ -88,16 +90,18 @@ def csvValue(value):
     else:
         return str(value)
 
+
 def eqClause(field, value):
     return doublequote(field) + ' = ' + quote(value)
+
 
 def neClause(field, value):
     return doublequote(field) + ' != ' + quote(value)
 
-# List/Range conversion utilities
 
 def natsorted(l):
     return sorted(l, key=lambda item: (int(item.partition(' ')[0]) if item[0].isdigit() else float('inf'), item))
+
 
 def rangeToList(valueRange):
     lst = []
@@ -109,6 +113,7 @@ def rangeToList(valueRange):
         else:
             lst.append(int(clause))
     return sorted(lst)
+
 
 def listToRange(valueList):
     valueRange = ''
@@ -131,6 +136,7 @@ def listToRange(valueList):
         valueRange = valueRange + ' ' + str(start) + '-' + str(this)
     return valueRange
 
+
 def listToRegExp(lst):
     if (len(lst) < 1):
         return QRegExp()
@@ -139,6 +145,7 @@ def listToRegExp(lst):
         for element in lst[1:]:
             exp = exp + '|' + str(element)
     return QRegExp('\\b(' + exp + ')\\b')
+
 
 def debug(msg, group='Debug'):
     logMessage(msg, group, )

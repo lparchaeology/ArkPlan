@@ -27,15 +27,6 @@
 import json
 import urllib2
 
-class ArkResponse():
-    url = ''
-    response = None
-    data = ''
-    raw = ''
-    message = ''
-    error = True
-    code = -1
-    reason = ''
 
 class Ark():
 
@@ -78,7 +69,7 @@ class Ark():
         return self._getJson('describeItems', {})
 
     def describeFrags(self, dataclass='all', classtype=None, aliased=None):
-        #FIXME Broken
+        # FIXME Broken
         return self._getJson('describeFrags', {'dataclass': dataclass, 'classtype': classtype, 'aliased': aliased})
 
     def describeFilters(self):
@@ -88,7 +79,7 @@ class Ark():
         return self._getJson('describeSubforms', {'itemkey': item_key})
 
     def describeFields(self, itemkey='all'):
-        #FIXME Broken for 'all', works for exact module
+        # FIXME Broken for 'all', works for exact module
         return self._getJson('describeFields', {'itemkey': itemkey})
 
     def getItems(self, itemkey='all'):
@@ -104,7 +95,7 @@ class Ark():
         return self._getJson('getFilter', {'retftrset': retftrset})
 
     def getFields(self, itemkey, item_value, fields, aliased=None):
-        #TODO multiple fields!!!
+        # TODO multiple fields!!!
         return self._getJson('getFields', {'itemkey': itemkey, itemkey: item_value, 'fields': fields, 'aliased': aliased})
 
     def transcludeFilter(self, ftype, src, retftrset=None, disp_mode=None):
@@ -230,206 +221,3 @@ class Ark():
             else:
                 ret = u'&' + unicode(key) + u'=' + unicode(value)
         return ret
-
-
-class ArkContainer(object):
-
-    _data = {}
-
-    def __init__(self, data):
-        self._data = data
-
-    def data(self):
-        return self._data
-
-
-class ArkObject(ArkContainer):
-
-    _ark = None
-    _aliases = {}
-
-    def __init__(self, ark, data):
-        super(ArkObject, self).__init__(data)
-        self._ark = ark
-        #FIXME If no aliases get false instead of empty list!
-        if self._data['aliases']:
-            for alias in self._data['aliases']:
-                self._aliases[alias['language']] = alias['alias']
-
-    def id(self):
-        return self._data['id']
-
-    def alias(self, language=None):
-        if language:
-            return self._aliases[language]
-        else:
-            return self._aliases[self._ark.language()]
-
-
-class ArkInstance(ArkContainer):
-
-    _api = None  # Ark()
-    _fragmentTypes = {}  # Set of ArkFragmentType() instances
-    _modules = {}  # Set of ArkModule() instances
-
-    def __init__(self, url, handle=None, passwd=None):
-        self._api = Ark(url, handle, passwd)
-        if self._api:
-            data = self._api.describeARK()
-            super(ArkInstance, self).__init__(data)
-            self._loadFragmentTypes()
-            self._loadModules()
-
-    def name(self):
-        return self._data['ark_name']
-
-    def displayName(self):
-        return self._data['ark_name_readable']
-
-    def version(self):
-        return self._data['version']
-
-    def language(self):
-        #TODO Find out from ARK, or allow to be set?
-        return u'en'
-
-    def fragmentTypes(self, dataClass=None):
-        if dataClass ==  None:
-            return self._fragmentTypes.values()
-        ret = []
-        token = self._api._dataClassToToken(dataClass)
-        for fragment in self._fragmentTypes.values():
-            if fragment._data['dataclass'] == token:
-                ret.append(fragment)
-        return ret
-
-    def fragmentType(self, dataClass, classType):
-        return self._fragmentTypes[self._api._dataClassToToken(dataClass), classType]
-
-    def modules(self):
-        return self._modules.values()
-
-    def module(self, name):
-        return self._modules[name]
-
-    def moduleForKey(self, key):
-        for module in self._modules.values():
-            if module.itemKey() == key:
-                return module
-
-    def filters(self):
-        return self._api.describeFilters()
-
-    def filterResults(self, filterId):
-        results = self._api.getFilter(None, None, filterId)
-        ret = []
-        for result in results.values():
-            ret.append(ArkResult(result))
-        return ret
-
-    def filterView(self, id, viewType=None):
-        return self._api.transcludeFilter(None, None, id, self._api._viewTypeToToken(viewType))
-
-    def searchResults(self, text):
-        results = self._api.getFilter('ftx', text)
-        ret = []
-        for result in results.values():
-            ret.append(ArkResult(result))
-        return ret
-
-    def searchView(self, text, viewType=None):
-        return self._api.transcludeFilter('ftx', text, None, self._api._viewTypeToToken(viewType))
-
-    def _loadFragmentTypes(self):
-        if self._api:
-            fragments = self._api.describeFrags()
-            for fragment in fragments:
-                self._fragmentTypes[fragment['dataclass'], fragment['type']] = ArkFragmentType(self, fragment)
-
-    def _loadModules(self):
-        if self._api:
-            modules = self._api.describeItems()
-            for module in modules:
-                self._modules[module['name']] = ArkModule(self, module)
-
-
-class ArkResult(ArkContainer):
-
-    _snips = []
-
-    def __init__(self, data):
-        super(ArkResult, self).__init__(data)
-        for snip in self._data['snippets']:
-            print snip
-            self._snips.append(ArkSnippet(snip))
-
-    def itemKey(self):
-        return self._data['itemkey']
-
-    def itemValue(self):
-        return self._data['itemval']
-
-    def score(self):
-        return self._data['score']
-
-    def snippets(self):
-        return self._snips
-
-
-class ArkSnippet(ArkContainer):
-
-    def __init__(self, data):
-        super(ArkSnippet, self).__init__(data)
-
-    def dataClass(self):
-        return self._data['class']
-
-    def classType(self):
-        return self._data['type']
-
-    def snippet(self):
-        return self._data['snip']
-
-
-class ArkFragmentType(ArkObject):
-
-    def __init__(self, ark, data):
-        super(ArkFragmentType, self).__init__(ark, data)
-
-    def dataClass(self):
-        return self._ark._api._tokenToDataClass(self._data['dataclass'])
-
-    def classType(self):
-        key = self._data['dataclass'] + u'type'
-        return self._data[key]
-
-
-class ArkModule(ArkObject):
-
-    _fieldAttr = []
-
-    def __init__(self, ark, data):
-        super(ArkModule, self).__init__(ark, data)
-
-    def shortForm(self):
-        return self._data['shortform']
-
-    def name(self):
-        return self._data['name']
-
-    def description(self):
-        return self._data['description']
-
-    def itemKey(self):
-        return self._data['itemkey']
-
-    def createdOn(self):
-        #TODO convert to date/time object
-        return self._data['cre_on']
-
-    def createdBy(self):
-        #TODO convert to ArkUser object?
-        return self._data['cre_by']
-
-    #TODO Fields, Items, Frags, Subfoms
-

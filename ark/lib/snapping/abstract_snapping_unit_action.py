@@ -22,36 +22,38 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtGui import QAction, QIcon
+
+import .Snapping
 
 
-class LayerComboBox(QComboBox):
+class AbstractSnappingUnitAction(QAction):
 
-    layerChanged = pyqtSignal()
+    """Abstract action for Snapping Unit."""
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def __init__(self, snapUnit, parent=None):
+        super(AbstractSnappingUnitAction, self).__init__(parent)
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+        self._snapUnit = snapUnit
+        if snapUnit == Snapping.Pixels:
+            self.setText('Pixels')
+            self.setStatusTip('Use pixels')
+        elif snapUnit == Snapping.LayerUnits:
+            self.setText('Layer Units')
+            self.setStatusTip('Use layer units')
+        elif snapUnit == Snapping.ProjectUnits:
+            self.setText('Project Units')
+            self.setStatusTip('Use project units')
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
+        self.setCheckable(True)
 
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+        self._refresh()
+        self.triggered.connect(self._triggered)
+
+    # Private API
+
+    def _triggered(self, checked):
+        pass
+
+    def _refresh(self):
+        pass

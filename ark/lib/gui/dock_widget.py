@@ -24,6 +24,7 @@
 
 from PyQt4.QtGui import QDockWidget
 
+
 class DockWidget(QDockWidget):
 
     _iface = None  # QgisInterface

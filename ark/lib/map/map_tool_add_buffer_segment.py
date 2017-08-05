@@ -22,36 +22,34 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from qgis.core import QGis, QgsGeometry
+
+from ..core import FeatureType
+import .MapToolAddFeature
 
 
-class LayerComboBox(QComboBox):
+class MapToolAddBufferSegment(MapToolAddFeature):
 
-    layerChanged = pyqtSignal()
+    """Tool to take a line segment and then save as a buffer polygon."""
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    _bufferDistance = 0.1  # Map Units
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+    def __init__(self, iface, distance,  polygonLayer, toolName=''):
+        super(MapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
+        self.setBuffer(distance)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
+    def setBuffer(self, distance):
+        self._bufferDistance = 0.1  # Map Units
 
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    def addAnyFeature(self, featureType, mapPointList, attributes, layer):
+        if featureType == FeatureType.Segment:
+            if len(mapPointList) != 2:
+                return False
+            lineGeom = QgsGeometry.fromPolyline(mapPointList)
+            polyGeom = lineGeom.buffer(self._bufferDistance, 0, 2, 2, 5.0)
+            if polyGeom and polyGeom.isGeosValid():
+                mapPointList = polyGeom.asPolygon()[0]
+            else:
+                mapPointList = []
+            featureType = FeatureType.Polygon
+        super(MapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)

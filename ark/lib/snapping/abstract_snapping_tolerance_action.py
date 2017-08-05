@@ -23,35 +23,37 @@
 """
 
 from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtGui import QDoubleSpinBox, QWidgetAction
 
 
-class LayerComboBox(QComboBox):
+class AbstractSnappingToleranceAction(QWidgetAction):
 
-    layerChanged = pyqtSignal()
+    """Abstract action for Snapping Tolerance."""
 
-    _layerType = None
-    _geometryType = None
+    snappingToleranceChanged = pyqtSignal(float)
+
     _iface = None
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
+    def __init__(self, parent=None):
+        super(AbstractSnappingToleranceAction, self).__init__(parent)
+
+        self._toleranceSpin = QDoubleSpinBox(parent)
+        self._toleranceSpin.setDecimals(5)
+        self._toleranceSpin.setRange(0.0, 100000000.0)
+        self.setDefaultWidget(self._toleranceSpin)
+        self.setText('Snapping Tolerance')
+        self.setStatusTip('Set the snapping tolerance')
+        self._refresh()
+        self._toleranceSpin.valueChanged.connect(self._changed)
+
+    def setInterface(self, iface):
         self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+        self._refresh()
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
+    # Private API
 
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    def _changed(self, tolerance):
+        pass
+
+    def _refresh(self):
+        pass

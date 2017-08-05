@@ -24,18 +24,16 @@
 
 import os.path
 
-from PyQt4.QtCore import Qt, QObject, QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
 from PyQt4.QtGui import QAction, QIcon
-
-from qgis.core import QGis, QgsProject, QgsMessageLog
+from qgis.core import QGis, QgsMessageLog
 from qgis.gui import QgsMessageBar
 
 from project import Project
 
-# Initialize Qt resources from file resources.py
-import resources
 
 class Plugin(QObject):
+
     """QGIS Plugin Base Class."""
 
     # InterfaceGroup enum
@@ -49,7 +47,7 @@ class Plugin(QObject):
 
     # Public variables
     iface = None  # QgsInteface()
-    pluginAction = None # QAction()
+    pluginAction = None  # QAction()
     pluginName = ''
     pluginPath = ''
     pluginIconPath = ''
@@ -59,37 +57,13 @@ class Plugin(QObject):
     _actions = []
     _checkable = False
     _menuGroup = 0  # MenuType
-    _menu = None # QMenu()
+    _menu = None  # QMenu()
     _toolbarGroup = 0  # MenuType
     _toolbar = None  # QToolBar()
 
     def __init__(self, iface, pluginName, pluginIconPath, pluginPath,
                  menuGroup=PluginsGroup, toolbarGroup=PluginsGroup, checkable=False, parent=None):
-        """Constructor.
-
-        :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-        :type iface: QgsInterface
-
-        :param pluginName: Untranslated name of the plugin.
-        :type pluginName: str
-
-        :param pluginPath: The plugin directory.
-        :type pluginPath: str
-
-        :param pluginIconPath: Plugin icon path, either file or resource.
-        :type pluginIconPath: str
-
-        :param menuGroup: The menu group to add the plugin to.
-        :type menuGroup: int
-
-        :param toolbarGroup: The toolbar group to add the plugin to.
-        :type toolbarGroup: int
-
-        :param checkable: If the plugin action is checkable, set to True for a dock or map tool, set to False for a dialog or single-shot function.
-        :type checkable: bool
-        """
+        """Constructor."""
         super(Plugin, self).__init__(parent)
         self.iface = iface
         self.pluginName = pluginName
@@ -108,10 +82,7 @@ class Plugin(QObject):
             QCoreApplication.installTranslator(self.translator)
 
     def setDisplayName(self, name):
-        """Set the translated display to be used in the menu and elsewhere
-        :param name: Translated plugin name.
-        :type name: str
-        """
+        """Set the translated display to be used in the menu and elsewhere."""
         self.displayName = name
 
     def initGui(self):
@@ -128,7 +99,8 @@ class Plugin(QObject):
             self._toolbar = self.iface.addToolBar(self.pluginName)
             self._toolbar.setObjectName(self.pluginName)
 
-        self.pluginAction = self.addNewAction(self.pluginIconPath, self.displayName, callback=self.run, checkable=self._checkable)
+        self.pluginAction = self.addNewAction(
+            self.pluginIconPath, self.displayName, callback=self.run, checkable=self._checkable)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -172,59 +144,18 @@ class Plugin(QObject):
         pass
 
     def addNewAction(
-        self,
-        iconPath,
-        text,
-        callback=None,
-        enabled=True,
-        checkable=False,
-        addToMenu=True,
-        addToToolbar=True,
-        tip=None,
-        whatsThis=None,
-        parent=None):
-        """Add a toolbar icon to the toolbar.
-
-        :param iconPath: Path to the icon for this action. Can be a resource
-            path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-        :type iconPath: str
-
-        :param text: Text that should be shown in menu items for this action.
-        :type text: str
-
-        :param callback: Function to be called when the action is triggered.
-        :type callback: function
-
-        :param enabled: A flag indicating if the action should be enabled
-            by default. Defaults to True.
-        :type enabled: bool
-
-        :param checkable: A flag indicating if the action should be checkable
-            by default. Defaults to False.
-        :type chenckable: bool
-
-        :param addToMenu: Flag indicating whether the action should also
-            be added to the plugin menu. Defaults to True.
-        :type addToMenu: bool
-
-        :param addToToolbar: Flag indicating whether the action should also
-            be added to the plugin toolbar. Defaults to True.
-        :type addToToolbar: bool
-
-        :param tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
-        :type tip: str
-
-        :param whatsThis: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
-
-        :param parent: Parent widget for the new action. Defaults None.
-        :type parent: QWidget
-
-        :returns: The action that was created. Note that the action is also
-            added to self._actions list.
-        :rtype: QAction
-        """
+            self,
+            iconPath,
+            text,
+            callback=None,
+            enabled=True,
+            checkable=False,
+            addToMenu=True,
+            addToToolbar=True,
+            tip=None,
+            whatsThis=None,
+            parent=None):
+        """Add a toolbar icon to the toolbar"""
 
         if parent is None:
             parent = self.iface.mainWindow()
@@ -243,23 +174,7 @@ class Plugin(QObject):
         return action
 
     def addAction(self, action, addToMenu=True, addToToolbar=True):
-        """Add an action to the menu and/or toolbar.
-           Note that the action is also added to self._actions list.
-
-        :param action: QAction that should be added
-        :type text: QAction
-
-        :param addToMenu: Flag indicating whether the action should also
-            be added to the plugin menu. Defaults to True.
-        :type addToMenu: bool
-
-        :param addToToolbar: Flag indicating whether the action should also
-            be added to the plugin toolbar. Defaults to True.
-        :type addToToolbar: bool
-
-        :returns: The action that was created.
-        :rtype: QAction
-        """
+        """Add an action to the menu and/or toolbar."""
 
         if addToToolbar:
             if self._toolbarGroup == Plugin.OwnGroup:
@@ -363,9 +278,11 @@ class Plugin(QObject):
         return self.iface.legendInterface()
 
 
-# Template implementation classes, copy one of these into your main plugin file
+"""Template implementation classes, copy one of these into your main plugin file"""
+
 
 class MyPlugin(Plugin):
+
     """QGIS Plugin Implementation for dialog or single-shot process."""
 
     def __init__(self, iface):
@@ -391,6 +308,7 @@ class MyPlugin(Plugin):
 
 
 class MyDockPlugin(Plugin):
+
     """QGIS Plugin Implementation for dock."""
 
     def __init__(self, iface):

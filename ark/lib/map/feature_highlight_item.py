@@ -25,15 +25,14 @@
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QBrush, QPen
-
-from qgis.core import QgsRectangle, QgsFeature, QgsRenderContext, QgsSymbolV2, QgsSimpleMarkerSymbolLayerV2
+from qgis.core import QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolV2
 from qgis.gui import QgsMapCanvasItem
 
 from ..project import Project
 
-# Code ported from QGIS QgsHighlight
 
 class FeatureHighlightItem(QgsMapCanvasItem):
+    # Code ported from QGIS QgsHighlight
 
     _mapCanvas = None  # QgsMapCanvas
     _brush = QBrush()
@@ -46,9 +45,15 @@ class FeatureHighlightItem(QgsMapCanvasItem):
     def __init__(self, mapCanvas, feature, layer):
         super(FeatureHighlight, self).__init__(mapCanvas)
         self._mapCanvas = mapCanvas
-        if not layer or not feature or not isinstance(feature, QgsFeature) or not feature.geometry() or feature.geometry().isEmpty() or not feature.geometry().isGeosValid():
+        if (not layer
+            or not feature
+            or not isinstance(feature, QgsFeature)
+            or not feature.geometry()
+            or feature.geometry().isEmpty()
+            or not feature.geometry().isGeosValid()
+            ):
             return
-        self._feature = QgsFeature(feature) # Force deep copy
+        self._feature = QgsFeature(feature)  # Force deep copy
         self._layer = layer
         self.setLineColor(Project.highlightLineColor())
         self.setFillColor(Project.highlightFillColor())
@@ -87,7 +92,7 @@ class FeatureHighlightItem(QgsMapCanvasItem):
         pass
 
     # protected:
-    def paint(self, painter, option=None, widget=None): # Override
+    def paint(self, painter, option=None, widget=None):  # Override
         if not self._feature:
             return
 
@@ -107,7 +112,8 @@ class FeatureHighlightItem(QgsMapCanvasItem):
             topLeft = m2p.toMapPoint(0, 0)
             res = m2p.mapUnitsPerPixel()
             imageSize = self._mapCanvas.mapSettings().outputSize()
-            rect = QgsRectangle(topLeft.x(), topLeft.y(),topLeft.x() + imageSize.width()*res, topLeft.y() - imageSize.height()*res)
+            rect = QgsRectangle(topLeft.x(), topLeft.y(), topLeft.x() + imageSize.width()
+                                * res, topLeft.y() - imageSize.height() * res)
             self.setRect(rect)
             self.setVisible(True)
         else:
@@ -115,7 +121,7 @@ class FeatureHighlightItem(QgsMapCanvasItem):
 
     # private:
     def _setSymbol(self, symbol, context, color, fillColor):
-        if  not symbol:
+        if not symbol:
             return
 
         for symbolLayer in reversed(symbol.symbolLayers()):
@@ -127,19 +133,23 @@ class FeatureHighlightItem(QgsMapCanvasItem):
                     symbolLayer.setOutlineColor(color)
                     symbolLayer.setFillColor(fillColor)
                     if isinstance(symbolLayer, QgsSimpleMarkerSymbolLayerV2):
-                        symbolLayer.setOutlineWidth(self._getSymbolWidth(context, symbolLayer.outlineWidth(), symbolLayer.outlineWidthUnit()))
+                        symbolLayer.setOutlineWidth(
+                            self._getSymbolWidth(context, symbolLayer.outlineWidth(), symbolLayer.outlineWidthUnit()))
                     if symbolLayer.type() == QgsSymbolV2.Line:
-                        symbolLayer.setWidth(self._getSymbolWidth(context, symbolLayer.width(), symbolLayer.widthUnit()))
+                        symbolLayer.setWidth(
+                            self._getSymbolWidth(context, symbolLayer.width(), symbolLayer.widthUnit()))
                     if symbolLayer.type() == QgsSymbolV2.Fill:
-                        symbolLayer.setBorderWidth(self._getSymbolWidth(context, symbolLayer.borderWidth(), symbolLayer.outputUnit()))
+                        symbolLayer.setBorderWidth(
+                            self._getSymbolWidth(context, symbolLayer.borderWidth(), symbolLayer.outputUnit()))
                     symbolLayer.removeDataDefinedProperty('color')
                     symbolLayer.removeDataDefinedProperty('color_border')
 
     def _getSymbolWidth(self, context, width, unit):
         scale = 1.0
         if unit == QgsSymbolV2.MapUnit:
-            scale = QgsSymbolLayerV2Utils.lineWidthScaleFactor(context, QgsSymbolV2.MM) / QgsSymbolLayerV2Utils.lineWidthScaleFactor(context, QgsSymbolV2.MapUnit)
-        width =  max(width + 2 * self._buffer * scale, self._minWidth * scale)
+            scale = QgsSymbolLayerV2Utils.lineWidthScaleFactor(
+                context, QgsSymbolV2.MM) / QgsSymbolLayerV2Utils.lineWidthScaleFactor(context, QgsSymbolV2.MapUnit)
+        width = max(width + 2 * self._buffer * scale, self._minWidth * scale)
         return width
 
     def _getRenderer(self, context, color, fillColor):

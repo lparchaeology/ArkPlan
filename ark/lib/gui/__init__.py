@@ -1,2 +1,6 @@
+from control_menu import ControlMenu
 from dock_widget import DockWidget
+from feature_action import FeatureAction
+from layer_combo_box import LayerComboBox
+from select_layer_dialog import SelectLayerDialog
 from tool_dock_widget import ToolDockWidget

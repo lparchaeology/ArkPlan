@@ -22,36 +22,41 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtGui import QAction, QIcon
+
+import .Snapping
 
 
-class LayerComboBox(QComboBox):
+class AbstractSnappingTypeAction(QAction):
 
-    layerChanged = pyqtSignal()
+    """Abstract action for Snapping Type."""
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def __init__(self, snapType, parent=None):
+        super(AbstractSnappingTypeAction, self).__init__(parent)
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+        self._snapType = snapType
+        if snapType == Snapping.CurrentLayer:
+            self.setText('Vertex')
+            self.setStatusTip('Snap to vertex')
+            self._icon = QIcon(':/plugins/ark/snapVertex.png')
+        elif snapType == Snapping.AllLayers:
+            self.setText('Segment')
+            self.setStatusTip('Snap to segment')
+            self._icon = QIcon(':/plugins/ark/snapSegment.png')
+        elif snapType == Snapping.SelectedLayers:
+            self.setText('Vertex and Segment')
+            self.setStatusTip('Snap to vertex and segment')
+            self._icon = QIcon(':/plugins/ark/snapVertexSegment.png')
+        self.setIcon(self._icon)
+        self.setCheckable(True)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
+        self._refresh()
+        self.triggered.connect(self._triggered)
 
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    # Private API
+
+    def _triggered(self, checked):
+        pass
+
+    def _refresh(self):
+        pass

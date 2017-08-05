@@ -22,38 +22,35 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, QFile, QFileInfo, QDir
-from PyQt4.QtGui import  QIcon, QAction, QDockWidget
-
-from qgis.core import QgsProject, QgsRasterLayer, QgsMapLayerRegistry, QgsFields, QgsLayerTreeModel, QgsMapLayer
-from qgis.gui import QgsLayerTreeView
-
-from ark.lib.plugin import Plugin
-from ark.lib.layercollection import *
-from ark.lib import layers
-from ark.lib.dock import ToolDockWidget
-from ark.lib.snapping import *
-
-from ark.grid.grid import GridModule
-
-from ark.core.data import Data
-from plan import Plan
-from filter_module import FilterModule
-from identify import MapToolIndentifyItems
 from config import Config
 
-from ark.gui.layer_tree_menu import LayerTreeMenu
-from ark.gui.settings_wizard import SettingsWizard
-from ark.gui.settings_dialog import SettingsDialog
-from ark.gui.select_item_dialog import SelectItemDialog
+from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
+from PyQt4.QtGui import QAction, QDockWidget, QIcon
+from qgis.core import QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
+from qgis.gui import QgsLayerTreeView
 
+from ark.core.data import Data
+from ark.grid.grid import GridModule
+from ark.gui.layer_tree_menu import LayerTreeMenu
+from ark.gui.select_item_dialog import SelectItemDialog
+from ark.gui.settings_dialog import SettingsDialog
+from ark.gui.settings_wizard import SettingsWizard
+from ark.lib.core import Collection, layers
+from ark.lib.gui import ToolDockWidget
+from ark.lib.plugin import Plugin
+from ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
+                              TopologicalEditingAction)
+from filter_module import FilterModule
+from identify import MapToolIndentifyItems
+from plan import Plan
 import resources
 
+
 class ArkSpatial(Plugin):
+
     """QGIS Plugin Implementation."""
 
-    project = None # QgsProject()
+    project = None  # QgsProject()
 
     # Tools
     identifyMapTool = None  # MapToolIndentifyItems()
@@ -68,7 +65,7 @@ class ArkSpatial(Plugin):
     drawingsGroupIndex = -1
     drawingsGroupName = ''
 
-    geoLayer = None  #QgsRasterLayer()
+    geoLayer = None  # QgsRasterLayer()
     plan = None  # LayerCollection()
     section = None  # LayerCollection()
     grid = None  # LayerCollection()
@@ -126,7 +123,8 @@ class ArkSpatial(Plugin):
         self.layerDock.setWindowTitle(self.tr(u'ARK Spatial'))
         self.layerDock.setObjectName(u'ArkLayerDock')
         self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
-        self.iface.legendInterface().addLegendLayerAction(self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
+        self.iface.legendInterface().addLegendLayerAction(
+            self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
 
     # Initialise plugin gui
     def initialise(self):
@@ -134,9 +132,9 @@ class ArkSpatial(Plugin):
             return True
 
         # Create the Layer Model and View
-        #TODO Should only show our subgroup but crashes!
+        # TODO Should only show our subgroup but crashes!
         #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(Config.projectGroupName), self);
-        self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self);
+        self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeReorder, True)
@@ -153,16 +151,19 @@ class ArkSpatial(Plugin):
         self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
         self.projectLayerView.currentLayerChanged.connect(self.iface.setActiveLayer)
         self.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
-        self.layerViewAction = self.addDockAction(':/plugins/ark/tree.svg', self.tr(u'Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
+        self.layerViewAction = self.addDockAction(
+            ':/plugins/ark/tree.svg', self.tr(u'Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
         self.layerViewAction.setChecked(True)
 
         # Init the identify tool and add to the toolbar
-        self.identifyAction = self.addDockAction(':/plugins/ark/filter/identify.png', self.tr(u'Identify Items'), callback=self.triggerIdentifyAction, checkable=True)
+        self.identifyAction = self.addDockAction(
+            ':/plugins/ark/filter/identify.png', self.tr(u'Identify Items'), callback=self.triggerIdentifyAction, checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the Load Item tool and add to the toolbar
-        self.showItemAction = self.addDockAction(':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
+        self.showItemAction = self.addDockAction(
+            ':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
 
         # Init the modules and add to the toolbar
         self.data = Data(self)
@@ -194,7 +195,7 @@ class ArkSpatial(Plugin):
             self.closeProject()
         if self.isInitialised() and self.isConfigured():
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
-            #Load the layer collections
+            # Load the layer collections
             self.grid = self._loadCollection('grid')
             self.plan = self._loadCollection('plan')
             self.section = self._loadCollection('section')
@@ -209,7 +210,7 @@ class ArkSpatial(Plugin):
 
     # Write the project for saving
     def writeProject(self):
-        if  self.isLoaded():
+        if self.isLoaded():
             self.data.writeProject()
             self.gridModule.writeProject()
             self.planModule.writeProject()
@@ -278,7 +279,7 @@ class ArkSpatial(Plugin):
         if checked and self.initialise() and self.configure():
             if not self._loaded:
                 self.loadProject()
-            #Close all open docks
+            # Close all open docks
             self._userDocks = []
             docks = self.iface.mainWindow().findChildren(QDockWidget)
             for dock in docks:
@@ -419,12 +420,13 @@ class ArkSpatial(Plugin):
         return 'ARK_' + baseName
 
     def loadGeoLayer(self, geoFile, zoomToLayer=True):
-        #TODO Check if already loaded, remove old one?
+        # TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self.drawingTransparency()/100.0)
+        self.geoLayer.renderer().setOpacity(self.drawingTransparency() / 100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.drawingsGroupIndex < 0):
-            self.drawingsGroupIndex = layers.createLayerGroup(self.iface, self.drawingsGroupName, Config.projectGroupName)
+            self.drawingsGroupIndex = layers.createLayerGroup(
+                self.iface, self.drawingsGroupName, Config.projectGroupName)
         self.legendInterface().moveLayer(self.geoLayer, self.drawingsGroupIndex)
         if zoomToLayer:
             self.mapCanvas().setExtent(self.geoLayer.extent())
@@ -485,7 +487,8 @@ class ArkSpatial(Plugin):
         filePath = layerPath + '/' + layerName + '.qml'
         if QFile.exists(filePath):
             return filePath
-        # Next see if the layer name has a style in the styles folder (which may be a special folder, the site folder or the plugin folder)
+        # Next see if the layer name has a style in the styles folder (which may
+        # be a special folder, the site folder or the plugin folder)
         filePath = self.stylePath() + '/' + layerName + '.qml'
         if QFile.exists(filePath):
             return filePath
@@ -505,11 +508,14 @@ class ArkSpatial(Plugin):
         if (lcs.collection == ''):
             lcs = self._configureCollection(collection)
         if lcs.pointsStylePath == '':
-            lcs.pointsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
+            lcs.pointsStylePath = self._stylePath(
+                lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
         if lcs.linesStylePath == '':
-            lcs.linesStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.linesLayerName, 'linesBaseName')
+            lcs.linesStylePath = self._stylePath(
+                lcs.collection, lcs.collectionPath, lcs.linesLayerName, 'linesBaseName')
         if lcs.polygonsStylePath == '':
-            lcs.polygonsStylePath = self._stylePath(lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
+            lcs.polygonsStylePath = self._stylePath(
+                lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
         return LayerCollection(self.iface, self.projectPath(), lcs)
 
     def _stylePath(self, collection, collectionPath, layerName, baseName):
@@ -555,7 +561,7 @@ class ArkSpatial(Plugin):
         if whatsThis is not None:
             action.setWhatsThis(whatsThis)
         self.layerDock.toolbar.addAction(action)
-        #self.actions.append(action)
+        # self.actions.append(action)
         return action
 
     # Field settings
@@ -610,7 +616,7 @@ class ArkSpatial(Plugin):
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path =  self.readEntry('stylePath', '')
+        path = self.readEntry('stylePath', '')
         if (not path):
             return self.pluginPath + '/styles'
         return path

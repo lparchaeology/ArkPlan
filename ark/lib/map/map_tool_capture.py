@@ -1,0 +1,262 @@
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+                                ARK QGIS
+                        A QGIS utilities library.
+        Part of the Archaeological Recording Kit by L-P : Archaeology
+                        http://ark.lparchaeology.com
+                              -------------------
+        copyright            : 2017 by L-P : Heritage LLP
+        email                : ark@lparchaeology.com
+        copyright            : 2017 by John Layt
+        email                : john@layt.net
+        copyright            : 2010 by Jürgen E. Fischer
+        copyright            : 2007 by Marco Hugentobler
+        copyright            : 2006 by Martin Dobias
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
+from PyQt4.QtCore import QSettings, Qt, pyqtSignal
+from PyQt4.QtGui import QColor
+from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer
+from qgis.gui import QgsRubberBand, QgsVertexMarker
+
+import .MapToolInteractive
+
+
+class MapToolCapture(MapToolInteractive):
+
+    """Tool to capture and show mouse clicks as geometry using map points."""
+
+    canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
+
+    _iface = None
+    _useCurrentLayerGeometry = False
+    _geometryType = QGis.NoGeometry
+    _mapPointList = []  # QList<QgsPoint>
+    _rubberBand = None  # QgsRubberBand()
+    _moveRubberBand = None  # QgsRubberBand()
+    _tip = ''
+    _validator = None  # QgsGeometryValidator()
+    _geometryErrors = []  # QList<QgsGeometry.Error>
+    _geometryErrorMarkers = []  # QList<QgsVertexMarker>
+
+    def __init__(self, iface, geometryType=QGis.UnknownGeometry):
+        super(MapToolCapture, self).__init__(iface.mapCanvas())
+        self._iface = iface
+        self._geometryType = geometryType
+        if (geometryType == QGis.UnknownGeometry):
+            self._useCurrentLayerGeometry = True
+        self.setCursor(capture_point_cursor)
+
+    def __del__(self):
+        self.deactivate()
+        super(MapToolCapture, self).__del__()
+
+    def activate(self):
+        super(MapToolCapture, self).activate()
+        geometryType = self.geometryType()
+        self._rubberBand = self._createRubberBand(geometryType)
+        self._moveRubberBand = self._createRubberBand(geometryType, True)
+        if (self._useCurrentLayerGeometry == True):
+            self._iface.currentLayerChanged.connect(self._currentLayerChanged)
+
+    def deactivate(self):
+        self.resetCapturing()
+        if (self._rubberBand is not None):
+            self.canvas().scene().removeItem(self._rubberBand)
+            self._rubberBand = None
+        if (self._moveRubberBand is not None):
+            self.canvas().scene().removeItem(self._moveRubberBand)
+            self._moveRubberBand = None
+        if (self._useCurrentLayerGeometry == True):
+            self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
+        super(MapToolCapture, self).deactivate()
+
+    def geometryType(self):
+        if (self._useCurrentLayerGeometry and self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer):
+            return self.canvas().currentLayer().geometryType()
+        else:
+            return self._geometryType
+
+    def _currentLayerChanged(self, layer):
+        if (not self._useCurrentLayerGeometry):
+            return
+        # TODO Update rubber bands
+        if (self._rubberBand is not None):
+            self._rubberBand.reset(self.geometryType())
+            for point in self._mapPointList[:-1]:
+                self._rubberBand.addPoint(point, False)
+        self._updateMoveRubberBand(self._mapPointList[-1])
+        self._validateGeometry()
+        self.canvas().refresh()
+
+    def canvasMoveEvent(self, e):
+        super(MapToolCapture, self).canvasMoveEvent(e)
+        if e.isAccepted():
+            return
+        if (self._moveRubberBand is not None):
+            # Capture mode
+            mapPoint, snapped = self._snapCursorPoint(e.pos())
+            self._moveRubberBand.movePoint(mapPoint)
+
+    def canvasReleaseEvent(self, e):
+        super(MapToolCapture, self).canvasReleaseEvent(e)
+        if e.isAccepted():
+            return
+        mapPoint, snapped = self._snapCursorPoint(e.pos())
+        if (e.button() == Qt.LeftButton):
+            # Capture mode
+            self._addVertex(mapPoint)
+        # Emit mode
+        self.canvasClicked.emit(mapPoint, e.button())
+
+    def keyPressEvent(self, e):
+        if (e.key() == Qt.Key_Escape):
+            self.resetCapturing()
+            e.accept()
+        elif (e.key() == Qt.Key_Backspace or e.key() == Qt.Key_Delete):
+            self._undo()
+            e.accept()
+        else:
+            super(MapToolCapture, self).keyPressEvent(e)
+
+    def _createRubberBand(self, geometryType, moveBand=False):
+        settings = QSettings()
+        rb = QgsRubberBand(self.canvas(), geometryType)
+        rb.setWidth(int(settings.value('/qgis/digitizing/line_width', 1)))
+        color = QColor(int(settings.value('/qgis/digitizing/line_color_red', 255)),
+                       int(settings.value('/qgis/digitizing/line_color_green', 0)),
+                       int(settings.value('/qgis/digitizing/line_color_blue', 0)))
+        myAlpha = int(settings.value('/qgis/digitizing/line_color_alpha', 200)) / 255.0
+        if (moveBand):
+            myAlpha = myAlpha * float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
+            rb.setLineStyle(Qt.DotLine)
+        if (geometryType == QGis.Polygon):
+            color.setAlphaF(myAlpha)
+        color.setAlphaF(myAlpha)
+        rb.setColor(color)
+        rb.show()
+        return rb
+
+    def _addVertex(self, mapPoint):
+        self._mapPointList.append(mapPoint)
+        self._rubberBand.addPoint(mapPoint)
+        self._updateMoveRubberBand(mapPoint)
+        self._validateGeometry()
+        return
+
+    def _updateMoveRubberBand(self, mapPoint):
+        if (self._moveRubberBand is None):
+            return
+        geometryType = self.geometryType()
+        self._moveRubberBand.reset(geometryType)
+        if (geometryType == QGis.Polygon):
+            self._moveRubberBand.addPoint(self._rubberBand.getPoint(0, 0), False)
+            self._moveRubberBand.movePoint(mapPoint, False)
+        self._moveRubberBand.addPoint(mapPoint)
+
+    def _undo(self):
+        if (self._rubberBand is not None):
+            rubberBandSize = self._rubberBand.numberOfVertices()
+            moveRubberBandSize = self._moveRubberBand.numberOfVertices()
+
+            if (rubberBandSize < 1 or len(self._mapPointList) < 1):
+                return
+
+            self._rubberBand.removePoint(-1)
+
+            if (rubberBandSize > 1):
+                if (moveRubberBandSize > 1):
+                    point = self._rubberBand.getPoint(0, rubberBandSize - 2)
+                    self._moveRubberBand.movePoint(moveRubberBandSize - 2, point)
+            else:
+                self._moveRubberBand.reset(self.geometryType())
+
+            self._mapPointList.pop()
+            self._validateGeometry()
+
+    def resetCapturing(self):
+        if (self._rubberBand is not None):
+            self._rubberBand.reset(self.geometryType())
+        if (self._moveRubberBand is not None):
+            self._moveRubberBand.reset(self.geometryType())
+        self._deleteGeometryValidation()
+        del self._mapPointList[:]
+        self.canvas().refresh()
+
+    def _deleteGeometryValidation(self):
+        if (self._validator is not None):
+            self._validator.errorFound.disconnect(self._addGeometryError)
+            self._validator.finished.disconnect(self.validationFinished)
+            self._validator.deleteLater()
+            self._validator = None
+        for errorMarker in self._geometryErrorMarkers:
+            self.canvas().scene().removeItem(errorMarker)
+        del self._geometryErrorMarkers[:]
+        self._geometryErrors[:]
+        self._tip = ''
+
+    def _validateGeometry(self):
+        geometryType = self.geometryType()
+        if (geometryType == QGis.Point or geometryType == QGis.UnknownGeometry or geometryType == QGis.NoGeometry or len(self._mapPointList) < 2):
+            return
+
+        settings = QSettings()
+        if (settings.value('/qgis/digitizing/validate_geometries', 1) == 0):
+            return
+
+        self._deleteGeometryValidation()
+
+        geometry = None  # QgsGeometry()
+
+        if (geometryType == QGis.Line):
+            geometry = QgsGeometry.fromPolyline(self._mapPointList)
+        elif (geometryType == QGis.Polygon):
+            if (len(self._mapPointList) < 3):
+                return
+            closed = list(self._mapPointList)
+            closed.append(self._mapPointList[0])
+            geometry = QgsGeometry.fromPolygon([closed])
+
+        if (geometry is None):
+            return
+
+        self._validator = QgsGeometryValidator(geometry)
+        self._validator.errorFound.connect(self._addGeometryError)
+        self._validator.finished.connect(self.validationFinished)
+        self._validator.start()
+
+        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation started.'))
+
+    def _addGeometryError(self, error):
+        self._geometryErrors.append(error)
+
+        if (self._tip != ''):
+            self._tip += '\n'
+        self._tip += error.what()
+
+        if (error.hasWhere()):
+            marker = QgsVertexMarker(self.canvas())
+            marker.setCenter(error.where())
+            marker.setIconType(QgsVertexMarker.ICON_X)
+            marker.setPenWidth(2)
+            marker.setToolTip(error.what())
+            marker.setColor(Qt.green)
+            marker.setZValue(marker.zValue() + 1)
+            self._geometryErrorMarkers.append(marker)
+
+        self._iface.mainWindow().statusBar().showMessage(error.what())
+        if (self._tip != ''):
+            self._iface.mainWindow().statusBar().setToolTip(self._tip)
+
+    def validationFinished(self):
+        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))

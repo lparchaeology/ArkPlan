@@ -22,36 +22,34 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+import csv
+
+from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt
+
+import .TableModel
 
 
-class LayerComboBox(QComboBox):
+class ParentChildModel(TableModel):
 
-    layerChanged = pyqtSignal()
+    def __init__(self, parent=None):
+        super(TableModel, self).__init__(parent)
+        self._fields = ['parent', 'child']
+        self._nullRecord = {'parent': None, 'child': None}
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def addChild(self, parent, child):
+        self.deleteRecords('child', child)
+        record = {'parent': parent, 'child': child}
+        self._table.append(record)
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+    def getChildren(self, parent):
+        children = []
+        for record in self._table:
+            if record['parent'] == parent:
+                children.append(record['child'])
+        return children
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    def getParent(self, child):
+        for record in self._table:
+            if record['child'] == child:
+                return record['parent']
+        return None

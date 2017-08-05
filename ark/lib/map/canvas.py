@@ -22,36 +22,23 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from qgis.core import QgsFeature, QgsGeometry
 
 
-class LayerComboBox(QComboBox):
-
-    layerChanged = pyqtSignal()
-
-    _layerType = None
-    _geometryType = None
-    _iface = None
-
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
-
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+def addHighlight(canvas, featureOrGeometry, layer, lineColor=None, fillColor=None, buff=None, minWidth=None):
+    # TODO Open bug report for QgsHighlight sip not having QgsFeature constructor.
+    #hl = QgsHighlight(canvas, featureOrGeometry, layer)
+    hl = None
+    if isinstance(featureOrGeometry, QgsFeature):
+        hl = FeatureHighlight(canvas, featureOrGeometry, layer)
+        if minWidth:
+            hl.setMinWidth(minWidth)
+    elif isinstance(featureOrGeometry, QgsGeometry):
+        hl = GeometryHighlight(canvas, featureOrGeometry, layer)
+    if lineColor:
+        hl.setLineColor(lineColor)
+    if fillColor:
+        hl.setFillColor(fillColor)
+    if buff:
+        hl.setBuffer(buff)
+    return hl

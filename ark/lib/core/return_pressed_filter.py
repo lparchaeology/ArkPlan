@@ -6,9 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -22,7 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, pyqtSignal, QObject, QEvent
+from PyQt4.QtCore import QEvent, QObject, Qt, pyqtSignal
+
 
 class ReturnPressedFilter(QObject):
 
@@ -32,7 +33,7 @@ class ReturnPressedFilter(QObject):
         super(ReturnPressedFilter, self).__init__(parent)
 
     def eventFilter(self, obj, event):
-        #FIXME WTF Sledgehammer to fix reload error nut
+        # FIXME WTF Sledgehammer to fix reload error nut
         if self == None or QEvent == None:
             return True
         if (event.type() == QEvent.KeyPress and (event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter)):

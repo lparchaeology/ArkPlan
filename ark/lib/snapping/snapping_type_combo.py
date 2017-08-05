@@ -22,33 +22,44 @@
  ***************************************************************************/
 """
 
-import csv
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import QComboBox
+from qgis.core import QgsProject
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex
+import .Snapping
 
-from table_model import TableModel
 
-class ParentChildModel(TableModel):
+class SnappingTypeCombo(QComboBox):
+
+    snappingTypeChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(TableModel, self).__init__(parent)
-        self._fields = ['parent', 'child']
-        self._nullRecord = {'parent' : None, 'child' : None}
 
-    def addChild(self, parent, child):
-        self.deleteRecords('child', child)
-        record = {'parent' : parent, 'child' : child}
-        self._table.append(record)
+        super(SnappingTypeCombo, self).__init__(parent)
 
-    def getChildren(self, parent):
-        children = []
-        for record in self._table:
-            if record['parent'] == parent:
-                children.append(record['child'])
-        return children
+        self.addItem('Off', Snapping.Off)
+        self.addItem('Vertex', Snapping.Vertex)
+        self.addItem('Segment', Snapping.Segment)
+        self.addItem('Vertex and Segment', Snapping.VertexAndSegment)
+        self.setCurrentIndex(0)
 
-    def getParent(self, child):
-        for record in self._table:
-            if record['child'] == child:
-                return record['parent']
-        return None
+        self._refresh()
+        self.currentIndexChanged.connect(self._changed)
+
+        # Make sure we catch changes in the main snapping dialog
+        QgsProject.instance().snapSettingsChanged.connect(self._refresh)
+        # If a new project is read, update to that project's setting
+        QgsProject.instance().readProject.connect(self._refresh)
+        self.snappingTypeChanged.connect(QgsProject.instance().snapSettingsChanged)
+
+    # Private API
+
+    def _changed(self, idx):
+        snapType = self.itemData(self.currentIndex())
+        Snapping.setProjectSnappingType(snapType)
+        self.snappingTypeChanged.emit(snapType)
+
+    def _refresh(self):
+        snapType = Snapping.projectSnappingType()
+        idx = self.findData(snapType)
+        self.setCurrentIndex(idx)

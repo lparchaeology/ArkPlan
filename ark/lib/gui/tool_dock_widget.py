@@ -22,10 +22,11 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QSize
-from PyQt4.QtGui import QWidget, QVBoxLayout, QToolBar
+from PyQt4.QtCore import QSize, Qt
+from PyQt4.QtGui import QToolBar, QVBoxLayout, QWidget
 
-from dock_widget import DockWidget
+import .DockWidget
+
 
 class ToolDockWidget(DockWidget):
 

@@ -6,9 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
         copyright            : 2011 by Jürgen E. Fischer
  ***************************************************************************/
@@ -24,16 +24,15 @@
 """
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QPolygonF, QBrush, QColor, QPen, QPainterPath
-
-from qgis.core import QGis, QgsRectangle, QgsGeometry
+from PyQt4.QtGui import QBrush, QColor, QPainterPath, QPen, QPolygonF
+from qgis.core import QGis, QgsGeometry, QgsRectangle
 from qgis.gui import QgsMapCanvasItem
 
 from ..project import Project
 
-# Code ported from QGIS QgsHighlight
 
 class GeometryHighlightItem(QgsMapCanvasItem):
+    # Code ported from QGIS QgsHighlight
 
     _mapCanvas = None  # QgsMapCanvas
     _geometry = None  # QgsGeometry()
@@ -45,7 +44,7 @@ class GeometryHighlightItem(QgsMapCanvasItem):
         self._mapCanvas = mapCanvas
         if not geometry or not isinstance(geometry, QgsGeometry) or geometry.isEmpty() or not geometry.isGeosValid():
             return
-        self._geometry = QgsGeometry(geometry) # Force deep copy
+        self._geometry = QgsGeometry(geometry)  # Force deep copy
         self.setLineColor(Project.highlightLineColor())
         self.setFillColor(Project.highlightFillColor())
         if (layer and self._mapCanvas.mapSettings().hasCrsTransformEnabled()):
@@ -74,7 +73,7 @@ class GeometryHighlightItem(QgsMapCanvasItem):
         pass
 
     # protected:
-    def paint(self, painter, option=None, widget=None): # Override
+    def paint(self, painter, option=None, widget=None):  # Override
         if not self._geometry:
             return
 

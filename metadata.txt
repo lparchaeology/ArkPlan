@@ -1,35 +1,25 @@
-# This file contains metadata for your plugin. Since
-# version 2.0 of QGIS this is the proper way to supply
-# information about a plugin. The old method of
-# embedding metadata in __init__.py will
-# is no longer supported since version 2.0.
+# This file should be included when you package your plugin.
 
-# This file should be included when you package your plugin.# Mandatory items:
+# Mandatory items:
 
 [general]
 name=ArkSpatial
 qgisMinimumVersion=2.14
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.2.84
-author=John Layt / L - P: Heritage LLP
-email=john@layt.net
+version=0.3.0
+author=John Layt / L - P : Heritage LLP
+email=ark@lparchaeology.com
 
 # End of mandatory metadata
 
-# Optional items:
-
-# Uncomment the following line and add your changelog:
 changelog=New features and bug fixes.
 
-# Tags are comma separated with spaces allowed
 tags=vector
 
-homepage=https://github.com/jlayt/ArkPlan
-tracker=https://github.com/jlayt/ArkPlan
-repository=https://github.com/jlayt/ArkPlan
+homepage=https://github.com/lparchaeology/ArkSpatial
+tracker=https://github.com/lparchaeology/ArkSpatial
+repository=https://github.com/lparchaeology/ArkSpatial
 icon=icon.png
-# experimental flag
-experimental=True
 
-# deprecated flag (applies to the whole plugin, not just a single version)
+experimental=True
 deprecated=False

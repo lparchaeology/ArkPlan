@@ -10,6 +10,9 @@
         email                : ark@lparchaeology.com
         copyright            : 2017 by John Layt
         email                : john@layt.net
+        copyright            : 2010 by Jürgen E. Fischer
+        copyright            : 2007 by Marco Hugentobler
+        copyright            : 2006 by Martin Dobias
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,37 +24,27 @@
  *                                                                         *
  ***************************************************************************/
 """
-
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtCore import Qt, pyqtSignal
+from qgis.gui import QgsMapToolIdentify
 
 
-class LayerComboBox(QComboBox):
+class MapToolIndentifyFeatures(QgsMapToolIdentify):
 
-    layerChanged = pyqtSignal()
+    featureIdentified = pyqtSignal(QgsFeature)
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def __init__(self, canvas):
+        super(MapToolIndentifyFeatures, self).__init__(canvas)
+        mToolName = self.tr('Identify feature')
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+    def canvasReleaseEvent(self, e):
+        if e.button() != Qt.LeftButton:
+            return
+        results = self.identify(e.x(), e.y(), QgsMapToolIdentify.LayerSelection, QgsMapToolIdentify.VectorLayer)
+        if (len(results) < 1):
+            return
+        # TODO: display a menu when several features identified
+        self.featureIdentified.emit(results[0].mFeature)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+    def keyPressEvent(self, e):
+        if (e.key() == Qt.Key_Escape):
+            self.canvas().unsetMapTool(self)

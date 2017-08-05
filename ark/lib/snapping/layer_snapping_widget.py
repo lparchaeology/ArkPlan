@@ -22,36 +22,24 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from PyQt4.QtGui import QHBoxLayout, QLabel, QSizePolicy, QToolButton, QWidget
 
 
-class LayerComboBox(QComboBox):
+class LayerSnappingWidget(QWidget):
 
-    layerChanged = pyqtSignal()
+    def __init__(self, layer, parent=None):
+        super(LayerSnappingWidget, self).__init__(parent)
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+        label = QLabel(layer.name(), self)
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding, self)
+        action = LayerSnappingAction(layer, self)
+        tool = QToolButton(self)
+        tool.setDefaultAction(action)
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+        layout = QHBoxLayout(self)
+        layout.setObjectName(u'layout')
+        layout.addWidget(label)
+        layout.addWidget(spacer)
+        layout.addWidget(tool)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
-
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+        self.setLayout(layout)

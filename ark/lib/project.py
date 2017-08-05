@@ -22,18 +22,16 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings, QFile
+from PyQt4.QtCore import QFile, QSettings
 from PyQt4.QtGui import QColor, QIcon
+from qgis.core import QGis, QgsApplication, QgsProject
 
-from qgis.core import QGis, QgsProject, QgsApplication
-
-# Project setting utilities
 
 class Project:
 
     @staticmethod
     def getThemeIcon(iconName):
-        iconName =   '/' + iconName
+        iconName = '/' + iconName
         if QFile.exists(QgsApplication.activeThemePath() + iconName):
             return QIcon(QgsApplication.activeThemePath() + iconName)
         elif QFile.exists(QgsApplication.defaultThemePath() + iconName):

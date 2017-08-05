@@ -24,34 +24,41 @@
 
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QComboBox
-from qgis.core import QgsMapLayer
+from qgis.core import QgsProject
+
+import .Snapping
 
 
-class LayerComboBox(QComboBox):
+class SnappingUnitCombo(QComboBox):
 
-    layerChanged = pyqtSignal()
+    snappingUnitChanged = pyqtSignal(int)
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
+    def __init__(self, parent=None):
 
-    def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
-        self._iface = iface
-        self._layerType = layerType
-        self._geometryType = geometryType
-        self._loadLayers()
+        super(SnappingUnitCombo, self).__init__(parent)
 
-    def _addLayer(self, layer):
-        self.addItem(layer.name(), layer.id())
+        self.addItem('Pixels', Snapping.Pixels)
+        self.addItem('Layer Units', Snapping.LayerUnits)
+        self.addItem('Project Units', Snapping.ProjectUnits)
+        self.setCurrentIndex(0)
 
-    def _loadLayers(self):
-        self.clear()
-        for layer in self._iface.legendInterface().layers():
-            if self._layerType is None and self._geometryType is None:
-                self._addLayer(layer)
-            elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
-                self._addLayer(layer)
-            elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
-                    self._addLayer(layer)
+        self._refresh()
+        self.currentIndexChanged.connect(self._changed)
+
+        # Make sure we catch changes in the main snapping dialog
+        QgsProject.instance().snapSettingsChanged.connect(self._refresh)
+        # If a new project is read, update to that project's setting
+        QgsProject.instance().readProject.connect(self._refresh)
+        self.snappingUnitChanged.connect(QgsProject.instance().snapSettingsChanged)
+
+    # Private API
+
+    def _changed(self, idx):
+        snapUnit = self.itemData(self.currentIndex())
+        Snapping.setProjectSnappingUnit(snapUnit)
+        self.snappingUnitChanged.emit(snapUnit)
+
+    def _refresh(self):
+        snapUnit = Snapping.projectSnappingUnit()
+        idx = self.findData(snapUnit)
+        self.setCurrentIndex(idx)

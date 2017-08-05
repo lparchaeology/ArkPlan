@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                ARK Spatial
-                    A QGIS plugin for Archaeological Recording.
+                                    pyARK
+                    A Python library for using ARK Database
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
@@ -20,21 +20,15 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- This script initializes the plugin, making it known to QGIS.
 """
 
-import os.path
 
-from ark import ArkSpatial
-from ark.lib.utils import debug
-
-# noinspection PyPep8Naming
-
-
-def classFactory(iface):  # pylint: disable=invalid-name
-    """Load ArkSpatial class from file arkspatial.
-
-    :param iface: A QGIS interface instance.
-    :type iface: QgsInterface
-    """
-    return ArkSpatial(iface, os.path.dirname(__file__))
+class ArkResponse():
+    url = ''
+    response = None
+    data = ''
+    raw = ''
+    message = ''
+    error = True
+    code = -1
+    reason = ''

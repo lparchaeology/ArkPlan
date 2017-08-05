@@ -24,15 +24,16 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 import math
 
 from qgis.core import QgsFeature, QgsGeometry, QgsPoint
-
-from shapely.ops import polygonize, unary_union
 from shapely.geometry import LineString, MultiLineString, Point
+from shapely.ops import polygonize, unary_union
 
-# Adapted from QGIS Processing plugin Polygonize by Piotr Pociask
+
 def polygonizeFeatures(features, fields=None):
+    # Adapted from QGIS Processing plugin Polygonize by Piotr Pociask
     lineList = []
     for inFeat in features:
         inGeom = inFeat.geometry()
@@ -52,8 +53,9 @@ def polygonizeFeatures(features, fields=None):
         outList.append(outFeat)
     return outList
 
-# Adapted from QGIS Processing plugin Dissolve by Victor Olaya
+
 def dissolveFeatures(features, fields=None, attributes=None):
+    # Adapted from QGIS Processing plugin Dissolve by Victor Olaya
     outFeat = QgsFeature(fields)
     first = True
     for inFeat in features:
@@ -73,20 +75,22 @@ def dissolveFeatures(features, fields=None, attributes=None):
         outFeat.setAttributes(attributes)
     return outFeat
 
-# Returns a point on the given line that is perpendicular to the given point
+
 def perpendicularPoint(lineGeometry, point):
-    # In 2.14 use QgsGeometry.nearestPoint()
-    # In 2.10 use QgsGeometry.isEmpty()
-    if lineGeometry is None or lineGeometry.isGeosEmpty() or point is None:
+    """Returns a point on the given line that is perpendicular to the given point."""
+    if lineGeometry is None or lineGeometry.isEmpty() or point is None:
         return QgsPoint()
+    return lineGeometry.nearestPoint(point)
+    # In 2.14 use QgsGeometry.nearestPoint()
     line = toMultiLineString(lineGeometry)
     perp = line.interpolate(line.project(Point(point)))
     return QgsPoint(perp.x, perp.y)
 
-# Returns a line cliipped to the extent of two given points
-# Assumes pt1, pt2 lie on line
+
 def clipLine(lineGeometry, pt1, pt2):
-    if lineGeometry is None or lineGeometry.isGeosEmpty() or pt1 is None or pt2 is None:
+    """Returns a line cliipped to the extent of two given points"""
+    # Assumes pt1, pt2 lie on line
+    if lineGeometry is None or lineGeometry.isEmpty() or pt1 is None or pt2 is None:
         return QgsGeometry()
     line = LineString(lineGeometry.asPolyline())
     d1 = line.project(Point(pt1))
@@ -110,6 +114,7 @@ def clipLine(lineGeometry, pt1, pt2):
             clip.append(QgsPoint(pt.x, pt.y))
     clip.append(end)
     return QgsGeometry.fromPolyline(clip)
+
 
 def toMultiLineString(lineGeometry):
     lineList = []

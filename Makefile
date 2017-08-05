@@ -3,10 +3,8 @@
 #                                 A QGIS plugin
 #             QGIS Plugin for ARK, the Archaeological Recording Kit
 #                              -------------------
-#        begin                : 2015-03-02
-#        git sha              : $Format:%H$
-#        copyright            : (C) 2015 by L - P: Heritage LLP
-#        copyright            : (C) 2015 by John Layt
+#        copyright            : (C) 2017 by L - P: Heritage LLP
+#        copyright            : (C) 2017 by John Layt
 #        email                : john@layt.net
 # ***************************************************************************/
 #
@@ -37,16 +35,11 @@ LOCALES =
 
 
 # translation
-SOURCES = \
-	__init__.py \
-	ark.py
+SOURCES = __init__.py
 
-PLUGINNAME = Ark
+PLUGINNAME = ArkSpatial
 
-PY_FILES = \
-	ark_plan.py \
-	ark_plan_dialog.py \
-	__init__.py
+PY_FILES = __init__.py
 
 UI_FILES = ark_plan_dialog_base.ui
 

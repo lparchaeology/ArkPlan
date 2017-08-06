@@ -22,17 +22,11 @@
  ***************************************************************************/
 """
 
-import os
-
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QIcon
 
-from qgis.core import QgsProject
+from ark.lib.gui import ToolDockWidget
 
-from ..libarkqgis.dock import ToolDockWidget
-
-from plan_widget import *
 
 class PlanDock(ToolDockWidget):
 
@@ -88,9 +82,12 @@ class PlanDock(ToolDockWidget):
 
         self.toolbar.addSeparator()
 
-        self.toolbar.addAction(QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
-        self.toolbar.addAction(QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
-        self.toolbar.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'), self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
+        self.toolbar.addAction(
+            QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
+        self.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
+        self.toolbar.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'),
+                               self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
 
         # Init the child widgets
         self.widget.drawingWidget.initGui(iface)
@@ -170,7 +167,8 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.resetContext()
 
     def setContext(self, context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic):
-        self.widget.schematicWidget.setContext(context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic)
+        self.widget.schematicWidget.setContext(
+            context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic)
 
     def contextStatus(self):
         return self.widget.schematicWidget.contextStatus()
@@ -185,7 +183,8 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.resetSourceContext()
 
     def setSourceContext(self, context, foundArk, contextType, contextDescription, foundFeature, foundSchematic):
-        self.widget.schematicWidget.setSourceContext(context, foundArk, contextType, contextDescription, foundFeature, foundSchematic)
+        self.widget.schematicWidget.setSourceContext(
+            context, foundArk, contextType, contextDescription, foundFeature, foundSchematic)
 
     def sourceStatus(self):
         return self.widget.schematicWidget.sourceStatus()

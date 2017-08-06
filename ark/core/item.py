@@ -21,15 +21,15 @@
  *                                                                         *
  ***************************************************************************/
 """
-from functools import total_ordering
 
-from PyQt4.QtCore import QVariant
+from functools import total_ordering
 
 from qgis.core import QgsFeatureRequest
 
-from ..libarkqgis import utils
+from ark.lib import utils
 
-from config import Config
+from ark.core import Config
+
 
 def _setAttribute(feature, attribute, value):
     try:
@@ -37,11 +37,13 @@ def _setAttribute(feature, attribute, value):
     except:
         pass
 
+
 def _attribute(feature, attribute):
     try:
         return feature.attribute(attribute)
     except:
         return None
+
 
 @total_ordering
 class Item():
@@ -54,9 +56,9 @@ class Item():
 
     def __eq__(self, other):
         return (isinstance(other, Item)
-            and self._siteCode == other._siteCode
-            and self._classCode == other._classCode
-            and self._itemId == other._itemId)
+                and self._siteCode == other._siteCode
+                and self._classCode == other._classCode
+                and self._itemId == other._itemId)
 
     def __lt__(self, other):
         if self._siteCode == other._siteCode and self._classCode == other._classCode:
@@ -64,8 +66,8 @@ class Item():
         elif self._siteCode == other._siteCode:
             return self._classCode < other._classCode and self._lt(self._itemId, other._itemId)
         return (self._siteCode < other._siteCode
-            and self._classCode < other._classCode
-            and self._lt(self._itemId, other._itemId))
+                and self._classCode < other._classCode
+                and self._lt(self._itemId, other._itemId))
 
     def _lt(self, id1, id2):
         if isinstance(id1, str) and id1.isdigit() and isinstance(id2, str) and id2.isdigit():
@@ -77,20 +79,20 @@ class Item():
         return hash((self._siteCode, self._classCode, self._itemId))
 
     def __str__(self):
-        return 'Item(' + str(self._siteCode) + ', ' +  str(self._classCode) + ', ' +  str(self._itemId) + ')'
+        return 'Item(' + str(self._siteCode) + ', ' + str(self._classCode) + ', ' + str(self._itemId) + ')'
 
     def debug(self):
-        return 'Item(' + utils.printable(self._siteCode) + ', ' +  utils.printable(self._classCode) + ', ' +  utils.printable(self._itemId) + ')'
+        return 'Item(' + utils.printable(self._siteCode) + ', ' + utils.printable(self._classCode) + ', ' + utils.printable(self._itemId) + ')'
 
     def isValid(self):
         return (isinstance(self._siteCode, str) and self._siteCode
-            and isinstance(self._classCode, str) and self._classCode
-            and isinstance(self._itemId, str) and self._itemId)
+                and isinstance(self._classCode, str) and self._classCode
+                and isinstance(self._itemId, str) and self._itemId)
 
     def isInvalid(self):
         return (not isinstance(self._siteCode, str) or self._siteCode == ''
-            or not isinstance(self._classCode, str) or self._classCode == ''
-            or not isinstance(self._itemId, str) or self._itemId == '')
+                or not isinstance(self._classCode, str) or self._classCode == ''
+                or not isinstance(self._itemId, str) or self._itemId == '')
 
     def isNull(self):
         return (self._siteCode == '' and self._classCode == '' and self._itemId == '')

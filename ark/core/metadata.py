@@ -22,12 +22,11 @@
  ***************************************************************************/
 """
 
-import string
-
-from PyQt4.QtCore import QObject, pyqtSignal, QPyNullVariant
+from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QInputDialog
 
-from feature import Feature
+from ark.core import Feature
+
 
 class Metadata(QObject):
 

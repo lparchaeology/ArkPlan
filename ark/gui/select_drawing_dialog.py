@@ -22,20 +22,20 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QDir
-from PyQt4.QtGui import QDialog, QDialogButtonBox, QAbstractItemView
+from PyQt4.QtCore import QDir
+from PyQt4.QtGui import QAbstractItemView, QDialog, QDialogButtonBox
 
-from ..libarkqgis.event_filters import ReturnPressedFilter
+from ark.lib.core import ReturnPressedFilter
 
-from select_drawing_dialog_base import *
-from config import Config
+from ark.core import Config
+
+from select_drawing_dialog_base import Ui_SelectDrawingDialog
+
 
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
 
-    _dir = None # QDir
+    _dir = None  # QDir
     _fileList = []
 
     def __init__(self, project, drawingType, siteCode='', georef=False, parent=None):

@@ -25,13 +25,12 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog, QApplication
+from PyQt4.QtGui import QApplication, QDialog
 
-from ..libarkqgis import utils
-from ..libarkqgis.models import TableModel
+from .. import utils
+from ..core import TableModel
+from table_dialog_base import Ui_TableDialog
 
-from table_dialog_base import *
 
 class TableDialog(QDialog, Ui_TableDialog):
 

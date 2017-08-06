@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,26 +22,27 @@
  ***************************************************************************/
 """
 
-import os.path
+import webbrowser
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog
+from PyQt4.QtGui import QAction, QApplication
 
-from credentials_dialog_base import *
+from ark.core import Item, Source
 
-class CredentialsDialog(QDialog, Ui_CredentialsDialog):
 
-    def __init__(self, parent=None):
-        super(CredentialsDialog, self).__init__(parent)
-        self.setupUi(self)
-        self.passwordEdit.setText('anon')
-        self.passwordEdit.selectAll()
-        self.usernameEdit.setText('anon')
-        self.usernameEdit.selectAll()
+class OpenArkAction(QAction):
 
-    def username(self):
-        return self.usernameEdit.text()
+    _url = ''
 
-    def password(self):
-        return self.passwordEdit.text()
+    def __init__(self, arkUrl, item, label, parent=None):
+        super(OpenArkAction, self).__init__(label, parent)
+        mod_cd = item.classCode() + '_cd'
+        item = item.siteCode() + '_' + item.itemId()
+        self._url = arkUrl + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item
+        self.triggered.connect(self._open)
+
+    def _open(self):
+        QApplication.clipboard().setText(self._url)
+        try:
+            webbrowser.get().open_new_tab(self._url)
+        except:
+            self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')

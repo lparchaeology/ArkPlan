@@ -21,18 +21,13 @@
  *                                                                         *
  ***************************************************************************/
 """
-from functools import total_ordering
 
-from PyQt4.QtCore import QVariant
+from qgis.core import QgsFeature
 
-from qgis.core import QgsFeature, QgsFeatureRequest
+from ark.lib import utils
 
-from ..libarkqgis import utils
+from ark.core import Audit, Item, Source
 
-from config import Config
-from item import *
-from source import Source
-from audit import Audit
 
 class Feature():
     _category = ''
@@ -50,12 +45,12 @@ class Feature():
 
     def __eq__(self, other):
         return (isinstance(other, Feature)
-            and self._category == other._category
-            and self._label == other._label
-            and self._comment == other._comment
-            and self._item == other._item
-            and self._source == other._source
-            and self._audit == other._audit)
+                and self._category == other._category
+                and self._label == other._label
+                and self._comment == other._comment
+                and self._item == other._item
+                and self._source == other._source
+                and self._audit == other._audit)
 
     def __lt__(self, other):
         if self._item == other._item:
@@ -67,19 +62,19 @@ class Feature():
 
     def __str__(self):
         return ('Feature('
-            + str(self._item) + ', '
-            + str(self._category) + ', '
-            + str(self._label) + ', '
-            + str(self._comment) + ')')
+                + str(self._item) + ', '
+                + str(self._category) + ', '
+                + str(self._label) + ', '
+                + str(self._comment) + ')')
 
     def debug(self):
         return ('Feature('
-            + self._item.debug() + ', '
-            + utils.printable(self._category) + ', '
-            + utils.printable(self._label) + ', '
-            + utils.printable(self._comment) + ', '
-            + self._source.debug() + ', '
-            + utils.printable(self._audit) + ')')
+                + self._item.debug() + ', '
+                + utils.printable(self._category) + ', '
+                + utils.printable(self._label) + ', '
+                + utils.printable(self._comment) + ', '
+                + self._source.debug() + ', '
+                + utils.printable(self._audit) + ')')
 
     def isValid(self):
         return (isinstance(self._item, Item)

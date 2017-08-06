@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -28,9 +26,9 @@ from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
-from qgis.gui import QgsMapLayerComboBox
 
-from update_layer_dialog_base import *
+from update_layer_dialog_base import Ui_UpdateLayerDialog
+
 
 class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
 

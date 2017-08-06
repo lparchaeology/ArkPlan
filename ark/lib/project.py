@@ -24,6 +24,7 @@
 
 from PyQt4.QtCore import QFile, QSettings
 from PyQt4.QtGui import QColor, QIcon
+
 from qgis.core import QGis, QgsApplication, QgsProject
 
 

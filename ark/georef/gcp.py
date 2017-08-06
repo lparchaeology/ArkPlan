@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,50 +22,10 @@
  ***************************************************************************/
 """
 
-import os
-from copy import deepcopy
+from PyQt4.QtCore import QPointF
 
-from PyQt4.QtCore import Qt, QPointF
+from qgis.core import QgsPoint
 
-from qgis.core import QgsPoint, QgsMessageLog
-
-class GroundControl():
-
-    crs = 'EPSG:27700'
-    _points = {}
-
-    def points(self):
-        return self._points
-
-    def point(self, index):
-        return self._points[index]
-
-    def setPoint(self, index, point):
-        self._points[index] = point
-
-    def appendPoint(self, point):
-        size = len(self._points)
-        if size == 0:
-            index = 1;
-        else:
-            keys = sorted(self._points, reverse=True)
-            index = keys[0] + 1
-        self.setPoint(index, point)
-
-    def isValid(self):
-        for index in self._points:
-            if not self._points[index].isValid():
-                return False
-        return True
-
-    def asCsv(self):
-        csv = 'mapX,mapY,pixelX,pixelY,enable\n'
-        for index in sorted(self._points):
-            csv += self._points[index].asCsv() + '\n'
-        return csv
-
-    def _log(self, msg):
-        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
 
 class GroundControlPoint():
 
@@ -144,6 +102,3 @@ class GroundControlPoint():
 
     def asCsv(self):
         return ','.join([str(self.map().x()), str(self.map().y()), str(self.raw().x()), str(self.raw().y()), str(int(self._enabled))])
-
-    def _log(self, msg):
-        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)

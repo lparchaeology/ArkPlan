@@ -26,6 +26,7 @@
 """
 from PyQt4.QtCore import Qt, QVariant
 from PyQt4.QtGui import QInputDialog
+
 from qgis.core import QGis, QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 from qgis.gui import QgsMessageBar
 

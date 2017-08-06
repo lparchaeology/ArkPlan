@@ -22,15 +22,13 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import  QAction, QMenu
+from PyQt4.QtGui import QAction, QMenu
 
-from qgis.core import QgsProject, QgsLayerTreeNode, QgsMapLayer
+from qgis.core import QgsLayerTreeNode, QgsMapLayer, QgsProject
 from qgis.gui import QgsLayerTreeViewMenuProvider
 
-from ..libarkqgis.project import Project
+from ark.lib import Project
 
-import resources
 
 class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
 
@@ -53,7 +51,8 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
         self._removeDrawings = QAction('Remove All Drawings', view)
         self._removeDrawings.triggered.connect(self._project.clearDrawings)
 
-        self._openAttributes = QAction(Project.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
+        self._openAttributes = QAction(
+            Project.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
         self._openAttributes.triggered.connect(self._showAttributeTable)
 
         self._openProperties = QAction(project.tr('&Properties'), view)

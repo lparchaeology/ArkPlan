@@ -23,6 +23,7 @@
 """
 
 from PyQt4.QtGui import QDialog, QDialogButtonBox
+
 from qgis.core import QgsMapLayerRegistry
 
 

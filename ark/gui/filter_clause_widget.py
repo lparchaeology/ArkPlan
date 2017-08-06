@@ -22,23 +22,22 @@
  ***************************************************************************/
 """
 
-import resources
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QMenu, QAction, QActionGroup, QIcon, QWidgetAction, QPixmap, QColor
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QPixmap, QWidget, QWidgetAction
 
 from qgis.gui import QgsColorButtonV2
 
-from ..libarkqgis.project import Project
-from ..libarkqgis.utils import *
+from ark.lib import Project, utils
 
-from item import Item
-from filter_base import *
+from ark.core import FilterType, Item
 
-import filter_clause_widget_base
+from filter_clause_widget_base import Ui_FilterClauseWidget
 
-class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidget):
+import resources
+
+
+class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
 
     clauseAdded = pyqtSignal()
     clauseRemoved = pyqtSignal(int)
@@ -133,7 +132,7 @@ class FilterClauseWidget(QWidget, filter_clause_widget_base.Ui_FilterClauseWidge
         self.filterClassCombo.setCurrentIndex(self.filterClassCombo.findData(clause.item.classCode()))
         self.filterRangeCombo.setEditText(clause.item.itemId())
         self._setFilterType(clause.action)
-        #self._colorTool.setColor(clause.color)
+        # self._colorTool.setColor(clause.color)
         self._colorTool.blockSignals(False)
         self.blockSignals(False)
 

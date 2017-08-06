@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-02-11
-        git sha              : $Format:%H$
-        copyright            : 2016 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -29,11 +27,12 @@ from PyQt4.QtGui import QGroupBox
 
 from qgis.core import QgsProject
 
-from ..libarkqgis.snapping import *
+from ark.lib import Snapping
 
-import snapping_widget_base
+from snapping_widget_base import Ui_SnappingWidget
 
-class SnappingWidget(QGroupBox, snapping_widget_base.Ui_SnappingWidget):
+
+class SnappingWidget(QGroupBox, Ui_SnappingWidget):
 
     def __init__(self, parent=None):
         super(SnappingWidget, self).__init__(parent)
@@ -44,21 +43,21 @@ class SnappingWidget(QGroupBox, snapping_widget_base.Ui_SnappingWidget):
         pass
 
     def unloadGui(self):
-        #self.snapBufferPointsTool.defaultAction().unload()
+        # self.snapBufferPointsTool.defaultAction().unload()
         del self.snapBufferPointsTool
-        #self.snapBufferLinesTool.defaultAction().unload()
+        # self.snapBufferLinesTool.defaultAction().unload()
         del self.snapBufferLinesTool
-        #self.snapBufferPolygonsTool.defaultAction().unload()
+        # self.snapBufferPolygonsTool.defaultAction().unload()
         del self.snapBufferPolygonsTool
-        #self.snapPlanPointsTool.defaultAction().unload()
+        # self.snapPlanPointsTool.defaultAction().unload()
         del self.snapPlanPointsTool
-        #self.snapPlanLinesTool.defaultAction().unload()
+        # self.snapPlanLinesTool.defaultAction().unload()
         del self.snapPlanPolygonsTool
-        #self.snapPlanPolygonsTool.defaultAction().unload()
+        # self.snapPlanPolygonsTool.defaultAction().unload()
         del self.snapBasePointsTool
-        #self.snapBaseLinesTool.defaultAction().unload()
+        # self.snapBaseLinesTool.defaultAction().unload()
         del self.snapBaseLinesTool
-        #self.snapBasePolygonsTool.defaultAction().unload()
+        # self.snapBasePolygonsTool.defaultAction().unload()
         del self.snapBasePolygonsTool
 
     # Load the project settings when project is loaded

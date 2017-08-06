@@ -24,10 +24,10 @@
 
 from qgis.core import QgsFeature
 
-from ..libarkqgis import utils
+from ark.lib import utils
 
-from config import Config
-from item import *
+from ark.core import Config, Item
+
 
 class Source():
     _sourceCode = ''
@@ -50,10 +50,16 @@ class Source():
         return hash((self._code, self._item, self._filename))
 
     def __str__(self):
-        return 'Source(' + str(self._code) + ', ' + str(self._item) + ', ' +  str(self._filename) + ')'
+        return ('Source('
+                + str(self._code) + ', '
+                + str(self._item) + ', '
+                + str(self._filename) + ')')
 
     def debug(self):
-        return 'Source(' + utils.printable(self._code) + ', ' +  self._item.debug() + ', ' +  utils.printable(self._filename) + ')'
+        return ('Source('
+                + utils.printable(self._code) + ', '
+                + self._item.debug() + ', '
+                + utils.printable(self._filename) + ')')
 
     def isValid(self):
         if self._code == '':

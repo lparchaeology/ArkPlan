@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,13 +22,11 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog, QColor
+from PyQt4.QtGui import QColor, QDialog
 
-from filter_export_dialog_base import *
+from filter_export_dialog_base import Ui_FilterExportDialog
+
 
 class FilterExportDialog(QDialog, Ui_FilterExportDialog):
 

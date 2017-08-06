@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,34 +22,35 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QObject, QVariant, QPoint
-from PyQt4.QtGui import QApplication, QAction, QIcon, QFileDialog
+from PyQt4.QtCore import QObject, Qt, QVariant
+from PyQt4.QtGui import QApplication, QIcon
 
-from qgis.core import *
+from qgis.core import QGis
 from qgis.gui import QgsVertexMarker
 
-from ..libarkqgis.geometry import LinearTransformer
-from ..libarkqgis import utils, layers
-from ..libarkqgis.map_tools import ArkMapToolEmitPoint
+from ark.lib import utils
+from ark.lib.core import LinearTransformer, layers
+from ark.lib.map import ArkMapToolEmitPoint
 
+from grid_dock import GridDock
+from grid_wizard import GridWizard
 from translate_features_dialog import TranslateFeaturesDialog
 from update_layer_dialog import UpdateLayerDialog
-from grid_wizard import GridWizard
-from grid_dock import GridDock
 
 import resources
 
+
 class GridModule(QObject):
 
-    project = None # Project()
+    project = None  # Project()
 
     # Internal variables
-    mapTool = None  #ArkMapToolEmitPoint()
+    mapTool = None  # ArkMapToolEmitPoint()
     initialised = False
     gridWizard = None  # QWizard
     _vertexMarker = None  # QgsVertexMarker
-    mapTransformer = None  #LinearTransformer()
-    localTransformer = None  #LinearTransformer()
+    mapTransformer = None  # LinearTransformer()
+    localTransformer = None  # LinearTransformer()
 
     def __init__(self, project):
         super(GridModule, self).__init__(project)
@@ -62,17 +61,25 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def initGui(self):
         self.dock = GridDock()
-        action = self.project.addDockAction(':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
+        action = self.project.addDockAction(
+            ':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
 
-        self._createGridAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)
-        self._identifyGridAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr(u'Identify Grid Coordinates'), self._triggerMapTool)
+        self._createGridAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)
+        self._identifyGridAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr(u'Identify Grid Coordinates'), self._triggerMapTool)
         self._identifyGridAction.setCheckable(True)
-        self._panToAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr(u'Pan to map point'), self.panMapToPoint)
-        self._pasteMapPointAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr(u'Paste Map Point'), self.pasteMapPointFromClipboard)
-        self._addMapPointAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/addPoint.png'), self.tr(u'Add point to current layer'), self.addMapPointToLayer)
-        self._updateLayerAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr(u'Update Layer Coordinates'), self.showUpdateLayerDialog)
-        self._translateFeaturesAction = self.dock.toolbar.addAction(QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr(u'Translate features'), self.showTranslateFeaturesDialog)
+        self._panToAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr(u'Pan to map point'), self.panMapToPoint)
+        self._pasteMapPointAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr(u'Paste Map Point'), self.pasteMapPointFromClipboard)
+        self._addMapPointAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/addPoint.png'), self.tr(u'Add point to current layer'), self.addMapPointToLayer)
+        self._updateLayerAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr(u'Update Layer Coordinates'), self.showUpdateLayerDialog)
+        self._translateFeaturesAction = self.dock.toolbar.addAction(
+            QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr(u'Translate features'), self.showTranslateFeaturesDialog)
 
         self.dock.widget.gridSelectionChanged.connect(self.changeGrid)
         self.dock.widget.mapPointChanged.connect(self.convertMapPoint)
@@ -166,9 +173,9 @@ class GridModule(QObject):
             return False
         features = []
         for feature in self.project.grid.pointsLayer.getFeatures():
-                features.append(feature)
-                if len(features) >= 2:
-                    break
+            features.append(feature)
+            if len(features) >= 2:
+                break
         map1, local1 = self.transformPoints(features[0])
         map2, local2 = self.transformPoints(features[1])
         self.mapTransformer = LinearTransformer(map1, local1, map2, local2)
@@ -237,13 +244,15 @@ class GridModule(QObject):
             localAxisPoint = None
             if self.gridWizard.methodType() == GridWizard.PointOnYAxis:
                 if axisGeometry.length() < yInterval:
-                    self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                    self.project.showCriticalMessage(
+                        'Cannot create grid: Input axis must be longer than local interval')
                     return False
                 mp2 = axisGeometry.interpolate(yInterval).asPoint()
                 lp2 = QgsPoint(lp1.x(), lp1.y() + yInterval)
             else:
                 if axisGeometry.length() < xInterval:
-                    self.project.showCriticalMessage('Cannot create grid: Input axis must be longer than local interval')
+                    self.project.showCriticalMessage(
+                        'Cannot create grid: Input axis must be longer than local interval')
                     return False
                 mp2 = axisGeometry.interpolate(xInterval).asPoint()
                 lp2 = QgsPoint(lp1.x() + xInterval, lp1.y())
@@ -289,8 +298,10 @@ class GridModule(QObject):
                 self.project.showCriticalMessage('Invalid grid polygons file!')
             else:
                 self._addGridPolygonsToLayer(polygons, localTransformer,
-                                             localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
-                                             localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) / yInterval,
+                                             localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) /
+                                             xInterval,
+                                             localOrigin.y(), yInterval, (localTerminus.y() - localOrigin.y()) /
+                                             yInterval,
                                              self._attributes(polygons, siteCode, gridName), local_x, local_y, map_x, map_y)
         return True
 
@@ -458,7 +469,8 @@ class GridModule(QObject):
         if self.initialised:
             dialog = TranslateFeaturesDialog(self.project.iface)
             if dialog.exec_():
-                self.translateFeatures(dialog.layer(), dialog.translateEast(), dialog.translateNorth(), dialog.allFeatures())
+                self.translateFeatures(
+                    dialog.layer(), dialog.translateEast(), dialog.translateNorth(), dialog.allFeatures())
 
     def translateFeatures(self, layer, xInterval, yInterval, allFeatures):
         localOriginPoint = QgsPoint(0, 0)
@@ -483,15 +495,15 @@ class GridModule(QObject):
         self.project.mapCanvas().zoomByFactor(1.0, self.mapPoint())
 
     def copyMapPointToClipboard(self):
-        #TODO Use QgsClipboard when it becomes public
+        # TODO Use QgsClipboard when it becomes public
         QApplication.clipboard().setText(self.mapPointAsWkt())
 
     def copyLocalPointToClipboard(self):
-        #TODO Use QgsClipboard when it becomes public
+        # TODO Use QgsClipboard when it becomes public
         QApplication.clipboard().setText(self.localPointAsWkt())
 
     def pasteMapPointFromClipboard(self):
-        #TODO Use QgsClipboard when it becomes public
+        # TODO Use QgsClipboard when it becomes public
         text = QApplication.clipboard().text().strip().upper()
         idx = text.find('POINT(')
         if idx >= 0:

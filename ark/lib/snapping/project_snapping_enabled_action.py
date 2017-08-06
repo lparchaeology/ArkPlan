@@ -24,7 +24,8 @@
 
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QAction, QIcon
-from qgis.coreimport import QgsProject
+
+from qgis.core import QgsProject
 
 from ..project import Project
 import .Snapping

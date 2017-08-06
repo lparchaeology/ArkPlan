@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -28,13 +26,12 @@ from PyQt4 import uic
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QWidget
 
-from config import Config
-from item import Item
-from source import Source
+from ark.core import Config, Item, Source
 
-import source_widget_base
+from source_widget_base import Ui_SourceWidget
 
-class SourceWidget(QWidget, source_widget_base.Ui_SourceWidget):
+
+class SourceWidget(QWidget, Ui_SourceWidget):
 
     sourceChanged = pyqtSignal()
 

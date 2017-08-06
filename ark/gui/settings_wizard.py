@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -25,10 +23,10 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWizard, QWizardPage, QFileDialog
+from PyQt4.QtGui import QFileDialog, QWizard
 
 from settings_wizard_base import Ui_SettingsWizard
+
 
 class SettingsWizard(QWizard, Ui_SettingsWizard):
 
@@ -65,6 +63,7 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
         return self.projectFileEdit.text()
 
     def _selectProjectFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(
+            self, self.tr('Project Folder'), self.projectFolderEdit.text()))
         if folderName:
             self.projectFolderEdit.setText(folderName)

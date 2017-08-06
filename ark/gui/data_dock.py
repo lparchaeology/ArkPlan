@@ -22,29 +22,18 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal, QUrl
-from PyQt4.QtGui import QWidget, QPixmap, QToolButton, QAction, QIcon, QMenu, QActionGroup
+from PyQt4.QtCore import QUrl, pyqtSignal
+from PyQt4.QtGui import QAction, QIcon
 from PyQt4.QtWebKit import QWebPage
 
-from ..libarkqgis.dock import ToolDockWidget
-from ..libarkqgis.project import Project
-from ..libarkqgis import utils
+from ark.lib import Project
+from ark.lib.gui import ToolDockWidget
 
-from enum import *
-from action_settings import ActionSettingsTool
-from config import Config
-from item import Item
-
-import data_widget_base
+from ark.core import Config, Item
+from ark.gui import ActionSettingsTool
 
 import resources
 
-class DataWidget(QWidget, data_widget_base.Ui_DataWidget):
-
-    def __init__(self, parent=None):
-        super(DataWidget, self).__init__(parent)
-        self.setupUi(self)
 
 class DataDock(ToolDockWidget):
 

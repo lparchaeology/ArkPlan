@@ -22,61 +22,34 @@
  ***************************************************************************/
 """
 
-import csv, json, urllib2, bisect, webbrowser
+import bisect
+import csv
+import webbrowser
 
-from PyQt4.QtCore import Qt, QObject, QSettings, QFile, pyqtSignal
-from PyQt4.QtGui import QApplication, QAction, QIcon, QSortFilterProxyModel
+from PyQt4.QtCore import QFile, QObject, Qt, pyqtSignal
+from PyQt4.QtGui import QApplication, QSortFilterProxyModel
 from PyQt4.QtWebKit import QWebView
 
-from qgis.core import NULL, QgsCredentials
+from ark.lib import utils
+from ark.lib.core import ParentChildModel
+from ark.lib.gui import CredentialsDialog
 
-from ..libarkqgis import utils
-from ..libarkqgis.models import TableModel, ParentChildModel
-
-from ..pyARK.ark import Ark
-
-from enum import *
-from data_dock import DataDock
-from config import Config
-from item import Item
-from credentials_dialog import CredentialsDialog
+from ark.core import Config, Item
+from ark.core.enum import *
+from ark.gui import DataDock
+from ark.pyARK import Ark
 
 import resources
 
-class ItemModel(TableModel):
 
-    def __init__(self, filePath, keyFields, parent=None):
-        super(ItemModel, self).__init__(parent)
-
-        if QFile.exists(filePath):
-            with open(filePath) as csvFile:
-                reader = csv.DictReader(csvFile)
-                self._fields = reader.fieldnames
-                self._nullRecord = {}
-                for field in self._fields:
-                    self._nullRecord[field] = ''
-                for record in reader:
-                    item = Item(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
-                    self._addItem(item, record)
-
-    def getItem(self, item):
-        return self.getRecord('item', item)
-
-    def _addItem(self, item, itemRecord):
-        record = {}
-        record.update(self._nullRecord)
-        record.update({'item' : item})
-        record.update(itemRecord)
-        self._table.append(record)
-
-class Data(QObject):
+class DataModule(QObject):
 
     dataLoaded = pyqtSignal()
 
-    project = None # Project()
+    project = None  # Project()
 
     # Internal variables
-    dock = None # DataDock()
+    dock = None  # DataDock()
 
     _classDataModels = {}  # {classCode: ItemModel()}
     _classDataProxyModels = {}  # {classCode: QSortFilterProxyModel()}
@@ -91,7 +64,7 @@ class Data(QObject):
     _filterAction = FilterAction.ExclusiveHighlightFilter
     _drawingAction = DrawingAction.NoDrawingAction
 
-    items = {} # {classCode: [Item]}
+    items = {}  # {classCode: [Item]}
 
     def __init__(self, project):
         super(Data, self).__init__(project)
@@ -102,7 +75,8 @@ class Data(QObject):
     # Create the gui when the plugin is first created
     def initGui(self):
         self.dock = DataDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
+        action = self.project.addDockAction(
+            ':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
 
         self.dock.itemChanged.connect(self._itemChanged)
@@ -426,7 +400,8 @@ class Data(QObject):
         self._prevItem = item
         url = ''
         if item.isValid() and self.haveItem(item):
-            url = self._ark.transcludeSubformUrl(item.classCode() + '_cd', item.itemValue(), item.classCode() + '_apisum')
+            url = self._ark.transcludeSubformUrl(
+                item.classCode() + '_cd', item.itemValue(), item.classCode() + '_apisum')
         self.dock.setItemUrl(url)
 
     def _value(self, value):
@@ -480,7 +455,7 @@ class Data(QObject):
         item_value = []
         if 'download.php' in url.toString():
             #web = QWebView()
-            #web.load(url)
+            # web.load(url)
             self.dock.widget.itemDataView.load(url)
             return
         if url.hasQueryItem('item_key'):

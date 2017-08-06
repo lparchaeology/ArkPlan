@@ -24,6 +24,7 @@
 
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QComboBox
+
 from qgis.core import QgsMapLayer
 
 

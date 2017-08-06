@@ -25,6 +25,7 @@
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QBrush, QPen
+
 from qgis.core import QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolV2
 from qgis.gui import QgsMapCanvasItem
 

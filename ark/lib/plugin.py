@@ -26,6 +26,7 @@ import os.path
 
 from PyQt4.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
 from PyQt4.QtGui import QAction, QIcon
+
 from qgis.core import QGis, QgsMessageLog
 from qgis.gui import QgsMessageBar
 

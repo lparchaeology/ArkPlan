@@ -23,13 +23,13 @@
 """
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, pyqtSignal
+from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QWidget
 
-from config import Config
-from item import Item
+from ark.core import Config, Item
 
-from select_item_widget_base import *
+from select_item_widget_base import Ui_SelectItemWidget
+
 
 class SelectItemWidget(QWidget, Ui_SelectItemWidget):
 

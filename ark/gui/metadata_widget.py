@@ -26,16 +26,12 @@ from PyQt4 import uic
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QGroupBox
 
-from qgis.core import NULL
+from ark.core import Config, Feature, Item, Source
 
-from config import Config
-from item import Item
-from feature import Feature
-from source import Source
+from metadata_widget_base import Ui_MetadataWidget
 
-import metadata_widget_base
 
-class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
+class MetadataWidget(QGroupBox, Ui_MetadataWidget):
 
     siteCodeChanged = pyqtSignal(str)
     classCodeChanged = pyqtSignal(str)
@@ -120,7 +116,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
 
     def setItemId(self, itemId):
         self.blockSignals(True)
-        if (isinstance(itemId, int) and itemId >=0) or (isinstance(itemId, str) and itemId.isdigit() and int(itemId) >= 0):
+        if (isinstance(itemId, int) and itemId >= 0) or (isinstance(itemId, str) and itemId.isdigit() and int(itemId) >= 0):
             self.idSpin.setValue(int(itemId))
         else:
             self.idSpin.setValue(0)
@@ -152,7 +148,7 @@ class MetadataWidget(QGroupBox, metadata_widget_base.Ui_MetadataWidget):
 
     def setSourceId(self, sourceId):
         self.blockSignals(True)
-        if (isinstance(sourceId, int) and sourceId >=0) or (isinstance(sourceId, str) and sourceId.isdigit() and int(sourceId) >= 0):
+        if (isinstance(sourceId, int) and sourceId >= 0) or (isinstance(sourceId, str) and sourceId.isdigit() and int(sourceId) >= 0):
             self.sourceIdSpin.setValue(int(sourceId))
         else:
             self.sourceIdSpin.setValue(0)

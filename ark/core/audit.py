@@ -24,6 +24,7 @@
 
 from ark.lib import utils
 
+
 class Audit():
     _creator = ''
     _created = ''
@@ -38,17 +39,17 @@ class Audit():
 
     def __str__(self):
         return ('Audit('
-            + str(self._creator) + ', '
-            + str(self._created) + ', '
-            + str(self._modifier) + ', '
-            + str(self._modified) + ')')
+                + str(self._creator) + ', '
+                + str(self._created) + ', '
+                + str(self._modifier) + ', '
+                + str(self._modified) + ')')
 
     def debug(self):
         return ('Audit('
-            +  utils.printable(self._creator) + ', '
-            +  utils.printable(self._created) + ', '
-            +  utils.printable(self._modifier) + ', '
-            +  utils.printable(self._modified) + ')')
+                + utils.printable(self._creator) + ', '
+                + utils.printable(self._created) + ', '
+                + utils.printable(self._modifier) + ', '
+                + utils.printable(self._modified) + ')')
 
     def setAudit(self, creator, created, modifier=None, modified=None):
         self.setCreator(creator)

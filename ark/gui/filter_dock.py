@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,51 +22,13 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QListWidgetItem, QIcon, QAction, QActionGroup, QMenu
+from PyQt4.QtGui import QAction, QIcon, QListWidgetItem
 
-from ..libarkqgis.dock import ToolDockWidget
-from ..libarkqgis import utils
+from ark.lib.gui import ToolDockWidget
 
-import filter_set_widget_base
-from filter_base import *
-from filter_clause_widget import *
+from ark.gui import FilterSetWidget
 
-class FilterSetWidget(QWidget, filter_set_widget_base.Ui_FilterSetWidget):
-
-    def __init__(self, parent=None):
-        super(FilterSetWidget, self).__init__(parent)
-        self.setupUi(self)
-        self._filterSetActionGroup = QActionGroup(self)
-        self._filterSetActionGroup.addAction(self.saveFilterSetAction)
-        self._filterSetActionGroup.addAction(self.reloadFilterSetAction)
-        self._filterSetActionGroup.addAction(self.deleteFilterSetAction)
-        self._filterSetActionGroup.addAction(self.exportFilterSetAction)
-        self._filterSetMenu = QMenu(self)
-        self._filterSetMenu.addActions(self._filterSetActionGroup.actions())
-        self.filterSetTool.setMenu(self._filterSetMenu)
-        self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
-
-    def setFilterSet(self, filterSet):
-        self.setFilterSetKey(filterSet.key)
-        if filterSet.source == 'ark':
-            self.saveFilterSetAction.setEnabled(False)
-            self.deleteFilterSetAction.setEnabled(False)
-            self.filterSetTool.setDefaultAction(self.reloadFilterSetAction)
-        else:
-            self.saveFilterSetAction.setEnabled(True)
-            self.deleteFilterSetAction.setEnabled(True)
-            self.filterSetTool.setDefaultAction(self.saveFilterSetAction)
-
-    def setFilterSetKey(self, key):
-        self.filterSetCombo.setCurrentIndex(self.filterSetCombo.findData(key))
-
-    def currentFilterSetKey(self):
-        return self.filterSetCombo.itemData(self.filterSetCombo.currentIndex())
-
-    def currentFilterSetName(self):
-        return self.filterSetCombo.currentText()
 
 class FilterDock(ToolDockWidget):
 
@@ -131,16 +91,16 @@ class FilterDock(ToolDockWidget):
         self._loadDataAction = QAction(QIcon(':/plugins/ark/data/loadData.svg'), "Load Data", self)
         self._loadDataAction.triggered.connect(self.loadDataSelected)
         self.toolbar.addAction(self._loadDataAction)
-        self._loadDataAction.setEnabled(False);
+        self._loadDataAction.setEnabled(False)
 
         self._refreshDataAction = QAction(QIcon(':/plugins/ark/data/refreshData.svg'), "Refresh Filter Sets", self)
         self._refreshDataAction.triggered.connect(self.refreshDataSelected)
         self.toolbar.addAction(self._refreshDataAction)
-        self._refreshDataAction.setEnabled(False);
+        self._refreshDataAction.setEnabled(False)
 
         #self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
-        #self._showDataAction.triggered.connect(self.showDataSelected)
-        #self.toolbar.addAction(self._showDataAction)
+        # self._showDataAction.triggered.connect(self.showDataSelected)
+        # self.toolbar.addAction(self._showDataAction)
 
         self.widget.filterSetCombo.currentIndexChanged.connect(self._filterSetChanged)
 
@@ -191,7 +151,7 @@ class FilterDock(ToolDockWidget):
         newItem = QListWidgetItem()
         newItem.setData(Qt.UserRole, idx)
         newItem.setSizeHint(filterClauseWidget.minimumSizeHint())
-        self.widget.filterClauseList.addItem(newItem);
+        self.widget.filterClauseList.addItem(newItem)
         self.widget.filterClauseList.setItemWidget(newItem, filterClauseWidget)
         self._items[idx] = newItem
         self._filterIndex += 1
@@ -207,7 +167,7 @@ class FilterDock(ToolDockWidget):
             self._schematicClauses.append(clauseWidget)
             newItem = QListWidgetItem()
             newItem.setSizeHint(clauseWidget.minimumSizeHint())
-            self.widget.schematicClauseList.addItem(newItem);
+            self.widget.schematicClauseList.addItem(newItem)
             self.widget.schematicClauseList.setItemWidget(newItem, clauseWidget)
             self._schematicItems.append(newItem)
 
@@ -337,7 +297,7 @@ class FilterDock(ToolDockWidget):
         return clauses
 
     def enableArkData(self, enable=True):
-        self._loadDataAction.setEnabled(enable);
+        self._loadDataAction.setEnabled(enable)
 
     def activateArkData(self):
-        self._refreshDataAction.setEnabled(True);
+        self._refreshDataAction.setEnabled(True)

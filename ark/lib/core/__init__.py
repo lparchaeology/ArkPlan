@@ -3,5 +3,7 @@ from collection_settings import CollectionSettings
 from feature_type import FeatureType
 from linear_transformer import LinearTransformer
 from parent_child_model import ParentChildModel
+from process_status import ProcessStatus
 from return_pressed_filter import ReturnPressedFilter
+from scale import Scale
 from table_model import TableModel

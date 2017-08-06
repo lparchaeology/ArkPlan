@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,17 +22,16 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtCore import QPoint, Qt
 from PyQt4.QtGui import QWizard
 
 from qgis.core import QgsPoint
 
-from ..libarkqgis.map_tools import ArkMapToolEmitPoint
+from ark.lib.map import ArkMapToolEmitPoint
 
-from grid_wizard_base import *
+from grid_wizard_base import Ui_GridWizard
+
 
 class GridWizard(QWizard, Ui_GridWizard):
 
@@ -42,8 +39,8 @@ class GridWizard(QWizard, Ui_GridWizard):
     PointOnXAxis = 1
     PointOnYAxis = 2
 
-    _iface = None # QgisInterface()
-    _mapTool = None # ArkMapToolEmitPoint
+    _iface = None  # QgisInterface()
+    _mapTool = None  # ArkMapToolEmitPoint
 
     def __init__(self, iface, project, parent=None):
         super(GridWizard, self).__init__(parent)

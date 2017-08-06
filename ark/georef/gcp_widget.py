@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,23 +22,21 @@
  ***************************************************************************/
 """
 
-import os
 
-from PyQt4.QtCore import Qt, pyqtSignal, QPoint, QPointF
-from PyQt4.QtGui import QWidget, QPen
 from PyQt4 import uic
-
-from qgis.core import QgsPoint, QgsMessageLog
+from PyQt4.QtCore import QPointF, Qt, pyqtSignal
+from PyQt4.QtGui import QPen, QWidget
 
 from gcp import GroundControlPoint
-import gcp_widget_base
+from gcp_widget_base import Ui_GcpWidget
 
-class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
+
+class GcpWidget(QWidget, Ui_GcpWidget):
 
     rawPointChanged = pyqtSignal(QPointF)
 
     # Internal variables
-    _gcp =  None
+    _gcp = None
 
     _gridEditable = False
     _mapEditable = False
@@ -111,6 +107,3 @@ class GcpWidget(QWidget, gcp_widget_base.Ui_GcpWidget):
         else:
             self._gcpItem.setVisible(False)
         # TODO if outside view then center on point
-
-    def _log(self, msg):
-        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)

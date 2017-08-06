@@ -25,6 +25,7 @@
 import re
 
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
+
 from qgis.core import NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
 
 

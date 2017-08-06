@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,24 +22,25 @@
  ***************************************************************************/
 """
 
-import os
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QFileInfo, QPoint, QPointF, QProcess, QSettings, QDir, QTextStream, QFile, QIODevice, QCoreApplication, QRectF
+from PyQt4.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
 from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
 
-from qgis.core import QgsPoint, QgsMapLayerRegistry, QgsRasterLayer, QgsVectorLayer, QgsMessageLog
+from qgis.core import QgsPoint
 
-from ..src.plan_util import *
+from ark.lib.core import ProcessStatus, Scale
 
-from georeferencer import Georeferencer, Scale, ProcessStatus
-from gcp import GroundControl, GroundControlPoint
-import georef_dialog_base
-import georef_graphics_view
+from ark.core import Drawing
+
+from gcp import GroundControlPoint
+from georef_dialog_base import Ui_GeorefDialogBase
+from georeferencer import Georeferencer
+from transform import Transform
 
 import resources
 
-class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
+
+class GeorefDialog(QDialog, Ui_GeorefDialogBase):
 
     # Internal variables
     _closeOnDone = False
@@ -109,7 +108,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self.gcpWidget3.setScene(self._scene, 3200, 3050, 2)
         self.gcpWidget4.setScene(self._scene, 3200, 100, 2)
 
-        md = PlanMetadata()
+        md = Drawing()
         md.setFile(self._inputFile)
         self.inputFileName.setText(self._inputFile.baseName())
         self.siteEdit.setText(md.siteCode)
@@ -139,7 +138,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def _loadGcp(self, path):
         gc = Georeferencer.loadGcpFile(path)
-        gcTo = GroundControl()
+        gcTo = Transform()
         for index in gc.points():
             gcp = gc.point(index)
             if gcp.map() == self.gcpWidget1.gcp().map():
@@ -189,7 +188,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
                 self.gcpWidget4.setGeo(local, map)
 
     def metadata(self):
-        md = PlanMetadata()
+        md = Drawing()
         md.setMetadata(
             self.siteEdit.text(),
             self.drawingType(),
@@ -254,7 +253,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
     def _updateStatus(self, step, status):
         self._setStatusLabel(step, status)
         self._showStatus(Georeferencer.Label[step] + ': ' + ProcessStatus.Label[status])
-        if  step == Georeferencer.Stop and status == ProcessStatus.Success:
+        if step == Georeferencer.Stop and status == ProcessStatus.Success:
             if self._closeOnDone:
                 self._close()
             else:
@@ -267,9 +266,6 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
 
     def _showStatus(self, text):
         self.statusBar.showMessage(text)
-
-    def _log(self, msg):
-        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
 
     def _save(self):
         self._copyInputFile()
@@ -298,7 +294,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
             self.reject()
 
     def _gc(self):
-        gc = GroundControl()
+        gc = Transform()
         gc.crs = self._type()['crs']
         gc.setPoint(1, self.gcpWidget1.gcp())
         gc.setPoint(2, self.gcpWidget2.gcp())
@@ -318,7 +314,7 @@ class GeorefDialog(QDialog, georef_dialog_base.Ui_GeorefDialogBase):
         self._georeferencer.run(gc, self.rawFile(), self.pointFile(), self.geoFile())
 
     def _finished(self, step, status):
-        if  step == Georeferencer.Stop and status == ProcessStatus.Success and self._closeOnDone:
+        if step == Georeferencer.Stop and status == ProcessStatus.Success and self._closeOnDone:
             self._close()
         else:
             self._toggleUi(True)

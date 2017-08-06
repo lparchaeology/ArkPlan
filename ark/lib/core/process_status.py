@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,20 +22,13 @@
  ***************************************************************************/
 """
 
-import os.path
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog
+class ProcessStatus():
 
-from data_dialog_base import *
-
-class DataDialog(QDialog, Ui_DataDialog):
-
-    def __init__(self, parent=None):
-        super(DataDialog, self).__init__(parent)
-
-        self.setupUi(self)
-
-    def accept(self):
-        return super(CreateGridDialog, self).accept()
+    # ProcessStatus enum
+    Unknown = 0
+    Running = 1
+    Success = 2
+    Failure = 3
+    Status = [0, 1, 2, 3]
+    Label = ['Unknown', 'Running', 'Success', 'Failure']

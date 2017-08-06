@@ -22,27 +22,27 @@
  ***************************************************************************/
 """
 
-from config import Config
-
 from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
+
 from qgis.core import QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
 from qgis.gui import QgsLayerTreeView
 
-from ark.core.data import Data
-from ark.grid.grid import GridModule
-from ark.gui.layer_tree_menu import LayerTreeMenu
-from ark.gui.select_item_dialog import SelectItemDialog
-from ark.gui.settings_dialog import SettingsDialog
-from ark.gui.settings_wizard import SettingsWizard
+from ark.lib import Plugin
 from ark.lib.core import Collection, layers
 from ark.lib.gui import ToolDockWidget
-from ark.lib.plugin import Plugin
 from ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
                               TopologicalEditingAction)
+
+from ark.core import Config
+from ark.grid import GridModule
+from ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard
+from ark.map import MapToolIndentifyItems
+
+from data_module import DataModule
 from filter_module import FilterModule
-from identify import MapToolIndentifyItems
-from plan import Plan
+from plan_module import PlanModule
+
 import resources
 
 

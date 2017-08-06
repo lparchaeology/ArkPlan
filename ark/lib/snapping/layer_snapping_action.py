@@ -24,6 +24,7 @@
 
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGuiimport import QActionGroup
+
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 

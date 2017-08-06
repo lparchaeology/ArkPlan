@@ -24,20 +24,16 @@
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QWidget, QToolButton, QIcon, QLabel
+from PyQt4.QtGui import QIcon, QLabel, QToolButton, QWidget
 
-from ..libarkqgis.map_tools import *
-from ..libarkqgis import geometry
+from ark.lib.core import FeatureType, geometry
 
-from audit import Audit
-from config import Config
-from feature import Feature
-from source import Source
-from item import *
+from ark.core import Audit, Config, Feature, Item, Source
 
-import feature_widget_base
+from feature_widget_base import Ui_FeatureWidget
 
-class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
+
+class FeatureWidget(QWidget, Ui_FeatureWidget):
 
     featureChanged = pyqtSignal()
     autoToolSelected = pyqtSignal()
@@ -69,17 +65,24 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
             if classCode['source']:
                 self.classCombo.addItem(classCode['label'], classCode['code'])
 
-        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/editPoints.svg', u'Points Node Tool', self._editPointsLayer)
-        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg', u'Points Select Tool', self._selectPointsLayer)
+        self._addStandardTool(
+            FeatureType.Point, ':/plugins/ark/plan/editPoints.svg', u'Points Node Tool', self._editPointsLayer)
+        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg',
+                              u'Points Select Tool', self._selectPointsLayer)
 
-        self._addStandardTool(FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer)
-        self._addStandardTool(FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer)
+        self._addStandardTool(
+            FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer)
+        self._addStandardTool(
+            FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer)
 
-        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg', u'Polygons Node Tool', self._editPolygonsLayer)
-        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg', u'Polygons Select Tool', self._selectPolygonsLayer)
+        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg',
+                              u'Polygons Node Tool', self._editPolygonsLayer)
+        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg',
+                              u'Polygons Select Tool', self._selectPolygonsLayer)
         # TODO Make generic somehow
         if collection == 'plan':
-            self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg', u'Auto-Schematic Tool', self._autoSchematicSelected)
+            self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg',
+                                  u'Auto-Schematic Tool', self._autoSchematicSelected)
 
         self._addToolSpacer(self.pointToolLayout)
         self._pointTool = self._colMax
@@ -91,7 +94,8 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         for feature in Config.featureCategories[collection]:
             if 'query' not in feature:
                 feature['query'] = None
-            self._addDrawingTool(feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
+            self._addDrawingTool(
+                feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
             if feature['definitive'] == True:
                 self._definitiveCategories.add(feature['category'])
 
@@ -102,7 +106,6 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
         for action in self._actions.values():
             if action.isChecked():
                 action.setChecked(False)
-
 
     def loadProject(self, project, collection):
         collection = project.collection(collection)
@@ -298,7 +301,7 @@ class FeatureWidget(QWidget, feature_widget_base.Ui_FeatureWidget):
             featureIter = inLayer.getFeatures()
             for feature in featureIter:
                 if (feature.attribute('id') == self.itemId()
-                    and feature.attribute('category') in self._definitiveCategories):
+                        and feature.attribute('category') in self._definitiveCategories):
                     definitiveFeatures.append(feature)
         if len(definitiveFeatures) <= 0:
             return

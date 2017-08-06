@@ -25,11 +25,12 @@
 from PyQt4 import uic
 from PyQt4.QtGui import QDialog, QFileDialog
 
-from settings_dialog_base import *
+from settings_dialog_base import Ui_SettingsDialogBase
+
 
 class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
-    _project = None # Project()
+    _project = None  # Project()
 
     def __init__(self, project, parent=None):
         super(SettingsDialog, self).__init__(parent)
@@ -79,9 +80,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self._project.setLogUpdates(self.logUpdatesCheck.isChecked())
 
         # Drawings tab settings
-        self._project.setDrawingPath('context', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
+        self._project.setDrawingPath(
+            'context', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
         self._project.setDrawingPath('plan', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
-        self._project.setDrawingPath('section', self.sectionDrawingFolderCheck.isChecked(), self.sectionDrawingFolderEdit.text())
+        self._project.setDrawingPath(
+            'section', self.sectionDrawingFolderCheck.isChecked(), self.sectionDrawingFolderEdit.text())
         self._project.setUseGeorefFolder(self.georefFolderCheck.isChecked())
         self._project.setDrawingTransparency(self.drawingTransparencySpin.value())
 
@@ -94,21 +97,25 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.styleFolderButton.setEnabled(not useDefault)
 
     def _selectStyleFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Style Folder'), self.styleFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(
+            self, self.tr('Style Folder'), self.styleFolderEdit.text()))
         if folderName:
             self.styleFolderEdit.setText(folderName)
 
     def _selectContextDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Context Drawing Folder'), self.contextDrawingFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(
+            self, self.tr('Context Drawing Folder'), self.contextDrawingFolderEdit.text()))
         if folderName:
             self.contextDrawingFolderEdit.setText(folderName)
 
     def _selectPlanDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Plan Drawing Folder'), self.planDrawingFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(
+            self, self.tr('Plan Drawing Folder'), self.planDrawingFolderEdit.text()))
         if folderName:
             self.planDrawingFolderEdit.setText(folderName)
 
     def _selectSectionDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(self, self.tr('Section Drawing Folder'), self.sectionDrawingFolderEdit.text()))
+        folderName = unicode(QFileDialog.getExistingDirectory(
+            self, self.tr('Section Drawing Folder'), self.sectionDrawingFolderEdit.text()))
         if folderName:
             self.sectionDrawingFolderEdit.setText(folderName)

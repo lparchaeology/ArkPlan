@@ -24,11 +24,13 @@
  ***************************************************************************/
 """
 
+
 class MapAction():
     NoMapAction = 0
     ZoomMap = 1
     PanMap = 2
     MoveMap = 3
+
 
 class FilterAction():
     NoFilterAction = 0
@@ -40,7 +42,14 @@ class FilterAction():
     HighlightFilter = 6
     ExclusiveHighlightFilter = 7
 
-class DrawingAction():
-    NoDrawingAction = 0
-    LoadDrawings = 1
-    AddDrawings = 2
+
+class FilterWidgetAction():
+    AddFilter = 0
+    RemoveFilter = 1
+    LockFilter = 2
+
+
+class SearchStatus():
+    Unknown = 0
+    Found = 1
+    NotFound = 2

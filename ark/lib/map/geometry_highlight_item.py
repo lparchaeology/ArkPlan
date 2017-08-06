@@ -25,6 +25,7 @@
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QBrush, QColor, QPainterPath, QPen, QPolygonF
+
 from qgis.core import QGis, QgsGeometry, QgsRectangle
 from qgis.gui import QgsMapCanvasItem
 

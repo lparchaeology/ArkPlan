@@ -24,7 +24,9 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 from PyQt4.QtCore import Qt, pyqtSignal
+
 from qgis.gui import QgsMapToolIdentify
 
 

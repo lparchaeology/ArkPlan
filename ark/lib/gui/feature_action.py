@@ -27,11 +27,12 @@
 
 from PyQt4.QtCore import QSettings, Qt
 from PyQt4.QtGui import QAction
+
 from qgis.core import QgsDistanceArea, QgsFeature, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext
 
-from snapping import Snapping
-import utils
+from ..snapping import Snapping
+import ..utils
 
 
 # TODO Clean up this and fix dialog problems

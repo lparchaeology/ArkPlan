@@ -21,41 +21,12 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.core import QGis, QgsGeometry
 
-from ..libarkqgis.map_tools import ArkMapToolAddFeature, FeatureType
-from ..libarkqgis import geometry
-from ..libarkqgis import utils
+from ark.lib.core import FeatureType
+from ark.lib.map import MapToolAddFeature
 
-# Tool to take a line segment and 'snap' it to a section line then save as a buffer polygon
-class ArkMapToolSectionSchematic(ArkMapToolAddFeature):
 
-    _sectionGeometry = None  # QgsGeometry
-
-    def __init__(self, iface, sectionGeometry,  polygonLayer, toolName=''):
-        super(ArkMapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
-        self._sectionGeometry = sectionGeometry
-
-    def setSectionGeometry(self, sectionGeometry):
-        self._sectionGeometry = QgsGeometry(sectionGeometry)
-
-    def addAnyFeature(self, featureType, mapPointList, attributes, layer):
-        if featureType == FeatureType.Segment:
-            if len(mapPointList) != 2 or self._sectionGeometry is None:
-                return False
-            sectionPointList = []
-            for point in mapPointList:
-                sectionPointList.append(geometry.perpendicularPoint(self._sectionGeometry, point))
-            lineGeom = geometry.clipLine(self._sectionGeometry, sectionPointList[0], sectionPointList[1])
-            polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 5.0)
-            if polyGeom and polyGeom.isGeosValid():
-                mapPointList = polyGeom.asPolygon()[0]
-            else:
-                mapPointList = []
-            featureType = FeatureType.Polygon
-        super(ArkMapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)
-
-class ArkMapToolAddBaseline(ArkMapToolAddFeature):
+class MapToolAddBaseline(MapToolAddFeature):
 
     _pointLayer = None  # QgsVectorLayer()
     _pointAttributes = {}  # QMap<int, QList<QVariant> >
@@ -71,7 +42,7 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
     _pointQueryValues = []
 
     def __init__(self, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
-        super(ArkMapToolAddBaseline, self).__init__(iface, lineLayer, toolName)
+        super(MapToolAddBaseline, self).__init__(iface, lineLayer, toolName)
         self._pointLayer = pointLayer
 
     def pointLayer(self):
@@ -81,12 +52,12 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
         self._pointAttributes = attributes
 
     def setPointQuery(self, field, title, label, defaultValue, minValue, maxValue):
-            self._pointQueryField = field
-            self._pointQueryTitle = title
-            self._pointQueryLabel = label
-            self._pointDefaultValue = defaultValue
-            self._pointQueryMin = minValue
-            self._pointQueryMax = maxValue
+        self._pointQueryField = field
+        self._pointQueryTitle = title
+        self._pointQueryLabel = label
+        self._pointDefaultValue = defaultValue
+        self._pointQueryMin = minValue
+        self._pointQueryMax = maxValue
 
     def canvasReleaseEvent(self, e):
         wasDragging = self._dragging
@@ -102,7 +73,8 @@ class ArkMapToolAddBaseline(ArkMapToolAddFeature):
 
     def _capturePointData(self):
         if self._pointQueryField:
-            value, ok = self._getValue(self._pointQueryTitle, self._pointQueryLabel, self._pointQueryField.type(), self._pointDefaultValue, self._pointQueryMin, self._pointQueryMax, self._pointQueryField.precision())
+            value, ok = self._getValue(self._pointQueryTitle, self._pointQueryLabel, self._pointQueryField.type(
+            ), self._pointDefaultValue, self._pointQueryMin, self._pointQueryMax, self._pointQueryField.precision())
             if ok:
                 self._pointQueryValues.append(value)
             else:

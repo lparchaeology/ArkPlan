@@ -24,23 +24,31 @@
  ***************************************************************************/
 """
 
-import os
+from PyQt4.QtCore import QRectF, Qt
+from PyQt4.QtGui import QGraphicsView
 
-from PyQt4.QtCore import Qt, QEvent, qDebug, pyqtSignal, QPointF
-from PyQt4.QtGui import QGraphicsView, QWidget
 
-class GeorefGraphicsView(QGraphicsView):
+class OverviewGraphicsView(QGraphicsView):
 
-    pointSelected = pyqtSignal(QPointF)
+    _rect = QRectF()
     buttonDown = False
     panning = False
 
     def __init__(self, parent=None):
-        super(GeorefGraphicsView, self).__init__(parent)
-        self.setCursor(Qt.CrossCursor)
+        super(OverviewGraphicsView, self).__init__(parent)
+        self.setCursor(Qt.OpenHandCursor)
+
+    def setSceneView(self, scene, rect):
+        self.setScene(scene)
+        self._rect = rect
+        self.fitInView(self._rect, Qt.KeepAspectRatioByExpanding)
 
     def viewRect(self):
         return self.mapToScene(self.viewport().geometry()).boundingRect()
+
+    def resizeEvent(self, event):
+        self.fitInView(self._rect, Qt.KeepAspectRatioByExpanding)
+        event.accept()
 
     def wheelEvent(self, event):
         factor = 1.41 ** (event.delta() / 240.0)
@@ -59,9 +67,7 @@ class GeorefGraphicsView(QGraphicsView):
             self.buttonDown = False
             if self.panning:
                 self.panning = False
-                self.setCursor(Qt.CrossCursor)
-            else:
-                self.pointSelected.emit(self.mapToScene(event.pos()))
+                self.setCursor(Qt.OpenHandCursor)
             event.accept()
         else:
             event.ignore()

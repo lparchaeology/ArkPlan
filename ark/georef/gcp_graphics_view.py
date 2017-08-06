@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,32 +22,23 @@
  ***************************************************************************/
 """
 
-import os
 
-from PyQt4.QtCore import Qt, QEvent, QRectF, qDebug
+from PyQt4.QtCore import QPointF, Qt, pyqtSignal
 from PyQt4.QtGui import QGraphicsView
 
-class OverviewGraphicsView(QGraphicsView):
 
-    _rect = QRectF()
+class GcpGraphicsView(QGraphicsView):
+
+    pointSelected = pyqtSignal(QPointF)
     buttonDown = False
     panning = False
 
     def __init__(self, parent=None):
-        super(OverviewGraphicsView, self).__init__(parent)
-        self.setCursor(Qt.OpenHandCursor)
-
-    def setSceneView(self, scene, rect):
-        self.setScene(scene)
-        self._rect = rect
-        self.fitInView(self._rect, Qt.KeepAspectRatioByExpanding)
+        super(GcpGraphicsView, self).__init__(parent)
+        self.setCursor(Qt.CrossCursor)
 
     def viewRect(self):
         return self.mapToScene(self.viewport().geometry()).boundingRect()
-
-    def resizeEvent(self, event):
-        self.fitInView(self._rect, Qt.KeepAspectRatioByExpanding)
-        event.accept()
 
     def wheelEvent(self, event):
         factor = 1.41 ** (event.delta() / 240.0)
@@ -68,7 +57,9 @@ class OverviewGraphicsView(QGraphicsView):
             self.buttonDown = False
             if self.panning:
                 self.panning = False
-                self.setCursor(Qt.OpenHandCursor)
+                self.setCursor(Qt.CrossCursor)
+            else:
+                self.pointSelected.emit(self.mapToScene(event.pos()))
             event.accept()
         else:
             event.ignore()

@@ -22,15 +22,13 @@
  ***************************************************************************/
 """
 
-import os.path
-
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QDir
-from PyQt4.QtGui import QDialog, QDialogButtonBox, QAbstractItemView
+from PyQt4.QtGui import QDialog
 
-from config import Config
+from ark.core import Config
 
-from select_item_dialog_base import *
+from select_item_dialog_base import Ui_SelectItemDialog
+
 
 class SelectItemDialog(QDialog, Ui_SelectItemDialog):
 

@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -24,32 +22,15 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, QObject, QFileInfo, QPointF, QProcess, QSettings, QDir, QTextStream, QFile, QIODevice, QCoreApplication, pyqtSignal
+from PyQt4.QtCore import (QCoreApplication, QDir, QFile, QFileInfo, QIODevice, QObject, QPointF, QProcess, QSettings,
+                          QTextStream, pyqtSignal)
 from PyQt4.QtGui import QPixmap
 
-from qgis.core import QgsPoint, QgsMessageLog
+from qgis.core import QgsPoint
 
-from gcp import *
+from gcp import GroundControlPoint
+from transform import Transform
 
-class ProcessStatus():
-
-    # ProcessStatus enum
-    Unknown = 0
-    Running = 1
-    Success = 2
-    Failure = 3
-    Label = ['Unknown', 'Running', 'Success', 'Failure']
-
-class Scale():
-
-    # Scale enum
-    OneToTen = 0
-    OneToTwenty = 1
-    OneToFifty = 2
-    OneToOneHundred = 3
-    Scale = [0, 1, 2, 3]
-    Label = ['1:10 (2.5m)', '1:20 (5m)', '1:50 (12.5m)', '1:100 (25m)']
-    Factor = [2.5, 5, 12.5, 25]
 
 class Georeferencer(QObject):
 
@@ -80,7 +61,7 @@ class Georeferencer(QObject):
     _args = ''
     _process = QProcess()
 
-    _gc = GroundControl()
+    _gc = Transform()
     _rawFile = QFileInfo()
     _pointFile = QFileInfo()
     _cropFile = QFileInfo()
@@ -95,12 +76,13 @@ class Georeferencer(QObject):
 
         self._gdalDir = QDir(self.gdalPath())
         if self._debug:
-            self._log('GDAL Path: ' + self._gdalDir.absolutePath())
+            debug('GDAL Path: ' + self._gdalDir.absolutePath())
         self._translate.setFile(self._gdalDir, 'gdal_translate')
         self._warp.setFile(self._gdalDir, 'gdalwarp')
         self._overview.setFile(self._gdalDir, 'gdaladdo')
         if (not self._translate.exists() or not self._warp.exists() or not self._overview.exists()):
-            self._signalError('GDAL commands not found, please ensure GDAL Tools plugin is installed and has correct path set!')
+            self._signalError(
+                'GDAL commands not found, please ensure GDAL Tools plugin is installed and has correct path set!')
             return
 
         self._process.started.connect(self._processStarted)
@@ -130,16 +112,16 @@ class Georeferencer(QObject):
         self._geoFile = geoFile
 
         if (self._debug):
-            self._log('Raw File: \'' + self._rawFile.absoluteFilePath() + '\'')
-            self._log('GCP File: \'' + self._pointFile.absoluteFilePath() + '\'')
-            self._log('Geo File: \'' + self._geoFile.absoluteFilePath() + '\'')
+            debug('Raw File: \'' + self._rawFile.absoluteFilePath() + '\'')
+            debug('GCP File: \'' + self._pointFile.absoluteFilePath() + '\'')
+            debug('Geo File: \'' + self._geoFile.absoluteFilePath() + '\'')
 
         QCoreApplication.processEvents()
         self._runCropStep()
 
     def _runCropStep(self):
         if self._debug:
-            self._log('Crop')
+            debug('Crop')
         self._step = Georeferencer.Crop
         self._args = []
         self._command = ''
@@ -163,10 +145,14 @@ class Georeferencer(QObject):
         self._args = []
         self._args.extend(['-of', 'GTiff'])
         self._args.extend(['-a_srs', self._gc.crs])
-        self._args.extend(['-gcp', str(self._gc.point(1).raw().x()), str(self._gc.point(1).raw().y()), str(self._gc.point(1).map().x()), str(self._gc.point(1).map().y())])
-        self._args.extend(['-gcp', str(self._gc.point(2).raw().x()), str(self._gc.point(2).raw().y()), str(self._gc.point(2).map().x()), str(self._gc.point(2).map().y())])
-        self._args.extend(['-gcp', str(self._gc.point(3).raw().x()), str(self._gc.point(3).raw().y()), str(self._gc.point(3).map().x()), str(self._gc.point(3).map().y())])
-        self._args.extend(['-gcp', str(self._gc.point(4).raw().x()), str(self._gc.point(4).raw().y()), str(self._gc.point(4).map().x()), str(self._gc.point(4).map().y())])
+        self._args.extend(['-gcp', str(self._gc.point(1).raw().x()), str(self._gc.point(1).raw().y()),
+                           str(self._gc.point(1).map().x()), str(self._gc.point(1).map().y())])
+        self._args.extend(['-gcp', str(self._gc.point(2).raw().x()), str(self._gc.point(2).raw().y()),
+                           str(self._gc.point(2).map().x()), str(self._gc.point(2).map().y())])
+        self._args.extend(['-gcp', str(self._gc.point(3).raw().x()), str(self._gc.point(3).raw().y()),
+                           str(self._gc.point(3).map().x()), str(self._gc.point(3).map().y())])
+        self._args.extend(['-gcp', str(self._gc.point(4).raw().x()), str(self._gc.point(4).raw().y()),
+                           str(self._gc.point(4).map().x()), str(self._gc.point(4).map().y())])
         self._args.append(self._cropFile.absoluteFilePath())
         self._args.append(self._translateFile.absoluteFilePath())
         self._command = self._translate.absoluteFilePath() + ' ' + ' '.join(self._args)
@@ -204,8 +190,8 @@ class Georeferencer(QObject):
         self._status = ProcessStatus.Running
         self._signalStatus()
         if self._debug:
-            self._log(self.Label[self._step])
-            self._log(self._command)
+            debug(self.Label[self._step])
+            debug(self._command)
 
     def _processFinished(self):
         self._status = ProcessStatus.Success
@@ -222,7 +208,7 @@ class Georeferencer(QObject):
     def _processError(self):
         self._status = ProcessStatus.Failure
         msg = str(self._process.readAllStandardError())
-        self._log(msg)
+        debug(msg)
         self._signalError(msg)
 
     def _signalStatus(self):
@@ -236,10 +222,6 @@ class Georeferencer(QObject):
         return QSettings().value('/GdalTools/gdalPath', '/usr/bin')
 
     @staticmethod
-    def _log(msg):
-        QgsMessageLog.logMessage(str(msg), 'ARK', QgsMessageLog.INFO)
-
-    @staticmethod
     def loadGcpFile(path):
         inFile = QFile(path)
         if (not inFile.open(QIODevice.ReadOnly | QIODevice.Text)):
@@ -250,7 +232,7 @@ class Georeferencer(QObject):
         if (line == 'mapX,mapY,pixelX,pixelY,enable'):
             line = inStream.readLine()
         lines = 0
-        gc = GroundControl()
+        gc = Transform()
         while (line):
             lines += 1
             vals = line.split(',')

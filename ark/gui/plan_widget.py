@@ -22,12 +22,11 @@
  ***************************************************************************/
 """
 
-import os
-
 from PyQt4 import uic
 from PyQt4.QtGui import QTabWidget
 
-import plan_widget_base
+from plan_widget_base import Ui_PlanWidget
+
 
 class PlanWidget(QTabWidget, plan_widget_base.Ui_PlanWidget):
 

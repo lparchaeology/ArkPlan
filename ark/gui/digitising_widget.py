@@ -1,4 +1,4 @@
-Digitising# -*- coding: utf-8 -*-
+Digitising  # -*- coding: utf-8 -*-
 """
 /***************************************************************************
                                 ARK Spatial
@@ -25,9 +25,10 @@ Digitising# -*- coding: utf-8 -*-
 from PyQt4 import uic
 from PyQt4.QtGui import QWidget
 
-import digitising_widget_base
+from digitising_widget_base import Ui_DigitisingWidget
 
-class DigitisingWidget(QWidget, digitising_widget_base.Ui_DigitisingWidget):
+
+class DigitisingWidget(QWidget, Ui_DigitisingWidget):
 
     def __init__(self, parent=None):
         super(DigitisingWidget, self).__init__(parent)

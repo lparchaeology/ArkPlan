@@ -23,6 +23,7 @@
 """
 
 from PyQt4.QtCore import pyqtSignal
+
 from qgis.core import QgsProject
 
 import .AbstractSnappingTypeAction

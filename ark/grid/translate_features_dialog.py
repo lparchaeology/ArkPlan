@@ -6,11 +6,9 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2014-12-07
-        git sha              : $Format:%H$
-        copyright            : 2014, 2015 by L-P : Heritage LLP
+        copyright            : 2017 by L-P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2014, 2015 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -27,10 +25,10 @@
 from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
-from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
-from qgis.gui import QgsMapLayerComboBox
+from qgis.core import QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 
-from translate_features_dialog_base import *
+from translate_features_dialog_base import Ui_TranslateFeaturesDialog
+
 
 class TranslateFeaturesDialog(QDialog, Ui_TranslateFeaturesDialog):
 
@@ -38,7 +36,8 @@ class TranslateFeaturesDialog(QDialog, Ui_TranslateFeaturesDialog):
         super(TranslateFeaturesDialog, self).__init__(parent)
         self.setupUi(self)
         for layer in iface.legendInterface().layers():
-            if (layer.type() == QgsMapLayer.VectorLayer and (layer.dataProvider().capabilities() & QgsVectorDataProvider.ChangeAttributeValues)):
+            if (layer.type() == QgsMapLayer.VectorLayer
+                    and (layer.dataProvider().capabilities() & QgsVectorDataProvider.ChangeAttributeValues)):
                 self.layerComboBox.addItem(layer.name(), layer.id())
 
     def layer(self):

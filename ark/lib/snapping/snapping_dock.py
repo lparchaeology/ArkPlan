@@ -24,6 +24,7 @@
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QWidget
+
 from qgis.coreimport import QgsMapLayer, QgsMapLayerRegistry
 
 from ..gui import DockWidget

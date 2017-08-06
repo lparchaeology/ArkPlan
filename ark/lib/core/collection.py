@@ -25,6 +25,7 @@
 from sets import Set
 
 from PyQt4.QtCore import QFile, QVariant
+
 from qgis.core import (NULL, QgsFeatureRequest, QgsField, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance,
                        QgsVectorLayer)
 

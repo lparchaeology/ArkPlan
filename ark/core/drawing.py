@@ -26,16 +26,20 @@
 
 import string
 
-from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir
 
-class PlanMetadata:
+class Drawing:
+
+    NoDrawingAction = 0
+    LoadDrawings = 1
+    AddDrawings = 2
+
     siteCode = ''
     sourceClass = ''
     name = ''
     sourceId = None
     easting = None
     northing = None
-    suffix  = ''
+    suffix = ''
     filename = ''
 
     def __init__(self, fileInfo=None):
@@ -97,8 +101,8 @@ class PlanMetadata:
                 return
             if (len(elements) >= suffixPos + 1):
                 location = elements[suffixPos]
-                #FIXME Make generic able to handle any length grid references
-                #TODO Add support for Baseline names
+                # FIXME Make generic able to handle any length grid references
+                # TODO Add support for Baseline names
                 if len(location) == 8 and location[3].lower() == 'e' and location[7].lower() == 'n':
                     self.easting = int(location[0:3])
                     self.northing = int(location[4:7])

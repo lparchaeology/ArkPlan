@@ -21,47 +21,31 @@
  *                                                                         *
  ***************************************************************************/
 """
-import bisect, copy
+import bisect
+import copy
 
-from PyQt4.QtCore import Qt, QVariant, QFileInfo, QObject, QDir, QFile
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QInputDialog, QApplication
+from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt, QVariant
+from PyQt4.QtGui import QAction, QApplication, QFileDialog, QIcon, QInputDialog
 
-from qgis.core import *
+from ark.lib import utils
+from ark.lib.core import layers
 
-from ..libarkqgis.map_tools import *
-from ..libarkqgis import utils, layers
+from ark.core import Config, Feature, FeaturePlanError, Item, Metadata, Source
+from ark.core.enum import *
+from ark.georef import GeorefDialog
+from ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog, TableDialog
 
-from ..georef.georef_dialog import GeorefDialog
-
-from plan_dock import PlanDock
-from plan_error import ErrorDialog, PlanError
-from table_dialog import TableDialog
-from select_drawing_dialog import SelectDrawingDialog
-
-from enum import *
-from plan_util import *
-from item import Item
-from feature import Feature
-from source import Source
-from plan_map_tools import *
-from config import Config
-from metadata import Metadata
 from schematic_widget import SearchStatus
 
 import resources
 
-def _quote(string):
-    return "'" + string + "'"
 
-def _doublequote(string):
-    return '"' + string + '"'
-
-class Plan(QObject):
+class PlanModule(QObject):
 
     # Project settings
-    project = None # Project()
+    project = None  # Project()
 
-    dock = None # PlanDock()
+    dock = None  # PlanDock()
 
     # Internal variables
     initialised = False
@@ -83,7 +67,8 @@ class Plan(QObject):
     # Create the gui when the plugin is first created
     def initGui(self):
         self.dock = PlanDock(self.project.layerDock)
-        action = self.project.addDockAction(':/plugins/ark/plan/drawPlans.png', self.tr(u'Drawing Tools'), callback=self.run, checkable=True)
+        action = self.project.addDockAction(
+            ':/plugins/ark/plan/drawPlans.png', self.tr(u'Drawing Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
 
         self.dock.loadAnyFileSelected.connect(self._loadAnyPlan)
@@ -124,7 +109,8 @@ class Plan(QObject):
         self.dock.loadProject(self.project)
 
         if self.project.plan.settings.log:
-            self._itemLogPath = self.project.projectPath() + '/' + self.project.plan.settings.collectionPath + '/log/itemLog.csv'
+            self._itemLogPath = self.project.projectPath(
+            ) + '/' + self.project.plan.settings.collectionPath + '/log/itemLog.csv'
             if not QFile.exists(self._itemLogPath):
                 fd = open(self._itemLogPath, 'a')
                 fd.write('timestamp,action,siteCode,classCode,itemId\n')
@@ -132,7 +118,7 @@ class Plan(QObject):
 
         # TODO Think of a better way...
         #self.metadata = Metadata(self.dock.widget.sourceWidget)
-        #self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
+        # self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
         self.project.data.dataLoaded.connect(self.dock.activateArkData)
 
@@ -148,8 +134,8 @@ class Plan(QObject):
         self._clearSchematicFilters()
         # TODO Unload the drawing tools!
         self.dock.closeProject()
-        #self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
-        #self.project.data.dataLoaded.disconnect(self.dock.activateArkData)
+        # self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
+        # self.project.data.dataLoaded.disconnect(self.dock.activateArkData)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
@@ -180,7 +166,8 @@ class Plan(QObject):
         self.metadata.setEditor(self.project.userName())
 
     def _loadAnyPlan(self):
-        filePaths = QFileDialog.getOpenFileNames(self.dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
+        filePaths = QFileDialog.getOpenFileNames(
+            self.dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
         for filePath in filePaths:
             self.georeferencePlan(QFileInfo(filePath), 'free')
 
@@ -274,7 +261,8 @@ class Plan(QObject):
         # Check the layers are writable
         name = collection.settings.collectionGroupName
         if not collection.isWritable():
-            self.project.showCriticalMessage(name + ' layers are not writable! Please correct the permissions and log out.', 0)
+            self.project.showCriticalMessage(
+                name + ' layers are not writable! Please correct the permissions and log out.', 0)
             return
 
         # Check the buffers contain valid data
@@ -304,7 +292,8 @@ class Plan(QObject):
                 self.dock.activateSchematicCheck()
                 self._findContext()
         else:
-            self.project.showCriticalMessage(name + ' data merge failed! Some data has not been saved, please check your data.', 5)
+            self.project.showCriticalMessage(
+                name + ' data merge failed! Some data has not been saved, please check your data.', 5)
 
     def _preMergeBufferCheck(self, layer):
         errors = []
@@ -358,32 +347,32 @@ class Plan(QObject):
                 error.field = 'source_cd'
                 error.message = 'Source Code is required'
                 error.ignore = True
-                #errors.append(copy.deepcopy(error))
+                # errors.append(copy.deepcopy(error))
             # Source attributes required depend on the source type
             if feature.attribute('source_cd') == 'creator' or feature.attribute('source_cd') == 'other':
                 if self._isEmpty(feature.attribute('comment')):
                     error.field = 'source_cd'
                     error.message = 'Comment is required for Source type of Creator or Other'
                     error.ignore = True
-                    #errors.append(copy.deepcopy(error))
+                    # errors.append(copy.deepcopy(error))
             elif feature.attribute('source_cd') == 'survey':
                 if self._isEmpty(feature.attribute('file')):
                     error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Survey'
                     error.ignore = True
-                    #errors.append(copy.deepcopy(error))
-            else: # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
+                    # errors.append(copy.deepcopy(error))
+            else:  # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
                 if ((feature.attribute('source_cd') == 'drawing' or feature.attribute('source_cd') == 'unchecked')
-                    and self._isEmpty(feature.attribute('file'))):
+                        and self._isEmpty(feature.attribute('file'))):
                     error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Drawing'
                     error.ignore = True
-                    #errors.append(copy.deepcopy(error))
+                    # errors.append(copy.deepcopy(error))
                 if (self._isEmpty(feature.attribute('source_cl')) or self._isEmpty(feature.attribute('source_id'))):
                     error.field = 'source_cd'
                     error.message = 'Source Class and ID is required'
                     error.ignore = True
-                    #errors.append(copy.deepcopy(error))
+                    # errors.append(copy.deepcopy(error))
         return errors
 
     def _isEmpty(self, val):
@@ -416,7 +405,8 @@ class Plan(QObject):
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item', label=None):
         if not label:
-            label = 'This action ***DELETES*** item ' + str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'
+            label = 'This action ***DELETES*** item ' + \
+                str(itemId) + ' from the saved data.\n\nPlease enter the item ID to confirm.'
         confirm, ok = QInputDialog.getText(None, title, label, text='')
         return ok and confirm == str(itemId)
 
@@ -429,13 +419,13 @@ class Plan(QObject):
             fd.close()
 
     def editInBuffers(self, item):
-        #if self._confirmDelete(item.itemId(), 'Confirm Move Item'):
-            request = item.featureRequest()
-            timestamp = utils.timestamp()
-            action = 'Edit Item'
-            if self.project.plan.moveFeatureRequestToBuffers(request, action, self.project.logUpdates(), timestamp):
-                self._logItemAction(item, action, timestamp)
-                self._metadataFromBuffers(item)
+        # if self._confirmDelete(item.itemId(), 'Confirm Move Item'):
+        request = item.featureRequest()
+        timestamp = utils.timestamp()
+        action = 'Edit Item'
+        if self.project.plan.moveFeatureRequestToBuffers(request, action, self.project.logUpdates(), timestamp):
+            self._logItemAction(item, action, timestamp)
+            self._metadataFromBuffers(item)
 
     def deleteItem(self, item):
         if self._confirmDelete(item.itemId(), 'Confirm Delete Item'):
@@ -496,7 +486,7 @@ class Plan(QObject):
             return
         mapExtent = self.project.mapCanvas().extent()
         if (extent.width() > mapExtent.width() or extent.height() > mapExtent.height()
-            or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):
+                or extent.width() * extent.height() > mapExtent.width() * mapExtent.height()):
             self._zoomToExtent(extent)
         else:
             self._panToExtent(extent)
@@ -649,7 +639,7 @@ class Plan(QObject):
         return self._featureRequest(item.filterClause() + ' and ' + self._notCategoryClause(category))
 
     def _classItemsRequest(self, siteCode, classCode):
-        return self._featureRequest(self._eqClause('site', siteCode)+ ' and ' + self._eqClause('class', classCode))
+        return self._featureRequest(self._eqClause('site', siteCode) + ' and ' + self._eqClause('class', classCode))
 
     # SchematicDock methods
 
@@ -743,7 +733,8 @@ class Plan(QObject):
 
     def _deleteSectionSchematic(self):
         item = self.dock.contextItem()
-        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + str(item.itemId()) + '\n\nPlease enter the item ID to confirm.'
+        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + \
+            str(item.itemId()) + '\n\nPlease enter the item ID to confirm.'
         if self._confirmDelete(item.itemId(), 'Confirm Delete Section Schematic', label):
             request = self._categoryRequest(item, 'scs')
             timestamp = utils.timestamp()
@@ -817,7 +808,8 @@ class Plan(QObject):
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 
-        self.dock.setContext(context, haveArk, contextType, contextDescription, haveFeature, haveSchematic, haveSectionSchematic)
+        self.dock.setContext(context, haveArk, contextType, contextDescription,
+                             haveFeature, haveSchematic, haveSectionSchematic)
         self.metadata.setItemId(context.itemId())
 
     def _editSource(self):
@@ -925,7 +917,10 @@ class Plan(QObject):
                 else:
                     row['GIS'] = 'N'
                 missing.append(row)
-        text = '<html><head/><body><p><span style=" font-weight:600;">Missing Schematics:</span></p><p>There are ' + str(len(contexts)) + ' Contexts in ARK, of which ' + str(len(missing)) + ' are missing schematics.<br/></p></body></html>'
-        dialog = TableDialog('Missing Schematics', text, ['Site Code', 'Context', 'Type', 'GIS'], {'Site Code' : '', 'Context' : '', 'Type' : '', 'GIS' : ''}, self.dock)
+        text = '<html><head/><body><p><span style=" font-weight:600;">Missing Schematics:</span></p><p>There are ' + \
+            str(len(contexts)) + ' Contexts in ARK, of which ' + \
+            str(len(missing)) + ' are missing schematics.<br/></p></body></html>'
+        dialog = TableDialog('Missing Schematics', text, ['Site Code', 'Context', 'Type', 'GIS'], {
+                             'Site Code': '', 'Context': '', 'Type': '', 'GIS': ''}, self.dock)
         dialog.addRows(missing)
         dialog.exec_()

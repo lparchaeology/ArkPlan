@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/data_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/data_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12
 #
 # WARNING! All changes made in this file will be lost!
 

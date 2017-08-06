@@ -28,6 +28,10 @@ from PyQt4.QtGui import QPixmap
 
 from qgis.core import QgsPoint
 
+from ark.lib.utils import debug
+
+from ark.core.enum import ProcessStatus
+
 from gcp import GroundControlPoint
 from transform import Transform
 

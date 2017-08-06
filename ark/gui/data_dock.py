@@ -32,6 +32,8 @@ from ark.lib.gui import ToolDockWidget
 from ark.core import Config, Item
 from ark.gui import ActionSettingsTool
 
+import .DataWidget
+
 import resources
 
 

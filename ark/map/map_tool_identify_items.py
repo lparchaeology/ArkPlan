@@ -25,10 +25,13 @@
 from PyQt4.QtCore import QPoint, QSettings, Qt
 from PyQt4.QtGui import QAction, QColor, QMenu
 
-from qgis.core import QGis
+from qgis.core import QGis, QgsPoint
 from qgis.gui import QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
+from ark.lib.gui import ClipboardAction
+
 from ark.core import Item
+from ark.gui import IdentifyItemAction
 
 
 class MapToolIndentifyItems(QgsMapToolIdentify):

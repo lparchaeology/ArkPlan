@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QFileDialog, QWizard
 
 from settings_wizard_base import Ui_SettingsWizard

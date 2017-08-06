@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-import csv
-
 from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
@@ -66,18 +64,18 @@ class TableModel(QAbstractTableModel):
         return ''
 
     def insertRows(self, position, rows, parent=QModelIndex()):
-        beginInsertRows(QModelIndex(), position, position + rows - 1)
+        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         for row in range(0, rows - 1):
             self._table.insert(position, self._nullRecord)
-        endInsertRows()
+        self.endInsertRows()
         return True
 
     def removeRows(self, position, rows, parent=QModelIndex()):
-        beginRemoveRows(QModelIndex(), position, position + rows - 1)
+        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
         for row in range(position + rows - 1, position):
             del self._table[row]
-        endRemoveRows()
-        return true
+        self.endRemoveRows()
+        return True
 
     def setData(self, index, value, role=Qt.EditRole):
         if (not index.isValid() or role != Qt.EditRole):

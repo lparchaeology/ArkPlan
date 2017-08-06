@@ -48,10 +48,16 @@ class FeatureError:
         return d
 
     def toCsv(self):
-        return utils.doublequote(self.layer) + ',' + str(self.row) + ',' + utils.doublequote(self.field) + ',' + utils.doublequote(self.message)
+        return (utils.doublequote(self.layer) + ','
+                + str(self.row) + ','
+                + utils.doublequote(self.field) + ','
+                + utils.doublequote(self.message))
 
     def toText(self):
-        return str(self.layer).ljust(20) + str(self.row).rjust(5) + '   ' + str(self.field).ljust(20) + str(self.message)
+        return (str(self.layer).ljust(20)
+                + str(self.row).rjust(5) + '   '
+                + str(self.field).ljust(20)
+                + str(self.message))
 
     def toLog(self):
         return str(self.layer) + ' : ' + str(self.row) + ' : ' + str(self.field) + ' : ' + str(self.message)

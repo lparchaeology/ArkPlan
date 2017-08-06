@@ -28,7 +28,6 @@ import webbrowser
 
 from PyQt4.QtCore import QFile, QObject, Qt, pyqtSignal
 from PyQt4.QtGui import QApplication, QSortFilterProxyModel
-from PyQt4.QtWebKit import QWebView
 
 from ark.lib import utils
 from ark.lib.core import ParentChildModel
@@ -38,8 +37,6 @@ from ark.core import Config, Item
 from ark.core.enum import *
 from ark.gui import DataDock
 from ark.pyARK import Ark
-
-import resources
 
 
 class DataModule(QObject):
@@ -315,7 +312,10 @@ class DataModule(QObject):
         return children
 
     def nodesItem(self, parentItem):
-        if not self._indexLoaded or not parentItem or parentItem.isInvalid() or not Config.fields[item.classCode()]['group']:
+        if (not self._indexLoaded
+                or not parentItem
+                or parentItem.isInvalid()
+                or not Config.fields[item.classCode()]['group']):
             return parentItem
         else:
             return self.nodesItem(self.childrenItem(parentItem))
@@ -382,7 +382,12 @@ class DataModule(QObject):
             utils.logMessage(response.raw)
         return response.url
 
-    def showItemData(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
+    def showItemData(self,
+                     item,
+                     mapAction=MapAction.NoMapAction,
+                     filterAction=FilterAction.NoFilterAction,
+                     drawingAction=DrawingAction.NoDrawingAction
+                     ):
         self.dock.setItem(item)
         self._showItem(item)
         self.project.planModule.applyItemActions(item, mapAction, filterAction, drawingAction)
@@ -405,7 +410,7 @@ class DataModule(QObject):
         self.dock.setItemUrl(url)
 
     def _value(self, value):
-        if value == False:
+        if value is False:
             return ''
         if isinstance(value, list):
             return self._value(value[-1])
@@ -454,7 +459,7 @@ class DataModule(QObject):
         item_key = ''
         item_value = []
         if 'download.php' in url.toString():
-            #web = QWebView()
+            # web = QWebView()
             # web.load(url)
             self.dock.widget.itemDataView.load(url)
             return

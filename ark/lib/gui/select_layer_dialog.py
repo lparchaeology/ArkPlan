@@ -22,9 +22,12 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QDialog, QDialogButtonBox
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLayout
 
 from qgis.core import QgsMapLayerRegistry
+
+import .LayerComboBox
 
 
 class SelectLayerDialog(QDialog):
@@ -33,26 +36,26 @@ class SelectLayerDialog(QDialog):
 
         self.setWindowTitle(self.tr("Select Layer"))
 
-        self._dialogLayout = QtGui.QVBoxLayout(self)
+        self._dialogLayout = QVBoxLayout(self)
 
         if text:
-            self._textLabel = QtGui.QLabel(self)
+            self._textLabel = QLabel(self)
             self._textLabel.setText(text)
             self._dialogLayout.addWidget(self._textLabel)
 
         if (label or not text):
-            self._comboLabel = QtGui.QLabel(self)
+            self._comboLabel = QLabel(self)
             if label:
                 self._comboLabel.setText(label)
             elif not text:
                 self._comboLabel.setText(self.tr('Layer:'))
-            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
-            self._comboLayout = QtGui.QHBoxLayout()
+            self._comboBox = LayerComboBox(iface, layerType, geometryType, self)
+            self._comboLayout = QHBoxLayout()
             self._comboLayout.addWidget(self._comboLabel)
             self._comboLayout.addWidget(self._comboBox)
             self._dialogLayout.addLayout(self._comboLayout)
         else:
-            self._comboBox = ArkLayerComboBox(iface, layerType, geometryType, self)
+            self._comboBox = LayerComboBox(iface, layerType, geometryType, self)
             self._dialogLayout.addWidget(self._comboBox)
 
         self._buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)

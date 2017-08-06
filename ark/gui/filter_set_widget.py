@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QActionGroup, QMenu, QWidget
 
 from filter_set_widget_base import Ui_FilterSetWidget

@@ -1,6 +1,7 @@
 from clipboard_action import ClipboardAction
 from control_menu import ControlMenu
 from credentials_dialog import CredentialsDialog
+from cursors import CapturePointCursor
 from dock_widget import DockWidget
 from feature_action import FeatureAction
 from fixed_graphics_view import FixedGraphicsView

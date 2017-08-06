@@ -153,8 +153,9 @@ class MapToolAddFeature(MapToolCapture):
 
         provider = layer.dataProvider()
         if (not (provider.capabilities() & QgsVectorDataProvider.AddFeatures)):
-            self.messageEmitted.emit(self.tr(
-                'Cannot add feature: The data provider for this layer does not support the addition of features.'), QgsMessageBar.CRITICAL)
+            self.messageEmitted.emit(
+                self.tr('Cannot add feature: Data provider does not support the addition of features.'),
+                QgsMessageBar.CRITICAL)
             return False
 
         layerWKBType = layer.wkbType()

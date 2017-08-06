@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-import re
-
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
 
 from qgis.core import NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
@@ -149,8 +147,7 @@ def listToRegExp(lst):
 
 
 def debug(msg, group='Debug'):
-    logMessage(msg, group, )
-    if isinstance(text, str) or isinstance(text, unicode):
-        QgsMessageLog.logMessage(text, group, QgsMessageLog.INFO)
+    if isinstance(msg, str) or isinstance(msg, unicode):
+        QgsMessageLog.logMessage(msg, group, QgsMessageLog.INFO)
     else:
-        QgsMessageLog.logMessage(printable(text), group, QgsMessageLog.INFO)
+        QgsMessageLog.logMessage(printable(msg), group, QgsMessageLog.INFO)

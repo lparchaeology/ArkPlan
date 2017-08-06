@@ -31,6 +31,8 @@ from PyQt4.QtGuiimport import QColor, QCursor
 from qgis.core import QGis, QgsGeometry, QgsPoint, QgsProject, QgsRectangle
 from qgis.gui import QgsMapCanvasSnapper, QgsMapTool, QgsRubberBand, QgsVertexMarker
 
+from ..gui import CapturePointCursor
+
 
 class MapToolInteractive(QgsMapTool):
 
@@ -193,7 +195,7 @@ class MapToolInteractive(QgsMapTool):
             if self._dragging:
                 # Pan map mode
                 self.canvas().panActionEnd(e.pos())
-                self.setCursor(capture_point_cursor)
+                self.setCursor(CapturePointCursor)
                 self._dragging = False
                 e.accept()
         elif (e.button() == Qt.RightButton):

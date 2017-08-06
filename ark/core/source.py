@@ -72,7 +72,7 @@ class Source():
         return not self.isValid()
 
     def isNull(self):
-        return self._code == '' and isinstance(item, Item) and self._item.isNull() and self._filename == ''
+        return self._code == '' and isinstance(self._item, Item) and self._item.isNull() and self._filename == ''
 
     def label(self):
         return Config.sourceCodes[self._code]['label']
@@ -106,10 +106,10 @@ class Source():
     def attributes(self):
         attrs = {}
         attrs = self._item.toAttributes()
-        _setDict(attrs, 'source_cd', self.sourceCode())
-        _setDict(attrs, 'source_cl', self.item().classCode())
-        _setDict(attrs, 'source_id', self.item().itemId())
-        _setDict(attrs, 'file', self.filename())
+        attrs['source_cd'] = utils.strip(self.sourceCode())
+        attrs['source_cl'] = utils.strip(self.item().classCode())
+        attrs['source_id'] = utils.strip(self.item().itemId())
+        attrs['file'] = utils.strip(self.filename())
         return attrs
 
     def setAttributes(self, attributes):

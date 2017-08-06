@@ -27,6 +27,8 @@ from PyQt4.QtGui import QIcon
 
 from ark.lib.gui import ToolDockWidget
 
+import .PlanWidget
+
 
 class PlanDock(ToolDockWidget):
 

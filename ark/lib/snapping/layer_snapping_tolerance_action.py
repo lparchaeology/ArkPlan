@@ -103,7 +103,7 @@ class LayerSnappingToleranceAction(AbstractSnappingToleranceAction):
             unit = Snapping.layerSnappingUnit(layerId)
             if (unit == Snapping.Pixels):
                 self._toleranceSpin.setSuffix(' px')
-            elif self._iface == None:
+            elif self._iface is None:
                 self._toleranceSpin.setSuffix('')
             elif unit == Snapping.LayerUnits:
                 layerUnits = QgsMapLayerRegistry.instance().mapLayer(layerId).crs().mapUnits()

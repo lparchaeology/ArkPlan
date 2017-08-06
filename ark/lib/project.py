@@ -81,7 +81,7 @@ class Project:
 
     @staticmethod
     def setEntry(scope, key, value, default=None):
-        if (value == None or value == '' or value == default):
+        if (value is None or value == '' or value == default):
             return QgsProject.instance().removeEntry(scope, key)
         else:
             return QgsProject.instance().writeEntry(scope, key, value)

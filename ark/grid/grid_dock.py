@@ -24,6 +24,8 @@
 
 from ark.lib.gui import ToolDockWidget
 
+import .GridWidget
+
 
 class GridDock(ToolDockWidget):
 

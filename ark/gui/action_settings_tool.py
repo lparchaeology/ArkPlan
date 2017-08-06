@@ -26,6 +26,7 @@ from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QToolButton
 
 from ark.core import Drawing, FilterType
+from ark.core.enum import DrawingAction, MapAction
 
 import resources
 

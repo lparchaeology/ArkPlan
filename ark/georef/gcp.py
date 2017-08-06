@@ -26,6 +26,8 @@ from PyQt4.QtCore import QPointF
 
 from qgis.core import QgsPoint
 
+from ark.lib import utils
+
 
 class GroundControlPoint():
 
@@ -101,4 +103,4 @@ class GroundControlPoint():
         self._enabled = enabled
 
     def asCsv(self):
-        return ','.join([str(self.map().x()), str(self.map().y()), str(self.raw().x()), str(self.raw().y()), str(int(self._enabled))])
+        return utils.csv([self.map().x(), self.map().y(), self.raw().x(), self.raw().y(), int(self._enabled)])

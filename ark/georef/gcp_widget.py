@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-
-from PyQt4 import uic
 from PyQt4.QtCore import QPointF, Qt, pyqtSignal
 from PyQt4.QtGui import QPen, QWidget
 

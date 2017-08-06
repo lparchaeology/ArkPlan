@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.core import QGis, QgsGeometry
+from qgis.core import QgsGeometry
 
 from ark.lib.core import FeatureType, geometry
 from ark.lib.map import MapToolAddFeature

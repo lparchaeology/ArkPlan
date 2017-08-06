@@ -34,7 +34,7 @@ class ReturnPressedFilter(QObject):
 
     def eventFilter(self, obj, event):
         # FIXME WTF Sledgehammer to fix reload error nut
-        if self == None or QEvent == None:
+        if self is None or QEvent is None:
             return True
         if (event.type() == QEvent.KeyPress and (event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter)):
             self.returnPressed.emit()

@@ -22,15 +22,15 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QPixmap, QWidget, QWidgetAction
 
 from qgis.gui import QgsColorButtonV2
 
-from ark.lib import Project, utils
+from ark.lib import Project
 
-from ark.core import FilterType, Item
+from ark.core import FilterClause, FilterType, Item
+from ark.core.enum import FilterWidgetAction
 
 from filter_clause_widget_base import Ui_FilterClauseWidget
 

@@ -95,7 +95,13 @@ def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
         if styleURI is None and symbology is None:
             symbology = getSymbology(layer)
-        return createShapefile(filePath, name, layer.wkbType(), layer.crs(), layer.dataProvider().fields(), styleURI, symbology)
+        return createShapefile(filePath,
+                               name,
+                               layer.wkbType(),
+                               layer.crs(),
+                               layer.dataProvider().fields(),
+                               styleURI,
+                               symbology)
     return QgsVectorLayer()
 
 
@@ -303,7 +309,13 @@ def addFeatures(features, layer, undoMessage='Add features to layer', log=False,
     return ok
 
 
-def copyFeatureRequest(featureRequest, fromLayer, toLayer, undoMessage='Copy features', log=False, logLayer=None, timestamp=None):
+def copyFeatureRequest(featureRequest,
+                       fromLayer,
+                       toLayer,
+                       undoMessage='Copy features',
+                       log=False,
+                       logLayer=None,
+                       timestamp=None):
     ok = False
     if log and (not logLayer or not timestamp):
         return ok

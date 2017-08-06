@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QDialog, QFileDialog
 
 from settings_dialog_base import Ui_SettingsDialogBase

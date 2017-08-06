@@ -1,4 +1,4 @@
-Digitising  # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
                                 ARK Spatial
@@ -22,7 +22,6 @@ Digitising  # -*- coding: utf-8 -*-
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QWidget
 
 from digitising_widget_base import Ui_DigitisingWidget

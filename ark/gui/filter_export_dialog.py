@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QColor, QDialog
 
 from filter_export_dialog_base import Ui_FilterExportDialog

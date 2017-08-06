@@ -67,7 +67,7 @@ class MapToolCapture(MapToolInteractive):
         geometryType = self.geometryType()
         self._rubberBand = self._createRubberBand(geometryType)
         self._moveRubberBand = self._createRubberBand(geometryType, True)
-        if (self._useCurrentLayerGeometry == True):
+        if (self._useCurrentLayerGeometry is True):
             self._iface.currentLayerChanged.connect(self._currentLayerChanged)
 
     def deactivate(self):
@@ -78,7 +78,7 @@ class MapToolCapture(MapToolInteractive):
         if (self._moveRubberBand is not None):
             self.canvas().scene().removeItem(self._moveRubberBand)
             self._moveRubberBand = None
-        if (self._useCurrentLayerGeometry == True):
+        if (self._useCurrentLayerGeometry is True):
             self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
         super(MapToolCapture, self).deactivate()
 
@@ -208,7 +208,10 @@ class MapToolCapture(MapToolInteractive):
 
     def _validateGeometry(self):
         geometryType = self.geometryType()
-        if (geometryType == QGis.Point or geometryType == QGis.UnknownGeometry or geometryType == QGis.NoGeometry or len(self._mapPointList) < 2):
+        if (geometryType == QGis.Point
+                or geometryType == QGis.UnknownGeometry
+                or geometryType == QGis.NoGeometry
+                or len(self._mapPointList) < 2):
             return
 
         settings = QSettings()

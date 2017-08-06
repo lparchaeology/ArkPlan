@@ -22,12 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QWidget
 
 from data_widget_base import Ui_DataWidget
-
-import resources
 
 
 class DataWidget(QWidget, Ui_DataWidget):

@@ -24,17 +24,19 @@
 
 from qgis.core import QgsFeature, QgsGeometry
 
+from . import FeatureHighlightItem, GeometryHighlightItem
+
 
 def addHighlight(canvas, featureOrGeometry, layer, lineColor=None, fillColor=None, buff=None, minWidth=None):
     # TODO Open bug report for QgsHighlight sip not having QgsFeature constructor.
-    #hl = QgsHighlight(canvas, featureOrGeometry, layer)
+    # hl = QgsHighlight(canvas, featureOrGeometry, layer)
     hl = None
     if isinstance(featureOrGeometry, QgsFeature):
-        hl = FeatureHighlight(canvas, featureOrGeometry, layer)
+        hl = FeatureHighlightItem(canvas, featureOrGeometry, layer)
         if minWidth:
             hl.setMinWidth(minWidth)
     elif isinstance(featureOrGeometry, QgsGeometry):
-        hl = GeometryHighlight(canvas, featureOrGeometry, layer)
+        hl = GeometryHighlightItem(canvas, featureOrGeometry, layer)
     if lineColor:
         hl.setLineColor(lineColor)
     if fillColor:

@@ -25,11 +25,12 @@
 from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
 
-from qgis.core import QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
+from qgis.core import (QGis, QgsField, QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject,
+                       QgsRasterLayer)
 from qgis.gui import QgsLayerTreeView
 
 from ark.lib import Plugin
-from ark.lib.core import Collection, layers
+from ark.lib.core import LayerCollection, LayerCollectionSettings, layers
 from ark.lib.gui import ToolDockWidget
 from ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
                               TopologicalEditingAction)
@@ -42,8 +43,6 @@ from ark.map import MapToolIndentifyItems
 from data_module import DataModule
 from filter_module import FilterModule
 from plan_module import PlanModule
-
-import resources
 
 
 class ArkSpatial(Plugin):
@@ -133,7 +132,8 @@ class ArkSpatial(Plugin):
 
         # Create the Layer Model and View
         # TODO Should only show our subgroup but crashes!
-        #self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(Config.projectGroupName), self);
+        # self.projectLayerModel
+        # = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot().findGroup(Config.projectGroupName), self);
         self.projectLayerModel = QgsLayerTreeModel(QgsProject.instance().layerTreeRoot(), self)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegend)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.ShowLegendAsTree)
@@ -157,7 +157,10 @@ class ArkSpatial(Plugin):
 
         # Init the identify tool and add to the toolbar
         self.identifyAction = self.addDockAction(
-            ':/plugins/ark/filter/identify.png', self.tr(u'Identify Items'), callback=self.triggerIdentifyAction, checkable=True)
+            ':/plugins/ark/filter/identify.png',
+            self.tr(u'Identify Items'),
+            callback=self.triggerIdentifyAction,
+            checkable=True)
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
@@ -166,14 +169,14 @@ class ArkSpatial(Plugin):
             ':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
 
         # Init the modules and add to the toolbar
-        self.data = Data(self)
+        self.data = DataModule(self)
         self.data.initGui()
         self.layerDock.toolbar.addSeparator()
         self.gridModule = GridModule(self)
         self.gridModule.initGui()
         self.filterModule = FilterModule(self)
         self.filterModule.initGui()
-        self.planModule = Plan(self)
+        self.planModule = PlanModule(self)
         self.planModule.initGui()
 
         # Add Settings to the toolbar
@@ -201,7 +204,10 @@ class ArkSpatial(Plugin):
             self.section = self._loadCollection('section')
             self.site = self._loadCollection('site')
             self.drawingsGroupName = Config.drawings['context']['layersGroupName']
-            if self.grid.initialise() and self.plan.initialise() and self.section.initialise() and self.site.initialise():
+            if (self.grid.initialise()
+                    and self.plan.initialise()
+                    and self.section.initialise()
+                    and self.site.initialise()):
                 self.data.loadProject()
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -302,7 +308,10 @@ class ArkSpatial(Plugin):
             return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
-        if wizard.exec_() and wizard.projectPath() and (wizard.projectCode() or wizard.siteCodes()) and QDir(wizard.projectPath()).mkpath('.'):
+        if (wizard.exec_()
+                and wizard.projectPath()
+                and (wizard.projectCode() or wizard.siteCodes())
+                and QDir(wizard.projectPath()).mkpath('.')):
 
             if (self.project.isDirty() and self.project.fileName()):
                 self.project.write()
@@ -522,26 +531,50 @@ class ArkSpatial(Plugin):
         return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])
 
     def _createCollectionLayers(self, collection, settings):
-        if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBPoint,
-                                   self.projectCrs(), self._layerFields(collection, 'pointsFields'))
-        if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBLineString,
-                                   self.projectCrs(), self._layerFields(collection, 'linesFields'))
-        if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBPolygon,
-                                   self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+        path = self.projectPath() + '/' + settings.pointsLayerPath
+        if settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath):
+            layers.createShapefile(path,
+                                   settings.pointsLayerName,
+                                   QGis.WKBPoint,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'pointsFields'))
+        path = self.projectPath() + '/' + settings.linesLayerPath
+        if (settings.linesLayerPath and not QFile.exists(path)):
+            layers.createShapefile(path,
+                                   settings.linesLayerName,
+                                   QGis.WKBLineString,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'linesFields'))
+        path = self.projectPath() + '/' + settings.polygonsLayerPath
+        if (settings.polygonsLayerPath and not QFile.exists(path)):
+            layers.createShapefile(path,
+                                   settings.polygonsLayerName,
+                                   QGis.WKBPolygon,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, collection, settings):
-        if (settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.pointsLayerPath,   settings.pointsLayerName,   QGis.WKBMultiPoint,
-                                   self.projectCrs(), self._layerFields(collection, 'pointsFields'))
-        if (settings.linesLayerPath and not QFile.exists(self.projectPath() + '/' + settings.linesLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.linesLayerPath,    settings.linesLayerName,    QGis.WKBMultiLineString,
-                                   self.projectCrs(), self._layerFields(collection, 'linesFields'))
-        if (settings.polygonsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.polygonsLayerPath)):
-            layers.createShapefile(self.projectPath() + '/' + settings.polygonsLayerPath, settings.polygonsLayerName, QGis.WKBMultiPolygon,
-                                   self.projectCrs(), self._layerFields(collection, 'polygonsFields'))
+        path = self.projectPath() + '/' + settings.pointsLayerPath
+        if (settings.pointsLayerPath and not QFile.exists(path)):
+            layers.createShapefile(path,
+                                   settings.pointsLayerName,
+                                   QGis.WKBMultiPoint,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'pointsFields'))
+        path = self.projectPath() + '/' + settings.linesLayerPath
+        if (settings.linesLayerPath and not QFile.exists(path)):
+            layers.createShapefile(path,
+                                   settings.linesLayerName,
+                                   QGis.WKBMultiLineString,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'linesFields'))
+        path = self.projectPath() + '/' + settings.polygonsLayerPath
+        if (settings.polygonsLayerPath and not QFile.exists(path)):
+            layers.createShapefile(path,
+                                   settings.polygonsLayerName,
+                                   QGis.WKBMultiPolygon,
+                                   self.projectCrs(),
+                                   self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):
         fieldKeys = self._collectionDefault(collection, fieldsKey)

@@ -22,11 +22,11 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QIcon, QLabel, QToolButton, QWidget
+from PyQt4.QtGui import QAction, QIcon, QLabel, QToolButton, QWidget
 
 from ark.lib.core import FeatureType, geometry
+from ark.lib.map import MapToolAddFeature
 
 from ark.core import Audit, Config, Feature, Item, Source
 
@@ -96,7 +96,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
                 feature['query'] = None
             self._addDrawingTool(
                 feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
-            if feature['definitive'] == True:
+            if feature['definitive'] is True:
                 self._definitiveCategories.add(feature['category'])
 
         self.idEdit.editingFinished.connect(self.featureChanged)
@@ -130,14 +130,14 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         self.setItem(feature.item())
         self.setSource(feature.source())
 
-        self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(source.sourceCode()))
+        self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(self._source.sourceCode()))
         self.commentEdit.setText(feature.comment())
 
-        idx = self.siteCodeCombo.findData(source.item().siteCode())
+        idx = self.siteCodeCombo.findData(self._source.item().siteCode())
         if idx >= 0:
             self.siteCodeCombo.setCurrentIndex(idx)
-        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item.classCode()))
-        self.sourceIdEdit.setText(source.item().itemId())
+        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(self._source.item.classCode()))
+        self.sourceIdEdit.setText(self._source.item().itemId())
 
         self.blockSignals(False)
 
@@ -197,7 +197,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         else:
             layer = self._pointsLayer
 
-        mapTool = ArkMapToolAddFeature(self._iface, layer, featureType, toolName)
+        mapTool = MapToolAddFeature(self._iface, layer, featureType, toolName)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
@@ -243,7 +243,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         self.metadata.setCategory(toolData['category'])
         mapTool.setDefaultAttributes(self.metadata.feature.toAttributes())
 
-    def _clearDrawingTools(self):
+    def clearDrawingTools(self):
         self._clearDrawingTools(self.pointToolLayout)
         self._clearDrawingTools(self.lineToolLayout)
         self._clearDrawingTools(self.polygonToolLayout)

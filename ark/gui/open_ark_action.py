@@ -26,8 +26,6 @@ import webbrowser
 
 from PyQt4.QtGui import QAction, QApplication
 
-from ark.core import Item, Source
-
 
 class OpenArkAction(QAction):
 

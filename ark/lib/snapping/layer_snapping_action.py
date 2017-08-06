@@ -68,7 +68,8 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
         menu.addSeparator()
         menu.addAction(self._toleranceAction)
         menu.addActions(self._unitTypeActionGroup.actions())
-        if isinstance(snapLayer, QgisInterface) or (isinstance(snapLayer, QgsVectorLayer) and snapLayer.geometryType() == QGis.Polygon):
+        if (isinstance(snapLayer, QgisInterface)
+                or (isinstance(snapLayer, QgsVectorLayer) and snapLayer.geometryType() == QGis.Polygon)):
             self._avoidAction = LayerSnappingAvoidIntersectionsAction(snapLayer, self)
             menu.addSeparator()
             menu.addAction(self._avoidAction)
@@ -130,6 +131,6 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
             self.setIcon(self._vertexAction.icon())
         if self._iface and self._avoidAction:
             layer = QgsMapLayerRegistry.instance().mapLayer(self.layerId())
-            isPolygon = (not layer is None and layer.type() ==
+            isPolygon = (layer is not None and layer.type() ==
                          QgsMapLayer.VectorLayer and layer.geometryType() == QGis.Polygon)
             self._avoidAction.setEnabled(isPolygon)

@@ -41,7 +41,7 @@ class GeometryHighlightItem(QgsMapCanvasItem):
     _pen = QPen()
 
     def __init__(self, mapCanvas, geometry, layer):
-        super(GeometryHighlight, self).__init__(mapCanvas)
+        super(GeometryHighlightItem, self).__init__(mapCanvas)
         self._mapCanvas = mapCanvas
         if not geometry or not isinstance(geometry, QgsGeometry) or geometry.isEmpty() or not geometry.isGeosValid():
             return

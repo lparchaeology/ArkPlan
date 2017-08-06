@@ -32,7 +32,7 @@ class DockWidget(QDockWidget):
     _action = None  # QAction
 
     def __init__(self, parent=None):
-        super(ArkDockWidget, self).__init__(parent)
+        super(DockWidget, self).__init__(parent)
         # HACK Work around a crash when dragging!
         self.setFeatures(QDockWidget.DockWidgetClosable)
 

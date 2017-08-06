@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
 from qgis.core import QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider

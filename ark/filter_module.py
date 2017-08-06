@@ -26,18 +26,14 @@ import re
 from PyQt4.QtCore import QObject, QSettings, Qt, pyqtSignal
 from PyQt4.QtGui import QInputDialog
 
-from qgis.core import QGis
 from qgis.gui import QgsExpressionBuilderDialog
 
-from ark.lib import Project, utils
+from ark.lib import utils
 from ark.lib.core import layers
-from ark.lib.map import MapToolIndentifyFeatures
 
 from ark.core import Config, FilterType
 from ark.core.enum import *
 from ark.gui import DataDialog, FilterDock, FilterExportDialog
-
-import resources
 
 
 class FilterModule(QObject):
@@ -297,8 +293,6 @@ class FilterModule(QObject):
     def applyHighlightFilters(self):
         if not self._initialised:
             return
-        highlightString = ''
-        firstHighlight = True
         self.project.plan.clearHighlight()
         self._applyHighlightClauses(self.currentFilterSet().clauses())
         self._applyHighlightClauses(self._schematicFilterSet.clauses())

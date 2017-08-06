@@ -116,7 +116,7 @@ class Drawing:
         name = self.sourceClass + '_' + self.siteCode
         if (self.sourceId > 0):
             name = name + '_' + str(self.sourceId)
-        if self.easting != None and self.northing != None:
+        if self.easting is not None and self.northing is not None:
             name = name + '_' + str(self.easting).zfill(3) + 'e' + str(self.northing).zfill(3) + 'n'
         if self.suffix:
             name = name + '_' + self.suffix

@@ -260,15 +260,30 @@ class Collection:
         if timestamp is None and self.settings.log:
             timestamp = utils.timestamp()
         merge = True
-        if layers.copyAllFeatures(self.pointsBuffer, self.pointsLayer, undoMessage + ' - copy points', log, self.pointsLog, timestamp):
+        if layers.copyAllFeatures(self.pointsBuffer,
+                                  self.pointsLayer,
+                                  undoMessage + ' - copy points',
+                                  log,
+                                  self.pointsLog,
+                                  timestamp):
             self._clearBuffer(self.pointsBuffer, undoMessage + ' - delete points')
         else:
             merge = False
-        if layers.copyAllFeatures(self.linesBuffer, self.linesLayer, undoMessage + ' - copy lines', log, self.linesLog, timestamp):
+        if layers.copyAllFeatures(self.linesBuffer,
+                                  self.linesLayer,
+                                  undoMessage + ' - copy lines',
+                                  log,
+                                  self.linesLog,
+                                  timestamp):
             self._clearBuffer(self.linesBuffer, undoMessage + ' - delete lines')
         else:
             merge = False
-        if layers.copyAllFeatures(self.polygonsBuffer, self.polygonsLayer, undoMessage + ' - copy polygons', log, self.polygonsLog, timestamp):
+        if layers.copyAllFeatures(self.polygonsBuffer,
+                                  self.polygonsLayer,
+                                  undoMessage + ' - copy polygons',
+                                  log,
+                                  self.polygonsLog,
+                                  timestamp):
             self._clearBuffer(self.polygonsBuffer, undoMessage + ' - delete polygons')
         else:
             merge = False
@@ -306,16 +321,19 @@ class Collection:
         return ret
 
     def copyFeatureRequestToBuffers(self, featureRequest, logMessage='Copy Features to Buffer'):
-        return (layers.copyFeatureRequest(featureRequest, self.pointsLayer, self.pointsBuffer, logMessage + ' - points')
-                and layers.copyFeatureRequest(featureRequest, self.linesLayer, self.linesBuffer, logMessage + ' - lines')
-                and layers.copyFeatureRequest(featureRequest, self.polygonsLayer, self.polygonsBuffer, logMessage + ' - polygons'))
+        pt = layers.copyFeatureRequest(featureRequest, self.pointsLayer, self.pointsBuffer, logMessage)
+        ln = layers.copyFeatureRequest(featureRequest, self.linesLayer, self.linesBuffer, logMessage)
+        pg = layers.copyFeatureRequest(featureRequest, self.polygonsLayer, self.polygonsBuffer, logMessage)
+        return pt and ln and pg
 
     def deleteFeatureRequest(self, featureRequest, logMessage='Delete Features', log=False, timestamp=None):
         if timestamp is None and log:
             timestamp = utils.timestamp()
-        return (layers.deleteFeatureRequest(featureRequest, self.pointsLayer, logMessage + ' - points', log, self.pointsLog, timestamp)
-                and layers.deleteFeatureRequest(featureRequest, self.linesLayer, logMessage + ' - lines', log, self.linesLog, timestamp)
-                and layers.deleteFeatureRequest(featureRequest, self.polygonsLayer, logMessage + ' - polygons', log, self.polygonsLog, timestamp))
+        pt = layers.deleteFeatureRequest(featureRequest, self.pointsLayer, logMessage, log, self.pointsLog, timestamp)
+        ln = layers.deleteFeatureRequest(featureRequest, self.linesLayer, logMessage, log, self.linesLog, timestamp)
+        pg = layers.deleteFeatureRequest(
+            featureRequest, self.polygonsLayer, logMessage, log, self.polygonsLog, timestamp)
+        return pt and ln and pg
 
     def setVisible(self, status):
         self.setPointsVisible(status)
@@ -376,13 +394,12 @@ class Collection:
         if (layer is not None
                 and layer.isValid()
                 and layer.featureCount() > 0
-                and self._iface.legendInterface().isLayerVisible(layer)
-                ):
+                and self._iface.legendInterface().isLayerVisible(layer)):
             layer.updateExtents()
             layerExtent = layer.extent()
             if layerExtent.isNull() or layerExtent.isEmpty():
                 return extent
-            if extent == None:
+            if extent is None:
                 extent = layerExtent
             else:
                 extent.combineExtentWith(layerExtent)

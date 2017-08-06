@@ -22,13 +22,12 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QTabWidget
 
 from plan_widget_base import Ui_PlanWidget
 
 
-class PlanWidget(QTabWidget, plan_widget_base.Ui_PlanWidget):
+class PlanWidget(QTabWidget, Ui_PlanWidget):
 
     def __init__(self, parent=None):
         super(PlanWidget, self).__init__(parent)

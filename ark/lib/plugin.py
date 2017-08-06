@@ -27,7 +27,7 @@ import os.path
 from PyQt4.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
 from PyQt4.QtGui import QAction, QIcon
 
-from qgis.core import QGis, QgsMessageLog
+from qgis.core import QgsMessageLog
 from qgis.gui import QgsMessageBar
 
 from project import Project
@@ -322,7 +322,7 @@ class MyDockPlugin(Plugin):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         super(MyPlugin, self).initGui()
 
-        self.dock = MyDock()  # Your dock implementation derived from ArkDockWidget
+        self.dock = MyDock()  # noqa # Your dock implementation derived from ArkDockWidget
         self.dock.load(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.dock.someSignal.connect(self.someMethod)
 

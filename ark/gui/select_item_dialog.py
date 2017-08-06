@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
 from ark.core import Config
@@ -38,7 +37,7 @@ class SelectItemDialog(QDialog, Ui_SelectItemDialog):
 
         self.itemWidget.setSiteCodes(siteCodes, defaultSiteCode)
 
-        if classCodes == None:
+        if classCodes is None:
             classCodes = sorted(Config.classCodes.keys())
         self.itemWidget.setClassCodes(classCodes)
 

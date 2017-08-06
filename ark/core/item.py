@@ -82,7 +82,9 @@ class Item():
         return 'Item(' + str(self._siteCode) + ', ' + str(self._classCode) + ', ' + str(self._itemId) + ')'
 
     def debug(self):
-        return 'Item(' + utils.printable(self._siteCode) + ', ' + utils.printable(self._classCode) + ', ' + utils.printable(self._itemId) + ')'
+        return ('Item(' + utils.printable(self._siteCode) + ', '
+                + utils.printable(self._classCode) + ', '
+                + utils.printable(self._itemId) + ')')
 
     def isValid(self):
         return (isinstance(self._siteCode, str) and self._siteCode
@@ -169,7 +171,9 @@ class Item():
             self.setSiteCode(attributes['id'])
 
     def toCsv(self):
-        return utils.doublequote(self._siteCode) + ',' + utils.doublequote(self._classCode) + ',' + utils.doublequote(self._itemId)
+        return (utils.doublequote(self._siteCode) + ','
+                + utils.doublequote(self._classCode) + ','
+                + utils.doublequote(self._itemId))
 
     def toList(self):
         lst = []

@@ -138,9 +138,11 @@ class FeatureAction(QAction):
             v = None
             field = fields[idx]
 
-            if (defaultAttributes.has_key(field.name())):
+            if (field.name() in defaultAttributes):
                 v = defaultAttributes[field.name()]
-            elif (reuseLastValues and self._lastUsedValues.has_key(self._layer.id()) and self._lastUsedValues[self._layer.id()].has_key(idx)):
+            elif (reuseLastValues
+                  and self._layer.id() in self._lastUsedValues
+                  and idx in self._lastUsedValues[self._layer.id()]):
                 v = self._lastUsedValues[self._layer.id()][idx]
             else:
                 v = provider.defaultValue(idx)

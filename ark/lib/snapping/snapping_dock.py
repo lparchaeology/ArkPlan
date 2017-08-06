@@ -23,11 +23,12 @@
 """
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QAbstractItemView, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
 
 from qgis.coreimport import QgsMapLayer, QgsMapLayerRegistry
 
 from ..gui import DockWidget
+import .LayerSnappingWidget
 
 
 class SnappingDock(DockWidget):
@@ -42,7 +43,7 @@ class SnappingDock(DockWidget):
         self.setObjectName(u'snappingDock')
 
         self._listWidget = QListWidget(self)
-        self._listWidget.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self._listWidget.setSelectionMode(QAbstractItemView.NoSelection)
         self._listWidget.setDropIndicatorShown(False)
 
         self._dockLayout = QVBoxLayout(self)

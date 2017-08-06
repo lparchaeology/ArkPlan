@@ -31,8 +31,6 @@ from ark.lib.core import TableModel
 
 from ark.core import Item
 
-import resources
-
 
 class ItemModel(TableModel):
 

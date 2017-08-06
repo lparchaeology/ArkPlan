@@ -70,7 +70,7 @@ class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
         unit = Snapping.projectSnappingUnit()
         if (unit == Snapping.Pixels):
             self._toleranceSpin.setSuffix(' px')
-        elif self._iface == None:
+        elif self._iface is None:
             self._toleranceSpin.setSuffix('')
         elif unit == Snapping.LayerUnits:  # == MapUnits
             layerUnits = None

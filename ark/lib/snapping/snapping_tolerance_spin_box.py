@@ -67,7 +67,7 @@ class SnappingToleranceSpinBox(QDoubleSpinBox):
         unit = Snapping.projectSnappingUnit()
         if (unit == Snapping.Pixels):
             self.setSuffix(' px')
-        elif self._iface == None:
+        elif self._iface is None:
             self.setSuffix('')
         elif unit == Snapping.LayerUnits:  # == MapUnits
             layerUnits = None

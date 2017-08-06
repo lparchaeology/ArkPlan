@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-import copy
-
 from PyQt4.QtGui import QColor
 
 from ark.lib import Project, utils

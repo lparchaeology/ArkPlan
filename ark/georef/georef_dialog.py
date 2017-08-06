@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
 from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
 
@@ -32,7 +31,6 @@ from ark.lib.core import ProcessStatus, Scale
 
 from ark.core import Drawing
 
-from gcp import GroundControlPoint
 from georef_dialog_base import Ui_GeorefDialogBase
 from georeferencer import Georeferencer
 from transform import Transform
@@ -83,14 +81,13 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         if (not inputFile.exists()):
             self._showStatus('ERROR: Input file not found! File path was ' + inputFile.absoluteFilePath())
             self._setStatusLabel('load', ProcessStatus.Failure)
-            return false
+            return False
 
         self._inputFile = inputFile
         pixmap = QPixmap(self._inputFile.absoluteFilePath())
         if pixmap.isNull():
             self._signalError('Loading of raw image failed.')
             return
-        inputDir = inputFile.absoluteDir()
 
         pixmap = QPixmap(self._inputFile.absoluteFilePath())
         w = pixmap.width()

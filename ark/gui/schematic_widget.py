@@ -22,14 +22,13 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QPixmap, QWidget
 
 from ark.lib.core import ReturnPressedFilter
 
 from ark.core import Item
-from ark.core.enum import *
+from ark.core.enum import FilterAction, SearchStatus
 
 from schematic_widget_base import Ui_SchematicWidget
 

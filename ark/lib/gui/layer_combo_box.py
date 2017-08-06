@@ -37,7 +37,7 @@ class LayerComboBox(QComboBox):
     _iface = None
 
     def __init__(self, iface, layerType=None, geometryType=None, parent=None):
-        super(ArkLayerComboBox, self).__init__(parent)
+        super(LayerComboBox, self).__init__(parent)
         self._iface = iface
         self._layerType = layerType
         self._geometryType = geometryType
@@ -54,5 +54,5 @@ class LayerComboBox(QComboBox):
             elif (self._layerType == QgsMapLayer.RasterLayer and layer.type() == QgsMapLayer.RasterLayer):
                 self._addLayer(layer)
             elif layer.type() == QgsMapLayer.VectorLayer:
-                if (self._geometryType == None or layer.geometryType() == self._geometryType):
+                if (self._geometryType is None or layer.geometryType() == self._geometryType):
                     self._addLayer(layer)

@@ -24,20 +24,18 @@
 import bisect
 import copy
 
-from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt, QVariant
-from PyQt4.QtGui import QAction, QApplication, QFileDialog, QIcon, QInputDialog
+from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
+from PyQt4.QtGui import QFileDialog, QIcon, QInputDialog
 
 from ark.lib import utils
 from ark.lib.core import layers
 
-from ark.core import Config, Feature, FeaturePlanError, Item, Metadata, Source
+from ark.core import Config, Feature, FeaturePlanError, Item, Source
 from ark.core.enum import *
 from ark.georef import GeorefDialog
 from ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog, TableDialog
 
 from schematic_widget import SearchStatus
-
-import resources
 
 
 class PlanModule(QObject):
@@ -117,7 +115,7 @@ class PlanModule(QObject):
                 fd.close()
 
         # TODO Think of a better way...
-        #self.metadata = Metadata(self.dock.widget.sourceWidget)
+        # self.metadata = Metadata(self.dock.widget.sourceWidget)
         # self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
         self.project.data.dataLoaded.connect(self.dock.activateArkData)
@@ -270,7 +268,7 @@ class PlanModule(QObject):
         errors.extend(self._preMergeBufferCheck(collection.linesBuffer))
         errors.extend(self._preMergeBufferCheck(collection.polygonsBuffer))
         if len(errors) > 0:
-            dialog = ErrorDialog()
+            dialog = FeatureErrorDialog()
             dialog.loadErrors(errors)
             dialog.exec_()
             if not dialog.ignoreErrors():
@@ -300,7 +298,7 @@ class PlanModule(QObject):
         row = 0
         for feature in layer.getFeatures():
             # Set up the error template
-            error = PlanError()
+            error = FeaturePlanError()
             error.layer = layer.name()
             error.row = row
             row = row + 1
@@ -435,7 +433,11 @@ class PlanModule(QObject):
             if self.project.plan.deleteFeatureRequest(request, action, self.project.logUpdates(), timestamp):
                 self._logItemAction(item, action, timestamp)
 
-    def applyItemActions(self, item, mapAction=MapAction.NoMapAction, filterAction=FilterAction.NoFilterAction, drawingAction=DrawingAction.NoDrawingAction):
+    def applyItemActions(self,
+                         item,
+                         mapAction=MapAction.NoMapAction,
+                         filterAction=FilterAction.NoFilterAction,
+                         drawingAction=DrawingAction.NoDrawingAction):
         if drawingAction != DrawingAction.NoDrawingAction:
             self.loadSourceDrawings(item, drawingAction == DrawingAction.LoadDrawings)
 
@@ -495,7 +497,7 @@ class PlanModule(QObject):
         self._panToExtent(self.itemExtent(item))
 
     def _panToExtent(self, extent):
-        if extent == None or extent.isNull() or extent.isEmpty():
+        if extent is None or extent.isNull() or extent.isEmpty():
             return
         self.project.mapCanvas().setCenter(extent.center())
 
@@ -503,7 +505,7 @@ class PlanModule(QObject):
         self._zoomToExtent(self.itemExtent(item))
 
     def _zoomToExtent(self, extent):
-        if extent == None or extent.isNull() or extent.isEmpty():
+        if extent is None or extent.isNull() or extent.isEmpty():
             return
         extent.scale(1.05)
         self.project.mapCanvas().setExtent(extent)
@@ -547,7 +549,7 @@ class PlanModule(QObject):
             layerExtent = layer.extent()
             if layerExtent.isNull() or layerExtent.isEmpty():
                 return extent
-            if extent == None:
+            if extent is None:
                 extent = layerExtent
             else:
                 extent.combineExtentWith(layerExtent)

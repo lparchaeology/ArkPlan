@@ -25,8 +25,6 @@
  ***************************************************************************/
 """
 
-import math
-
 from qgis.core import QgsFeature, QgsGeometry, QgsPoint
 
 from shapely.geometry import LineString, MultiLineString, Point

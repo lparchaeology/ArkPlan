@@ -26,7 +26,8 @@
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QBrush, QPen
 
-from qgis.core import QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolV2
+from qgis.core import (QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolLayerV2Utils,
+                       QgsSymbolV2)
 from qgis.gui import QgsMapCanvasItem
 
 from ..project import Project
@@ -44,15 +45,14 @@ class FeatureHighlightItem(QgsMapCanvasItem):
     _minWidth = 0.0
 
     def __init__(self, mapCanvas, feature, layer):
-        super(FeatureHighlight, self).__init__(mapCanvas)
+        super(FeatureHighlightItem, self).__init__(mapCanvas)
         self._mapCanvas = mapCanvas
         if (not layer
-            or not feature
-            or not isinstance(feature, QgsFeature)
-            or not feature.geometry()
-            or feature.geometry().isEmpty()
-            or not feature.geometry().isGeosValid()
-            ):
+                or not feature
+                or not isinstance(feature, QgsFeature)
+                or not feature.geometry()
+                or feature.geometry().isEmpty()
+                or not feature.geometry().isGeosValid()):
             return
         self._feature = QgsFeature(feature)  # Force deep copy
         self._layer = layer

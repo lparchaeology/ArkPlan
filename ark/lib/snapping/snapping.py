@@ -208,7 +208,12 @@ class Snapping():
 
     @staticmethod
     def setSnapSettingsForLayer(layerId, enabled, snapType, units, tolerance, avoidIntersections):
-        return QgsProject.instance().setSnapSettingsForLayer(layerId, enabled, snapType, units, tolerance, avoidIntersections)
+        return QgsProject.instance().setSnapSettingsForLayer(layerId,
+                                                             enabled,
+                                                             snapType,
+                                                             units,
+                                                             tolerance,
+                                                             avoidIntersections)
 
     @staticmethod
     def layerSnappingEnabled(layerId):

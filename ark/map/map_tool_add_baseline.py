@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from PyQt4.QtCore import Qt
+
 from ark.lib.core import FeatureType
 from ark.lib.map import MapToolAddFeature
 
@@ -62,7 +64,7 @@ class MapToolAddBaseline(MapToolAddFeature):
     def canvasReleaseEvent(self, e):
         wasDragging = self._dragging
         mapPointList = self._mapPointList
-        super(ArkMapToolAddBaseline, self).canvasReleaseEvent(e)
+        super(MapToolAddBaseline, self).canvasReleaseEvent(e)
         if (wasDragging):
             pass
         elif (e.button() == Qt.LeftButton):

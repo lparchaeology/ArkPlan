@@ -24,7 +24,6 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QApplication, QDialog
 
 from .. import utils

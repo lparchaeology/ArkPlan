@@ -120,7 +120,7 @@ class Feature():
         self._category = utils.string(category)
 
     def label(self):
-        return self._label == utils.string(label)
+        return self._label
 
     def selLabel(self, label):
         self._label = utils.string(label)
@@ -151,28 +151,26 @@ class Feature():
 
     def fromFeature(self, feature):
         item = Item(feature)
-        category = _attribute(feature, 'category')
-        label = _attribute(feature, 'label')
+        category = feature.attribute('category')
+        label = feature.attribute('label')
         source = Source(feature)
-        comment = _attribute(feature, 'comment')
-        creator = _attribute(feature, 'creator')
-        created = _attribute(feature, 'created')
-        self.setFeature(item, category, label, source, comment, creator, created)
+        audit = Audit(feature)
+        comment = feature.attribute('comment')
+        self.setFeature(item, category, label, source, comment, audit)
 
     def toFeature(self, feature):
         self._item.toFeature(feature)
-        _setAttribute(feature, 'category', self._category)
-        _setAttribute(feature, 'label', self._label)
+        feature.setAttribute('category', utils.strip(self._category))
+        feature.setAttribute('label', utils.strip(self._label))
+        feature.setAttribute('comment', utils.strip(self._comment))
         self._source.toFeature(feature)
-        _setAttribute(feature, 'comment', self._comment)
-        _setAttribute(feature, 'creator', self._audit)
-        _setAttribute(feature, 'created', self.created)
+        self._audit.toFeature(feature)
 
     def attributes(self):
         attrs = {}
-        _setDict(attrs, 'category', self._category)
-        _setDict(attrs, 'label', self._label)
-        _setDict(attrs, 'comment', self._comment)
+        attrs['category'] = utils.strip(self._category)
+        attrs['label'] = utils.strip(self._label)
+        attrs['comment'] = utils.strip(self._comment)
         attrs.update(self.item().attributes())
         attrs.update(self.source().attributes())
         attrs.update(self.audit().attributes())

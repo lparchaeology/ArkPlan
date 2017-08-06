@@ -22,13 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QApplication, QDialog
 
-from ark.lib import utils
 from ark.lib.core import TableModel
-
-from ark.core import Feature
 
 from error_dialog_base import Ui_FeatureErrorDialog
 

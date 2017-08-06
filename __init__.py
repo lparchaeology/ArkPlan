@@ -25,8 +25,7 @@
 
 import os.path
 
-from ark import ArkSpatial
-from ark.lib.utils import debug
+import .ark as ark
 
 # noinspection PyPep8Naming
 
@@ -37,4 +36,4 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    return ArkSpatial(iface, os.path.dirname(__file__))
+    return ark.ArkSpatial(iface, os.path.dirname(__file__))

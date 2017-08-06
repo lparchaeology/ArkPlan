@@ -22,7 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QHBoxLayout, QLabel, QSizePolicy, QToolButton, QWidget
+from PyQt4.QtGui import QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QToolButton, QWidget
+
+import .LayerSnappingAction
 
 
 class LayerSnappingWidget(QWidget):

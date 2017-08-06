@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QObject, Qt, QVariant
 from PyQt4.QtGui import QApplication, QIcon
 
-from qgis.core import QGis
+from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPoint, QgsVectorLayer
 from qgis.gui import QgsVertexMarker
 
 from ark.lib import utils

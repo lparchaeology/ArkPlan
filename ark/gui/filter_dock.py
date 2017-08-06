@@ -27,7 +27,11 @@ from PyQt4.QtGui import QAction, QIcon, QListWidgetItem
 
 from ark.lib.gui import ToolDockWidget
 
+from ark.core import FilterType
+from ark.core.enum import FilterWidgetAction
 from ark.gui import FilterSetWidget
+
+import .FilterClauseWidget
 
 
 class FilterDock(ToolDockWidget):
@@ -98,7 +102,7 @@ class FilterDock(ToolDockWidget):
         self.toolbar.addAction(self._refreshDataAction)
         self._refreshDataAction.setEnabled(False)
 
-        #self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
+        # self._showDataAction = QAction(QIcon(':/plugins/ark/filter/viewData.png'), "Show Data", self)
         # self._showDataAction.triggered.connect(self.showDataSelected)
         # self.toolbar.addAction(self._showDataAction)
 

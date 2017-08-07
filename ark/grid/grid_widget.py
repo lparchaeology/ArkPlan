@@ -27,7 +27,7 @@ from PyQt4.QtGui import QWidget
 
 from qgis.core import QgsPoint
 
-from grid_widget_base import Ui_GridWidget
+from .grid_widget_base import Ui_GridWidget
 
 
 class GridWidget(QWidget, Ui_GridWidget):

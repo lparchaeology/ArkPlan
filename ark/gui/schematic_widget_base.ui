@@ -720,7 +720,7 @@
   <customwidget>
    <class>ActionSettingsTool</class>
    <extends>QToolButton</extends>
-   <header>action_settings.h</header>
+   <header>action_settings_tool.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

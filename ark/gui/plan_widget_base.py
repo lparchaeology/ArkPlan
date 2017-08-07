@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/plan_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/plan_widget_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -25,16 +25,16 @@ except AttributeError:
 class Ui_PlanWidget(object):
     def setupUi(self, PlanWidget):
         PlanWidget.setObjectName(_fromUtf8("PlanWidget"))
-        self.drawingTab = QtGui.QWidget()
-        self.drawingTab.setObjectName(_fromUtf8("drawingTab"))
-        self.verticalLayout = QtGui.QVBoxLayout(self.drawingTab)
+        self.digitisingTab = QtGui.QWidget()
+        self.digitisingTab.setObjectName(_fromUtf8("digitisingTab"))
+        self.verticalLayout = QtGui.QVBoxLayout(self.digitisingTab)
         self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.drawingWidget = DrawingWidget(self.drawingTab)
-        self.drawingWidget.setObjectName(_fromUtf8("drawingWidget"))
-        self.verticalLayout.addWidget(self.drawingWidget)
-        PlanWidget.addTab(self.drawingTab, _fromUtf8(""))
+        self.digitisingWidget = DigitisingWidget(self.digitisingTab)
+        self.digitisingWidget.setObjectName(_fromUtf8("digitisingWidget"))
+        self.verticalLayout.addWidget(self.digitisingWidget)
+        PlanWidget.addTab(self.digitisingTab, _fromUtf8(""))
         self.checkingTab = QtGui.QWidget()
         self.checkingTab.setObjectName(_fromUtf8("checkingTab"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.checkingTab)
@@ -84,10 +84,10 @@ class Ui_PlanWidget(object):
 
     def retranslateUi(self, PlanWidget):
         PlanWidget.setWindowTitle(_translate("PlanWidget", "PlanWidget", None))
-        PlanWidget.setTabText(PlanWidget.indexOf(self.drawingTab), _translate("PlanWidget", "Drawing", None))
+        PlanWidget.setTabText(PlanWidget.indexOf(self.digitisingTab), _translate("PlanWidget", "Drawing", None))
         PlanWidget.setTabText(PlanWidget.indexOf(self.checkingTab), _translate("PlanWidget", "Checking", None))
         PlanWidget.setTabText(PlanWidget.indexOf(self.toolsTab), _translate("PlanWidget", "Tools", None))
 
-from drawing_widget import DrawingWidget
+from digitising_widget import DigitisingWidget
 from schematic_widget import SchematicWidget
 from snapping_widget import SnappingWidget

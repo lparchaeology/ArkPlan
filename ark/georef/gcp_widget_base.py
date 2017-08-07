@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'georef/gcp_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/georef/gcp_widget_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -29,7 +29,7 @@ class Ui_GcpWidget(object):
         self.verticalLayout = QtGui.QVBoxLayout(GcpWidget)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.gcpView = GeorefGraphicsView(GcpWidget)
+        self.gcpView = GcpGraphicsView(GcpWidget)
         self.gcpView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.gcpView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.gcpView.setInteractive(False)
@@ -128,4 +128,4 @@ class Ui_GcpWidget(object):
         self.mapX.setText(_translate("GcpWidget", "0.0", None))
         self.mapY.setText(_translate("GcpWidget", "0.0", None))
 
-from georef_graphics_view import GeorefGraphicsView
+from gcp_graphics_view import GcpGraphicsView

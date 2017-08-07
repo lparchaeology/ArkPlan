@@ -29,23 +29,26 @@ from qgis.core import (QGis, QgsField, QgsFields, QgsLayerTreeModel, QgsMapLayer
                        QgsRasterLayer)
 from qgis.gui import QgsLayerTreeView
 
-from ark.lib import Plugin
-from ark.lib.core import LayerCollection, LayerCollectionSettings, layers
-from ark.lib.gui import ToolDockWidget
-from ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
-                              TopologicalEditingAction)
+from ArkSpatial.ark.lib import Plugin
+from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
+from ArkSpatial.ark.lib.gui import ToolDockWidget
+from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
+                                         TopologicalEditingAction)
 
-from ark.core import Config
-from ark.grid import GridModule
-from ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard
-from ark.map import MapToolIndentifyItems
+from ArkSpatial.ark.core import Config
+from ArkSpatial.ark.grid import GridModule
+from ArkSpatial.ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard
+from ArkSpatial.ark.map import MapToolIndentifyItems
 
-from data_module import DataModule
-from filter_module import FilterModule
-from plan_module import PlanModule
+from .data_module import DataModule
+from .filter_module import FilterModule
+from .plan_module import PlanModule
+
+# import sys, os
+# sys.path.append(os.path.dirname(__file__))
 
 
-class ArkSpatial(Plugin):
+class ArkSpatialPlugin(Plugin):
 
     """QGIS Plugin Implementation."""
 
@@ -65,10 +68,10 @@ class ArkSpatial(Plugin):
     drawingsGroupName = ''
 
     geoLayer = None  # QgsRasterLayer()
-    plan = None  # LayerCollection()
-    section = None  # LayerCollection()
-    grid = None  # LayerCollection()
-    site = None  # LayerCollection()
+    plan = None  # Collection()
+    section = None  # Collection()
+    grid = None  # Collection()
+    site = None  # Collection()
 
     projectLayerView = None  # QgsLayerTreeView()
     layerDock = None  # ToolDockWidget()
@@ -83,8 +86,8 @@ class ArkSpatial(Plugin):
     _topoAction = None  # TopologicalEditingAction()
 
     def __init__(self, iface, pluginPath):
-        super(ArkSpatial, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
-                                         Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
+        super(ArkSpatialPlugin, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
+                                               Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))
 
@@ -113,7 +116,7 @@ class ArkSpatial(Plugin):
 
     # Load the plugin gui
     def initGui(self):
-        super(ArkSpatial, self).initGui()
+        super(ArkSpatialPlugin, self).initGui()
 
         # Init the main dock so we have somethign to show on first run
         self.projectLayerView = QgsLayerTreeView()
@@ -279,7 +282,7 @@ class ArkSpatial(Plugin):
         self.layerDock = None
 
         # Removes the plugin menu item and icon from QGIS GUI.
-        super(ArkSpatial, self).unload()
+        super(ArkSpatialPlugin, self).unload()
 
     def run(self, checked):
         if checked and self.initialise() and self.configure():
@@ -358,7 +361,7 @@ class ArkSpatial(Plugin):
             QDir(self.projectPath() + '/' + bufferPath).mkpath('.')
         if config['log']:
             QDir(self.projectPath() + '/' + logPath).mkpath('.')
-        lcs = LayerCollectionSettings()
+        lcs = CollectionSettings()
         lcs.collection = grp
         lcs.collectionPath = path
         lcs.parentGroupName = Config.projectGroupName
@@ -513,7 +516,7 @@ class ArkSpatial(Plugin):
         return ''
 
     def _loadCollection(self, collection):
-        lcs = LayerCollectionSettings.fromProject(self.pluginName, collection)
+        lcs = CollectionSettings.fromProject(self.pluginName, collection)
         if (lcs.collection == ''):
             lcs = self._configureCollection(collection)
         if lcs.pointsStylePath == '':
@@ -525,7 +528,7 @@ class ArkSpatial(Plugin):
         if lcs.polygonsStylePath == '':
             lcs.polygonsStylePath = self._stylePath(
                 lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
-        return LayerCollection(self.iface, self.projectPath(), lcs)
+        return Collection(self.iface, self.projectPath(), lcs)
 
     def _stylePath(self, collection, collectionPath, layerName, baseName):
         return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])

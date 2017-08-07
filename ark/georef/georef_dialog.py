@@ -27,13 +27,13 @@ from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
 
 from qgis.core import QgsPoint
 
-from ark.lib.core import ProcessStatus, Scale
+from ArkSpatial.ark.lib.core import ProcessStatus, Scale
 
-from ark.core import Drawing
+from ArkSpatial.ark.core import Drawing
 
-from georef_dialog_base import Ui_GeorefDialogBase
-from georeferencer import Georeferencer
-from transform import Transform
+from .georef_dialog_base import Ui_GeorefDialogBase
+from .georeferencer import Georeferencer
+from .transform import Transform
 
 import resources
 

@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QDialog, QFileDialog
 
-from settings_dialog_base import Ui_SettingsDialogBase
+from .settings_dialog_base import Ui_SettingsDialogBase
 
 
 class SettingsDialog(QDialog, Ui_SettingsDialogBase):

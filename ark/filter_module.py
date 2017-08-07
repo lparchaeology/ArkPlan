@@ -28,12 +28,11 @@ from PyQt4.QtGui import QInputDialog
 
 from qgis.gui import QgsExpressionBuilderDialog
 
-from ark.lib import utils
-from ark.lib.core import layers
+from ArkSpatial.ark.lib.core import layers
 
-from ark.core import Config, FilterType
-from ark.core.enum import *
-from ark.gui import DataDialog, FilterDock, FilterExportDialog
+from ArkSpatial.ark.core import Config, FilterClause, FilterSet, FilterType
+from ArkSpatial.ark.core.enum import FilterAction
+from ArkSpatial.ark.gui import FilterDock, FilterExportDialog
 
 
 class FilterModule(QObject):
@@ -74,7 +73,6 @@ class FilterModule(QObject):
         self.dock.clearFilterSelected.connect(self.filterSetCleared)
         self.dock.loadDataSelected.connect(self._loadArkData)
         self.dock.refreshDataSelected.connect(self._refreshArkData)
-        self.dock.showDataSelected.connect(self.showDataDialogFilter)
         self.dock.zoomFilterSelected.connect(self.zoomFilter)
 
         self.dock.filterSetChanged.connect(self.setFilterSet)
@@ -156,13 +154,13 @@ class FilterModule(QObject):
 
     def _typeForAction(self, filterAction):
         if (filterAction == FilterAction.IncludeFilter or filterAction == FilterAction.ExclusiveFilter):
-            return FilterType.IncludeFilter
+            return FilterType.Include
         elif (filterAction == FilterAction.SelectFilter or filterAction == FilterAction.ExclusiveSelectFilter):
-            return FilterType.SelectFilter
+            return FilterType.Select
         elif (filterAction == FilterAction.HighlightFilter or filterAction == FilterAction.ExclusiveHighlightFilter):
-            return FilterType.HighlightFilter
+            return FilterType.Highlight
         elif (filterAction == FilterAction.ExcludeFilter):
-            return FilterType.ExcludeFilter
+            return FilterType.Exclude
         return -1
 
     def applyItemAction(self, item, filterAction):
@@ -184,25 +182,25 @@ class FilterModule(QObject):
         if not self._initialised:
             return
         self.dock.removeFilters()
-        ret = self.addFilterClause(FilterType.IncludeFilter, item)
+        ret = self.addFilterClause(FilterType.Include, item)
         self.zoomFilter()
         return ret
 
     def excludeItem(self, item):
         if not self._initialised:
             return
-        return self.addFilterClause(FilterType.ExcludeFilter, item)
+        return self.addFilterClause(FilterType.Exclude, item)
 
     def highlightItem(self, item):
         if not self._initialised:
             return
         self.dock.removeHighlightFilters()
-        return self.addFilterClause(FilterType.HighlightFilter, item)
+        return self.addFilterClause(FilterType.Highlight, item)
 
     def addHighlightItem(self, item):
         if not self._initialised:
             return
-        return self.addFilterClause(FilterType.HighlightFilter, item)
+        return self.addFilterClause(FilterType.Highlight, item)
 
     def applySchematicFilter(self, item, filterAction):
         if not self._initialised:
@@ -212,8 +210,8 @@ class FilterModule(QObject):
         cl.item = item
         if ((filterAction == FilterAction.SelectFilter or filterAction == FilterAction.ExclusiveSelectFilter
              or filterAction == FilterAction.HighlightFilter or filterAction == FilterAction.ExclusiveHighlightFilter)
-                and (self.hasFilterType(FilterType.IncludeFilter) or self.hasFilterType(FilterType.ExcludeFilter))):
-            cl.action = FilterType.IncludeFilter
+                and (self.hasFilterType(FilterType.Include) or self.hasFilterType(FilterType.Exclude))):
+            cl.action = FilterType.Include
             self._schematicFilterSet.addClause(cl)
         cl.action = self._typeForAction(filterAction)
         self._schematicFilterSet.addClause(cl)
@@ -299,7 +297,7 @@ class FilterModule(QObject):
 
     def _applyHighlightClauses(self, clauses):
         for clause in clauses:
-            if clause.action == FilterType.HighlightFilter:
+            if clause.action == FilterType.Highlight:
                 filterItem = self.project.data.nodesItem(clause.item)
                 self.addHighlight(filterItem.filterClause(), clause.lineColor(), clause.color)
 
@@ -352,32 +350,6 @@ class FilterModule(QObject):
 
     def zoomFilter(self):
         self.project.plan.zoomToExtent()
-
-    def showIdentifyDialog(self, feature):
-        context = feature.attribute('id')
-        self.showDataDialogList([context])
-
-    def showDataDialogFilter(self):
-        # TODO Create Context list from filter set
-        return self.showDataDialogList([])
-
-    def showDataDialogList(self, contextList):
-        subList = []
-        groupList = []
-        for context in contextList:
-            subList.append(self.data.subGroupForContext(context))
-            groupList.append(self.data.groupForContext(context))
-        dataDialog = DataDialog(self.project.iface.mainWindow())
-        dataDialog.contextTableView.setModel(self.data._contextProxyModel)
-        self.data._contextProxyModel.setFilterRegExp(utils._listToRegExp(contextList))
-        dataDialog.contextTableView.resizeColumnsToContents()
-        dataDialog.subGroupTableView.setModel(self.data._subGroupProxyModel)
-        self.data._subGroupProxyModel.setFilterRegExp(utils._listToRegExp(subList))
-        dataDialog.subGroupTableView.resizeColumnsToContents()
-        dataDialog.groupTableView.setModel(self.data._groupProxyModel)
-        self.data._groupProxyModel.setFilterRegExp(utils._listToRegExp(groupList))
-        dataDialog.groupTableView.resizeColumnsToContents()
-        return dataDialog.exec_()
 
     # Filter Set methods
 

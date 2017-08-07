@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from ark.lib import utils
+from ArkSpatial.ark.lib import utils
 
 
 class Audit():

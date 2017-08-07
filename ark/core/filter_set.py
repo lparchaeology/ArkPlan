@@ -26,9 +26,9 @@ import copy
 
 from PyQt4.QtCore import QSettings
 
-from ark.core import Config
+from ArkSpatial.ark.core import Config, FilterClause
 
-import .FilterClause
+from .filter_type import FilterType
 
 
 class FilterSet():
@@ -163,19 +163,19 @@ class FilterSet():
         firstSelect = True
         for clause in self._clauses:
             filterItem = self._project.data.nodesItem(clause.key)
-            if clause.action == FilterType.SelectFilter:
+            if clause.action == FilterType.Select:
                 if firstSelect:
                     firstSelect = False
                 else:
                     selectString += ' or '
                 selectString += filterItem.filterClause()
-            elif clause.action == FilterType.ExcludeFilter:
+            elif clause.action == FilterType.Exclude:
                 if firstExclude:
                     firstExclude = False
                 else:
                     excludeString += ' or '
                 excludeString += filterItem.filterClause()
-            elif clause.action == FilterType.IncludeFilter:
+            elif clause.action == FilterType.Include:
                 if firstInclude:
                     firstInclude = False
                 else:

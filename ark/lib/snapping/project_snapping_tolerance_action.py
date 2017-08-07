@@ -26,8 +26,8 @@ from PyQt4.QtCore import pyqtSignal
 
 from qgis.core import QgsProject
 
-import .AbstractSnappingToleranceAction
-import .Snapping
+from .abstract_snapping_tolerance_action import AbstractSnappingToleranceAction
+from .snapping_ import Snapping
 
 
 class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):

@@ -22,9 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QAction
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class AbstractSnappingUnitAction(QAction):

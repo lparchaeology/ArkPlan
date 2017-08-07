@@ -22,12 +22,11 @@
  ***************************************************************************/
 """
 
-from PyQt4 import uic
 from PyQt4.QtGui import QDialog
 
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 
-from update_layer_dialog_base import Ui_UpdateLayerDialog
+from .update_layer_dialog_base import Ui_UpdateLayerDialog
 
 
 class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):

@@ -29,7 +29,7 @@ from PyQt4.QtCore import Qt, pyqtSignal
 from qgis.core import QgsPoint
 from qgis.gui import QgsVertexMarker
 
-import .MapToolInteractive
+from .map_tool_intractive import MapToolInteractive
 
 
 class MapToolEmitPoint(MapToolInteractive):

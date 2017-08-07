@@ -25,7 +25,7 @@
 import json
 import urllib2
 
-import .ArkResponse
+from .ark_response import ArkResponse
 
 
 class Ark():

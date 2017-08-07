@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QIcon
 from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class LayerSnappingEnabledAction(QAction):

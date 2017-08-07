@@ -27,9 +27,9 @@ from PyQt4.QtGui import QWizard
 
 from qgis.core import QgsPoint
 
-from ark.lib.map import ArkMapToolEmitPoint
+from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
-from grid_wizard_base import Ui_GridWizard
+from .grid_wizard_base import Ui_GridWizard
 
 
 class GridWizard(QWizard, Ui_GridWizard):
@@ -39,7 +39,7 @@ class GridWizard(QWizard, Ui_GridWizard):
     PointOnYAxis = 2
 
     _iface = None  # QgisInterface()
-    _mapTool = None  # ArkMapToolEmitPoint
+    _mapTool = None  # MapToolEmitPoint
 
     def __init__(self, iface, project, parent=None):
         super(GridWizard, self).__init__(parent)
@@ -56,7 +56,7 @@ class GridWizard(QWizard, Ui_GridWizard):
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)
         self.methodCombo.currentIndexChanged.connect(self.setMethodType)
 
-        self._mapTool = ArkMapToolEmitPoint(self._iface.mapCanvas())
+        self._mapTool = MapToolEmitPoint(self._iface.mapCanvas())
         self._mapTool.setSnappingEnabled(True)
         self._mapTool.canvasClicked.connect(self.pointSelected)
         self._mapTool.deactivated.connect(self.cancelGetPoint)

@@ -25,10 +25,10 @@
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QAbstractItemView, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
 
-from qgis.coreimport import QgsMapLayer, QgsMapLayerRegistry
+from qgis.core import QgsMapLayer, QgsMapLayerRegistry
 
 from ..gui import DockWidget
-import .LayerSnappingWidget
+from ..snapping import LayerSnappingWidget
 
 
 class SnappingDock(DockWidget):
@@ -72,7 +72,7 @@ class SnappingDock(DockWidget):
             return
         newItem = QListWidgetItem()
         newItem.setData(Qt.UserRole, layer.id())
-        newItem.setSizeHint(layerWidget.minimumSizeHint())
+        # newItem.setSizeHint(layerWidget.minimumSizeHint())
         self._listWidget.addItem(newItem)
         self._listWidget.setItemWidget(newItem, LayerSnappingWidget(layer, self))
 

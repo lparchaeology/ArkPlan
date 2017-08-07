@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QWidget
 
-from data_widget_base import Ui_DataWidget
+from .data_widget_base import Ui_DataWidget
 
 
 class DataWidget(QWidget, Ui_DataWidget):

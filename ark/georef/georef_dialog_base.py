@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'georef/georef_dialog_base.ui'
+# Form implementation generated from reading ui file 'ark/georef/georef_dialog_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -355,7 +355,7 @@ class Ui_GeorefDialogBase(object):
         self.label_3.setText(_translate("GeorefDialogBase", "Load Raw Image", None))
         self.label_6.setText(_translate("GeorefDialogBase", "Generate Image Overviews", None))
 
-from fixed_graphics_view import FixedGraphicsView
+from ArkSpatial.ark.lib.gui.fixed_graphics_view import FixedGraphicsView
+from ArkSpatial.ark.lib.gui.overview_graphics_view import OverviewGraphicsView
 from gcp_widget import GcpWidget
-from overview_graphics_view import OverviewGraphicsView
 import resources_rc

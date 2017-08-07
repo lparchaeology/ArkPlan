@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QTabWidget
 
-from plan_widget_base import Ui_PlanWidget
+from .plan_widget_base import Ui_PlanWidget
 
 
 class PlanWidget(QTabWidget, Ui_PlanWidget):

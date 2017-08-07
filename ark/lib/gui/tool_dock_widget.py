@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QSize, Qt
 from PyQt4.QtGui import QToolBar, QVBoxLayout, QWidget
 
-import .DockWidget
+from ..gui import DockWidget
 
 
 class ToolDockWidget(DockWidget):

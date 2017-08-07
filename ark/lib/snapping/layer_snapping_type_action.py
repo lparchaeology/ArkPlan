@@ -27,8 +27,8 @@ from PyQt4.QtCore import pyqtSignal
 from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-import .AbstractSnappingTypeAction
-import .Snapping
+from .abstract_snapping_type_action import AbstractSnappingTypeAction
+from .snapping_ import Snapping
 
 
 class LayerSnappingTypeAction(AbstractSnappingTypeAction):

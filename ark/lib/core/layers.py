@@ -22,13 +22,13 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QFile, QFileInfo
+from PyQt4.QtCore import QFile, QFileInfo, QVariant
 from PyQt4.QtXml import QDomDocument, QDomImplementation
 
-from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsLayerTreeGroup, QgsMapLayer, QgsMapLayerRegistry,
-                       QgsProject, QgsVectorFileWriter, QgsVectorLayer)
+from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
+                       QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer)
 
-import ..utils
+from .. import utils
 
 
 def styleFilePath(layerPath, layerName, customStylePath, customStyleName, defaultStylePath, defaultStyleName):

@@ -26,7 +26,7 @@ from PyQt4.QtGui import QDialog
 
 from qgis.core import QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 
-from translate_features_dialog_base import Ui_TranslateFeaturesDialog
+from .translate_features_dialog_base import Ui_TranslateFeaturesDialog
 
 
 class TranslateFeaturesDialog(QDialog, Ui_TranslateFeaturesDialog):

@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QAction, QIcon
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class AbstractSnappingTypeAction(QAction):

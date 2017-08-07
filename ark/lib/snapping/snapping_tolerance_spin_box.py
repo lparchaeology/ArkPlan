@@ -27,7 +27,7 @@ from PyQt4.QtGui import QDoubleSpinBox
 
 from qgis.core import QGis, QgsProject
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class SnappingToleranceSpinBox(QDoubleSpinBox):

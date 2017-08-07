@@ -29,14 +29,14 @@ import webbrowser
 from PyQt4.QtCore import QFile, QObject, Qt, pyqtSignal
 from PyQt4.QtGui import QApplication, QSortFilterProxyModel
 
-from ark.lib import utils
-from ark.lib.core import ParentChildModel
-from ark.lib.gui import CredentialsDialog
+from ArkSpatial.ark.lib import utils
+from ArkSpatial.ark.lib.core import ParentChildModel
+from ArkSpatial.ark.lib.gui import CredentialsDialog
 
-from ark.core import Config, Item
-from ark.core.enum import *
-from ark.gui import DataDock
-from ark.pyARK import Ark
+from ArkSpatial.ark.core import Config, Item, ItemModel
+from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
+from ArkSpatial.ark.gui import DataDock
+from ArkSpatial.ark.pyARK import Ark
 
 
 class DataModule(QObject):
@@ -64,7 +64,7 @@ class DataModule(QObject):
     items = {}  # {classCode: [Item]}
 
     def __init__(self, project):
-        super(Data, self).__init__(project)
+        super(DataModule, self).__init__(project)
         self.project = project
 
     # Standard Dock methods
@@ -315,13 +315,13 @@ class DataModule(QObject):
         if (not self._indexLoaded
                 or not parentItem
                 or parentItem.isInvalid()
-                or not Config.fields[item.classCode()]['group']):
+                or not Config.fields[parentItem.classCode()]['group']):
             return parentItem
         else:
             return self.nodesItem(self.childrenItem(parentItem))
 
     def childrenItem(self, parentItem):
-        if not parentItem or parentItem.isInvalid() or not Config.fields[item.classCode()]['group']:
+        if not parentItem or parentItem.isInvalid() or not Config.fields[parentItem.classCode()]['group']:
             return Item()
         childIdSet = set()
         for parent in parentItem.toList():

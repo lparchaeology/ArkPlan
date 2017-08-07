@@ -22,11 +22,7 @@
  ***************************************************************************/
 """
 
-import csv
-
-from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt
-
-import .TableModel
+from .table_model import TableModel
 
 
 class ParentChildModel(TableModel):

@@ -24,8 +24,8 @@
 
 from PyQt4.QtCore import Qt
 
-from ark.lib.core import FeatureType
-from ark.lib.map import MapToolAddFeature
+from ArkSpatial.ark.lib.core import FeatureType
+from ArkSpatial.ark.lib.map import MapToolAddFeature
 
 
 class MapToolAddBaseline(MapToolAddFeature):

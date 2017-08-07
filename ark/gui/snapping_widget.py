@@ -26,10 +26,9 @@ from PyQt4.QtGui import QGroupBox
 
 from qgis.core import QgsProject
 
-from ark.lib import Snapping
-from ark.lib.snapping import LayerSnappingAction
+from ArkSpatial.ark.lib.snapping import LayerSnappingAction, Snapping
 
-from snapping_widget_base import Ui_SnappingWidget
+from .snapping_widget_base import Ui_SnappingWidget
 
 
 class SnappingWidget(QGroupBox, Ui_SnappingWidget):

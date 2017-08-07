@@ -25,9 +25,9 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QGroupBox
 
-from ark.core import Config, Feature, Item, Source
+from ArkSpatial.ark.core import Config, Feature, Item, Source
 
-from metadata_widget_base import Ui_MetadataWidget
+from .metadata_widget_base import Ui_MetadataWidget
 
 
 class MetadataWidget(QGroupBox, Ui_MetadataWidget):

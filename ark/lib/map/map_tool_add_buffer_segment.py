@@ -22,10 +22,10 @@
  ***************************************************************************/
 """
 
-from qgis.core import QGis, QgsGeometry
+from qgis.core import QgsGeometry
 
 from ..core import FeatureType
-import .MapToolAddFeature
+from .map_tool_add_feature import MapToolAddFeature
 
 
 class MapToolAddBufferSegment(MapToolAddFeature):
@@ -35,7 +35,7 @@ class MapToolAddBufferSegment(MapToolAddFeature):
     _bufferDistance = 0.1  # Map Units
 
     def __init__(self, iface, distance,  polygonLayer, toolName=''):
-        super(MapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
+        super(MapToolAddBufferSegment, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
         self.setBuffer(distance)
 
     def setBuffer(self, distance):
@@ -52,4 +52,4 @@ class MapToolAddBufferSegment(MapToolAddFeature):
             else:
                 mapPointList = []
             featureType = FeatureType.Polygon
-        super(MapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)
+        super(MapToolAddBufferSegment, self).addAnyFeature(featureType, mapPointList, attributes, layer)

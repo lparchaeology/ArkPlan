@@ -25,12 +25,12 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QPixmap, QWidget
 
-from ark.lib.core import ReturnPressedFilter
+from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
-from ark.core import Item
-from ark.core.enum import FilterAction, SearchStatus
+from ArkSpatial.ark.core import Item
+from ArkSpatial.ark.core.enum import FilterAction, SearchStatus
 
-from schematic_widget_base import Ui_SchematicWidget
+from .schematic_widget_base import Ui_SchematicWidget
 
 import resources
 

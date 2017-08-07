@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QVariant
 
-from ark.lib.core import FeatureType
+from ArkSpatial.ark.lib.core import FeatureType
 
 
 class Config():

@@ -23,9 +23,9 @@
  This script initializes the plugin, making it known to QGIS.
 """
 
-import os.path
+import os
 
-import .ark as ark
+from .ark import ArkSpatialPlugin
 
 # noinspection PyPep8Naming
 
@@ -36,4 +36,4 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    return ark.ArkSpatial(iface, os.path.dirname(__file__))
+    return ArkSpatialPlugin(iface, os.path.dirname(__file__))

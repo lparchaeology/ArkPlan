@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QInputDialog
 
-from ark.core import Feature
+from ArkSpatial.ark.core import Feature
 
 
 class Metadata(QObject):

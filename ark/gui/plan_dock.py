@@ -25,9 +25,9 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QIcon
 
-from ark.lib.gui import ToolDockWidget
+from ArkSpatial.ark.lib.gui import ToolDockWidget
 
-import .PlanWidget
+from .plan_widget import PlanWidget
 
 
 class PlanDock(ToolDockWidget):
@@ -92,13 +92,13 @@ class PlanDock(ToolDockWidget):
                                self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
 
         # Init the child widgets
-        self.widget.drawingWidget.initGui(iface)
+        self.widget.digitisingWidget.initGui(iface)
         self.widget.schematicWidget.initGui()
         self.widget.snappingWidget.initGui()
 
         # Cascade the child widget signals
-        self.widget.drawingWidget.resetButton.clicked.connect(self.resetSelected)
-        self.widget.drawingWidget.mergeButton.clicked.connect(self.mergeSelected)
+        self.widget.digitisingWidget.resetButton.clicked.connect(self.resetSelected)
+        self.widget.digitisingWidget.mergeButton.clicked.connect(self.mergeSelected)
 
         self.widget.schematicWidget.loadArkData.connect(self.loadArkData)
         self.widget.schematicWidget.mapActionChanged.connect(self.mapActionChanged)
@@ -124,7 +124,7 @@ class PlanDock(ToolDockWidget):
         self.widget.schematicWidget.resetSelected.connect(self.resetSchematicSelected)
 
     def unloadGui(self):
-        self.widget.drawingWidget.unloadGui()
+        self.widget.digitisingWidget.unloadGui()
         self.widget.schematicWidget.unloadGui()
         self.widget.snappingWidget.unloadGui()
         del self.widget.snappingWidget
@@ -132,23 +132,23 @@ class PlanDock(ToolDockWidget):
 
     # Load the project settings when project is loaded
     def loadProject(self, project):
-        self.widget.drawingWidget.loadProject(project)
+        self.widget.digitisingWidget.loadProject(project)
         self.widget.schematicWidget.loadProject(project)
         self.widget.snappingWidget.loadProject(project)
 
     # Close the project
     def closeProject(self):
-        self.widget.drawingWidget.closeProject()
+        self.widget.digitisingWidget.closeProject()
         self.widget.schematicWidget.closeProject()
         self.widget.snappingWidget.closeProject()
 
     # Drawing methods pass-through
 
     def source(self):
-        return self.widget.drawingWidget.source()
+        return self.widget.digitisingWidget.source()
 
     def setSource(self, source):
-        self.widget.drawingWidget.setSource(source)
+        self.widget.digitisingWidget.setSource(source)
 
     # Schematic methods pass-through
 
@@ -168,9 +168,21 @@ class PlanDock(ToolDockWidget):
     def resetContext(self):
         self.widget.schematicWidget.resetContext()
 
-    def setContext(self, context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic):
-        self.widget.schematicWidget.setContext(
-            context, foundArkData, contextType, contextDescription, foundFeatureData, foundSchematic, foundSectionSchematic)
+    def setContext(self,
+                   context,
+                   foundArkData,
+                   contextType,
+                   contextDescription,
+                   foundFeatureData,
+                   foundSchematic,
+                   foundSectionSchematic):
+        self.widget.schematicWidget.setContext(context,
+                                               foundArkData,
+                                               contextType,
+                                               contextDescription,
+                                               foundFeatureData,
+                                               foundSchematic,
+                                               foundSectionSchematic)
 
     def contextStatus(self):
         return self.widget.schematicWidget.contextStatus()

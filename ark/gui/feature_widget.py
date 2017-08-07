@@ -25,12 +25,12 @@
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QLabel, QToolButton, QWidget
 
-from ark.lib.core import FeatureType, geometry
-from ark.lib.map import MapToolAddFeature
+from ArkSpatial.ark.lib.core import FeatureType, geometry
+from ArkSpatial.ark.lib.map import MapToolAddFeature
 
-from ark.core import Audit, Config, Feature, Item, Source
+from ArkSpatial.ark.core import Audit, Config, Feature, Item, Source
 
-from feature_widget_base import Ui_FeatureWidget
+from .feature_widget_base import Ui_FeatureWidget
 
 
 class FeatureWidget(QWidget, Ui_FeatureWidget):

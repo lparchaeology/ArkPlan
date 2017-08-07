@@ -22,9 +22,9 @@
  ***************************************************************************/
 """
 
-from ark.lib.gui import ToolDockWidget
+from ArkSpatial.ark.lib.gui import ToolDockWidget
 
-import .GridWidget
+from .grid_widget import GridWidget
 
 
 class GridDock(ToolDockWidget):

@@ -27,8 +27,7 @@ from PyQt4.QtGui import QAction, QIcon
 
 from qgis.core import QgsProject
 
-from ..project import Project
-import .Snapping
+from .snapping_ import Snapping
 
 
 class ProjectSnappingEnabledAction(QAction):

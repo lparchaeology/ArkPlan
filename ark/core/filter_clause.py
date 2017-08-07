@@ -24,15 +24,16 @@
 
 from PyQt4.QtGui import QColor
 
-from ark.lib import Project, utils
+from ArkSpatial.ark.lib import Project, utils
 
-from ark.core import FilterType, Item
+from .filter_type import FilterType
+from .item import Item
 
 
 class FilterClause():
 
     item = Item()
-    action = FilterType.IncludeFilter
+    action = FilterType.Include
     color = Project.highlightLineColor()
     _viewIdx = -1
 

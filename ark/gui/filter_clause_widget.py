@@ -27,12 +27,12 @@ from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QPixmap, QWidget, Q
 
 from qgis.gui import QgsColorButtonV2
 
-from ark.lib import Project
+from ArkSpatial.ark.lib import Project
 
-from ark.core import FilterClause, FilterType, Item
-from ark.core.enum import FilterWidgetAction
+from ArkSpatial.ark.core import FilterClause, FilterType, Item
+from ArkSpatial.ark.core.enum import FilterWidgetAction
 
-from filter_clause_widget_base import Ui_FilterClauseWidget
+from .filter_clause_widget_base import Ui_FilterClauseWidget
 
 import resources
 
@@ -44,7 +44,7 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
     clauseChanged = pyqtSignal(int)
 
     _filterIndex = -1
-    _filterType = FilterType.IncludeFilter
+    _filterType = FilterType.Include
     _filterActionStatus = -1
     _siteCode = ''
 
@@ -110,7 +110,7 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
         self._typeMenu.addAction(self._colorAction)
         self.filterTypeTool.setMenu(self._typeMenu)
 
-        self._setFilterType(FilterType.IncludeFilter)
+        self._setFilterType(FilterType.Include)
 
     def index(self):
         return self._filterIndex
@@ -138,13 +138,13 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
 
     def _setFilterType(self, filterType):
         self._filterType = filterType
-        if filterType == FilterType.ExcludeFilter:
+        if filterType == FilterType.Exclude:
             self._excludeAction.setChecked(True)
             self.filterTypeTool.setDefaultAction(self._excludeAction)
-        elif filterType == FilterType.SelectFilter:
+        elif filterType == FilterType.Select:
             self._selectAction.setChecked(True)
             self.filterTypeTool.setDefaultAction(self._selectAction)
-        elif filterType == FilterType.HighlightFilter:
+        elif filterType == FilterType.Highlight:
             self._highlightAction.setChecked(True)
             self.filterTypeTool.setDefaultAction(self._highlightAction)
         else:
@@ -221,19 +221,19 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
         self.clauseRemoved.emit(self._filterIndex)
 
     def _includeFilterChecked(self):
-        self._setFilterType(FilterType.IncludeFilter)
+        self._setFilterType(FilterType.Include)
         self.clauseChanged.emit(self._filterIndex)
 
     def _excludeFilterChecked(self):
-        self._setFilterType(FilterType.ExcludeFilter)
+        self._setFilterType(FilterType.Exclude)
         self.clauseChanged.emit(self._filterIndex)
 
     def _highlightFilterChecked(self):
-        self._setFilterType(FilterType.HighlightFilter)
+        self._setFilterType(FilterType.Highlight)
         self.clauseChanged.emit(self._filterIndex)
 
     def _selectFilterChecked(self):
-        self._setFilterType(FilterType.SelectFilter)
+        self._setFilterType(FilterType.Select)
         self.clauseChanged.emit(self._filterIndex)
 
     def _filterRangeChanged(self):
@@ -244,5 +244,5 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
         pix.fill(color)
         self._highlightIcon = QIcon(pix)
         self._highlightAction.setIcon(self._highlightIcon)
-        self._setFilterType(FilterType.HighlightFilter)
+        self._setFilterType(FilterType.Highlight)
         self.clauseChanged.emit(self._filterIndex)

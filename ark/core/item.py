@@ -26,9 +26,9 @@ from functools import total_ordering
 
 from qgis.core import QgsFeatureRequest
 
-from ark.lib import utils
+from ArkSpatial.ark.lib import utils
 
-from ark.core import Config
+from ArkSpatial.ark.core import Config
 
 
 def _setAttribute(feature, attribute, value):

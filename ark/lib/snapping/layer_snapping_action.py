@@ -23,12 +23,18 @@
 """
 
 from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGuiimport import QActionGroup
+from PyQt4.QtGui import QActionGroup
 
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-import .Snapping
+from ..gui import ControlMenu
+from .layer_snapping_avoid_intersection_action import LayerSnappingAvoidIntersectionsAction
+from .layer_snapping_enabled_action import LayerSnappingEnabledAction
+from .layer_snapping_tolerance_action import LayerSnappingToleranceAction
+from .layer_snapping_type_action import LayerSnappingTypeAction
+from .layer_snapping_unit_action import LayerSnappingUnitAction
+from .snapping_ import Snapping
 
 
 class LayerSnappingAction(LayerSnappingEnabledAction):

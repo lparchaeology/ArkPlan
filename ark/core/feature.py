@@ -24,9 +24,12 @@
 
 from qgis.core import QgsFeature
 
-from ark.lib import utils
+from ArkSpatial.ark.lib import utils
 
-from ark.core import Audit, Item, Source
+from ArkSpatial.ark.core import Audit
+
+from .item import Item
+from .source import Source
 
 
 class Feature():

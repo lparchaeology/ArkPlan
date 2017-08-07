@@ -24,7 +24,7 @@
 
 from qgis.core import QgsFeature, QgsGeometry
 
-from . import FeatureHighlightItem, GeometryHighlightItem
+from ..map import FeatureHighlightItem, GeometryHighlightItem
 
 
 def addHighlight(canvas, featureOrGeometry, layer, lineColor=None, fillColor=None, buff=None, minWidth=None):

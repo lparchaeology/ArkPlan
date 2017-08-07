@@ -26,7 +26,7 @@ from PyQt4.QtCore import QPointF
 
 from qgis.core import QgsPoint
 
-from ark.lib import utils
+from ArkSpatial.ark.lib import utils
 
 
 class GroundControlPoint():

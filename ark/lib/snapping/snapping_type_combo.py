@@ -27,7 +27,7 @@ from PyQt4.QtGui import QComboBox
 
 from qgis.core import QgsProject
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class SnappingTypeCombo(QComboBox):

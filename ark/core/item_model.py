@@ -27,9 +27,9 @@ import csv
 
 from PyQt4.QtCore import QFile
 
-from ark.lib.core import TableModel
+from ArkSpatial.ark.lib.core import TableModel
 
-from ark.core import Item
+from ArkSpatial.ark.core import Item
 
 
 class ItemModel(TableModel):

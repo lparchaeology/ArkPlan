@@ -25,13 +25,13 @@
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QListWidgetItem
 
-from ark.lib.gui import ToolDockWidget
+from ArkSpatial.ark.lib.gui import ToolDockWidget
 
-from ark.core import FilterType
-from ark.core.enum import FilterWidgetAction
-from ark.gui import FilterSetWidget
+from ArkSpatial.ark.core import FilterType
+from ArkSpatial.ark.core.enum import FilterWidgetAction
+from ArkSpatial.ark.gui import FilterClauseWidget
 
-import .FilterClauseWidget
+from filter_set_widget import FilterSetWidget
 
 
 class FilterDock(ToolDockWidget):

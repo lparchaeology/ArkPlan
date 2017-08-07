@@ -28,12 +28,11 @@ from PyQt4.QtGui import QPixmap
 
 from qgis.core import QgsPoint
 
-from ark.lib.utils import debug
+from ArkSpatial.ark.lib.core import ProcessStatus
+from ArkSpatial.ark.lib.utils import debug
 
-from ark.core.enum import ProcessStatus
-
-from gcp import GroundControlPoint
-from transform import Transform
+from .gcp import GroundControlPoint
+from .transform import Transform
 
 
 class Georeferencer(QObject):

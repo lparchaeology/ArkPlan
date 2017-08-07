@@ -27,10 +27,11 @@
 from PyQt4.QtCore import QSettings, Qt, pyqtSignal
 from PyQt4.QtGui import QColor
 
-from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer
+from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPoint
 from qgis.gui import QgsRubberBand, QgsVertexMarker
 
-import .MapToolInteractive
+from ..gui.cursors import CapturePointCursor
+from .map_tool_intractive import MapToolInteractive
 
 
 class MapToolCapture(MapToolInteractive):
@@ -56,7 +57,7 @@ class MapToolCapture(MapToolInteractive):
         self._geometryType = geometryType
         if (geometryType == QGis.UnknownGeometry):
             self._useCurrentLayerGeometry = True
-        self.setCursor(capture_point_cursor)
+        self.setCursor(CapturePointCursor)
 
     def __del__(self):
         self.deactivate()

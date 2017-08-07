@@ -28,14 +28,14 @@ from PyQt4.QtGui import QApplication, QIcon
 from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPoint, QgsVectorLayer
 from qgis.gui import QgsVertexMarker
 
-from ark.lib import utils
-from ark.lib.core import LinearTransformer, layers
-from ark.lib.map import ArkMapToolEmitPoint
+from ArkSpatial.ark.lib import utils
+from ArkSpatial.ark.lib.core import LinearTransformer, layers
+from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
-from grid_dock import GridDock
-from grid_wizard import GridWizard
-from translate_features_dialog import TranslateFeaturesDialog
-from update_layer_dialog import UpdateLayerDialog
+from .grid_dock import GridDock
+from .grid_wizard import GridWizard
+from .translate_features_dialog import TranslateFeaturesDialog
+from .update_layer_dialog import UpdateLayerDialog
 
 import resources
 
@@ -45,7 +45,7 @@ class GridModule(QObject):
     project = None  # Project()
 
     # Internal variables
-    mapTool = None  # ArkMapToolEmitPoint()
+    mapTool = None  # MapToolEmitPoint()
     initialised = False
     gridWizard = None  # QWizard
     _vertexMarker = None  # QgsVertexMarker
@@ -90,7 +90,7 @@ class GridModule(QObject):
         self._setReadOnly(True)
         self._createGridAction.setEnabled(False)
 
-        self.mapTool = ArkMapToolEmitPoint(self.project.mapCanvas())
+        self.mapTool = MapToolEmitPoint(self.project.mapCanvas())
         self.mapTool.setAction(self._identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 

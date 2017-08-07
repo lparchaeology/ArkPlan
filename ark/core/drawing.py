@@ -29,10 +29,6 @@ import string
 
 class Drawing:
 
-    NoDrawingAction = 0
-    LoadDrawings = 1
-    AddDrawings = 2
-
     siteCode = ''
     sourceClass = ''
     name = ''

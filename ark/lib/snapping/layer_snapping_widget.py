@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QToolButton, QWidget
 
-import .LayerSnappingAction
+from ..snapping import LayerSnappingAction
 
 
 class LayerSnappingWidget(QWidget):

@@ -26,8 +26,8 @@ from PyQt4.QtCore import pyqtSignal
 
 from qgis.core import QgsProject
 
-import .AbstractSnappingUnitAction
-import .Snapping
+from .abstract_snapping_unit_action import AbstractSnappingUnitAction
+from .snapping_ import Snapping
 
 
 class ProjectSnappingUnitAction(AbstractSnappingUnitAction):

@@ -33,7 +33,7 @@ from qgis.gui import QgsMessageBar
 from ..core import FeatureType
 from ..gui import FeatureAction
 from ..snapping import Snapping
-import .MapToolCapture
+from .map_tool_capture import MapToolCapture
 
 
 class MapToolAddFeature(MapToolCapture):

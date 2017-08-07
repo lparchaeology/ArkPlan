@@ -25,8 +25,8 @@
 from PyQt4.QtCore import QPointF, Qt, pyqtSignal
 from PyQt4.QtGui import QPen, QWidget
 
-from gcp import GroundControlPoint
-from gcp_widget_base import Ui_GcpWidget
+from .gcp import GroundControlPoint
+from .gcp_widget_base import Ui_GcpWidget
 
 
 class GcpWidget(QWidget, Ui_GcpWidget):

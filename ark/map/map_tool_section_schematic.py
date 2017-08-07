@@ -23,8 +23,8 @@
 """
 from qgis.core import QgsGeometry
 
-from ark.lib.core import FeatureType, geometry
-from ark.lib.map import MapToolAddFeature
+from ArkSpatial.ark.lib.core import FeatureType, geometry
+from ArkSpatial.ark.lib.map import MapToolAddFeature
 
 
 class MapToolSectionSchematic(MapToolAddFeature):

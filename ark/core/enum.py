@@ -23,6 +23,12 @@
 """
 
 
+class DrawingAction():
+    NoDrawingAction = 0
+    LoadDrawings = 1
+    AddDrawings = 2
+
+
 class MapAction():
     NoMapAction = 0
     ZoomMap = 1

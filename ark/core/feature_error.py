@@ -22,9 +22,9 @@
  ***************************************************************************/
 """
 
-from ark.lib import utils
+from ArkSpatial.ark.lib import utils
 
-from ark.core import Feature
+from ArkSpatial.ark.core import Feature
 
 
 class FeatureError:

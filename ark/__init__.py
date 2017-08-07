@@ -1,3 +1,2 @@
-from ark.lib.utils import debug
-
-from arkspatial import ArkSpatial
+from .ark_spatial_plugin import ArkSpatialPlugin
+from .lib.utils import debug

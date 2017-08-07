@@ -27,10 +27,11 @@ from PyQt4.QtGui import QAction, QMenu
 
 from qgis.core import QGis
 
-from ark.lib.gui import ClipboardAction
+from ArkSpatial.ark.lib.gui import ClipboardAction
 
-from ark.core import Config, Item, Source
-from ark.gui import OpenArkAction
+from ArkSpatial.ark.core import Config, Item, Source
+
+from .open_ark_action import OpenArkAction
 
 
 class IdentifyItemAction(QAction):

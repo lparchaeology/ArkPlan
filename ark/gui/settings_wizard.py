@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QFileDialog, QWizard
 
-from settings_wizard_base import Ui_SettingsWizard
+from .settings_wizard_base import Ui_SettingsWizard
 
 
 class SettingsWizard(QWizard, Ui_SettingsWizard):

@@ -27,7 +27,7 @@ from PyQt4.QtGui import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLay
 
 from qgis.core import QgsMapLayerRegistry
 
-import .LayerComboBox
+from ..gui import LayerComboBox
 
 
 class SelectLayerDialog(QDialog):

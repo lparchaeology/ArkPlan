@@ -26,13 +26,13 @@ from PyQt4.QtCore import QUrl, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon
 from PyQt4.QtWebKit import QWebPage
 
-from ark.lib import Project
-from ark.lib.gui import ToolDockWidget
+from ArkSpatial.ark.lib import Project
+from ArkSpatial.ark.lib.gui import ToolDockWidget
 
-from ark.core import Config, Item
-from ark.gui import ActionSettingsTool
+from ArkSpatial.ark.core import Config, Item
+from ArkSpatial.ark.gui import ActionSettingsTool
 
-import .DataWidget
+from .data_widget import DataWidget
 
 import resources
 

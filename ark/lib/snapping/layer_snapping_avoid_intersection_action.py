@@ -25,10 +25,10 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QAction
 
-from qgis.core import QGis, QgsMapLayerRegistry, QgsProject, QgsVectorLayer
+from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-import .Snapping
+from .snapping_ import Snapping
 
 
 class LayerSnappingAvoidIntersectionsAction(QAction):
@@ -92,7 +92,7 @@ class LayerSnappingAvoidIntersectionsAction(QAction):
 
     def _triggered(self, status):
         layerId = self.layerId()
-        if checked and layerId:
+        if self.checked() and layerId:
             Snapping.setLayerSnappingAvoidIntersections(layerId, status)
             self.avoidIntersectionsChanged.emit(layerId, status)
 

@@ -693,12 +693,12 @@
   <customwidget>
    <class>FixedGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>fixed_graphics_view.h</header>
+   <header>ArkSpatial.ark.lib.gui.fixed_graphics_view.h</header>
   </customwidget>
   <customwidget>
    <class>OverviewGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>overview_graphics_view.h</header>
+   <header>ArkSpatial.ark.lib.gui.overview_graphics_view.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

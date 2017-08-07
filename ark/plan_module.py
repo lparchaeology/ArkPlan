@@ -21,21 +21,23 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 import bisect
 import copy
 
 from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
-from PyQt4.QtGui import QFileDialog, QIcon, QInputDialog
+from PyQt4.QtGui import QFileDialog, QInputDialog
 
-from ark.lib import utils
-from ark.lib.core import layers
+from qgis.core import NULL, QgsFeatureRequest, QgsGeometry
 
-from ark.core import Config, Feature, FeaturePlanError, Item, Source
-from ark.core.enum import *
-from ark.georef import GeorefDialog
-from ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog, TableDialog
+from ArkSpatial.ark.lib import utils
+from ArkSpatial.ark.lib.core import layers
+from ArkSpatial.ark.lib.gui import TableDialog
 
-from schematic_widget import SearchStatus
+from ArkSpatial.ark.core import Config, Drawing, Feature, FeatureError, Item, Source
+from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction, SearchStatus
+from ArkSpatial.ark.georef import GeorefDialog
+from ArkSpatial.ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog
 
 
 class PlanModule(QObject):
@@ -59,7 +61,7 @@ class PlanModule(QObject):
     _itemLogPath = ''
 
     def __init__(self, project):
-        super(Plan, self).__init__(project)
+        super(PlanModule, self).__init__(project)
         self.project = project
 
     # Create the gui when the plugin is first created
@@ -152,7 +154,7 @@ class PlanModule(QObject):
 
     # Plan Tools
 
-    def _setPlanMetadata(self, pmd):
+    def _setDrawing(self, pmd):
         self.metadata.setSiteCode(pmd.siteCode)
         self.metadata.setClassCode(pmd.sourceClass)
         if pmd.sourceId > 0:
@@ -180,7 +182,7 @@ class PlanModule(QObject):
         if (dialog.exec_()):
             for filePath in dialog.selectedFiles():
                 geoFile = QFileInfo(filePath)
-                self._setPlanMetadata(PlanMetadata(geoFile))
+                self._setDrawing(Drawing(geoFile))
                 self.project.loadGeoLayer(geoFile)
 
     def loadDrawing(self, item, zoomToDrawing=True):
@@ -199,7 +201,7 @@ class PlanModule(QObject):
         drawingDir.setNameFilters(nameList)
         drawings = drawingDir.entryInfoList()
         for drawing in drawings:
-            self._setPlanMetadata(PlanMetadata(drawing))
+            self._setDrawing(Drawing(drawing))
             self.project.loadGeoLayer(drawing, zoomToDrawing)
 
     def loadSourceDrawings(self, item, clearDrawings=False):
@@ -234,8 +236,8 @@ class PlanModule(QObject):
     def georeferencePlan(self, sourceFile, mode='name'):
         drawings = Config.drawings
         for drawing in drawings:
-            drawings[drawing]['raw'] = self.project.rawDrawingDir(group)
-            drawings[drawing]['geo'] = self.project.georefDrawingDir(group)
+            drawings[drawing]['raw'] = self.project.rawDrawingDir(drawing)
+            drawings[drawing]['geo'] = self.project.georefDrawingDir(drawing)
             drawings[drawing]['suffix'] = '_r'
             drawings[drawing]['crs'] = self.project.projectCrs().authid()
             drawings[drawing]['grid'] = self.project.grid.pointsLayer
@@ -246,7 +248,7 @@ class PlanModule(QObject):
             geoFile = georefDialog.geoFile()
             md = georefDialog.metadata()
             md.filename = geoFile.fileName()
-            self._setPlanMetadata(md)
+            self._setDrawing(md)
             self.project.loadGeoLayer(geoFile)
 
     # Layer Methods
@@ -298,7 +300,7 @@ class PlanModule(QObject):
         row = 0
         for feature in layer.getFeatures():
             # Set up the error template
-            error = FeaturePlanError()
+            error = FeatureError()
             error.layer = layer.name()
             error.row = row
             row = row + 1

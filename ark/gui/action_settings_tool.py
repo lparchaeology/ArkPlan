@@ -25,8 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QToolButton
 
-from ark.core import Drawing, FilterType
-from ark.core.enum import DrawingAction, MapAction
+from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 
 import resources
 
@@ -49,22 +48,22 @@ class ActionSettingsTool(QToolButton):
         self._moveMapAction.setChecked(True)
 
         self._filterActionGroup = QActionGroup(self)
-        self._noFilterAction = self._addFilterAction(FilterType.NoFilterAction, 'No filter action')
-        self._includeFilterAction = self._addFilterAction(FilterType.IncludeFilter, 'Add to filter')
-        self._exclusiveFilterAction = self._addFilterAction(FilterType.ExclusiveFilter, 'Exclusive filter')
-        self._selectFilterAction = self._addFilterAction(FilterType.SelectFilter, 'Add to selection')
+        self._noFilterAction = self._addFilterAction(FilterAction.NoFilterAction, 'No filter action')
+        self._includeFilterAction = self._addFilterAction(FilterAction.IncludeFilter, 'Add to filter')
+        self._exclusiveFilterAction = self._addFilterAction(FilterAction.ExclusiveFilter, 'Exclusive filter')
+        self._selectFilterAction = self._addFilterAction(FilterAction.SelectFilter, 'Add to selection')
         self._exclusiveSelectFilterAction = self._addFilterAction(
-            FilterType.ExclusiveSelectFilter, 'Exclusive selection')
-        self._highlightFilterAction = self._addFilterAction(FilterType.HighlightFilter, 'Add to highlight')
+            FilterAction.ExclusiveSelectFilter, 'Exclusive selection')
+        self._highlightFilterAction = self._addFilterAction(FilterAction.HighlightFilter, 'Add to highlight')
         self._exclusiveHighlightFilterAction = self._addFilterAction(
-            FilterType.ExclusiveHighlightFilter, 'Exclusive highlight')
+            FilterAction.ExclusiveHighlightFilter, 'Exclusive highlight')
         self._exclusiveHighlightFilterAction.setChecked(True)
 
         self._drawingActionGroup = QActionGroup(self)
-        self._noDrawingAction = self._addDrawingAction(Drawing.NoDrawingAction, 'No drawing action')
+        self._noDrawingAction = self._addDrawingAction(DrawingAction.NoDrawingAction, 'No drawing action')
         self._noDrawingAction.setChecked(True)
-        self._loadDrawingsAction = self._addDrawingAction(Drawing.LoadDrawings, 'Load drawings')
-        self._addDrawingsAction = self._addDrawingAction(Drawing.AddDrawings, 'Add drawings')
+        self._loadDrawingsAction = self._addDrawingAction(DrawingAction.LoadDrawings, 'Load drawings')
+        self._addDrawingsAction = self._addDrawingAction(DrawingAction.AddDrawings, 'Add drawings')
 
         self._settingsMenu = QMenu(self)
         self._settingsMenu.addActions(self._mapActionGroup.actions())
@@ -89,19 +88,19 @@ class ActionSettingsTool(QToolButton):
             self._moveMapAction.setChecked(True)
 
     def setFilterAction(self, filterAction):
-        if filterAction == FilterType.NoFilterAction:
+        if filterAction == FilterAction.NoFilterAction:
             self._noFilterAction.setChecked(True)
-        elif filterAction == FilterType.IncludeFilter:
+        elif filterAction == FilterAction.IncludeFilter:
             self._includeFilterAction.setChecked(True)
-        elif filterAction == FilterType.ExclusiveFilter:
+        elif filterAction == FilterAction.ExclusiveFilter:
             self._exclusiveFilterAction.setChecked(True)
-        elif filterAction == FilterType.SelectFilter:
+        elif filterAction == FilterAction.SelectFilter:
             self._selectFilterAction.setChecked(True)
-        elif filterAction == FilterType.ExclusiveSelectFilter:
+        elif filterAction == FilterAction.ExclusiveSelectFilter:
             self._exclusiveSelectFilterAction.setChecked(True)
-        elif filterAction == FilterType.HighlightFilter:
+        elif filterAction == FilterAction.HighlightFilter:
             self._highlightFilterAction.setChecked(True)
-        elif filterAction == FilterType.ExclusiveHighlightFilter:
+        elif filterAction == FilterAction.ExclusiveHighlightFilter:
             self._exclusiveHighlightFilterAction.setChecked(True)
 
     def setDrawingAction(self, drawingAction):

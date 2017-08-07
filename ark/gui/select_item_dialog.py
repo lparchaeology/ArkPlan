@@ -24,9 +24,9 @@
 
 from PyQt4.QtGui import QDialog
 
-from ark.core import Config
+from ArkSpatial.ark.core import Config
 
-from select_item_dialog_base import Ui_SelectItemDialog
+from .select_item_dialog_base import Ui_SelectItemDialog
 
 
 class SelectItemDialog(QDialog, Ui_SelectItemDialog):

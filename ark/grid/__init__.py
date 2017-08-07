@@ -1,1 +1,1 @@
-from grid import GridModule
+from .grid_module import GridModule

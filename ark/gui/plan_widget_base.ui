@@ -8,7 +8,7 @@
   <property name="currentIndex">
    <number>0</number>
   </property>
-  <widget class="QWidget" name="drawingTab">
+  <widget class="QWidget" name="digitisingTab">
    <attribute name="title">
     <string>Drawing</string>
    </attribute>
@@ -20,7 +20,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="DrawingWidget" name="drawingWidget" native="true"/>
+     <widget class="DigitisingWidget" name="digitisingWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -93,9 +93,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DrawingWidget</class>
+   <class>DigitisingWidget</class>
    <extends>QWidget</extends>
-   <header>drawing_widget.h</header>
+   <header>digitising_widget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

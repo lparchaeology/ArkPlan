@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/schematic_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/schematic_widget_base.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -364,5 +364,5 @@ class Ui_SchematicWidget(object):
         self.findSourceTool.setToolTip(_translate("SchematicWidget", "<html><head/><body><p>Pan to Context</p></body></html>", None))
         self.findSourceTool.setText(_translate("SchematicWidget", "...", None))
 
-from action_settings import ActionSettingsTool
+from action_settings_tool import ActionSettingsTool
 import resources_rc

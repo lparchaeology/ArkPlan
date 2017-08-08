@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
+from qgis.core import QGis, NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
 
 
 def bound(minVal, val, maxVal):
@@ -88,6 +88,17 @@ def csvValue(value):
         return doublequote(value)
     else:
         return str(value)
+
+
+def unitToSuffix(unit):
+    if unit == QGis.Meters:
+        return ' m'
+    elif unit == QGis.Feet:
+        return ' ft'
+    elif unit == QGis.NauticalMiles:
+        return ' NM'
+    else:
+        return ' °'
 
 
 def eqClause(field, value):

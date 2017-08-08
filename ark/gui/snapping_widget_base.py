@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/snapping_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/snapping_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -78,29 +78,29 @@ class Ui_SnappingWidget(object):
         self.snapPlanPolygonsTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
         self.snapPlanPolygonsTool.setObjectName(_fromUtf8("snapPlanPolygonsTool"))
         self.gridLayout.addWidget(self.snapPlanPolygonsTool, 2, 3, 1, 1)
-        self.snapBaseLabel = QtGui.QLabel(SnappingWidget)
-        self.snapBaseLabel.setObjectName(_fromUtf8("snapBaseLabel"))
-        self.gridLayout.addWidget(self.snapBaseLabel, 3, 0, 1, 1)
-        self.snapBasePointsTool = QtGui.QToolButton(SnappingWidget)
-        self.snapBasePointsTool.setCheckable(True)
-        self.snapBasePointsTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
-        self.snapBasePointsTool.setObjectName(_fromUtf8("snapBasePointsTool"))
-        self.gridLayout.addWidget(self.snapBasePointsTool, 3, 1, 1, 1)
-        self.snapBaseLinesTool = QtGui.QToolButton(SnappingWidget)
-        self.snapBaseLinesTool.setCheckable(True)
-        self.snapBaseLinesTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
-        self.snapBaseLinesTool.setObjectName(_fromUtf8("snapBaseLinesTool"))
-        self.gridLayout.addWidget(self.snapBaseLinesTool, 3, 2, 1, 1)
-        self.snapBasePolygonsTool = QtGui.QToolButton(SnappingWidget)
-        self.snapBasePolygonsTool.setCheckable(True)
-        self.snapBasePolygonsTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
-        self.snapBasePolygonsTool.setObjectName(_fromUtf8("snapBasePolygonsTool"))
-        self.gridLayout.addWidget(self.snapBasePolygonsTool, 3, 3, 1, 1)
+        self.snapSiteLabel = QtGui.QLabel(SnappingWidget)
+        self.snapSiteLabel.setObjectName(_fromUtf8("snapSiteLabel"))
+        self.gridLayout.addWidget(self.snapSiteLabel, 3, 0, 1, 1)
+        self.snapSitePointsTool = QtGui.QToolButton(SnappingWidget)
+        self.snapSitePointsTool.setCheckable(True)
+        self.snapSitePointsTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
+        self.snapSitePointsTool.setObjectName(_fromUtf8("snapSitePointsTool"))
+        self.gridLayout.addWidget(self.snapSitePointsTool, 3, 1, 1, 1)
+        self.snapSiteLinesTool = QtGui.QToolButton(SnappingWidget)
+        self.snapSiteLinesTool.setCheckable(True)
+        self.snapSiteLinesTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
+        self.snapSiteLinesTool.setObjectName(_fromUtf8("snapSiteLinesTool"))
+        self.gridLayout.addWidget(self.snapSiteLinesTool, 3, 2, 1, 1)
+        self.snapSitePolygonsTool = QtGui.QToolButton(SnappingWidget)
+        self.snapSitePolygonsTool.setCheckable(True)
+        self.snapSitePolygonsTool.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
+        self.snapSitePolygonsTool.setObjectName(_fromUtf8("snapSitePolygonsTool"))
+        self.gridLayout.addWidget(self.snapSitePolygonsTool, 3, 3, 1, 1)
         spacerItem = QtGui.QSpacerItem(238, 7, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 4, 0, 1, 4)
         self.snapBuffersLabel.setBuddy(self.snapBufferPointsTool)
         self.snapPlanLabel.setBuddy(self.snapPlanPointsTool)
-        self.snapBaseLabel.setBuddy(self.snapBasePointsTool)
+        self.snapSiteLabel.setBuddy(self.snapSitePointsTool)
 
         self.retranslateUi(SnappingWidget)
         QtCore.QMetaObject.connectSlotsByName(SnappingWidget)
@@ -119,8 +119,8 @@ class Ui_SnappingWidget(object):
         self.snapPlanPointsTool.setText(_translate("SnappingWidget", "...", None))
         self.snapPlanLinesTool.setText(_translate("SnappingWidget", "...", None))
         self.snapPlanPolygonsTool.setText(_translate("SnappingWidget", "...", None))
-        self.snapBaseLabel.setText(_translate("SnappingWidget", "Snap Base Data:", None))
-        self.snapBasePointsTool.setText(_translate("SnappingWidget", "...", None))
-        self.snapBaseLinesTool.setText(_translate("SnappingWidget", "...", None))
-        self.snapBasePolygonsTool.setText(_translate("SnappingWidget", "...", None))
+        self.snapSiteLabel.setText(_translate("SnappingWidget", "Snap Site Data:", None))
+        self.snapSitePointsTool.setText(_translate("SnappingWidget", "...", None))
+        self.snapSiteLinesTool.setText(_translate("SnappingWidget", "...", None))
+        self.snapSitePolygonsTool.setText(_translate("SnappingWidget", "...", None))
 

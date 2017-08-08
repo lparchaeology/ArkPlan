@@ -53,11 +53,11 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
         # self.snapPlanLinesTool.defaultAction().unload()
         del self.snapPlanPolygonsTool
         # self.snapPlanPolygonsTool.defaultAction().unload()
-        del self.snapBasePointsTool
-        # self.snapBaseLinesTool.defaultAction().unload()
-        del self.snapBaseLinesTool
-        # self.snapBasePolygonsTool.defaultAction().unload()
-        del self.snapBasePolygonsTool
+        del self.snapSitePointsTool
+        # self.snapSiteLinesTool.defaultAction().unload()
+        del self.snapSiteLinesTool
+        # self.snapSitePolygonsTool.defaultAction().unload()
+        del self.snapSitePolygonsTool
 
     # Load the project settings when project is loaded
     def loadProject(self, project):
@@ -67,9 +67,9 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
         self._setLayer(project.iface, project.plan.pointsLayer, self.snapPlanPointsTool)
         self._setLayer(project.iface, project.plan.linesLayer, self.snapPlanLinesTool)
         self._setLayer(project.iface, project.plan.polygonsLayer, self.snapPlanPolygonsTool)
-        self._setLayer(project.iface, project.base.pointsLayer, self.snapBasePointsTool)
-        self._setLayer(project.iface, project.base.linesLayer, self.snapBaseLinesTool)
-        self._setLayer(project.iface, project.base.polygonsLayer, self.snapBasePolygonsTool)
+        self._setLayer(project.iface, project.site.pointsLayer, self.snapSitePointsTool)
+        self._setLayer(project.iface, project.site.linesLayer, self.snapSiteLinesTool)
+        self._setLayer(project.iface, project.site.polygonsLayer, self.snapSitePolygonsTool)
         Snapping.setSnappingMode(Snapping.SelectedLayers)
         Snapping.setIntersectionSnapping(True)
         Snapping.setTopologicalEditing(True)
@@ -89,8 +89,8 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
         self.snapPlanPointsTool.defaultAction().unload()
         self.snapPlanLinesTool.defaultAction().unload()
         self.snapPlanPolygonsTool.defaultAction().unload()
-        self.snapBaseLinesTool.defaultAction().unload()
-        self.snapBasePolygonsTool.defaultAction().unload()
+        self.snapSiteLinesTool.defaultAction().unload()
+        self.snapSitePolygonsTool.defaultAction().unload()
         QgsProject.instance().snapSettingsChanged.disconnect(self._refresh)
 
     def _setLayer(self, iface, layer, tool):

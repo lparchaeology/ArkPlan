@@ -27,6 +27,7 @@ from PyQt4.QtGui import QDoubleSpinBox
 
 from qgis.core import QGis, QgsProject
 
+from .. import utils
 from .snapping_ import Snapping
 
 
@@ -77,20 +78,9 @@ class SnappingToleranceSpinBox(QDoubleSpinBox):
             else:
                 # TODO Find out the correct option here for all_layers!
                 layerUnits = self._iface.mapCanvas().mapUnits()
-            suffix = _unitToSuffix(layerUnits)
+            suffix = utils.unitToSuffix(layerUnits)
             self.setSuffix(suffix)
         elif unit == Snapping.ProjectUnits:
             projectUnits = self._iface.mapCanvas().mapUnits()
-            suffix = _unitToSuffix(projectUnits)
+            suffix = utils.unitToSuffix(projectUnits)
             self.setSuffix(suffix)
-
-
-def _unitToSuffix(unit):
-    if unit == QGis.Meters:
-        return ' m'
-    elif unit == QGis.Feet:
-        return ' ft'
-    elif unit == QGis.NauticalMiles:
-        return ' NM'
-    else:
-        return ' °'

@@ -26,6 +26,7 @@ from PyQt4.QtCore import pyqtSignal
 
 from qgis.core import QgsProject
 
+from .. import utils
 from .abstract_snapping_tolerance_action import AbstractSnappingToleranceAction
 from .snapping_ import Snapping
 
@@ -80,11 +81,11 @@ class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
             else:
                 # TODO Find out the correct option here for all_layers!
                 layerUnits = self._iface.mapCanvas().mapUnits()
-            suffix = _unitToSuffix(layerUnits)
+            suffix = utils.unitToSuffix(layerUnits)
             self._toleranceSpin.setSuffix(suffix)
         elif unit == Snapping.ProjectUnits:
             projectUnits = self._iface.mapCanvas().mapUnits()
-            suffix = _unitToSuffix(projectUnits)
+            suffix = utils.unitToSuffix(projectUnits)
             self._toleranceSpin.setSuffix(suffix)
         self.setEnabled(Snapping.snappingMode() != Snapping.SelectedLayers)
         self._toleranceSpin.blockSignals(False)

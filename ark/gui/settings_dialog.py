@@ -38,7 +38,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.setupUi(self)
 
         # Project tab settings
-        self.multiSiteCheck.setChecked(project.multiSiteProject())
         self.siteCodeEdit.setText(project.siteCode())
         self.styleFolderCheck.setChecked(project.useCustomStyles())
         if project.useCustomStyles():
@@ -72,7 +71,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
     def accept(self):
         # Project tab settings
-        self._project.setMultiSiteProject(self.multiSiteCheck.isChecked())
         self._project.setSiteCode(self.siteCodeEdit.text())
         self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
         self._project.setArkUrl(self.arkUrlEdit.text())

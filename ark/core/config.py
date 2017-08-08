@@ -29,8 +29,8 @@ from ArkSpatial.ark.lib.core import FeatureType
 
 class Config():
 
-    pluginName = u'ArkPlan'
-    projectGroupName = u'Ark Spatial'
+    pluginName = u'ARKspatial'
+    projectGroupName = u'ARK Spatial'
     filterSetGroupName = u'Filter Export Data'
     bufferSuffix = u'_buf'
     logSuffix = u'_log'

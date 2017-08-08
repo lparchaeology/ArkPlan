@@ -132,9 +132,9 @@ class FilterModule(QObject):
         codeList = set()
         for key in Config.classCodes:
             classCode = Config.classCodes[key]
-            if classCode['plan']:
-                codeList.add(classCode['code'])
-            elif Config.fields[classCode['code']]['group'] and self.project.data.hasClassData(classCode['code']):
+            if classCode['collection']:
+                codeList.add(key)
+            elif classCode['group']:
                 codeList.add(classCode['code'])
         codes = {}
         for code in sorted(codeList):

@@ -509,7 +509,7 @@ class ArkSpatialPlugin(Plugin):
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self.pluginPath + '/styles/' + baseName + '.qml'
+        filePath = self.pluginPath + '/ark/styles/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!

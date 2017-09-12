@@ -197,27 +197,27 @@ def addLayerToLegend(iface, layer, group=-1):
 def wkbToMemoryType(wkbType):
     if (wkbType == QGis.WKBPoint):
         return 'point'
-    elif (wkbType == QGis.WKBLineString):
+    if (wkbType == QGis.WKBLineString):
         return 'linestring'
-    elif (wkbType == QGis.WKBPolygon):
+    if (wkbType == QGis.WKBPolygon):
         return 'polygon'
-    elif (wkbType == QGis.WKBMultiPoint):
+    if (wkbType == QGis.WKBMultiPoint):
         return 'multipoint'
-    elif (wkbType == QGis.WKBMultiLineString):
+    if (wkbType == QGis.WKBMultiLineString):
         return 'multilinestring'
-    elif (wkbType == QGis.WKBMultiPolygon):
+    if (wkbType == QGis.WKBMultiPolygon):
         return 'multipolygon'
-    elif (wkbType == QGis.WKBPoint25D):
+    if (wkbType == QGis.WKBPoint25D):
         return 'point'
-    elif (wkbType == QGis.WKBLineString25D):
+    if (wkbType == QGis.WKBLineString25D):
         return 'linestring'
-    elif (wkbType == QGis.WKBPolygon25D):
+    if (wkbType == QGis.WKBPolygon25D):
         return 'polygon'
-    elif (wkbType == QGis.WKBMultiPoint25D):
+    if (wkbType == QGis.WKBMultiPoint25D):
         return 'multipoint'
-    elif (wkbType == QGis.WKBMultiLineString25D):
+    if (wkbType == QGis.WKBMultiLineString25D):
         return 'multilinestring'
-    elif (wkbType == QGis.WKBMultiPolygon25D):
+    if (wkbType == QGis.WKBMultiPolygon25D):
         return 'multipolygon'
     return 'unknown'
 
@@ -578,3 +578,22 @@ def isWritable(layer):
                 and shxFile.exists() and shxFile.isWritable()
                 and dbfFile.exists() and dbfFile.isWritable())
     return True
+
+
+def extendExtent(extent, layer):
+    if (layer is not None and layer.isValid() and layer.featureCount() > 0):
+        layer.updateExtents()
+        layerExtent = layer.extent()
+        if layerExtent.isNull() or layerExtent.isEmpty():
+            return extent
+        if extent is None:
+            return layerExtent
+        extent.combineExtentWith(layerExtent)
+    return extent
+
+
+def zoomToExtent(canvas, extent):
+    if (extent is not None and not extent.isNull()):
+        extent.scale(1.05)
+        canvas.setExtent(extent)
+        canvas.refresh()

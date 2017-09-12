@@ -455,41 +455,18 @@ class ArkSpatialPlugin(Plugin):
 
     def isArkGroup(self, name):
         return (name == Config.projectGroupName
-                or name == self.plan.settings.collectionGroupName
-                or name == self.plan.settings.bufferGroupName
-                or name == self.section.settings.collectionGroupName
-                or name == self.section.settings.bufferGroupName
-                or name == self.grid.settings.collectionGroupName
-                or name == self.grid.settings.bufferGroupName
-                or name == self.site.settings.collectionGroupName
-                or name == self.site.settings.bufferGroupName
+                or self.plan.isCollectionGroup(name)
+                or self.section.isCollectionGroup(name)
+                or self.site.isCollectionGroup(name)
+                or self.grid.isCollectionGroup(name)
                 or name == self.drawingsGroupName)
 
     def isArkLayer(self, layerId):
         return (layerId == self.plan.pointsLayerId
-                or layerId == self.plan.linesLayerId
-                or layerId == self.plan.polygonsLayerId
-                or layerId == self.plan.pointsBufferId
-                or layerId == self.plan.linesBufferId
-                or layerId == self.plan.polygonsBufferId
-                or layerId == self.section.pointsLayerId
-                or layerId == self.section.linesLayerId
-                or layerId == self.section.polygonsLayerId
-                or layerId == self.section.pointsBufferId
-                or layerId == self.section.linesBufferId
-                or layerId == self.section.polygonsBufferId
-                or layerId == self.site.pointsLayerId
-                or layerId == self.site.linesLayerId
-                or layerId == self.site.polygonsLayerId
-                or layerId == self.site.pointsBufferId
-                or layerId == self.site.linesBufferId
-                or layerId == self.site.polygonsBufferId
-                or layerId == self.grid.pointsLayerId
-                or layerId == self.grid.linesLayerId
-                or layerId == self.grid.polygonsLayerId
-                or layerId == self.grid.pointsBufferId
-                or layerId == self.grid.linesBufferId
-                or layerId == self.grid.polygonsBufferId)
+                or self.plan.isCollectionLayer(layerId)
+                or self.section.isCollectionLayer(layerId)
+                or self.site.isCollectionLayer(layerId)
+                or self.grid.isCollectionLayer(layerId))
 
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'

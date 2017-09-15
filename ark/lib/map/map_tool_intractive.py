@@ -28,7 +28,7 @@
 from PyQt4.QtCore import QRect, Qt
 from PyQt4.QtGui import QColor, QCursor
 
-from qgis.core import QGis, QgsGeometry, QgsPoint, QgsProject, QgsRectangle
+from qgis.core import QGis, QgsGeometry, QgsPointV2, QgsProject, QgsRectangle
 from qgis.gui import QgsMapCanvasSnapper, QgsMapTool, QgsRubberBand, QgsVertexMarker
 
 from ..gui import CapturePointCursor
@@ -52,7 +52,7 @@ class MapToolInteractive(QgsMapTool):
     _snappingMarker = None  # QgsVertexMarker()
 
     _showSnappableVertices = False
-    _snappableVertices = []  # [QgsPoint()]
+    _snappableVertices = []  # [QgsPointV2()]
     _snappableMarkers = []  # [QgsVertexMarker()]
 
     def __init__(self, canvas, snappingEnabled=False, showSnappableVertices=False):
@@ -233,7 +233,7 @@ class MapToolInteractive(QgsMapTool):
             return self.toMapCoordinates(cursorPoint), False
         else:
             # Take a copy as QGIS will delete the result!
-            snappedVertex = QgsPoint(snapResults[0].snappedVertex)
+            snappedVertex = QgsPointV2(snapResults[0].snappedVertex)
             return snappedVertex, True
 
     def _createSnappingMarker(self, snapPoint):
@@ -253,7 +253,7 @@ class MapToolInteractive(QgsMapTool):
         if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         extent = self.canvas().extent()
-        for vertex in self._snappableVertices.asMultiPoint():
+        for vertex in self._snappableVertices.geometry():
             if (extent.contains(vertex)):
                 marker = QgsVertexMarker(self.canvas())
                 marker.setIconType(QgsVertexMarker.ICON_X)
@@ -292,11 +292,11 @@ class MapToolInteractive(QgsMapTool):
                     if geometry is None:
                         pass
                     elif geometry.type() == QGis.Point:
-                        vertices.extend([geometry.asPoint()])
+                        vertices.extend([geometry.geometry()])
                     elif geometry.type() == QGis.Line:
-                        vertices.extend(geometry.asPolyline())
+                        vertices.extend(geometry.geometry())
                     elif geometry.type() == QGis.Polygon:
-                        lines = geometry.asPolygon()
+                        lines = geometry.geometry()
                         for line in lines:
                             vertices.extend(line)
         self._snappableVertices = QgsGeometry.fromMultiPoint(vertices)

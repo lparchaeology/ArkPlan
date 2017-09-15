@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QObject, Qt, QVariant
 from PyQt4.QtGui import QApplication, QIcon
 
-from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPoint, QgsVectorLayer
+from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPointV2, QgsVectorLayer
 from qgis.gui import QgsVertexMarker
 
 from ArkSpatial.ark.lib import utils
@@ -118,7 +118,7 @@ class GridModule(QObject):
 
     # Close the project
     def closeProject(self):
-        self._vertexMarker.setCenter(QgsPoint())
+        self._vertexMarker.setCenter(QgsPointV2())
         self.project.grid.clearFilter()
         self.initialised = False
 
@@ -146,7 +146,7 @@ class GridModule(QObject):
                 self.loadProject()
             self._vertexMarker.setCenter(self.mapPoint())
         else:
-            self._vertexMarker.setCenter(QgsPoint())
+            self._vertexMarker.setCenter(QgsPointV2())
 
     def loadGridNames(self):
         self.project.grid.clearFilter()
@@ -187,10 +187,10 @@ class GridModule(QObject):
         self.convertMapPoint()
 
     def transformPoints(self, feature):
-        mapPoint = feature.geometry().asPoint()
+        mapPoint = feature.geometry().geometry()
         localX = feature.attribute('local_x')
         localY = feature.attribute('local_y')
-        localPoint = QgsPoint(localX, localY)
+        localPoint = QgsPointV2(localX, localY)
         return mapPoint, localPoint
 
     # Widget settings methods
@@ -247,15 +247,15 @@ class GridModule(QObject):
                     self.project.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
-                mp2 = axisGeometry.interpolate(yInterval).asPoint()
-                lp2 = QgsPoint(lp1.x(), lp1.y() + yInterval)
+                mp2 = axisGeometry.interpolate(yInterval).geometry()
+                lp2 = QgsPointV2(lp1.x(), lp1.y() + yInterval)
             else:
                 if axisGeometry.length() < xInterval:
                     self.project.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
-                mp2 = axisGeometry.interpolate(xInterval).asPoint()
-                lp2 = QgsPoint(lp1.x() + xInterval, lp1.y())
+                mp2 = axisGeometry.interpolate(xInterval).geometry()
+                lp2 = QgsPointV2(lp1.x() + xInterval, lp1.y())
         if self.createGrid(self.gridWizard.siteCode(), self.gridWizard.gridName(),
                            mp1, lp1, mp2, lp2,
                            self.gridWizard.localOriginPoint(), self.gridWizard.localTerminusPoint(),
@@ -323,10 +323,10 @@ class GridModule(QObject):
         features = []
         for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
             for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
-                localPoint = QgsPoint(localX, localY)
+                localPoint = QgsPointV2(localX, localY)
                 mapPoint = transformer.map(localPoint)
                 feature = QgsFeature(layer.dataProvider().fields())
-                feature.setGeometry(QgsGeometry.fromPoint(mapPoint))
+                feature.setGeometry(QgsGeometry(mapPoint))
                 self._setAttributes(feature, attributes)
                 feature.setAttribute(localFieldX, localX)
                 feature.setAttribute(localFieldY, localY)
@@ -342,8 +342,8 @@ class GridModule(QObject):
         terminusX = originX + (intervalX * repeatX)
         terminusY = originY + (intervalY * repeatY)
         for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
-            localStartPoint = QgsPoint(localX, originY)
-            localEndPoint = QgsPoint(localX, terminusY)
+            localStartPoint = QgsPointV2(localX, originY)
+            localEndPoint = QgsPointV2(localX, terminusY)
             mapStartPoint = transformer.map(localStartPoint)
             mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
@@ -353,8 +353,8 @@ class GridModule(QObject):
             feature.setAttribute(mapFieldX, mapStartPoint.x())
             features.append(feature)
         for localY in range(originY, originY + (intervalY * repeatY) + 1, intervalY):
-            localStartPoint = QgsPoint(originX, localY)
-            localEndPoint = QgsPoint(terminusX, localY)
+            localStartPoint = QgsPointV2(originX, localY)
+            localEndPoint = QgsPointV2(terminusX, localY)
             mapStartPoint = transformer.map(localStartPoint)
             mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
@@ -371,13 +371,13 @@ class GridModule(QObject):
         features = []
         for localX in range(originX, originX + intervalX * repeatX, intervalX):
             for localY in range(originY, originY + intervalY * repeatY, intervalY):
-                localPoint = QgsPoint(localX, localY)
+                localPoint = QgsPointV2(localX, localY)
                 mapPoint = transformer.map(localPoint)
                 points = []
                 points.append(transformer.map(localPoint))
-                points.append(transformer.map(QgsPoint(localX, localY + intervalY)))
-                points.append(transformer.map(QgsPoint(localX + intervalX, localY + intervalY)))
-                points.append(transformer.map(QgsPoint(localX + intervalX, localY)))
+                points.append(transformer.map(QgsPointV2(localX, localY + intervalY)))
+                points.append(transformer.map(QgsPointV2(localX + intervalX, localY + intervalY)))
+                points.append(transformer.map(QgsPointV2(localX + intervalX, localY)))
                 feature = QgsFeature(layer.dataProvider().fields())
                 feature.setGeometry(QgsGeometry.fromPolygon([points]))
                 self._setAttributes(feature, attributes)
@@ -450,11 +450,11 @@ class GridModule(QObject):
             map_y_idx = layer.fieldNameIndex(map_y)
             if updateGeometry:
                 for feature in layer.getFeatures():
-                    localPoint = QgsPoint(feature.attribute(local_x), feature.attribute(local_y))
+                    localPoint = QgsPointV2(feature.attribute(local_x), feature.attribute(local_y))
                     mapPoint = self.localTransformer.map(localPoint)
-                    layer.changeGeometry(feature.id(), QgsGeometry.fromPoint(mapPoint))
+                    layer.changeGeometry(feature.id(), QgsGeometry(mapPoint))
             for feature in layer.getFeatures():
-                mapPoint = feature.geometry().asPoint()
+                mapPoint = feature.geometry().geometry()
                 localPoint = self.mapTransformer.map(mapPoint)
                 layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
                 layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
@@ -473,8 +473,8 @@ class GridModule(QObject):
                     dialog.layer(), dialog.translateEast(), dialog.translateNorth(), dialog.allFeatures())
 
     def translateFeatures(self, layer, xInterval, yInterval, allFeatures):
-        localOriginPoint = QgsPoint(0, 0)
-        localTranslatedPoint = QgsPoint(xInterval, yInterval)
+        localOriginPoint = QgsPointV2(0, 0)
+        localTranslatedPoint = QgsPointV2(xInterval, yInterval)
         mapOriginPoint = self.localTransformer.map(localOriginPoint)
         mapTranslatedPoint = self.localTransformer.map(localTranslatedPoint)
         dx = mapTranslatedPoint.x() - mapOriginPoint.x()
@@ -512,7 +512,7 @@ class GridModule(QObject):
             text = text[idx_l:idx_r]
         if (text[0] == '(' and text[len(text) - 1] == ')'):
             coords = text[1:len(text) - 2].split()
-            point = QgsPoint(float(coords[0]), float(coords[1]))
+            point = QgsPointV2(float(coords[0]), float(coords[1]))
             self.setMapPoint(point)
 
     def addMapPointToLayer(self):
@@ -523,13 +523,13 @@ class GridModule(QObject):
 
     def setMapPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
-            self.setMapPoint(geom.asPoint())
+            self.setMapPoint(geom.geometry())
 
     def setMapPointFromWkt(self, wkt):
         self.setMapPointFromGeometry(QgsGeometry.fromWkt(wkt))
 
     def mapPointAsGeometry(self):
-        return QgsGeometry.fromPoint(self.mapPoint())
+        return QgsGeometry(self.mapPoint())
 
     def mapPointAsFeature(self, fields):
         feature = QgsFeature(fields)
@@ -550,13 +550,13 @@ class GridModule(QObject):
 
     def setLocalPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
-            self.setLocalPoint(geom.asPoint())
+            self.setLocalPoint(geom.geometry())
 
     def setLocalPointFromWkt(self, wkt):
         self.setLocalPointFromGeometry(QgsGeometry.fromWkt(wkt))
 
     def localPointAsGeometry(self):
-        return QgsGeometry.fromPoint(self.localPoint())
+        return QgsGeometry(self.localPoint())
 
     def localPointAsWkt(self):
         # Return the text so we don't have insignificant double values

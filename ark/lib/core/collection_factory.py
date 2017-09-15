@@ -113,21 +113,21 @@ class CollectionFactory:
         if settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath):
             layers.createShapefile(path,
                                    settings.pointsLayerName,
-                                   QGis.WKBPoint,
+                                   QGis.WKBPoint25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'pointsFields'))
         path = self.projectPath() + '/' + settings.linesLayerPath
         if (settings.linesLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.linesLayerName,
-                                   QGis.WKBLineString,
+                                   QGis.WKBLineString25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'linesFields'))
         path = self.projectPath() + '/' + settings.polygonsLayerPath
         if (settings.polygonsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.polygonsLayerName,
-                                   QGis.WKBPolygon,
+                                   QGis.WKBPolygon25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'polygonsFields'))
 
@@ -136,21 +136,21 @@ class CollectionFactory:
         if (settings.pointsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.pointsLayerName,
-                                   QGis.WKBMultiPoint,
+                                   QGis.WKBMultiPoint25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'pointsFields'))
         path = self.projectPath() + '/' + settings.linesLayerPath
         if (settings.linesLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.linesLayerName,
-                                   QGis.WKBMultiLineString,
+                                   QGis.WKBMultiLineString25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'linesFields'))
         path = self.projectPath() + '/' + settings.polygonsLayerPath
         if (settings.polygonsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.polygonsLayerName,
-                                   QGis.WKBMultiPolygon,
+                                   QGis.WKBMultiPolygon25D,
                                    self.projectCrs(),
                                    self._layerFields(collection, 'polygonsFields'))
 

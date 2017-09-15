@@ -25,7 +25,7 @@
  ***************************************************************************/
 """
 
-from qgis.core import QgsFeature, QgsGeometry, QgsPoint
+from qgis.core import QgsFeature, QgsGeometry, QgsPointV2
 
 from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import polygonize, unary_union
@@ -39,9 +39,9 @@ def polygonizeFeatures(features, fields=None):
         if inGeom is None:
             pass
         elif inGeom.isMultipart():
-            lineList.extend(inGeom.asMultiPolyline())
+            lineList.extend(inGeom.geometry())
         else:
-            lineList.append(inGeom.asPolyline())
+            lineList.append(inGeom.geometry())
     allLines = MultiLineString(lineList)
     allLines = unary_union(allLines)
     polygons = list(polygonize([allLines]))
@@ -78,12 +78,12 @@ def dissolveFeatures(features, fields=None, attributes=None):
 def perpendicularPoint(lineGeometry, point):
     """Returns a point on the given line that is perpendicular to the given point."""
     if lineGeometry is None or lineGeometry.isEmpty() or point is None:
-        return QgsPoint()
+        return QgsPointV2()
     return lineGeometry.nearestPoint(point)
     # In 2.14 use QgsGeometry.nearestPoint()
     line = toMultiLineString(lineGeometry)
     perp = line.interpolate(line.project(Point(point)))
-    return QgsPoint(perp.x, perp.y)
+    return QgsPointV2(perp.x, perp.y)
 
 
 def clipLine(lineGeometry, pt1, pt2):
@@ -91,7 +91,7 @@ def clipLine(lineGeometry, pt1, pt2):
     # Assumes pt1, pt2 lie on line
     if lineGeometry is None or lineGeometry.isEmpty() or pt1 is None or pt2 is None:
         return QgsGeometry()
-    line = LineString(lineGeometry.asPolyline())
+    line = LineString(lineGeometry.geometry())
     d1 = line.project(Point(pt1))
     d2 = line.project(Point(pt2))
     if d1 < d2:
@@ -110,7 +110,7 @@ def clipLine(lineGeometry, pt1, pt2):
         pt = Point(coord)
         dp = line.project(pt)
         if dp > ds and dp < de:
-            clip.append(QgsPoint(pt.x, pt.y))
+            clip.append(QgsPointV2(pt.x, pt.y))
     clip.append(end)
     return QgsGeometry.fromPolyline(clip)
 
@@ -118,7 +118,7 @@ def clipLine(lineGeometry, pt1, pt2):
 def toMultiLineString(lineGeometry):
     lineList = []
     if lineGeometry.isMultipart():
-        lineList.extend(lineGeometry.asMultiPolyline())
+        lineList.extend(lineGeometry.geometry())
     else:
-        lineList.append(lineGeometry.asPolyline())
+        lineList.append(lineGeometry.geometry())
     return MultiLineString(lineList)

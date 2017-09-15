@@ -164,7 +164,7 @@ class MapToolAddFeature(MapToolCapture):
         geometry = None
 
         if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
-            geometry = QgsGeometry.fromPoint(layerPoints[0])
+            geometry = QgsGeometry(layerPoints[0])
         elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
             geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
         elif (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):

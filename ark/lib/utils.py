@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import QGis, NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint
+from qgis.core import QGis, NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPointV2
 
 
 def bound(minVal, val, maxVal):
@@ -46,8 +46,8 @@ def printable(val):
         return 'u' + doublequote(val)
     if type(val) == QRectF:
         return 'QRectF(' + str(val.x()) + ', ' + str(val.y()) + ', ' + str(val.width()) + ', ' + str(val.height()) + ')'
-    if type(val) == QgsPoint:
-        return 'QgsPoint(' + val.toString(3) + ')'
+    if type(val) == QgsPointV2:
+        return 'QgsPointV2(' + val.toString(3) + ')'
     if type(val) == QgsGeometry:
         return 'QgsGeometry(' + val.exportToGeoJSON() + ')'
     if type(val) == QgsFeature:

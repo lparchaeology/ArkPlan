@@ -26,7 +26,7 @@ from PyQt4.QtCore import (QCoreApplication, QDir, QFile, QFileInfo, QIODevice, Q
                           QTextStream, pyqtSignal)
 from PyQt4.QtGui import QPixmap
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.core import ProcessStatus
 from ArkSpatial.ark.lib.utils import debug
@@ -241,7 +241,7 @@ class Georeferencer(QObject):
             vals = line.split(',')
             if (len(vals) != 5):
                 return None
-            map = QgsPoint(float(vals[0]), float(vals[1]))
+            map = QgsPointV2(float(vals[0]), float(vals[1]))
             raw = QPointF(float(vals[2]), float(vals[3]))
             enabled = bool(vals[4])
             point = GroundControlPoint(raw, map, enabled)

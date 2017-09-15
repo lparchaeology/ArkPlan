@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
 from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.core import ProcessStatus, Scale
 
@@ -161,10 +161,10 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         local4 = QPointF(self.eastSpin.value() + mapUnits, self.northSpin.value() + mapUnits)
 
         if self.drawingType() == 'sec':
-            self.gcpWidget1.setGeo(local1, QgsPoint(local1))
-            self.gcpWidget2.setGeo(local2, QgsPoint(local2))
-            self.gcpWidget3.setGeo(local3, QgsPoint(local3))
-            self.gcpWidget4.setGeo(local4, QgsPoint(local4))
+            self.gcpWidget1.setGeo(local1, QgsPointV2(local1))
+            self.gcpWidget2.setGeo(local2, QgsPointV2(local2))
+            self.gcpWidget3.setGeo(local3, QgsPointV2(local3))
+            self.gcpWidget4.setGeo(local4, QgsPointV2(local4))
             return
 
         typ = self._type()
@@ -174,7 +174,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         localY = gridLayer.fieldNameIndex(typ['local_y'])
         for feature in features:
             local = QPoint(feature.attributes()[localX], feature.attributes()[localY])
-            map = feature.geometry().asPoint()
+            map = feature.geometry().geometry()
             if local == local1:
                 self.gcpWidget1.setGeo(local, map)
             elif local == local2:

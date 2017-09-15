@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QPoint, Qt
 from PyQt4.QtGui import QWizard
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
@@ -62,20 +62,20 @@ class GridWizard(QWizard, Ui_GridWizard):
         self._mapTool.deactivated.connect(self.cancelGetPoint)
 
     def mapPoint1(self):
-        return QgsPoint(self.mapPoint1EastingSpin.value(), self.mapPoint1NorthingSpin.value())
+        return QgsPointV2(self.mapPoint1EastingSpin.value(), self.mapPoint1NorthingSpin.value())
 
     def mapPoint2(self):
-        return QgsPoint(self.mapPoint2EastingSpin.value(), self.mapPoint2NorthingSpin.value())
+        return QgsPointV2(self.mapPoint2EastingSpin.value(), self.mapPoint2NorthingSpin.value())
 
     def localPoint1(self):
         if self.methodType() == GridWizard.TwoKnownPoints:
-            return QgsPoint(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
-        return QgsPoint(self.localOriginEastingSpin.value(), self.localOriginNorthingSpin.value())
+            return QgsPointV2(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
+        return QgsPointV2(self.localOriginEastingSpin.value(), self.localOriginNorthingSpin.value())
 
     def localPoint2(self):
         if self.methodType() == GridWizard.TwoKnownPoints:
-            return QgsPoint(self.localPoint2EastingSpin.value(), self.localPoint2NorthingSpin.value())
-        return QgsPoint()
+            return QgsPointV2(self.localPoint2EastingSpin.value(), self.localPoint2NorthingSpin.value())
+        return QgsPointV2()
 
     def methodType(self):
         return self.methodCombo.currentIndex()

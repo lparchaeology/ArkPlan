@@ -83,19 +83,19 @@ class GeometryHighlightItem(QgsMapCanvasItem):
 
         wkbType = self._geometry.wkbType()
         if wkbType == QGis.WKBPoint or wkbType == QGis.WKBPoint25D:
-            self._paintPoint(painter, self._geometry.asPoint())
+            self._paintPoint(painter, self._geometry.geometry())
         elif wkbType == QGis.WKBMultiPoint or wkbType == QGis.WKBMultiPoint25D:
-            for point in self._geometry.asMultiPoint():
+            for point in self._geometry.geometry():
                 self._paintPoint(painter, point)
         elif wkbType == QGis.WKBLineString or wkbType == QGis.WKBLineString25D:
-            self._paintLine(painter, self._geometry.asPolyline())
+            self._paintLine(painter, self._geometry.geometry())
         elif wkbType == QGis.WKBMultiLineString or wkbType == QGis.WKBMultiLineString25D:
-            for line in self._geometry.asMultiPolyline():
+            for line in self._geometry.geometry():
                 self._paintLine(painter, line)
         elif wkbType == QGis.WKBPolygon or wkbType == QGis.WKBPolygon25D:
-            self._paintPolygon(painter, self._geometry.asPolygon())
+            self._paintPolygon(painter, self._geometry.geometry())
         elif wkbType == QGis.WKBMultiPolygon or wkbType == QGis.WKBMultiPolygon25D:
-            for polygon in self._geometry.asMultiPolygon():
+            for polygon in self._geometry.geometry():
                 self._paintPolygon(painter, polygon)
 
     def updateRect(self):

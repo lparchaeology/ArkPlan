@@ -27,7 +27,7 @@
 from PyQt4.QtCore import QSettings, Qt, pyqtSignal
 from PyQt4.QtGui import QColor
 
-from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPoint
+from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPointV2
 from qgis.gui import QgsRubberBand, QgsVertexMarker
 
 from ..gui.cursors import CapturePointCursor
@@ -38,12 +38,12 @@ class MapToolCapture(MapToolInteractive):
 
     """Tool to capture and show mouse clicks as geometry using map points."""
 
-    canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
+    canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
 
     _iface = None
     _useCurrentLayerGeometry = False
     _geometryType = QGis.NoGeometry
-    _mapPointList = []  # QList<QgsPoint>
+    _mapPointList = []  # QList<QgsPointV2>
     _rubberBand = None  # QgsRubberBand()
     _moveRubberBand = None  # QgsRubberBand()
     _tip = ''

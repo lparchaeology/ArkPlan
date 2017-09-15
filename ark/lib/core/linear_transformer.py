@@ -25,7 +25,7 @@
 
 import math
 
-from qgis.core import QgsPoint
+from qgis.core import QgsPointV2
 
 
 class LinearTransformer():
@@ -47,15 +47,15 @@ class LinearTransformer():
 
     def map(self, p):
         # move to origin (translation part 1)
-        p = QgsPoint(p.x() - self.dx1,
+        p = QgsPointV2(p.x() - self.dx1,
                      p.y() - self.dy1)
         # scale
-        p = QgsPoint(self.ds * p.x(),
+        p = QgsPointV2(self.ds * p.x(),
                      self.ds * p.y())
         # rotation
-        p = QgsPoint(math.cos(self.da) * p.x() - math.sin(self.da) * p.y(),
+        p = QgsPointV2(math.cos(self.da) * p.x() - math.sin(self.da) * p.y(),
                      math.sin(self.da) * p.x() + math.cos(self.da) * p.y())
         # remove to right spot (translation part 2)
-        p = QgsPoint(p.x() + self.dx2,
+        p = QgsPointV2(p.x() + self.dx2,
                      p.y() + self.dy2)
         return p

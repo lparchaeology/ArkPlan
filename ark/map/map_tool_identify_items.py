@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QPoint, QSettings, Qt
 from PyQt4.QtGui import QAction, QColor, QMenu
 
-from qgis.core import QGis, QgsPoint
+from qgis.core import QGis, QgsPointV2
 from qgis.gui import QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from ArkSpatial.ark.lib.gui import ClipboardAction
@@ -121,7 +121,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         del self._highlights[:]
         del self._actions[:]
         if resetVertex and self._vertexMarker:
-            self._vertexMarker.setCenter(QgsPoint())
+            self._vertexMarker.setCenter(QgsPointV2())
 
     def _highlight(self, item):
         if item.data() == 'top':

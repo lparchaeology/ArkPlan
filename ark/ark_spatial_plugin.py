@@ -25,8 +25,7 @@
 from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
 
-from qgis.core import (QGis, QgsField, QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject,
-                       QgsRasterLayer)
+from qgis.core import QGis, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
 from qgis.gui import QgsLayerTreeView
 
 from ArkSpatial.ark.lib import Plugin
@@ -426,11 +425,6 @@ class ArkSpatialPlugin(Plugin):
         if (oldIndex == self.projectGroupIndex):
             self.projectGroupIndex = newIndex
 
-    def _layerName(self, baseName):
-        if self.siteCode():
-            return self.siteCode() + '_' + baseName
-        return 'ARK_' + baseName
-
     def loadGeoLayer(self, geoFile, zoomToLayer=True):
         # TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
@@ -510,59 +504,6 @@ class ArkSpatialPlugin(Plugin):
     def _stylePath(self, collection, collectionPath, layerName, baseName):
         return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])
 
-    def _createCollectionLayers(self, collection, settings):
-        path = self.projectPath() + '/' + settings.pointsLayerPath
-        if settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath):
-            layers.createShapefile(path,
-                                   settings.pointsLayerName,
-                                   QGis.WKBPoint,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'pointsFields'))
-        path = self.projectPath() + '/' + settings.linesLayerPath
-        if (settings.linesLayerPath and not QFile.exists(path)):
-            layers.createShapefile(path,
-                                   settings.linesLayerName,
-                                   QGis.WKBLineString,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'linesFields'))
-        path = self.projectPath() + '/' + settings.polygonsLayerPath
-        if (settings.polygonsLayerPath and not QFile.exists(path)):
-            layers.createShapefile(path,
-                                   settings.polygonsLayerName,
-                                   QGis.WKBPolygon,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'polygonsFields'))
-
-    def _createCollectionMultiLayers(self, collection, settings):
-        path = self.projectPath() + '/' + settings.pointsLayerPath
-        if (settings.pointsLayerPath and not QFile.exists(path)):
-            layers.createShapefile(path,
-                                   settings.pointsLayerName,
-                                   QGis.WKBMultiPoint,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'pointsFields'))
-        path = self.projectPath() + '/' + settings.linesLayerPath
-        if (settings.linesLayerPath and not QFile.exists(path)):
-            layers.createShapefile(path,
-                                   settings.linesLayerName,
-                                   QGis.WKBMultiLineString,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'linesFields'))
-        path = self.projectPath() + '/' + settings.polygonsLayerPath
-        if (settings.polygonsLayerPath and not QFile.exists(path)):
-            layers.createShapefile(path,
-                                   settings.polygonsLayerName,
-                                   QGis.WKBMultiPolygon,
-                                   self.projectCrs(),
-                                   self._layerFields(collection, 'polygonsFields'))
-
-    def _layerFields(self, collection, fieldsKey):
-        fieldKeys = self._collectionDefault(collection, fieldsKey)
-        fields = QgsFields()
-        for fieldKey in fieldKeys:
-            fields.append(self.field(fieldKey))
-        return fields
-
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         action = QAction(QIcon(iconPath), text, self.layerDock)
         if callback is not None:
@@ -576,12 +517,6 @@ class ArkSpatialPlugin(Plugin):
         self.layerDock.toolbar.addAction(action)
         # self.actions.append(action)
         return action
-
-    # Field settings
-
-    def field(self, fieldKey):
-        config = Config.fields[fieldKey]
-        return QgsField(config['attribute'], config['type'], '', config['len'], config['decimals'], config['label'])
 
     # Project level settings
     # TODO Move to json file

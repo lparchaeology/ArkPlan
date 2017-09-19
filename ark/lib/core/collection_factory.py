@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QDockWidget, QIcon
 from qgis.core import QGis, QgsField, QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject
 
 from ..project import Project
-from collection import Collection, CollectionSettings, layers
+from collection import Collection, Collectionsettings, layers
 
 
 class CollectionFactory:
@@ -38,120 +38,121 @@ class CollectionFactory:
         path = config['path']
         bufferPath = path + '/buffer'
         logPath = path + '/log'
-        QDir(self.projectPath() + '/' + path).mkpath('.')
+        QDir(projectPath + '/' + path).mkpath('.')
         if config['buffer']:
-            QDir(self.projectPath() + '/' + bufferPath).mkpath('.')
+            QDir(projectPath + '/' + bufferPath).mkpath('.')
         if config['log']:
-            QDir(self.projectPath() + '/' + logPath).mkpath('.')
-        lcs = CollectionSettings()
-        lcs.collection = grp
-        lcs.collectionPath = path
-        lcs.parentGroupName = Config.projectGroupName
-        lcs.collectionGroupName = config['groupName']
-        lcs.bufferGroupName = config['bufferGroupName']
-        lcs.log = config['log']
+            QDir(projectPath + '/' + logPath).mkpath('.')
+        settings = Collectionsettings()
+        settings.collection = grp
+        settings.collectionPath = path
+        settings.parentGroupName = Config.projectGroupName
+        settings.collectionGroupName = config['groupName']
+        settings.bufferGroupName = config['bufferGroupName']
+        settings.log = config['log']
         if config['pointsBaseName']:
-            lcs.pointsLayerLabel = config['pointsLabel']
-            lcs.pointsLayerName = self._layerName(config['pointsBaseName'])
-            lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
-            lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, config['pointsBaseName'])
+            settings.pointsLayerLabel = config['pointsLabel']
+            settings.pointsLayerName = self._layerName(config['pointsBaseName'])
+            settings.pointsLayerPath = self._shapeFile(path, settings.pointsLayerName)
+            settings.pointsStylePath = self._styleFile(path, settings.pointsLayerName, config['pointsBaseName'])
             if config['buffer']:
-                lcs.pointsBufferName = lcs.pointsLayerName + Config.bufferSuffix
-                lcs.pointsBufferPath = self._shapeFile(bufferPath, lcs.pointsBufferName)
+                settings.pointsBufferName = settings.pointsLayerName + Config.bufferSuffix
+                settings.pointsBufferPath = self._shapeFile(bufferPath, settings.pointsBufferName)
             if config['log']:
-                lcs.pointsLogName = lcs.pointsLayerName + Config.logSuffix
-                lcs.pointsLogPath = self._shapeFile(logPath, lcs.pointsLogName)
+                settings.pointsLogName = settings.pointsLayerName + Config.logSuffix
+                settings.pointsLogPath = self._shapeFile(logPath, settings.pointsLogName)
         if config['linesBaseName']:
-            lcs.linesLayerLabel = config['linesLabel']
-            lcs.linesLayerName = self._layerName(config['linesBaseName'])
-            lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
-            lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, config['linesBaseName'])
+            settings.linesLayerLabel = config['linesLabel']
+            settings.linesLayerName = self._layerName(config['linesBaseName'])
+            settings.linesLayerPath = self._shapeFile(path, settings.linesLayerName)
+            settings.linesStylePath = self._styleFile(path, settings.linesLayerName, config['linesBaseName'])
             if config['buffer']:
-                lcs.linesBufferName = lcs.linesLayerName + Config.bufferSuffix
-                lcs.linesBufferPath = self._shapeFile(bufferPath, lcs.linesBufferName)
+                settings.linesBufferName = settings.linesLayerName + Config.bufferSuffix
+                settings.linesBufferPath = self._shapeFile(bufferPath, settings.linesBufferName)
             if config['log']:
-                lcs.linesLogName = lcs.linesLayerName + Config.logSuffix
-                lcs.linesLogPath = self._shapeFile(logPath, lcs.linesLogName)
+                settings.linesLogName = settings.linesLayerName + Config.logSuffix
+                settings.linesLogPath = self._shapeFile(logPath, settings.linesLogName)
         if config['polygonsBaseName']:
-            lcs.polygonsLayerLabel = config['polygonsLabel']
-            lcs.polygonsLayerName = self._layerName(config['polygonsBaseName'])
-            lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
-            lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, config['polygonsBaseName'])
+            settings.polygonsLayerLabel = config['polygonsLabel']
+            settings.polygonsLayerName = self._layerName(config['polygonsBaseName'])
+            settings.polygonsLayerPath = self._shapeFile(path, settings.polygonsLayerName)
+            settings.polygonsStylePath = self._styleFile(path, settings.polygonsLayerName, config['polygonsBaseName'])
             if config['buffer']:
-                lcs.polygonsBufferName = lcs.polygonsLayerName + Config.bufferSuffix
-                lcs.polygonsBufferPath = self._shapeFile(bufferPath, lcs.polygonsBufferName)
+                settings.polygonsBufferName = settings.polygonsLayerName + Config.bufferSuffix
+                settings.polygonsBufferPath = self._shapeFile(bufferPath, settings.polygonsBufferName)
             if config['log']:
-                lcs.polygonsLogName = lcs.polygonsLayerName + Config.logSuffix
-                lcs.polygonsLogPath = self._shapeFile(logPath, lcs.polygonsLogName)
-        lcs.toProject(self.pluginName)
+                settings.polygonsLogName = settings.polygonsLayerName + Config.logSuffix
+                settings.polygonsLogPath = self._shapeFile(logPath, settings.polygonsLogName)
+        settings.toProject(self.pluginName)
         if config['multi']:
-            self._createCollectionMultiLayers(grp, lcs)
+            self._createCollectionMultiLayers(grp, settings)
         else:
-            self._createCollectionLayers(grp, lcs)
-        return lcs
+            self._createCollectionLayers(grp, settings)
+        return settings
 
-    def _loadCollection(self, collection):
-        lcs = CollectionSettings.fromProject(self.pluginName, collection)
-        if (lcs.collection == ''):
-            lcs = self._configureCollection(collection)
-        if lcs.pointsStylePath == '':
-            lcs.pointsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
-        if lcs.linesStylePath == '':
-            lcs.linesStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.linesLayerName, 'linesBaseName')
-        if lcs.polygonsStylePath == '':
-            lcs.polygonsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
-        return Collection(self.iface, self.projectPath(), lcs)
+    def loadCollection(self, iface, projectPath, scope, collection):
+        settings = Collectionsettings.fromProject(scope, collection)
+        if (settings.collection == ''):
+            settings = self._configureCollection(collection)
+        if settings.pointsStylePath == '':
+            settings.pointsStylePath = self._stylePath(
+                settings.collection, settings.collectionPath, settings.pointsLayerName, 'pointsBaseName')
+        if settings.linesStylePath == '':
+            settings.linesStylePath = self._stylePath(
+                settings.collection, settings.collectionPath, settings.linesLayerName, 'linesBaseName')
+        if settings.polygonsStylePath == '':
+            settings.polygonsStylePath = self._stylePath(
+                settings.collection, settings.collectionPath, settings.polygonsLayerName, 'polygonsBaseName')
+        return Collection(iface, projectPath, settings)
 
     def _stylePath(self, collection, collectionPath, layerName, baseName):
         return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])
 
-    def _createCollectionLayers(self, collection, settings):
-        path = self.projectPath() + '/' + settings.pointsLayerPath
-        if settings.pointsLayerPath and not QFile.exists(self.projectPath() + '/' + settings.pointsLayerPath):
+    def createCollectionLayers(self, projectPath, collection, settings):
+        path = projectPath + '/' + settings.pointsLayerPath
+        if settings.pointsLayerPath and not QFile.exists(projectPath + '/' + settings.pointsLayerPath):
             layers.createShapefile(path,
                                    settings.pointsLayerName,
                                    QGis.WKBPoint25D,
-                                   self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'pointsFields'))
-        path = self.projectPath() + '/' + settings.linesLayerPath
+        path = projectPath + '/' + settings.linesLayerPath
         if (settings.linesLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.linesLayerName,
                                    QGis.WKBLineString25D,
-                                   self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'linesFields'))
-        path = self.projectPath() + '/' + settings.polygonsLayerPath
+        path = projectPath + '/' + settings.polygonsLayerPath
         if (settings.polygonsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.polygonsLayerName,
                                    QGis.WKBPolygon25D,
-                                   self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'polygonsFields'))
 
     def _createCollectionMultiLayers(self, collection, settings):
-        path = self.projectPath() + '/' + settings.pointsLayerPath
+        path = projectPath + '/' + settings.pointsLayerPath
         if (settings.pointsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.pointsLayerName,
                                    QGis.WKBMultiPoint25D,
                                    self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'pointsFields'))
-        path = self.projectPath() + '/' + settings.linesLayerPath
+        path = projectPath + '/' + settings.linesLayerPath
         if (settings.linesLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.linesLayerName,
                                    QGis.WKBMultiLineString25D,
-                                   self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'linesFields'))
-        path = self.projectPath() + '/' + settings.polygonsLayerPath
+        path = projectPath + '/' + settings.polygonsLayerPath
         if (settings.polygonsLayerPath and not QFile.exists(path)):
             layers.createShapefile(path,
                                    settings.polygonsLayerName,
                                    QGis.WKBMultiPolygon25D,
-                                   self.projectCrs(),
+                                   settings.crs,
                                    self._layerFields(collection, 'polygonsFields'))
 
     def _layerFields(self, collection, fieldsKey):

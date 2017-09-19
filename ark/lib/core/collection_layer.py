@@ -32,9 +32,6 @@ from .. import utils
 
 class CollectionLayer:
 
-    projectPath = ''
-    settings = None  # CollectionLayerSettings()
-
     layer = None
     layerId = ''
 
@@ -47,12 +44,14 @@ class CollectionLayer:
     # Internal variables
 
     _iface = None  # QgsInterface()
+    _collection = None  # Collection()
+    _settings = None  # CollectionLayerSettings()
+
     _highlights = []  # [QgsHighlight]
 
-    def __init__(self, iface, projectPath, settings):
-        self._iface = iface
-        self.projectPath = projectPath
-        self.settings = settings
+    def __init__(self, collection, layer):
+        self._iface = collection._iface
+        self.settings = collection.settings.layers[layer]
         # If the layers are removed we need to remove them too
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
@@ -85,7 +84,7 @@ class CollectionLayer:
         if (len(layerList) > 0):
             layer = layerList[0]
         else:
-            fullLayerPath = self.projectPath + '/' + self.settings.layerPath
+            fullLayerPath = self._collection.projectPath + '/' + self.settings.layerPath
             layer = QgsVectorLayer(fullLayerPath, self.settings.layerName, 'ogr')
             layer = layers.addLayerToLegend(self._iface, layer)
         if layer and layer.isValid():
@@ -104,7 +103,7 @@ class CollectionLayer:
         if (len(layerList) > 0):
             layer = layerList[0]
         else:
-            fullLayerPath = self.projectPath + '/' + self.settings.bufferPath
+            fullLayerPath = self._collection.projectPath + '/' + self.settings.bufferPath
             if (self.settings.bufferName and self.settings.bufferPath and self.layer and self.layer.isValid()):
                 if not QFile.exists(fullLayerPath):
                     # If the layer doesn't exist, clone from the source layer
@@ -131,7 +130,7 @@ class CollectionLayer:
         if (len(layerList) > 0):
             layer = layerList[0]
         else:
-            fullLayerPath = self.projectPath + '/' + layerPath
+            fullLayerPath = self._collection.projectPath + '/' + layerPath
             if (layerName and layerPath and sourceLayer and sourceLayer.isValid()):
                 if not QFile.exists(fullLayerPath):
                     # If the layer doesn't exist, clone from the source layer

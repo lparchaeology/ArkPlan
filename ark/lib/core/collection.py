@@ -34,15 +34,13 @@ class Collection:
     projectPath = ''
     settings = None  # CollectionSettings()
 
-    points = None  # CollectionLayer()
-    lines = None  # CollectionLayer()
-    polygons = None  # CollectionLayer()
-
     # Internal variables
 
     _iface = None  # QgsInterface()
     _collectionGroupIndex = -1
     _bufferGroupIndex = -1
+    _fields = {}  # QgsField()
+    _layers = {}  # CollectionLayer()
 
     filter = ''
     selection = ''
@@ -52,9 +50,6 @@ class Collection:
         self._iface = iface
         self.projectPath = projectPath
         self.settings = settings
-        self.points = CollectionLayer(iface, projectPath, settings.points)
-        self.lines = CollectionLayer(iface, projectPath, settings.lines)
-        self.polygons = CollectionLayer(iface, projectPath, settings.polygons)
         # If the legend indexes change make sure we stay updated
         self._iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
@@ -69,9 +64,21 @@ class Collection:
                 or name == self.plan.settings.bufferGroupName)
 
     def isCollectionLayer(self, layerId):
-        return (self.points.isCollectionLayer(layerId)
-                or self.lines.isCollectionLayer(layerId)
-                or self.polygons.isCollectionLayer(layerId))
+        for layer in self._layers:
+            if self._layers[layer].isCollectionLayer(layerId):
+                return True
+        return False
+
+    def _layers(self):
+        if self._layers.length != self.settings.layers.length:
+            self.loadCollection
+        return self._layers
+
+    def _layer(self, layer):
+        layers = self._layers()
+        if layer in layers:
+            return layers[layer];
+        return None
 
     def _groupIndexChanged(self, oldIndex, newIndex):
         if (oldIndex == self._collectionGroupIndex):
@@ -106,74 +113,74 @@ class Collection:
         return True
 
     def isWritable(self):
-        return (self.points.isWritable() and self.lines.isWritable() and self.polygons.isWritable())
+        for layer in self._layers():
+            if not self._layers[layer]isWritable():
+                return False
+        return True
 
     def mergeBuffers(self, undoMessage='Merge Buffers', timestamp=None):
         if timestamp is None:
             timestamp = utils.timestamp()
-        return (self.points.mergeBuffer(undoMessage, timestamp)
-                and self.lines.mergeBuffer(undoMessage, timestamp)
-                and self.polygons.mergeBuffer(undoMessage, timestamp))
+        for layer in self._layers():
+            if not self._layers[layer].mergeBuffer(undoMessage, timestamp):
+                return False
+        return True
 
     def resetBuffers(self, undoMessage='Reset Buffers'):
-        self.points.resetBuffer(undoMessage)
-        self.lines.resetBuffer(undoMessage)
-        self.polygons.resetBuffer(undoMessage)
+        for layer in self._layers():
+            self._layers[layer].resetBuffer(undoMessage)
 
     def clearBuffers(self, undoMessage='Clear Buffers'):
-        self.points.clearBuffer(undoMessage)
-        self.lines.clearBuffer(undoMessage)
-        self.polygons.clearBuffer(undoMessage)
+        for layer in self._layers():
+            self._layers[layer].clearBuffer(undoMessage)
 
     def moveFeatureRequestToBuffers(self, featureRequest, logMessage='Move Features', timestamp=None):
         if timestamp is None:
             timestamp = utils.timestamp()
-        return (self.points.moveFeatureRequestToBuffer(featureRequest, logMessage, timestamp)
-                and self.lines.moveFeatureRequestToBuffer(featureRequest, logMessage, timestamp)
-                and self.polygons.moveFeatureRequestToBuffer(featureRequest, logMessage, timestamp))
+        for layer in self._layers():
+            if not self._layers[layer].moveFeatureRequestToBuffer(featureRequest, logMessage, timestamp):
+                return False
+        return True
 
     def copyFeatureRequestToBuffers(self, featureRequest, logMessage='Copy Features to Buffer', timestamp=None):
         if timestamp is None:
             timestamp = utils.timestamp()
-        return (self.points.copyFeatureRequestToBuffer(featureRequest, logMessage, timestamp)
-                and self.lines.copyFeatureRequestToBuffer(featureRequest, logMessage, timestamp)
-                and self.polygons.copyFeatureRequestToBuffer(featureRequest, logMessage, timestamp))
+        for layer in self._layers():
+            if not self._layers[layer].copyFeatureRequestToBuffer(featureRequest, logMessage, timestamp):
+                return False
+        return True
 
     def deleteFeatureRequest(self, featureRequest, logMessage='Delete Features', timestamp=None):
         if timestamp is None:
             timestamp = utils.timestamp()
-        return (self.points.deleteFeatureRequest(featureRequest, logMessage, timestamp)
-                and self.lines.deleteFeatureRequest(featureRequest, logMessage, timestamp)
-                and self.polygons.deleteFeatureRequest(featureRequest, logMessage, timestamp))
+        for layer in self._layers():
+            if not self._layers[layer].deleteFeatureRequest(featureRequest, logMessage, timestamp):
+                return False
+        return True
 
     def setVisible(self, status):
-        self.points.setVisible(status)
-        self.lines.setVisible(status)
-        self.polygons.setVisible(status)
+        for layer in self._layers():
+            self._layers[layer].setVisible(status)
 
     def applyFilter(self, expression):
         self.filter = expression
-        self.points.applyFilter(expression)
-        self.lines.applyFilter(expression)
-        self.polygons.applyFilter(expression)
+        for layer in self._layers():
+            self._layers[layer].applyFilter(expression)
 
     def clearFilter(self):
-        self.points.clearFilter()
-        self.lines.clearFilter()
-        self.polygons.clearFilter()
+        for layer in self._layers():
+            self._layers[layer].clearFilter()
 
     def applySelection(self, expression):
         self.selection = expression
         request = QgsFeatureRequest().setFilterExpression(expression)
-        self.points.applySelectionRequest(request)
-        self.lines.applySelectionRequest(request)
-        self.polygons.applySelectionRequest(request)
+        for layer in self._layers():
+            self._layers[layer].applySelectionRequest(request)
 
     def clearSelection(self):
         self.selection = ''
-        self.points.removeSelection()
-        self.lines.removeSelection()
-        self.polygons.removeSelection()
+        for layer in self._layers():
+            self._layers[layer].removeSelection()
 
     def zoomToExtent(self):
         extent = self.extent()
@@ -181,32 +188,27 @@ class Collection:
 
     def extent(self):
         extent = None
-        extent = layers.extendExtent(extent, self.points.extent())
-        extent = layers.extendExtent(extent, self.lines.extent())
-        extent = layers.extendExtent(extent, self.polygons.extent())
+        for layer in self._layers():
+            extent = layers.extendExtent(extent, self._layers[layer].extent())
         return extent
 
     def uniqueValues(self, fieldName):
         vals = set()
-        vals.update(self.points.uniqueValues())
-        vals.update(self.lines.uniqueValues())
-        vals.update(self.polygons.uniqueValues())
+        for layer in self._layers():
+            vals.update(self._layers[layer].uniqueValues())
         return sorted(vals)
 
     def updateAttribute(self, attribute, value, expression=None):
-        self.points.updateAttribute(attribute, value, expression)
-        self.lines.updateAttribute(attribute, value, expression)
-        self.polygons.updateAttribute(attribute, value, expression)
+        for layer in self._layers():
+            self._layers[layer].updateAttribute(attribute, value, expression)
 
     def updateBufferAttribute(self, attribute, value, expression=None):
-        self.points.updateBufferAttribute(attribute, value, expression)
-        self.lines.updateBufferAttribute(attribute, value, expression)
-        self.polygons.updateBufferAttribute(attribute, value, expression)
+        for layer in self._layers():
+            self._layers[layer].updateBufferAttribute(attribute, value, expression)
 
     def clearHighlight(self):
-        self.points.clearHighlight()
-        self.lines.clearHighlight()
-        self.polygons.clearHighlight()
+        for layer in self._layers():
+            self._layers[layer].clearHighlight()
 
     def applyHighlight(self, requestOrExpr, lineColor=None, fillColor=None, buff=None, minWidth=None):
         request = None
@@ -217,9 +219,8 @@ class Collection:
             request = QgsFeatureRequest()
             request.setFilterExpression(requestOrExpr)
             self.highlight = requestOrExpr
-        self.points.applyHighlight(request, lineColor, fillColor, buff, minWidth)
-        self.lines.applyHighlight(request, lineColor, fillColor, buff, minWidth)
-        self.polygons.applyHighlight(request, lineColor, fillColor, buff, minWidth)
+        for layer in self._layers():
+            self._layers[layer].applyHighlight(request, lineColor, fillColor, buff, minWidth)
 
     def addHighlight(self, requestOrExpr, lineColor=None, fillColor=None, buff=None, minWidth=None):
         request = None
@@ -230,6 +231,5 @@ class Collection:
             request = QgsFeatureRequest()
             request.setFilterExpression(requestOrExpr)
             self.highlight = requestOrExpr
-        self.points.addHighlight(request, lineColor, fillColor, buff, minWidth)
-        self.lines.addHighlight(request, lineColor, fillColor, buff, minWidth)
-        self.polygons.addHighlight(request, lineColor, fillColor, buff, minWidth)
+        for layer in self._layers():
+            self._layers[layer].addHighlight(request, lineColor, fillColor, buff, minWidth)

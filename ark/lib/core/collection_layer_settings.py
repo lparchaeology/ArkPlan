@@ -32,7 +32,6 @@ class CollectionLayerSettings:
     name = ''
     path = ''
     stylePath = ''
-    fields = {}
 
     bufferLayer = False
     bufferName = ''
@@ -43,7 +42,7 @@ class CollectionLayerSettings:
     logPath = ''
 
     def setLayer(self, layer, label, name, path):
-        self.ayer = layer
+        self.layer = layer
         self.label = label
         self.name = name
         self.path = path
@@ -60,18 +59,18 @@ class CollectionLayerSettings:
 
     @staticmethod
     def fromProject(scope, path, layer):
-        cl = CollectionLayerSettings()
-        cl.layer = layer
+        settings = CollectionLayerSettings()
+        settings.layer = layer
         path = path + layer + '/'
-        cl.label = Project.readEntry(scope, path + 'label')
-        cl.name = Project.readEntry(scope, path + 'name')
-        cl.path = Project.readEntry(scope, path + 'path')
-        cl.bufferLayer = Project.readBoolEntry(scope, path + 'bufferLayer')
-        cl.bufferName = Project.readEntry(scope, path + 'bufferName')
-        cl.bufferPath = Project.readEntry(scope, path + 'bufferPath')
-        cl.logLayer = Project.readBoolEntry(scope, path + 'logLayer')
-        cl.logName = Project.readEntry(scope, path + 'logName')
-        cl.logPath = Project.readEntry(scope, path + 'logPath')
+        settings.label = Project.readEntry(scope, path + 'label')
+        settings.name = Project.readEntry(scope, path + 'name')
+        settings.path = Project.readEntry(scope, path + 'path')
+        settings.bufferLayer = Project.readBoolEntry(scope, path + 'bufferLayer')
+        settings.bufferName = Project.readEntry(scope, path + 'bufferName')
+        settings.bufferPath = Project.readEntry(scope, path + 'bufferPath')
+        settings.logLayer = Project.readBoolEntry(scope, path + 'logLayer')
+        settings.logName = Project.readEntry(scope, path + 'logName')
+        settings.logPath = Project.readEntry(scope, path + 'logPath')
 
     def toProject(self, scope, path):
         path = path + self.layer + '/'

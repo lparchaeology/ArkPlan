@@ -34,26 +34,32 @@ class CollectionSettings:
     parentGroupName = ''
     collectionGroupName = ''
     bufferGroupName = ''
-    log = False
 
-    points = None
-    lines = None
-    polygons = None
+    log = False
+    multi = False
+
+    fields = {}
+    layers = {}
+    crs = ''
 
     @staticmethod
     def fromProject(scope, collection):
         path = 'collections/' + collection + '/'
-        cs = CollectionSettings()
-        cs.collection = Project.readEntry(scope, path + 'collection')
-        cs.collectionPath = Project.readEntry(scope, path + 'collectionPath')
-        cs.collectionGroupName = Project.readEntry(scope, path + 'collectionGroupName')
-        cs.parentGroupName = Project.readEntry(scope, path + 'parentGroupName')
-        cs.bufferGroupName = Project.readEntry(scope, path + 'bufferGroupName')
-        cs.log = Project.readBoolEntry(scope, path + 'log')
-        cs.points = CollectionLayerSettings.fromProject(scope, path, 'points')
-        cs.lines = CollectionLayerSettings.fromProject(scope, path, 'points')
-        cs.polygons = CollectionLayerSettings.fromProject(scope, path, 'points')
-        return cs
+        settings = CollectionSettings()
+        settings.collection = Project.readEntry(scope, path + 'collection')
+        settings.collectionPath = Project.readEntry(scope, path + 'collectionPath')
+        settings.collectionGroupName = Project.readEntry(scope, path + 'collectionGroupName')
+        settings.parentGroupName = Project.readEntry(scope, path + 'parentGroupName')
+        settings.bufferGroupName = Project.readEntry(scope, path + 'bufferGroupName')
+        settings.log = Project.readBoolEntry(scope, path + 'log')
+        fields = Project.readListEntry(scope, path + 'fields')
+        for field in fields:
+            settings.fields[field] = CollectionFieldSettings.fromProject(scope, path, field)
+        layers = Project.readListEntry(scope, path + 'layers')
+        for layer in layers:
+            settings.layers[layer] = CollectionLayerSettings.fromProject(scope, path, layer)
+        settings.crs = Project.readEntry(scope, path + 'crs')
+        return settings
 
     def toProject(self, scope):
         path = 'collections/' + self.collection + '/'
@@ -63,6 +69,8 @@ class CollectionSettings:
         Project.writeEntry(scope, path + 'parentGroupName', self.parentGroupName)
         Project.writeEntry(scope, path + 'bufferGroupName', self.bufferGroupName)
         Project.writeEntry(scope, path + 'log', self.log)
-        self.points.toProject(scope, path)
-        self.lines.toProject(scope, path)
-        self.polygons.toProject(scope, path)
+        for field in self.fields:
+            field.toProject(scope, path)
+        for layer in self.layers:
+            layer.toProject(scope, path)
+        Project.writeEntry(scope, path + 'crs', self.crs.authid())

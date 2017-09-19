@@ -248,25 +248,7 @@ class Config():
         },
     }
 
-    pointsFieldsDefault = [
-        'site',
-        'class',
-        'id',
-        'label',
-        'category',
-        'elevation',
-        'source_cd',
-        'source_cl',
-        'source_id',
-        'file',
-        'comment',
-        'created',
-        'creator',
-        'modified',
-        'modifier'
-    ]
-
-    layersFieldsDefaults = [
+    collectionFields = [
         'site',
         'class',
         'id',
@@ -304,15 +286,21 @@ class Config():
             'bufferGroupName': 'Plan Edit',
             'log': True,
             'multi': True,
-            'pointsLabel': 'Plan Points',
-            'linesLabel': 'Plan Lines',
-            'polygonsLabel': 'Plan Polygons',
-            'pointsBaseName': 'plan_pt',
-            'linesBaseName': 'plan_pl',
-            'polygonsBaseName': 'plan_pg',
-            'pointsFields': pointsFieldsDefault,
-            'linesFields': layersFieldsDefaults,
-            'polygonsFields': layersFieldsDefaults,
+            'fields': collectionFields,
+            'layers': {
+                'points': {
+                    'name': 'plan_pt',
+                    'label': 'Plan Points',
+                },
+                'lines': {
+                    'name': 'plan_pl',
+                    'label': 'Plan Lines',
+                },
+                'polygons': {
+                    'name': 'plan_pg',
+                    'label': 'Plan Polygons',
+                },
+            },
         },
         'section': {
             'path': 'vector/collection/section',
@@ -323,15 +311,21 @@ class Config():
             'bufferGroupName': '',
             'log': True,
             'multi': True,
-            'pointsLabel': 'Section Points',
-            'linesLabel': 'Section Lines',
-            'polygonsLabel': 'Section Polygons',
-            'pointsBaseName': 'section_pt',
-            'linesBaseName': 'section_pl',
-            'polygonsBaseName': 'section_pg',
-            'pointsFields': pointsFieldsDefault,
-            'linesFields': layersFieldsDefaults,
-            'polygonsFields': layersFieldsDefaults,
+            'fields': collectionFields,
+            'layers': {
+                'points': {
+                    'name': 'section_pt',
+                    'label': 'Section Points',
+                },
+                'lines': {
+                    'name': 'section_pl',
+                    'label': 'Section Lines',
+                },
+                'polygons': {
+                    'name': 'section_pg',
+                    'label': 'Section Polygons',
+                },
+            },
         },
         'site': {
             'path': 'vector/collection/site',
@@ -342,15 +336,21 @@ class Config():
             'bufferGroupName': '',
             'log': True,
             'multi': True,
-            'pointsLabel': 'Site Points',
-            'linesLabel': 'Site Lines',
-            'polygonsLabel': 'Site Polygons',
-            'pointsBaseName': 'site_pt',
-            'linesBaseName': 'site_pl',
-            'polygonsBaseName': 'site_pg',
-            'pointsFields': pointsFieldsDefault,
-            'linesFields': layersFieldsDefaults,
-            'polygonsFields': layersFieldsDefaults,
+            'fields': collectionFields,
+            'layers': {
+                'points': {
+                    'name': 'site_pt',
+                    'label': 'Site Points',
+                },
+                'lines': {
+                    'name': 'site_pl',
+                    'label': 'Site Lines',
+                },
+                'polygons': {
+                    'name': 'site_pg',
+                    'label': 'Site Polygons',
+                },
+            },
         },
         'grid': {
             'path': 'vector/collection/grid',
@@ -361,15 +361,21 @@ class Config():
             'bufferGroupName': '',
             'log': False,
             'multi': False,
-            'pointsLabel': 'Grid Points',
-            'linesLabel': 'Grid Lines',
-            'polygonsLabel': 'Grid Polygons',
-            'pointsBaseName': 'grid_pt',
-            'linesBaseName': 'grid_pl',
-            'polygonsBaseName': 'grid_pg',
-            'pointsFields': gridFieldsDefaults,
-            'linesFields': gridFieldsDefaults,
-            'polygonsFields': gridFieldsDefaults,
+            'fields': gridFields,
+            'layers': {
+                'points': {
+                    'name': 'grid_pt',
+                    'label': 'Grid Points',
+                },
+                'lines': {
+                    'name': 'grid_pl',
+                    'label': 'Grid Lines',
+                },
+                'polygons': {
+                    'name': 'grid_pg',
+                    'label': 'Grid Polygons',
+                },
+            },
         },
     }
 
@@ -707,3 +713,71 @@ class Config():
             {'class': 'site', 'category': 'tpt', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Test Pit'},
         ]
     }
+        'plan': {
+            'points': {
+                'name': 'plan_pt',
+                'label': 'Plan Points',
+            },
+            'lines': {
+                'name': 'plan_pl',
+                'label': 'Plan Lines',
+            },
+            'polygons': {
+                'name': 'plan_pg',
+                'label': 'Plan Polygons',
+            },
+            'fields': collectionFields,
+        },
+
+    def toCollectionSettings(self, collection):
+        config = Config.collections[collection]
+        path = config['path']
+        bufferPath = path + '/buffer'
+        logPath = path + '/log'
+
+        settings = CollectionSettings()
+        settings.collection = collection
+        settings.collectionPath = path
+        settings.parentGroupName = Config.projectGroupName
+        settings.collectionGroupName = config['groupName']
+        settings.bufferGroupName = config['bufferGroupName']
+        settings.log = config['log']
+        settings.multi = config['multi']
+
+        for field in config['fields']:
+            fieldConfig = config['fields'][field]
+            fs = CollectionFieldSettings()
+            fs.attribute = fieldConfig['attribute']
+            fs.type = fieldConfig['type']
+            fs.len = fieldConfig['len']
+            fs.decimals = fieldConfig['decimals']
+            fs.min = fieldConfig['min']
+            fs.max = fieldConfig['max']
+            fs.default = fieldConfig['default']
+            fs.label = fieldConfig['label']
+            fs.query = fieldConfig['query']
+            settings.fields[field] = fs
+
+        for layer in config['layers']:
+            layerConfig = config['layers'][layer]
+            ls = CollectionLayerSettings()
+            ls.label = layerConfig['label']
+            ls.name = layerConfig['name']
+            ls.path = self._shapeFile(path, ls.name)
+            ls.stylePath = self._styleFile(path, ls.name, config['pointsBaseName'])
+            if config['buffer']:
+                ls.bufferLayer = True
+                ls.bufferName = ls.name + Config.bufferSuffix
+                ls.bufferPath = self._shapeFile(bufferPath, ls.bufferName)
+            if config['log']:
+                ls.logLayer = True
+                ls.logName = ls.name + Config.logSuffix
+                ls.logPath = self._shapeFile(logPath, ls.logName)
+            if layer == 'points':
+                settings.points = ls
+            if layer == 'lines':
+                settings.lines = ls
+            if layer == 'polygons':
+                settings.polygons = ls
+
+        return settings

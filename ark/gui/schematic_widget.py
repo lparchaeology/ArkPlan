@@ -30,9 +30,7 @@ from ArkSpatial.ark.lib.core import ReturnPressedFilter
 from ArkSpatial.ark.core import Item
 from ArkSpatial.ark.core.enum import FilterAction, SearchStatus
 
-from .schematic_widget_base import Ui_SchematicWidget
-
-import resources
+from .ui.schematic_widget_base import Ui_SchematicWidget
 
 
 class SchematicWidget(QWidget, Ui_SchematicWidget):

@@ -26,7 +26,7 @@ from PyQt4.QtGui import QApplication, QDialog
 
 from ArkSpatial.ark.lib.core import TableModel
 
-from .feature_error_dialog_base import Ui_FeatureErrorDialog
+from .ui.feature_error_dialog_base import Ui_FeatureErrorDialog
 
 
 class FeatureErrorDialog(QDialog, Ui_FeatureErrorDialog):

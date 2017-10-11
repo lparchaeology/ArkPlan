@@ -1,4 +1,6 @@
 from .collection import Collection
+from .collection_field_settings import CollectionFieldSettings
+from .collection_layer_settings import CollectionLayerSettings
 from .collection_settings import CollectionSettings
 from .feature_type import FeatureType
 from .linear_transformer import LinearTransformer

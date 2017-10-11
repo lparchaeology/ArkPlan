@@ -24,13 +24,14 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QWizardPage
+
 
 class FolderPage(QWizardPage):
 
     def initializePage(self):
         self.registerField("projectFolder*", self.wizard().projectFolderEdit)
+
 
 class ProjectPage(QWizardPage):
 
@@ -40,12 +41,14 @@ class ProjectPage(QWizardPage):
         self.registerField("siteCodes", self.wizard().siteCodesEdit)
         self.registerField("arkUrl", self.wizard().arkUrlEdit)
 
+
 class UserPage(QWizardPage):
 
     def initializePage(self):
         self.registerField("userFullname*", self.wizard().userFullnameEdit)
         self.registerField("userInitials*", self.wizard().userInitialsEdit)
         self.registerField("arkUserId", self.wizard().arkUserIdEdit)
+
 
 class ConfirmPage(QWizardPage):
 

@@ -25,7 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QDoubleSpinBox
 
-from qgis.core import QGis, QgsProject
+from qgis.core import QgsProject
 
 from .. import utils
 from .snapping_ import Snapping

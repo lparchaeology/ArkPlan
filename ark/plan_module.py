@@ -578,7 +578,7 @@ class PlanModule(QObject):
     def _sectionChanged(self, item):
         try:
             self.mapTools['scs'].setSectionGeometry(self._sectionLineGeometry(item))
-        except:
+        except Exception:
             pass
 
     def _metadataFromBuffers(self, item):
@@ -761,7 +761,7 @@ class PlanModule(QObject):
                     contextDescription = str(vals[u'conf_field_short_desc'][0][u'current'])
             else:
                 contextDescription = 'Context not in ARK'
-        except:
+        except Exception:
             haveArk = SearchStatus.Unknown
         return haveArk, contextType, contextDescription
 
@@ -909,12 +909,12 @@ class PlanModule(QObject):
                 itemData = self.project.data.getItemData(context)
                 try:
                     row['Type'] = itemData['context_type']
-                except:
+                except Exception:
                     row['Type'] = ''
                     try:
                         vals = self.project.data.getItemFields(context, ['conf_field_cxttype'])
                         row['Type'] = vals[u'conf_field_cxttype']
-                    except:
+                    except Exception:
                         row['Type'] = ''
                 if context in features:
                     row['GIS'] = 'Y'

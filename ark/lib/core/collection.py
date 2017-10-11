@@ -26,7 +26,6 @@ from qgis.core import QgsFeatureRequest
 
 from . import layers
 from .. import utils
-from collection_layer import CollectionLayer
 
 
 class Collection:
@@ -77,7 +76,7 @@ class Collection:
     def _layer(self, layer):
         layers = self._layers()
         if layer in layers:
-            return layers[layer];
+            return layers[layer]
         return None
 
     def _groupIndexChanged(self, oldIndex, newIndex):
@@ -114,7 +113,7 @@ class Collection:
 
     def isWritable(self):
         for layer in self._layers():
-            if not self._layers[layer]isWritable():
+            if not self._layers[layer].isWritable():
                 return False
         return True
 

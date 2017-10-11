@@ -28,7 +28,7 @@ from PyQt4.QtGui import QApplication, QDialog
 
 from .. import utils
 from ..core import TableModel
-from table_dialog_base import Ui_TableDialog
+from .ui.table_dialog_base import Ui_TableDialog
 
 
 class TableDialog(QDialog, Ui_TableDialog):

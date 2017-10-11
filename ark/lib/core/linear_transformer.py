@@ -48,14 +48,14 @@ class LinearTransformer():
     def map(self, p):
         # move to origin (translation part 1)
         p = QgsPointV2(p.x() - self.dx1,
-                     p.y() - self.dy1)
+                       p.y() - self.dy1)
         # scale
         p = QgsPointV2(self.ds * p.x(),
-                     self.ds * p.y())
+                       self.ds * p.y())
         # rotation
         p = QgsPointV2(math.cos(self.da) * p.x() - math.sin(self.da) * p.y(),
-                     math.sin(self.da) * p.x() + math.cos(self.da) * p.y())
+                       math.sin(self.da) * p.x() + math.cos(self.da) * p.y())
         # remove to right spot (translation part 2)
         p = QgsPointV2(p.x() + self.dx2,
-                     p.y() + self.dy2)
+                       p.y() + self.dy2)
         return p

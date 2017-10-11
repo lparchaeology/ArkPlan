@@ -27,7 +27,7 @@ from PyQt4.QtGui import QWidget
 
 from ArkSpatial.ark.core import Config, Item
 
-from .select_item_widget_base import Ui_SelectItemWidget
+from .ui.select_item_widget_base import Ui_SelectItemWidget
 
 
 class SelectItemWidget(QWidget, Ui_SelectItemWidget):

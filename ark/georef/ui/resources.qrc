@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="plugins/ark/georef">
+    <file alias="running.png">resources/user-away-extended.png</file>
+    <file alias="failure.png">resources/user-busy.png</file>
+    <file alias="unknown.png">resources/user-offline.png</file>
+    <file alias="success.png">resources/user-online.png</file>
+  </qresource>
+</RCC>

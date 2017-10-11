@@ -29,7 +29,7 @@ from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
 from ArkSpatial.ark.core import Config
 
-from .select_drawing_dialog_base import Ui_SelectDrawingDialog
+from .ui.select_drawing_dialog_base import Ui_SelectDrawingDialog
 
 
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):

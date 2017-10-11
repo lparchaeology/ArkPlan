@@ -34,14 +34,14 @@ from ArkSpatial.ark.core import Config
 def _setAttribute(feature, attribute, value):
     try:
         feature.setAttribute(attribute, utils.strip(value))
-    except:
+    except Exception:
         pass
 
 
 def _attribute(feature, attribute):
     try:
         return feature.attribute(attribute)
-    except:
+    except Exception:
         return None
 
 
@@ -152,7 +152,7 @@ class Item():
             classCode = keyParts[0]
             itemId = valParts[1]
             self.setItem(siteCode, classCode, itemId)
-        except:
+        except Exception:
             pass
 
     def attributes(self):

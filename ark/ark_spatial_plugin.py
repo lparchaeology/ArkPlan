@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
 
-from qgis.core import QGis, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
+from qgis.core import QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
 from qgis.gui import QgsLayerTreeView
 
 from ArkSpatial.ark.lib import Plugin

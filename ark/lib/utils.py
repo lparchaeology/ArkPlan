@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import QGis, NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPointV2
+from qgis.core import NULL, QGis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPointV2
 
 
 def bound(minVal, val, maxVal):

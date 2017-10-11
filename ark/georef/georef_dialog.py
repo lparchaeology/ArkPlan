@@ -31,11 +31,9 @@ from ArkSpatial.ark.lib.core import ProcessStatus, Scale
 
 from ArkSpatial.ark.core import Drawing
 
-from .georef_dialog_base import Ui_GeorefDialogBase
 from .georeferencer import Georeferencer
 from .transform import Transform
-
-import resources
+from .ui.georef_dialog_base import Ui_GeorefDialogBase
 
 
 class GeorefDialog(QDialog, Ui_GeorefDialogBase):

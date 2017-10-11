@@ -37,8 +37,6 @@ from .grid_wizard import GridWizard
 from .translate_features_dialog import TranslateFeaturesDialog
 from .update_layer_dialog import UpdateLayerDialog
 
-import resources
-
 
 class GridModule(QObject):
 
@@ -240,8 +238,6 @@ class GridModule(QObject):
         yInterval = self.gridWizard.localNorthingInterval()
         if self.gridWizard.methodType() != GridWizard.TwoKnownPoints:
             axisGeometry = QgsGeometry.fromPolyline([mp1, mp2])
-            mapAxisPoint = None
-            localAxisPoint = None
             if self.gridWizard.methodType() == GridWizard.PointOnYAxis:
                 if axisGeometry.length() < yInterval:
                     self.project.showCriticalMessage(

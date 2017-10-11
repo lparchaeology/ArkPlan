@@ -32,9 +32,7 @@ from ArkSpatial.ark.lib import Project
 from ArkSpatial.ark.core import FilterClause, FilterType, Item
 from ArkSpatial.ark.core.enum import FilterWidgetAction
 
-from .filter_clause_widget_base import Ui_FilterClauseWidget
-
-import resources
+from .ui.filter_clause_widget_base import Ui_FilterClauseWidget
 
 
 class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):

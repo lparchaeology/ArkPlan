@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QActionGroup, QMenu, QWidget
 
-from .filter_set_widget_base import Ui_FilterSetWidget
+from .ui.filter_set_widget_base import Ui_FilterSetWidget
 
 
 class FilterSetWidget(QWidget, Ui_FilterSetWidget):

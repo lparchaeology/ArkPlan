@@ -28,7 +28,7 @@ from qgis.core import QgsProject
 
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction, Snapping
 
-from .snapping_widget_base import Ui_SnappingWidget
+from .ui.snapping_widget_base import Ui_SnappingWidget
 
 
 class SnappingWidget(QGroupBox, Ui_SnappingWidget):

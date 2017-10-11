@@ -258,7 +258,7 @@ class Snapping():
         try:
             idx = layerIdList.index(layerId)
             return True
-        except:
+        except Exception:
             return False
 
     @staticmethod
@@ -268,7 +268,7 @@ class Snapping():
             idx = layerIdList.index(layerId)
             if not avoid:
                 layerIdList.pop(idx)
-        except:
+        except Exception:
             if avoid:
                 layerIdList.append(layerId)
         Project.writeEntry("Digitizing", "/AvoidIntersectionsList", layerIdList)
@@ -282,7 +282,7 @@ class Snapping():
         try:
             idx = layerIdList.index(layerId)
             return valueList[idx]
-        except:
+        except Exception:
             return defaultValue
 
     @staticmethod
@@ -295,7 +295,7 @@ class Snapping():
             idx = layerIdList.index(layerId)
             valueList[idx] = str(value)
             Project.writeEntry("Digitizing", layerListId, valueList)
-        except:
+        except Exception:
             pass
 
     @staticmethod

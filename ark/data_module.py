@@ -136,7 +136,7 @@ class DataModule(QObject):
     def hasClassData(self, classCode):
         try:
             return (len(self.items[classCode]) > 0)
-        except:
+        except Exception:
             return False
 
     def _hasOfflineData(self):
@@ -188,7 +188,6 @@ class DataModule(QObject):
                 keyFields = Item('site', 'class', 'id')
                 items = set()
                 reader = csv.DictReader(csvFile)
-                fields = reader.fieldnames
                 for record in reader:
                     item = Item(record[keyFields.siteCode], record[keyFields.classCode], record[keyFields.itemId])
                     items.add(item)
@@ -250,7 +249,7 @@ class DataModule(QObject):
                 idx = bisect.bisect_left(self.items[item.classCode()], item) - 1
             if idx >= 0 and idx < len(self.items[item.classCode()]) - 1:
                 return self.items[item.classCode()][idx]
-        except:
+        except Exception:
             pass
         return Item()
 
@@ -273,7 +272,7 @@ class DataModule(QObject):
             url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
             try:
                 webbrowser.get().open_new_tab(url)
-            except:
+            except Exception:
                 QApplication.clipboard().setText(url)
                 self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
@@ -289,7 +288,7 @@ class DataModule(QObject):
                 itemvalue = link[u'xmi_itemvalue'].split(u'_')
                 item = Item(itemvalue[0], itemkey[:3], itemvalue[1])
                 items.append(item)
-        except:
+        except Exception:
             return []
         return items
 
@@ -376,6 +375,7 @@ class DataModule(QObject):
     def getItemSubform(self, item, subform):
         if self._ark is None or item is None or item.isInvalid():
             return {}
+        response = self._ark.get()
         if response.error:
             utils.logMessage(response.url)
             utils.logMessage(response.message)
@@ -417,7 +417,7 @@ class DataModule(QObject):
         if isinstance(value, dict):
             try:
                 return value[u'current']
-            except:
+            except Exception:
                 return ''
         return value
 

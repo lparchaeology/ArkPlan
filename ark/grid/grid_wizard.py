@@ -29,7 +29,7 @@ from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
-from .grid_wizard_base import Ui_GridWizard
+from .ui.grid_wizard_base import Ui_GridWizard
 
 
 class GridWizard(QWizard, Ui_GridWizard):

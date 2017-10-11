@@ -31,7 +31,7 @@ from ArkSpatial.ark.lib.gui import ClipboardAction
 
 from ArkSpatial.ark.core import Config, Item, Source
 
-from .open_ark_action import OpenArkAction
+from open_ark_action import OpenArkAction
 
 
 class IdentifyItemAction(QAction):

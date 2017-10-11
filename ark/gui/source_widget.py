@@ -27,7 +27,7 @@ from PyQt4.QtGui import QWidget
 
 from ArkSpatial.ark.core import Config, Item, Source
 
-from .source_widget_base import Ui_SourceWidget
+from .ui.source_widget_base import Ui_SourceWidget
 
 
 class SourceWidget(QWidget, Ui_SourceWidget):

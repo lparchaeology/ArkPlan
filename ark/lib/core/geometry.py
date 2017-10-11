@@ -68,7 +68,7 @@ def dissolveFeatures(features, fields=None, attributes=None):
             try:
                 tmpOutGeom = QgsGeometry(tmpOutGeom.combine(tmpInGeom))
                 outFeat.setGeometry(tmpOutGeom)
-            except:
+            except Exception:
                 pass
     if attributes is not None:
         outFeat.setAttributes(attributes)

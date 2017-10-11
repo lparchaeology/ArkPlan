@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QColor, QDialog
 
-from .filter_export_dialog_base import Ui_FilterExportDialog
+from .ui.filter_export_dialog_base import Ui_FilterExportDialog
 
 
 class FilterExportDialog(QDialog, Ui_FilterExportDialog):

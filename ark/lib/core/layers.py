@@ -30,6 +30,25 @@ from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsField, QgsL
 
 from .. import utils
 
+wkbMemoryType = {
+    QGis.WKBPoint: 'point',
+    QGis.WKBLineString: 'linestring',
+    QGis.WKBPolygon: 'polygon',
+    QGis.WKBMultiPoint: 'multipoint',
+    QGis.WKBMultiLineString: 'multilinestring',
+    QGis.WKBMultiPolygon: 'multipolygon',
+    QGis.WKBPoint25D: 'point',
+    QGis.WKBLineString25D: 'linestring',
+    QGis.WKBPolygon25D: 'polygon',
+    QGis.WKBMultiPoint25D: 'multipoint',
+    QGis.WKBMultiLineString25D: 'multilinestring',
+    QGis.WKBMultiPolygon25D: 'multipolygon'
+}
+
+
+def wkbToMemoryType(wkbType):
+    return wkbMemoryType.get(wkbType, 'unknown')
+
 
 def styleFilePath(layerPath, layerName, customStylePath, customStyleName, defaultStylePath, defaultStyleName):
     # Try find a style file to match a layer
@@ -194,34 +213,6 @@ def addLayerToLegend(iface, layer, group=-1):
     return layer
 
 
-def wkbToMemoryType(wkbType):
-    if (wkbType == QGis.WKBPoint):
-        return 'point'
-    if (wkbType == QGis.WKBLineString):
-        return 'linestring'
-    if (wkbType == QGis.WKBPolygon):
-        return 'polygon'
-    if (wkbType == QGis.WKBMultiPoint):
-        return 'multipoint'
-    if (wkbType == QGis.WKBMultiLineString):
-        return 'multilinestring'
-    if (wkbType == QGis.WKBMultiPolygon):
-        return 'multipolygon'
-    if (wkbType == QGis.WKBPoint25D):
-        return 'point'
-    if (wkbType == QGis.WKBLineString25D):
-        return 'linestring'
-    if (wkbType == QGis.WKBPolygon25D):
-        return 'polygon'
-    if (wkbType == QGis.WKBMultiPoint25D):
-        return 'multipoint'
-    if (wkbType == QGis.WKBMultiLineString25D):
-        return 'multilinestring'
-    if (wkbType == QGis.WKBMultiPolygon25D):
-        return 'multipolygon'
-    return 'unknown'
-
-
 def getAllFeaturesRequest(featureRequest, layer):
     # Stash the current selection
     selection = []
@@ -298,7 +289,7 @@ def addFeatures(features, layer, undoMessage='Add features to layer', log=False,
                 if log:
                     try:
                         logLayer.rollBack()
-                    except:
+                    except Exception:
                         utils.logMessage('TODO: Rollback on log layer???')
                 layer.rollBack()
         if ft == 0:
@@ -330,7 +321,8 @@ def copyFeatureRequest(featureRequest,
         toLayer.setSubsetString('')
     # Copy the requested features
     wasEditing = toLayer.isEditable()
-    if (wasEditing or toLayer.startEditing()) and (logLayer is None or logLayer.isEditable() or logLayer.startEditing()):
+    isEditable = wasEditing or toLayer.startEditing()
+    if (isEditable and (logLayer is None or logLayer.isEditable() or logLayer.startEditing())):
         if wasEditing:
             toLayer.beginEditCommand(undoMessage)
         logFeature = None
@@ -373,7 +365,7 @@ def copyFeatureRequest(featureRequest,
                 if log:
                     try:
                         logLayer.rollBack()
-                    except:
+                    except Exception:
                         utils.logMessage('TODO: Rollback on log layer???')
                 toLayer.rollBack()
         if ft == 0:
@@ -390,7 +382,7 @@ def copyAllFeatures(fromLayer, toLayer, undoMessage='Copy features', log=False, 
     return copyFeatureRequest(QgsFeatureRequest(), fromLayer, toLayer, undoMessage, log, logLayer, timestamp)
 
 
-def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete features', log=False, logLayer=None, timestamp=None):
+def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete feature', log=False, logLayer=None, timestamp=None):
     ok = False
     if log and (not logLayer or not timestamp):
         return ok
@@ -445,7 +437,7 @@ def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete features', l
                 if log:
                     try:
                         logLayer.rollBack()
-                    except:
+                    except Exception:
                         utils.logMessage('TODO: Rollback on log layer???')
                 layer.rollBack()
         if ft == 0:

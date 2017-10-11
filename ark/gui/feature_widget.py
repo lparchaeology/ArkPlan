@@ -30,7 +30,7 @@ from ArkSpatial.ark.lib.map import MapToolAddFeature
 
 from ArkSpatial.ark.core import Audit, Config, Feature, Item, Source
 
-from .feature_widget_base import Ui_FeatureWidget
+from .ui.feature_widget_base import Ui_FeatureWidget
 
 
 class FeatureWidget(QWidget, Ui_FeatureWidget):

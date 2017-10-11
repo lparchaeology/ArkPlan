@@ -179,7 +179,7 @@ class Ark():
             try:
                 ret.data = json.loads(ret.raw)
                 ret.error = False
-            except:
+            except Exception:
                 ret.message = 'Invalid JSON'
                 ret.reason = 'Invalid JSON'
         return ret

@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QDialog
 
-from credentials_dialog_base import Ui_CredentialsDialog
+from .ui.credentials_dialog_base import Ui_CredentialsDialog
 
 
 class CredentialsDialog(QDialog, Ui_CredentialsDialog):

@@ -34,8 +34,6 @@ from ArkSpatial.ark.gui import ActionSettingsTool
 
 from .data_widget import DataWidget
 
-import resources
-
 
 class DataDock(ToolDockWidget):
 

@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QWidget
 
-from .digitising_widget_base import Ui_DigitisingWidget
+from .ui.digitising_widget_base import Ui_DigitisingWidget
 
 
 class DigitisingWidget(QWidget, Ui_DigitisingWidget):

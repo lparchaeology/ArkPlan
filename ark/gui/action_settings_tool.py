@@ -27,8 +27,6 @@ from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QToolButton
 
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 
-import resources
-
 
 class ActionSettingsTool(QToolButton):
 

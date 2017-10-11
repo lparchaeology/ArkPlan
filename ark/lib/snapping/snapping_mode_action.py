@@ -29,8 +29,6 @@ from qgis.core import QgsProject
 
 from .snapping_ import Snapping
 
-import resources
-
 
 class SnappingModeAction(QAction):
 

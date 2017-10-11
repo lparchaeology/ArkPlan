@@ -30,7 +30,7 @@ from ..project import Project
 class CollectionFieldSettings:
 
     attribute = ''
-    type = None // QVariant.Type
+    type = None  # QVariant.Type
     length = None
     decimals = None
     min = None

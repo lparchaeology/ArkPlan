@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QVariant
 
-from ArkSpatial.ark.lib.core import FeatureType
+from ArkSpatial.ark.lib.core import CollectionFieldSettings, CollectionLayerSettings, CollectionSettings, FeatureType
 
 
 class Config():
@@ -361,7 +361,7 @@ class Config():
             'bufferGroupName': '',
             'log': False,
             'multi': False,
-            'fields': gridFields,
+            'fields': gridFieldsDefaults,
             'layers': {
                 'points': {
                     'name': 'grid_pt',
@@ -713,21 +713,6 @@ class Config():
             {'class': 'site', 'category': 'tpt', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Test Pit'},
         ]
     }
-        'plan': {
-            'points': {
-                'name': 'plan_pt',
-                'label': 'Plan Points',
-            },
-            'lines': {
-                'name': 'plan_pl',
-                'label': 'Plan Lines',
-            },
-            'polygons': {
-                'name': 'plan_pg',
-                'label': 'Plan Polygons',
-            },
-            'fields': collectionFields,
-        },
 
     def toCollectionSettings(self, collection):
         config = Config.collections[collection]

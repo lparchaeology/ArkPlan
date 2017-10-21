@@ -1,9 +1,10 @@
 <RCC>
   <qresource prefix="/plugins/ark">
-    <file alias="icon.png">../icon.png</file>
+    <file alias="icon.png">../../../icon.png</file>
     <file alias="folder.png">./resources/folder.png</file>
     <file alias="tree.svg">./resources/view-list-tree.svg</file>
     <file alias="settings.svg">./resources/settings.svg</file>
+    <file alias="excalibur.svg">./resources/knight.svg</file>
   </qresource>
   <qresource prefix="/plugins/ark/data">
     <file alias="data.svg">./resources/server-database.svg</file>

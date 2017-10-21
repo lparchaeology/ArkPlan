@@ -36,7 +36,7 @@ from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappi
 
 from ArkSpatial.ark.core import Config
 from ArkSpatial.ark.grid import GridModule
-from ArkSpatial.ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard
+from ArkSpatial.ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard, ProjectDialog
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
@@ -90,14 +90,21 @@ class ArkSpatialPlugin(Plugin):
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARK Spatial'))
 
-        # TODO Make own plugin!
         self._snappingAction = ProjectSnappingAction(iface.mainWindow())
+        # TODO Snapping Tools - Make own plugin!
         self._snappingAction.setInterface(iface)
         self.iface.addToolBarIcon(self._snappingAction)
         self._interAction = IntersectionSnappingAction(iface.mainWindow())
         self.iface.addToolBarIcon(self._interAction)
         self._topoAction = TopologicalEditingAction(iface.mainWindow())
         self.iface.addToolBarIcon(self._topoAction)
+
+        # TODO Excalibur Tools - Make wn plugin
+        self._excalibur = QAction(QIcon(':/plugins/ark/excalibur.svg'), 'Excalibur', self.iface.mainWindow())
+        self._excalibur.triggered.connect(self.pullExcalibur)
+        self._excalibur.setEnabled(True)
+        self._excalibur.setCheckable(False)
+        self.iface.addToolBarIcon(self._excalibur)
 
     def isInitialised(self):
         return self._initialised
@@ -266,12 +273,17 @@ class ArkSpatialPlugin(Plugin):
             self._initialised = False
 
         self.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
+        self.iface.removeToolBarIcon(self._snappingAction)
         self._snappingAction.unload()
         del self._snappingAction
+        self.iface.removeToolBarIcon(self._interAction)
         self._interAction.unload()
         del self._interAction
+        self.iface.removeToolBarIcon(self._topoAction)
         self._topoAction.unload()
         del self._topoAction
+
+        self.iface.removeToolBarIcon(self._excalibur)
 
         # Unload this dock and uninitialise
         del self.projectLayerView
@@ -695,3 +707,7 @@ class ArkSpatialPlugin(Plugin):
         dialog = SelectItemDialog(self.siteCodes(), self.siteCode(), classCodes, self.iface.mainWindow())
         if dialog.exec_():
             self.planModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())
+
+    def pullExcalibur(self):
+        dialog = ProjectDialog(self.iface.mainWindow())
+        return dialog.exec_()

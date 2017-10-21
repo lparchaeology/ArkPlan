@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProjectDialog</class>
+ <widget class="QDialog" name="ProjectDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>485</width>
+    <height>390</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="tabPosition">
+      <enum>QTabWidget::West</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="ProjectWidget" name="projectTab">
+      <attribute name="title">
+       <string>Project</string>
+      </attribute>
+     </widget>
+     <widget class="BaseMapWidget" name="baseMapTab">
+      <attribute name="title">
+       <string>Base Map</string>
+      </attribute>
+     </widget>
+     <widget class="FigureWidget" name="figureTab">
+      <attribute name="title">
+       <string>Figures</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ProjectWidget</class>
+   <extends>QWidget</extends>
+   <header>..project_widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BaseMapWidget</class>
+   <extends>QWidget</extends>
+   <header>..base_map_widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FigureWidget</class>
+   <extends>QWidget</extends>
+   <header>..figure_widget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

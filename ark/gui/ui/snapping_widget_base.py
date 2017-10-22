@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ark/gui/snapping_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/ui/snapping_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 

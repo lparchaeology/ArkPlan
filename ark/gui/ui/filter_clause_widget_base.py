@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/filter_clause_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/ui/filter_clause_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -64,4 +64,3 @@ class Ui_FilterClauseWidget(object):
         self.filterTypeTool.setText(_translate("FilterClauseWidget", "...", None))
         self.filterActionTool.setText(_translate("FilterClauseWidget", "...", None))
 
-import resources

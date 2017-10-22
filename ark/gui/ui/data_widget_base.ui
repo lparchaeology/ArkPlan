@@ -14,12 +14,21 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item row="2" column="0" colspan="4">
-    <widget class="QWebView" name="itemDataView">
-     <property name="url">
+    <widget class="QWebView" name="itemDataView" native="true">
+     <property name="url" stdset="0">
       <url>
        <string>about:blank</string>
       </url>
@@ -32,7 +41,7 @@
    <item row="1" column="0" colspan="2">
     <widget class="QLabel" name="itemLabel">
      <property name="text">
-      <string>Item ID:</string>
+      <string>I&amp;tem ID:</string>
      </property>
      <property name="buddy">
       <cstring>classCodeCombo</cstring>
@@ -72,8 +81,6 @@
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -42,10 +42,12 @@ from ArkSpatial.ark.map import MapToolIndentifyItems
 from .data_module import DataModule
 from .filter_module import FilterModule
 from .plan_module import PlanModule
+from .trench_module import TrenchModule
 
-# import sys, os
-# sys.path.append(os.path.dirname(__file__))
-
+import georef.ui.resources
+import grid.ui.resources
+import gui.ui.resources
+import lib.snapping.resources
 
 class ArkSpatialPlugin(Plugin):
 
@@ -61,6 +63,7 @@ class ArkSpatialPlugin(Plugin):
     gridModule = None  # Grid()
     planModule = None  # Plan()
     filterModule = None  # FilterModule()
+    trenchModule = None  # TrenchModule()
 
     projectGroupIndex = -1
     drawingsGroupIndex = -1
@@ -187,6 +190,8 @@ class ArkSpatialPlugin(Plugin):
         self.filterModule.initGui()
         self.planModule = PlanModule(self)
         self.planModule.initGui()
+        self.trenchModule = TrenchModule(self)
+        self.trenchModule.initGui()
 
         # Add Settings to the toolbar
         self.layerDock.toolbar.addSeparator()
@@ -312,6 +317,7 @@ class ArkSpatialPlugin(Plugin):
                 self.planModule.dock.setVisible(False)
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)
+                self.trenchModule.dock.setVisible(False)
             for dock in self._userDocks:
                 self.iface.mainWindow().findChild(QDockWidget, dock).setVisible(True)
             self._userDocks = []

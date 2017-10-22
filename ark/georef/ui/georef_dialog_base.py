@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/georef/ui/georef_dialog_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -44,6 +44,7 @@ class Ui_GeorefDialogBase(object):
         self.layoutWidget = QtGui.QWidget(self.splitter)
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_4.setMargin(0)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
         self.planView = OverviewGraphicsView(self.layoutWidget)
         self.planView.setMinimumSize(QtCore.QSize(300, 320))
@@ -54,7 +55,7 @@ class Ui_GeorefDialogBase(object):
         self.planView.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         self.planView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
         self.planView.setObjectName(_fromUtf8("planView"))
-        self.verticalLayout_4.addWidget(self.planView, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.verticalLayout_4.addWidget(self.planView, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
         self.formLayout.setObjectName(_fromUtf8("formLayout"))
@@ -271,6 +272,7 @@ class Ui_GeorefDialogBase(object):
         self.layoutWidget1 = QtGui.QWidget(self.splitter)
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.gridLayout = QtGui.QGridLayout(self.layoutWidget1)
+        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.headerView = FixedGraphicsView(self.layoutWidget1)
         self.headerView.setMinimumSize(QtCore.QSize(900, 50))
@@ -358,4 +360,3 @@ class Ui_GeorefDialogBase(object):
 from ..gcp_widget import GcpWidget
 from ArkSpatial.ark.lib.gui.fixed_graphics_view import FixedGraphicsView
 from ArkSpatial.ark.lib.gui.overview_graphics_view import OverviewGraphicsView
-import resources

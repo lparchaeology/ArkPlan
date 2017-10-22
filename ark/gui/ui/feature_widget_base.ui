@@ -158,8 +158,6 @@
   <tabstop>classCombo</tabstop>
   <tabstop>commentEdit</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

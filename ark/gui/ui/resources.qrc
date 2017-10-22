@@ -18,6 +18,9 @@
     <file alias="goNextItem.svg">./resources/go-next-view.svg</file>
     <file alias="goPrevItem.svg">./resources/go-previous-view.svg</file>
   </qresource>
+  <qresource prefix="/plugins/ark/trench">
+    <file alias="trench.svg">./resources/object-columns.svg</file>
+  </qresource>
   <qresource prefix="/plugins/ark/plan">
     <file alias="georef.png">./resources/mGeorefRun.png</file>
     <file alias="loadDrawings.svg">./resources/mIconRaster.svg</file>

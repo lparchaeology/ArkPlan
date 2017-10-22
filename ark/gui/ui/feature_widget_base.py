@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/feature_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/ui/feature_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -115,4 +115,3 @@ class Ui_FeatureWidget(object):
         self.featureLabel.setText(_translate("FeatureWidget", "Feature:", None))
         self.labelLabel.setText(_translate("FeatureWidget", "Label:", None))
 
-import resources

@@ -719,9 +719,6 @@
   <tabstop>headerView</tabstop>
   <tabstop>footerView</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

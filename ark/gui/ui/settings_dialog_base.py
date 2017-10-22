@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'src/settings_dialog_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/ui/settings_dialog_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -38,6 +38,7 @@ class Ui_SettingsDialogBase(object):
         self.userTab = QtGui.QWidget()
         self.userTab.setObjectName(_fromUtf8("userTab"))
         self.gridLayout_3 = QtGui.QGridLayout(self.userTab)
+        self.gridLayout_3.setMargin(0)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
@@ -76,6 +77,7 @@ class Ui_SettingsDialogBase(object):
         self.projectTab = QtGui.QWidget()
         self.projectTab.setObjectName(_fromUtf8("projectTab"))
         self.gridLayout_5 = QtGui.QGridLayout(self.projectTab)
+        self.gridLayout_5.setMargin(0)
         self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
         self.arkUrlLabel = QtGui.QLabel(self.projectTab)
         self.arkUrlLabel.setObjectName(_fromUtf8("arkUrlLabel"))
@@ -222,4 +224,3 @@ class Ui_SettingsDialogBase(object):
         self.styleFolderLabel.setText(_translate("SettingsDialogBase", "Styles Folder:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.projectTab), _translate("SettingsDialogBase", "Project", None))
 
-import resources

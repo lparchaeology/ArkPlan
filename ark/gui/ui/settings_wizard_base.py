@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/settings_wizard_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -196,4 +196,3 @@ class Ui_SettingsWizard(object):
         self.projectFileEdit.setPlaceholderText(_translate("SettingsWizard", "SHU28_DG", None))
 
 from ..settings_wizard_page import ConfirmPage, FolderPage, ProjectPage, UserPage
-import resources

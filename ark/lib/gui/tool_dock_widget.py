@@ -23,7 +23,7 @@
 """
 
 from PyQt4.QtCore import QSize, Qt
-from PyQt4.QtGui import QToolBar, QVBoxLayout, QWidget
+from PyQt4.QtGui import QToolBar, QVBoxLayout, QWidget, QAction, QIcon
 
 from ..gui import DockWidget
 
@@ -69,3 +69,26 @@ class ToolDockWidget(DockWidget):
 
     def unloadGui(self):
         super(ToolDockWidget, self).unloadGui()
+
+    def addToolbarAction(
+            self,
+            iconPath,
+            text,
+            callback=None,
+            enabled=True,
+            checkable=False,
+            tip=None,
+            whatsThis=None
+    ):
+        """Add a toolbar icon to the toolbar"""
+        action = QAction(QIcon(iconPath), text, self)
+        if tip is not None:
+            action.setStatusTip(tip)
+        if whatsThis is not None:
+            action.setWhatsThis(whatsThis)
+        if callback is not None:
+            action.triggered.connect(callback)
+        action.setEnabled(enabled)
+        action.setCheckable(checkable)
+        self.toolbar.addAction(action)
+        return action

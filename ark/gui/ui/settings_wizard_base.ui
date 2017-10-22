@@ -352,8 +352,6 @@ Once the project is created you can modify these settings or configure more sett
   <tabstop>arkUserIdEdit</tabstop>
   <tabstop>projectFileEdit</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

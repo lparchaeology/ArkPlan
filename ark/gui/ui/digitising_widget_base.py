@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/digitising_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -53,7 +53,7 @@ class Ui_DigitisingWidget(object):
         self.planDigitisingWidget.setObjectName(_fromUtf8("planDigitisingWidget"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.planDigitisingWidget)
         self.verticalLayout_4.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
-        self.verticalLayout_4.setContentsMargins(12, -1, 12, 12)
+        self.verticalLayout_4.setContentsMargins(12, 0, 12, 12)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
         self.planFeatureWidget = FeatureWidget(self.planDigitisingWidget)
         self.planFeatureWidget.setObjectName(_fromUtf8("planFeatureWidget"))

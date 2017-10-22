@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/grid/ui/grid_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -130,4 +130,3 @@ class Ui_GridWidget(object):
         self.copyLocalPointAction.setText(_translate("GridWidget", "Copy", None))
         self.copyLocalPointAction.setToolTip(_translate("GridWidget", "Copy Local Point", None))
 
-import resources

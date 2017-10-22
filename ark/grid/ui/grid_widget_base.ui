@@ -212,8 +212,6 @@
   <tabstop>localEastingSpin</tabstop>
   <tabstop>localNorthingSpin</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

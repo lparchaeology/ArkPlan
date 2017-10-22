@@ -729,8 +729,6 @@
   <tabstop>editSourceButton</tabstop>
   <tabstop>siteCodeCombo</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -67,8 +67,8 @@ class Ui_BaseMapWidget(object):
         BaseMapWidget.setWindowTitle(_translate("BaseMapWidget", "Form", None))
         self.downloadButton.setText(_translate("BaseMapWidget", "Download", None))
         self.reloadButton.setText(_translate("BaseMapWidget", "Reload", None))
-        self.extentButton.setText(_translate("BaseMapWidget", "Visible Extent", None))
+        self.extentButton.setText(_translate("BaseMapWidget", "Visible E&xtent", None))
         self.titleLabel.setText(_translate("BaseMapWidget", "Vector Base Map", None))
         self.spinBox.setSuffix(_translate("BaseMapWidget", " km", None))
-        self.radiusButton.setText(_translate("BaseMapWidget", "Site Location Radius", None))
+        self.radiusButton.setText(_translate("BaseMapWidget", "Site &Location Radius", None))
 

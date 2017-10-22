@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ark/gui/data_widget_base.ui'
+# Form implementation generated from reading ui file 'ark/gui/ui/data_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -30,7 +30,7 @@ class Ui_DataWidget(object):
         self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.itemDataView = QtWebKit.QWebView(DataWidget)
-        self.itemDataView.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
+        self.itemDataView.setProperty("url", QtCore.QUrl(_fromUtf8("about:blank")))
         self.itemDataView.setObjectName(_fromUtf8("itemDataView"))
         self.gridLayout.addWidget(self.itemDataView, 2, 0, 1, 4)
         self.siteCodeCombo = QtGui.QComboBox(DataWidget)
@@ -59,9 +59,8 @@ class Ui_DataWidget(object):
 
     def retranslateUi(self, DataWidget):
         DataWidget.setWindowTitle(_translate("DataWidget", "Form", None))
-        self.itemLabel.setText(_translate("DataWidget", "Item ID:", None))
+        self.itemLabel.setText(_translate("DataWidget", "I&tem ID:", None))
         self.itemIdSpin.setToolTip(_translate("DataWidget", "Source ID", None))
         self.siteCodeLabel.setText(_translate("DataWidget", "Site Code:", None))
 
 from PyQt4 import QtWebKit
-import resources

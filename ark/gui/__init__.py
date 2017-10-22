@@ -25,4 +25,5 @@ from .settings_dialog import SettingsDialog
 from .settings_wizard import SettingsWizard
 from .snapping_widget import SnappingWidget
 from .source_widget import SourceWidget
+from .trench_dock import TrenchDock
 from .trench_widget import TrenchWidget

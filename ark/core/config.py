@@ -289,14 +289,20 @@ class Config():
             'fields': collectionFields,
             'layers': {
                 'points': {
+                    'layer': 'points',
+                    'geometry': QGis.Point,
                     'name': 'plan_pt',
                     'label': 'Plan Points',
                 },
                 'lines': {
+                    'layer': 'lines',
+                    'geometry': QGis.Line,
                     'name': 'plan_pl',
                     'label': 'Plan Lines',
                 },
                 'polygons': {
+                    'layer': 'polygons',
+                    'geometry': QGis.Polygon,
                     'name': 'plan_pg',
                     'label': 'Plan Polygons',
                 },
@@ -314,14 +320,20 @@ class Config():
             'fields': collectionFields,
             'layers': {
                 'points': {
+                    'layer': 'points',
+                    'geometry': QGis.Point,
                     'name': 'section_pt',
                     'label': 'Section Points',
                 },
                 'lines': {
+                    'layer': 'lines',
+                    'geometry': QGis.Line,
                     'name': 'section_pl',
                     'label': 'Section Lines',
                 },
                 'polygons': {
+                    'layer': 'polygons',
+                    'geometry': QGis.Polygon,
                     'name': 'section_pg',
                     'label': 'Section Polygons',
                 },
@@ -339,14 +351,20 @@ class Config():
             'fields': collectionFields,
             'layers': {
                 'points': {
+                    'layer': 'points',
+                    'geometry': QGis.Point,
                     'name': 'site_pt',
                     'label': 'Site Points',
                 },
                 'lines': {
+                    'layer': 'lines',
+                    'geometry': QGis.Line,
                     'name': 'site_pl',
                     'label': 'Site Lines',
                 },
                 'polygons': {
+                    'layer': 'polygons',
+                    'geometry': QGis.Polygon,
                     'name': 'site_pg',
                     'label': 'Site Polygons',
                 },
@@ -364,14 +382,20 @@ class Config():
             'fields': gridFieldsDefaults,
             'layers': {
                 'points': {
+                    'layer': 'points',
+                    'geometry': QGis.Point,
                     'name': 'grid_pt',
                     'label': 'Grid Points',
                 },
                 'lines': {
+                    'layer': 'lines',
+                    'geometry': QGis.Line,
                     'name': 'grid_pl',
                     'label': 'Grid Lines',
                 },
                 'polygons': {
+                    'layer': 'polygons',
+                    'geometry': QGis.Polygon,
                     'name': 'grid_pg',
                     'label': 'Grid Polygons',
                 },

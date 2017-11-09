@@ -385,39 +385,39 @@ class ArkSpatialPlugin(Plugin):
         lcs.collectionGroupName = config['groupName']
         lcs.bufferGroupName = config['bufferGroupName']
         lcs.log = config['log']
-        if config['pointsBaseName']:
-            lcs.pointsLayerLabel = config['pointsLabel']
-            lcs.pointsLayerName = self._layerName(config['pointsBaseName'])
-            lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
-            lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName, config['pointsBaseName'])
-            if config['buffer']:
-                lcs.pointsBufferName = lcs.pointsLayerName + Config.bufferSuffix
-                lcs.pointsBufferPath = self._shapeFile(bufferPath, lcs.pointsBufferName)
-            if config['log']:
-                lcs.pointsLogName = lcs.pointsLayerName + Config.logSuffix
-                lcs.pointsLogPath = self._shapeFile(logPath, lcs.pointsLogName)
-        if config['linesBaseName']:
-            lcs.linesLayerLabel = config['linesLabel']
-            lcs.linesLayerName = self._layerName(config['linesBaseName'])
-            lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
-            lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName, config['linesBaseName'])
-            if config['buffer']:
-                lcs.linesBufferName = lcs.linesLayerName + Config.bufferSuffix
-                lcs.linesBufferPath = self._shapeFile(bufferPath, lcs.linesBufferName)
-            if config['log']:
-                lcs.linesLogName = lcs.linesLayerName + Config.logSuffix
-                lcs.linesLogPath = self._shapeFile(logPath, lcs.linesLogName)
-        if config['polygonsBaseName']:
-            lcs.polygonsLayerLabel = config['polygonsLabel']
-            lcs.polygonsLayerName = self._layerName(config['polygonsBaseName'])
-            lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
-            lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName, config['polygonsBaseName'])
-            if config['buffer']:
-                lcs.polygonsBufferName = lcs.polygonsLayerName + Config.bufferSuffix
-                lcs.polygonsBufferPath = self._shapeFile(bufferPath, lcs.polygonsBufferName)
-            if config['log']:
-                lcs.polygonsLogName = lcs.polygonsLayerName + Config.logSuffix
-                lcs.polygonsLogPath = self._shapeFile(logPath, lcs.polygonsLogName)
+
+        lcs.pointsLayerLabel = config['pointsLabel']
+        lcs.pointsLayerName = self._layerName(config['pointsBaseName'])
+        lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
+        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName)
+        if config['buffer']:
+            lcs.pointsBufferName = lcs.pointsLayerName + Config.bufferSuffix
+            lcs.pointsBufferPath = self._shapeFile(bufferPath, lcs.pointsBufferName)
+        if config['log']:
+            lcs.pointsLogName = lcs.pointsLayerName + Config.logSuffix
+            lcs.pointsLogPath = self._shapeFile(logPath, lcs.pointsLogName)
+
+        lcs.linesLayerLabel = config['linesLabel']
+        lcs.linesLayerName = self._layerName(config['linesBaseName'])
+        lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
+        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName)
+        if config['buffer']:
+            lcs.linesBufferName = lcs.linesLayerName + Config.bufferSuffix
+            lcs.linesBufferPath = self._shapeFile(bufferPath, lcs.linesBufferName)
+        if config['log']:
+            lcs.linesLogName = lcs.linesLayerName + Config.logSuffix
+            lcs.linesLogPath = self._shapeFile(logPath, lcs.linesLogName)
+
+        lcs.polygonsLayerLabel = config['polygonsLabel']
+        lcs.polygonsLayerName = self._layerName(config['polygonsBaseName'])
+        lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
+        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName)
+        if config['buffer']:
+            lcs.polygonsBufferName = lcs.polygonsLayerName + Config.bufferSuffix
+            lcs.polygonsBufferPath = self._shapeFile(bufferPath, lcs.polygonsBufferName)
+        if config['log']:
+            lcs.polygonsLogName = lcs.polygonsLayerName + Config.logSuffix
+            lcs.polygonsLogPath = self._shapeFile(logPath, lcs.polygonsLogName)
         lcs.toProject(self.pluginName)
         if config['multi']:
             self._createCollectionMultiLayers(grp, lcs)
@@ -483,7 +483,7 @@ class ArkSpatialPlugin(Plugin):
     def _shapeFile(self, layerPath, layerName):
         return layerPath + '/' + layerName + '.shp'
 
-    def _styleFile(self, layerPath, layerName, baseName):
+    def _styleFile(self, layerPath, layerName):
         # First see if the layer itself has a default style saved
         filePath = layerPath + '/' + layerName + '.qml'
         if QFile.exists(filePath):
@@ -491,10 +491,6 @@ class ArkSpatialPlugin(Plugin):
         # Next see if the layer name has a style in the styles folder (which may
         # be a special folder, the site folder or the plugin folder)
         filePath = self.stylePath() + '/' + layerName + '.qml'
-        if QFile.exists(filePath):
-            return filePath
-        # Next see if the default name has a style in the style folder
-        filePath = self.stylePath() + '/' + baseName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
@@ -510,17 +506,17 @@ class ArkSpatialPlugin(Plugin):
             lcs = self._configureCollection(collection)
         if lcs.pointsStylePath == '':
             lcs.pointsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.pointsLayerName, 'pointsBaseName')
+                lcs.collection, lcs.collectionPath, lcs.pointsLayerName)
         if lcs.linesStylePath == '':
             lcs.linesStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.linesLayerName, 'linesBaseName')
+                lcs.collection, lcs.collectionPath, lcs.linesLayerName)
         if lcs.polygonsStylePath == '':
             lcs.polygonsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.polygonsLayerName, 'polygonsBaseName')
+                lcs.collection, lcs.collectionPath, lcs.polygonsLayerName)
         return Collection(self.iface, self.projectPath(), lcs)
 
-    def _stylePath(self, collection, collectionPath, layerName, baseName):
-        return self._styleFile(collectionPath, layerName, Config.collections[collection][baseName])
+    def _stylePath(self, collection, collectionPath, layerName):
+        return self._styleFile(collectionPath, layerName)
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         action = QAction(QIcon(iconPath), text, self.layerDock)

@@ -28,8 +28,11 @@ from ..project import Project
 class CollectionLayerSettings:
 
     layer = ''
+    geometry = QGis.NoGeometry
     label = ''
     name = ''
+    fields = {}
+
     path = ''
     stylePath = ''
 
@@ -56,6 +59,14 @@ class CollectionLayerSettings:
         self.logLayer = True
         self.logName = name
         self.logPath = path
+
+    @staticmethod
+    def fromArray(config):
+        settings = CollectionLayerSettings()
+        settings.layer = config['layer']
+        settings.geometry = config['geometry']
+        settings.label = config['label']
+        settings.name = config['name']
 
     @staticmethod
     def fromProject(scope, path, layer):

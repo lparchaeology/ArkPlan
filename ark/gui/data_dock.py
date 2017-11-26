@@ -26,7 +26,7 @@ from PyQt4.QtCore import QUrl, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon
 from PyQt4.QtWebKit import QWebPage
 
-from ArkSpatial.ark.lib import Project
+from ArkSpatial.ark.lib import Application
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 
 from ArkSpatial.ark.core import Config, Item
@@ -84,7 +84,7 @@ class DataDock(ToolDockWidget):
         self._loadItemDrawingsAction.triggered.connect(self.loadDrawingsSelected)
         self.toolbar.addAction(self._loadItemDrawingsAction)
 
-        self._editItemAction = QAction(Project.getThemeIcon('mActionToggleEditing.svg'), "Edit Item", self)
+        self._editItemAction = QAction(Application.getThemeIcon('mActionToggleEditing.svg'), "Edit Item", self)
         self._editItemAction.triggered.connect(self.editItemSelected)
         self.toolbar.addAction(self._editItemAction)
 

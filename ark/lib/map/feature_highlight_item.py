@@ -30,7 +30,7 @@ from qgis.core import (QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMark
                        QgsSymbolV2)
 from qgis.gui import QgsMapCanvasItem
 
-from ..project import Project
+from ..application import Application
 
 
 class FeatureHighlightItem(QgsMapCanvasItem):
@@ -56,10 +56,10 @@ class FeatureHighlightItem(QgsMapCanvasItem):
             return
         self._feature = QgsFeature(feature)  # Force deep copy
         self._layer = layer
-        self.setLineColor(Project.highlightLineColor())
-        self.setFillColor(Project.highlightFillColor())
-        self._minWidth = Project.highlightMinimumWidth()
-        self._buffer = Project.highlightBuffer()
+        self.setLineColor(Application.highlightLineColor())
+        self.setFillColor(Application.highlightFillColor())
+        self._minWidth = Application.highlightMinimumWidth()
+        self._buffer = Application.highlightBuffer()
         if self._mapCanvas.mapSettings().hasCrsTransformEnabled():
             ct = self._mapCanvas.mapSettings().layerTransform(self._layer)
             if ct:

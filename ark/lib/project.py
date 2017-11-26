@@ -25,59 +25,25 @@
 from PyQt4.QtCore import QFile, QSettings
 from PyQt4.QtGui import QColor, QIcon
 
-from qgis.core import QGis, QgsApplication, QgsProject
+from qgis.core import QGis, QgsProject
 
 
 class Project:
 
     @staticmethod
-    def getThemeIcon(iconName):
-        iconName = '/' + iconName
-        if QFile.exists(QgsApplication.activeThemePath() + iconName):
-            return QIcon(QgsApplication.activeThemePath() + iconName)
-        elif QFile.exists(QgsApplication.defaultThemePath() + iconName):
-            return QIcon(QgsApplication.defaultThemePath() + iconName)
-        else:
-            themePath = ':/icons/' + QSettings().value('/Themes', '', str) + iconName
-            if QFile.exists(themePath):
-                return QIcon(themePath)
-            else:
-                return QIcon(':/icons/default' + iconName)
+    def exists():
+        return cls.file().exists()
 
     @staticmethod
-    def crs(iface):
-        return iface.mapCanvas().mapSettings().destinationCrs()
+    def file():
+        return QgsProject.instance().fileinfo()
 
-    @staticmethod
-    def highlightColorName():
-        return QColor(QSettings().value('/Map/highlight/color', QGis.DEFAULT_HIGHLIGHT_COLOR.name(), str))
-
-    @staticmethod
-    def highlightColorAlpha():
-        return QSettings().value('/Map/highlight/colorAlpha', QGis.DEFAULT_HIGHLIGHT_COLOR.alpha(), int)
-
-    @classmethod
-    def highlightLineColor(cls):
-        color = QColor(cls.highlightColorName())
-        return color
-
-    @classmethod
-    def highlightFillColor(cls):
-        color = QColor(cls.highlightColorName())
-        color.setAlpha(cls.highlightColorAlpha())
-        return color
-
-    @staticmethod
-    def highlightBuffer():
-        return QSettings().value('/Map/highlight/buffer', QGis.DEFAULT_HIGHLIGHT_BUFFER_MM, float)
-
-    @staticmethod
-    def highlightMinimumWidth():
-        return QSettings().value('/Map/highlight/minWidth', QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
+    def fileName():
+        return QgsProject.instance().fileName()
 
     @staticmethod
     def filePath():
-        return QgsProject.instance().fileinfo().canonicalFilePath()
+        return QgsProject.instance().homePath()
 
     @staticmethod
     def setEntry(scope, key, value, default=None):

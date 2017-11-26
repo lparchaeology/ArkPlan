@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from qgis.core import QGis
+
 from ..project import Project
 
 

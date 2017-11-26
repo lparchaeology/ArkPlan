@@ -27,7 +27,7 @@ from PyQt4.QtGui import QAction, QMenu
 from qgis.core import QgsLayerTreeNode, QgsMapLayer, QgsProject
 from qgis.gui import QgsLayerTreeViewMenuProvider
 
-from ArkSpatial.ark.lib import Project
+from ArkSpatial.ark.lib import Application
 
 
 class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
@@ -52,7 +52,7 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
         self._removeDrawings.triggered.connect(self._project.clearDrawings)
 
         self._openAttributes = QAction(
-            Project.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
+            Application.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
         self._openAttributes.triggered.connect(self._showAttributeTable)
 
         self._openProperties = QAction(project.tr('&Properties'), view)

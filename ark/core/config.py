@@ -24,6 +24,8 @@
 
 from PyQt4.QtCore import QVariant
 
+from qgis.core import QGis
+
 from ArkSpatial.ark.lib.core import CollectionFieldSettings, CollectionLayerSettings, CollectionSettings, FeatureType
 
 

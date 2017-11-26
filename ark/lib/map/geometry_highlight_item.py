@@ -29,7 +29,7 @@ from PyQt4.QtGui import QBrush, QColor, QPainterPath, QPen, QPolygonF
 from qgis.core import QGis, QgsGeometry, QgsRectangle
 from qgis.gui import QgsMapCanvasItem
 
-from ..project import Project
+from ..application import Application
 
 
 class GeometryHighlightItem(QgsMapCanvasItem):
@@ -46,8 +46,8 @@ class GeometryHighlightItem(QgsMapCanvasItem):
         if not geometry or not isinstance(geometry, QgsGeometry) or geometry.isEmpty() or not geometry.isGeosValid():
             return
         self._geometry = QgsGeometry(geometry)  # Force deep copy
-        self.setLineColor(Project.highlightLineColor())
-        self.setFillColor(Project.highlightFillColor())
+        self.setLineColor(Application.highlightLineColor())
+        self.setFillColor(Application.highlightFillColor())
         if (layer and self._mapCanvas.mapSettings().hasCrsTransformEnabled()):
             ct = self._mapCanvas.mapSettings().layerTransform(layer)
             if ct:

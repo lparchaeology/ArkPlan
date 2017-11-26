@@ -24,7 +24,7 @@
 
 from PyQt4.QtGui import QColor
 
-from ArkSpatial.ark.lib import Project, utils
+from ArkSpatial.ark.lib import Application, utils
 
 from .filter_type import FilterType
 from .item import Item
@@ -34,7 +34,7 @@ class FilterClause():
 
     item = Item()
     action = FilterType.Include
-    color = Project.highlightLineColor()
+    color = Application.highlightLineColor()
     _viewIdx = -1
 
     def __str__(self):

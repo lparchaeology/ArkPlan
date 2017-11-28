@@ -24,6 +24,7 @@
 
 import json
 import urllib2
+import base64
 
 from .ark_response import ArkResponse
 
@@ -164,8 +165,11 @@ class Ark():
         ret = ArkResponse()
         ret.url = self._buildUrl(req, args)
         ret.data = json.loads('{}')
+        request = urllib2.Request(ret.url)
+        base64string = base64.encodestring('%s:%s' % (self.handle, self.passwd))[:-1]
+        request.add_header("Authorization", "Basic %s" % base64string)
         try:
-            ret.response = urllib2.urlopen(ret.url)
+            ret.response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
             ret.message = 'ARK server could not complete the request: ' + str(e.code)
             ret.code = e.code

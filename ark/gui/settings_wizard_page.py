@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWizardPage
+from PyQt4.QtGui import QWizardPage, QComboBox
 
 from qgis.core import QgsApplication
 
@@ -38,8 +38,8 @@ class ServerPage(QWizardPage):
 
     def initializePage(self):
         self.registerField("arkUrl", self.wizard().arkUrlEdit)
-        self.registerField("arkUserId", self.wizard().arkUserIdEdit)
-        self.registerField("arkUserPassword", self.wizard().arkUserIdEdit)
+        self.registerField("arkUser", self.wizard().arkUserEdit)
+        self.registerField("arkPassword", self.wizard().arkPasswordEdit)
         self.setField('arkUrl', Application.serverUrl())
         self.setField('arkUserId', Application.serverUser())
         self.setField('arkUserId', Application.serverPassword())
@@ -48,34 +48,52 @@ class ServerPage(QWizardPage):
         url = self.field("arkUrl")
         if url is None or url == "":
             return True
-        user = self.field("arkUserId")
-        password = self.field("arkUserPassword")
+        user = self.field("arkUser")
+        password = self.field("arkPassword")
         if user is None or user == "" or password is None or password == "":
-            return True
-        ark = Ark(url, user, password)
-        response = ark.getItems('job_cd')
-        if response.error:
-            utils.debug(response.url)
-            utils.debug(response.message)
-            utils.debug(response.raw)
             return False
-        utils.debug(response.data)
         return True
 
 
 class ProjectPage(QWizardPage):
 
+    ark = None
+
     def __init__(self):
         super(ProjectPage, self).__init__()
 
     def initializePage(self):
-        self.registerField("projectCode*", self.wizard().projectCodeCombo)
+        url = self.field("arkUrl")
+        if url is None or url == "":
+            self.registerField("projectCode*", self.wizard().projectCodeCombo.lineEdit())
+        else:
+            self.registerField("projectCode*", self.wizard().projectCodeCombo)
+            self.wizard().projectCodeCombo.setMaxVisibleItems(10)
+            self.wizard().projectCodeCombo.setInsertPolicy(QComboBox.NoInsert)
+            self.wizard().projectNameEdit.setEnabled(False)
+            self.wizard().siteCodesEdit.setEnabled(False)
+            self.wizard().locationEastingEdit.setEnabled(False)
+            self.wizard().locationNorthingEdit.setEnabled(False)
         self.registerField("projectName*", self.wizard().projectNameEdit)
         self.registerField("siteCodes", self.wizard().siteCodesEdit)
         self.registerField("locationEasting", self.wizard().locationEastingEdit)
         self.registerField("locationNorthing", self.wizard().locationNorthingEdit)
         self.registerField("crs", self.wizard().crsEdit)
         self.setField('crs', Application.projectDefaultCrs().authid())
+        if url is None or url == "":
+            return
+        user = self.field("arkUser")
+        password = self.field("arkPassword")
+        self.ark = Ark(url, user, password)
+        response = self.ark.getItems('job_cd')
+        if response.error:
+            utils.debug(response.url)
+            utils.debug(response.message)
+            utils.debug(response.raw)
+            return
+        self.wizard().projectCodeCombo.setMaxCount(len(response.data['job']))
+        for item in response.data['job']:
+            self.wizard().projectCodeCombo.addItem(item["job_no"], item["job_cd"])
 
 
 class UserPage(QWizardPage):
@@ -87,6 +105,10 @@ class UserPage(QWizardPage):
         self.registerField("userFullname*", self.wizard().userFullnameEdit)
         self.registerField("userInitials*", self.wizard().userInitialsEdit)
         self.setField('userFullname', QgsApplication.userFullName())
+        initials = ''
+        for name in self.field("userFullname").split(' '):
+            initials += name[0]
+        self.setField('userInitials', initials)
 
 
 class ConfirmPage(QWizardPage):

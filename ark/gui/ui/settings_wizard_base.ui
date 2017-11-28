@@ -38,17 +38,23 @@
       <property name="wordWrap">
        <bool>true</bool>
       </property>
+      <property name="buddy">
+       <cstring>arkUrlEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="2" column="0" colspan="2">
-     <widget class="QLabel" name="arkUserIdLabel">
+     <widget class="QLabel" name="arkUserLabel">
       <property name="text">
        <string>User ID (optional):</string>
+      </property>
+      <property name="buddy">
+       <cstring>arkUserEdit</cstring>
       </property>
      </widget>
     </item>
     <item row="2" column="2">
-     <widget class="QLineEdit" name="arkUserIdEdit">
+     <widget class="QLineEdit" name="arkUserEdit">
       <property name="placeholderText">
        <string>dgarrod</string>
       </property>
@@ -58,6 +64,9 @@
      <widget class="QLabel" name="arkPasswordLabel">
       <property name="text">
        <string>Password (optional):</string>
+      </property>
+      <property name="buddy">
+       <cstring>arkPasswordEdit</cstring>
       </property>
      </widget>
     </item>
@@ -128,6 +137,9 @@
       <property name="text">
        <string>Project Code:</string>
       </property>
+      <property name="buddy">
+       <cstring>projectCodeCombo</cstring>
+      </property>
      </widget>
     </item>
     <item row="2" column="0" colspan="2">
@@ -142,6 +154,9 @@
     </item>
     <item row="2" column="2" colspan="3">
      <widget class="QLineEdit" name="projectNameEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="placeholderText">
        <string>Shuqba Cave, Wadi an-Natuf</string>
       </property>
@@ -175,6 +190,9 @@
       <property name="text">
        <string>Location:</string>
       </property>
+      <property name="buddy">
+       <cstring>locationEastingEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="4" column="2">
@@ -195,6 +213,9 @@
      <widget class="QLabel" name="crsLabel">
       <property name="text">
        <string>CRS:</string>
+      </property>
+      <property name="buddy">
+       <cstring>crsEdit</cstring>
       </property>
      </widget>
     </item>
@@ -220,8 +241,11 @@
       <property name="editable">
        <bool>true</bool>
       </property>
-      <property name="insertPolicy">
-       <enum>QComboBox::InsertAtTop</enum>
+      <property name="maxVisibleItems">
+       <number>1</number>
+      </property>
+      <property name="maxCount">
+       <number>1</number>
       </property>
      </widget>
     </item>
@@ -304,7 +328,7 @@
        <bool>true</bool>
       </property>
       <property name="buddy">
-       <cstring>projectFileEdit</cstring>
+       <cstring>projectFolderEdit</cstring>
       </property>
      </widget>
     </item>
@@ -342,9 +366,6 @@ ARK Spatial will automatically organise the data under this folder.
       </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="buddy">
-       <cstring>projectFolderEdit</cstring>
       </property>
      </widget>
     </item>
@@ -425,6 +446,23 @@ ARK Spatial will automatically organise the data under this folder.
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>arkUrlEdit</tabstop>
+  <tabstop>arkUserEdit</tabstop>
+  <tabstop>arkPasswordEdit</tabstop>
+  <tabstop>projectCodeCombo</tabstop>
+  <tabstop>projectNameEdit</tabstop>
+  <tabstop>siteCodesEdit</tabstop>
+  <tabstop>locationEastingEdit</tabstop>
+  <tabstop>locationNorthingEdit</tabstop>
+  <tabstop>crsEdit</tabstop>
+  <tabstop>crsButton</tabstop>
+  <tabstop>userFullnameEdit</tabstop>
+  <tabstop>userInitialsEdit</tabstop>
+  <tabstop>projectFolderEdit</tabstop>
+  <tabstop>projectFolderButton</tabstop>
+  <tabstop>projectFileEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

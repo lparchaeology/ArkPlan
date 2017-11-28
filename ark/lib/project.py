@@ -30,14 +30,15 @@ from qgis.core import QGis, QgsProject
 
 class Project:
 
-    @staticmethod
-    def exists():
-        return cls.file().exists()
+    @classmethod
+    def exists(cls):
+        return cls.fileInfo().exists()
 
     @staticmethod
-    def file():
-        return QgsProject.instance().fileinfo()
+    def fileInfo():
+        return QgsProject.instance().fileInfo()
 
+    @staticmethod
     def fileName():
         return QgsProject.instance().fileName()
 

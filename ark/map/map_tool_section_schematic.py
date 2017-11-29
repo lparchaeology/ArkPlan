@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                ARK QGIS
-                        A QGIS utilities library.
-        Part of the Archaeological Recording Kit by L-P : Archaeology
+                                ARKspatial
+                    A QGIS plugin for Archaeological Recording.
+        Part of the Archaeological Recording Kit by L - P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        copyright            : 2017 by L-P : Heritage LLP
+        copyright            : 2017 by L - P : Heritage LLP
         email                : ark@lparchaeology.com
         copyright            : 2017 by John Layt
         email                : john@layt.net
@@ -21,6 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 from qgis.core import QgsGeometry
 
 from ArkSpatial.ark.lib.core import FeatureType, geometry

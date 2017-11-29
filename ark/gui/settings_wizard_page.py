@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
-                                ARK Spatial
+                                ARKspatial
                     A QGIS plugin for Archaeological Recording.
-    Part of the Archaeological Recording Kit by L - P : Archaeology.
+        Part of the Archaeological Recording Kit by L - P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
         copyright            : 2017 by L - P : Heritage LLP

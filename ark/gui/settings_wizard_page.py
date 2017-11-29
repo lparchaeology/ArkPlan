@@ -26,6 +26,8 @@ import os
 
 from PyQt4.QtGui import QComboBox, QFileDialog, QWizardPage
 
+from qgis.gui import QgsProjectionSelectionWidget
+
 from ArkSpatial.ark.lib import Application, Project, utils
 
 from ArkSpatial.ark.core import Settings
@@ -56,28 +58,37 @@ class ServerPage(QWizardPage):
 class ProjectPage(QWizardPage):
 
     ark = None
+    crs = None
 
     def initializePage(self):
-        url = self.field("arkUrl")
-        if url is None or url == "":
-            self.registerField("projectCode*", self.wizard().projectCodeCombo.lineEdit())
-        else:
-            self.registerField("projectCode*", self.wizard().projectCodeCombo)
-            self.wizard().projectCodeCombo.setMaxVisibleItems(10)
-            self.wizard().projectCodeCombo.setInsertPolicy(QComboBox.NoInsert)
-            self.wizard().projectNameEdit.setEnabled(False)
-            self.wizard().siteCodeEdit.setEnabled(False)
-            self.wizard().locationEastingEdit.setEnabled(False)
-            self.wizard().locationNorthingEdit.setEnabled(False)
-            self.wizard().projectCodeCombo.currentIndexChanged.connect(self._updateArkProject)
         self.registerField("projectName*", self.wizard().projectNameEdit)
         self.registerField("siteCode", self.wizard().siteCodeEdit)
         self.registerField("locationEasting", self.wizard().locationEastingEdit)
         self.registerField("locationNorthing", self.wizard().locationNorthingEdit)
-        self.registerField("crs", self.wizard().crsEdit)
-        self.setField('crs', Application.projectDefaultCrs().authid())
+        self.registerField("siteRadius", self.wizard().siteRadiusSpin)
+
+        self.crs = Application.projectDefaultCrs()
+        self.wizard().crsWidget.setCrs(self.crs)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.LayerCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.ProjectCrs, True)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.CurrentCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.DefaultCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.RecentCrs, True)
+        self.wizard().crsWidget.crsChanged.connect(self._crsChanged)
+
+        url = self.field("arkUrl")
         if url is None or url == "":
+            self.registerField("projectCode*", self.wizard().projectCodeCombo.lineEdit())
             return
+
+        self.registerField("projectCode*", self.wizard().projectCodeCombo)
+        self.wizard().projectCodeCombo.setMaxVisibleItems(10)
+        self.wizard().projectCodeCombo.setInsertPolicy(QComboBox.NoInsert)
+        self.wizard().projectNameEdit.setEnabled(False)
+        self.wizard().siteCodeEdit.setEnabled(False)
+        self.wizard().locationEastingEdit.setEnabled(False)
+        self.wizard().locationNorthingEdit.setEnabled(False)
+        self.wizard().projectCodeCombo.currentIndexChanged.connect(self._updateArkProject)
 
         user = self.field("arkUser")
         password = self.field("arkPassword")
@@ -106,6 +117,9 @@ class ProjectPage(QWizardPage):
         if fieldName in data:
             value = data[fieldName]
         self.setField(fieldName, value)
+
+    def _crsChanged(self, crs):
+        self.crs = crs
 
 
 class UserPage(QWizardPage):

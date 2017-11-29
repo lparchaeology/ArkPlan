@@ -119,18 +119,8 @@
     <string notr="true">projectPage</string>
    </attribute>
    <layout class="QGridLayout" name="projectLayout">
-    <item row="0" column="0" colspan="5">
-     <widget class="QLabel" name="projectLabel">
-      <property name="text">
-       <string>You must enter at least a Project Code and Name. If no Site Code is entered, the Project Code is used instead. The Location will be used to create a site centre point and (optionally) a site radius.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
+    <item row="6" column="1" colspan="2">
+     <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true"/>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="projectCodeLabel">
@@ -142,23 +132,13 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="2">
+    <item row="2" column="0">
      <widget class="QLabel" name="projectNameLabel">
       <property name="text">
        <string>Project Name:</string>
       </property>
       <property name="buddy">
        <cstring>projectNameEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2" colspan="3">
-     <widget class="QLineEdit" name="projectNameEdit">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="placeholderText">
-       <string>Shuqba Cave, Wadi an-Natuf</string>
       </property>
      </widget>
     </item>
@@ -178,13 +158,6 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="2" colspan="3">
-     <widget class="QLineEdit" name="siteCodeEdit">
-      <property name="placeholderText">
-       <string>SHU28</string>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="0">
      <widget class="QLabel" name="locationLabel">
       <property name="text">
@@ -195,72 +168,29 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
+    <item row="4" column="1">
      <widget class="QLineEdit" name="locationEastingEdit">
       <property name="placeholderText">
        <string>Easting</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="3">
-     <widget class="QLineEdit" name="locationNorthingEdit">
-      <property name="placeholderText">
-       <string>Northing</string>
-      </property>
-     </widget>
-    </item>
     <item row="6" column="0">
-     <widget class="QLabel" name="crsLabel">
+     <widget class="QLabel" name="crsAuthidLabel">
       <property name="text">
        <string>CRS:</string>
-      </property>
-      <property name="buddy">
-       <cstring>crsEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="4">
-     <widget class="QToolButton" name="crsButton">
-      <property name="text">
-       <string>...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2" colspan="2">
-     <widget class="QLineEdit" name="crsEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-      <property name="placeholderText">
-       <string>CRS</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2" colspan="3">
-     <widget class="QComboBox" name="projectCodeCombo">
-      <property name="editable">
-       <bool>true</bool>
-      </property>
-      <property name="maxVisibleItems">
-       <number>1</number>
-      </property>
-      <property name="maxCount">
-       <number>1</number>
       </property>
      </widget>
     </item>
     <item row="5" column="0">
-     <widget class="QLabel" name="radiusLabel">
+     <widget class="QLabel" name="siteRadiusLabel">
       <property name="text">
        <string>Radius:</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QDoubleSpinBox" name="radiusSpin">
+    <item row="5" column="1">
+     <widget class="QDoubleSpinBox" name="siteRadiusSpin">
       <property name="suffix">
        <string> km</string>
       </property>
@@ -275,6 +205,56 @@
       </property>
       <property name="value">
        <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="2">
+     <widget class="QLineEdit" name="projectNameEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Shuqba Cave, Wadi an-Natuf</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="QComboBox" name="projectCodeCombo">
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+      <property name="maxVisibleItems">
+       <number>1</number>
+      </property>
+      <property name="maxCount">
+       <number>1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="QLineEdit" name="siteCodeEdit">
+      <property name="placeholderText">
+       <string>SHU28</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QLineEdit" name="locationNorthingEdit">
+      <property name="placeholderText">
+       <string>Northing</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="3">
+     <widget class="QLabel" name="projectLabel">
+      <property name="text">
+       <string>You must enter at least a Project Code and Name. If no Site Code is entered, the Project Code is used instead. The Location will be used to create a site centre point and (optionally) a site radius.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -456,6 +436,12 @@ ARK Spatial will automatically organise the data under this folder.
    <header>..settings_wizard_page</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgis.gui</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>arkUrlEdit</tabstop>
@@ -466,8 +452,6 @@ ARK Spatial will automatically organise the data under this folder.
   <tabstop>siteCodeEdit</tabstop>
   <tabstop>locationEastingEdit</tabstop>
   <tabstop>locationNorthingEdit</tabstop>
-  <tabstop>crsEdit</tabstop>
-  <tabstop>crsButton</tabstop>
   <tabstop>userFullNameEdit</tabstop>
   <tabstop>userInitialsEdit</tabstop>
  </tabstops>

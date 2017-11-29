@@ -57,8 +57,11 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def locationNorthing(self):
         return self.field('locationNorthing')
 
+    def siteRadius(self):
+        return self.field('locationNorthing')
+
     def crs(self):
-        return self.field('crs')
+        return self.projectPage.crs
 
     def userFullName(self):
         return self.field('userFullName')

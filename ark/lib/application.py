@@ -27,6 +27,8 @@ from PyQt4.QtGui import QColor, QIcon
 
 from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem
 
+from ArkSpatial.ark.lib import utils
+
 
 class Application:
 
@@ -54,18 +56,18 @@ class Application:
 
     @classmethod
     def projectDefaultCrs(cls):
-        return QgsCoordinateReferenceSystem(cls.projectDefaultCrsId())
+        return QgsCoordinateReferenceSystem(cls.projectDefaultCrsAuthid())
 
     @staticmethod
-    def projectDefaultCrsId():
+    def projectDefaultCrsAuthid():
         return QSettings().value("/Projections/projectDefaultCrs", "EPSG:4326")
 
     @classmethod
     def layerDefaultCrs(cls):
-        return QgsCoordinateReferenceSystem(cls.layerDefaultCrsId())
+        return QgsCoordinateReferenceSystem(cls.layerDefaultCrsAuthid())
 
     @staticmethod
-    def layerDefaultCrsId():
+    def layerDefaultCrsAuthid():
         return QSettings().value("/Projections/layerDefaultCrs", "EPSG:4326")
 
     @staticmethod

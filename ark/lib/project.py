@@ -43,7 +43,7 @@ class Project:
         return QgsProject.instance().fileName()
 
     @staticmethod
-    def filePath():
+    def homePath():
         return QgsProject.instance().homePath()
 
     @classmethod

@@ -359,11 +359,6 @@ class ArkSpatialPlugin(Plugin):
             Settings.setProjectCode(wizard.projectCode())
             Settings.setSiteCode(wizard.siteCode())
 
-            # self._configureCollection('grid')
-            # self._configureCollection('plan')
-            # self._configureCollection('section')
-            # self._configureCollection('site')
-
             # self._configureDrawing('context')
             # self._configureDrawing('plan')
             # self._configureDrawing('section')
@@ -377,63 +372,6 @@ class ArkSpatialPlugin(Plugin):
             return False
         else:
             return True
-
-    def _configureCollection(self, grp):
-        config = Config.collections[grp]
-        path = config['path']
-        bufferPath = path + '/buffer'
-        logPath = path + '/log'
-        QDir(self.projectPath() + '/' + path).mkpath('.')
-        if config['buffer']:
-            QDir(self.projectPath() + '/' + bufferPath).mkpath('.')
-        if config['log']:
-            QDir(self.projectPath() + '/' + logPath).mkpath('.')
-        lcs = CollectionSettings()
-        lcs.collection = grp
-        lcs.collectionPath = path
-        lcs.parentGroupName = Config.projectGroupName
-        lcs.collectionGroupName = config['groupName']
-        lcs.bufferGroupName = config['bufferGroupName']
-        lcs.log = config['log']
-
-        lcs.pointsLayerLabel = config['pointsLabel']
-        lcs.pointsLayerName = self._layerName(config['pointsBaseName'])
-        lcs.pointsLayerPath = self._shapeFile(path, lcs.pointsLayerName)
-        lcs.pointsStylePath = self._styleFile(path, lcs.pointsLayerName)
-        if config['buffer']:
-            lcs.pointsBufferName = lcs.pointsLayerName + Config.bufferSuffix
-            lcs.pointsBufferPath = self._shapeFile(bufferPath, lcs.pointsBufferName)
-        if config['log']:
-            lcs.pointsLogName = lcs.pointsLayerName + Config.logSuffix
-            lcs.pointsLogPath = self._shapeFile(logPath, lcs.pointsLogName)
-
-        lcs.linesLayerLabel = config['linesLabel']
-        lcs.linesLayerName = self._layerName(config['linesBaseName'])
-        lcs.linesLayerPath = self._shapeFile(path, lcs.linesLayerName)
-        lcs.linesStylePath = self._styleFile(path, lcs.linesLayerName)
-        if config['buffer']:
-            lcs.linesBufferName = lcs.linesLayerName + Config.bufferSuffix
-            lcs.linesBufferPath = self._shapeFile(bufferPath, lcs.linesBufferName)
-        if config['log']:
-            lcs.linesLogName = lcs.linesLayerName + Config.logSuffix
-            lcs.linesLogPath = self._shapeFile(logPath, lcs.linesLogName)
-
-        lcs.polygonsLayerLabel = config['polygonsLabel']
-        lcs.polygonsLayerName = self._layerName(config['polygonsBaseName'])
-        lcs.polygonsLayerPath = self._shapeFile(path, lcs.polygonsLayerName)
-        lcs.polygonsStylePath = self._styleFile(path, lcs.polygonsLayerName)
-        if config['buffer']:
-            lcs.polygonsBufferName = lcs.polygonsLayerName + Config.bufferSuffix
-            lcs.polygonsBufferPath = self._shapeFile(bufferPath, lcs.polygonsBufferName)
-        if config['log']:
-            lcs.polygonsLogName = lcs.polygonsLayerName + Config.logSuffix
-            lcs.polygonsLogPath = self._shapeFile(logPath, lcs.polygonsLogName)
-        lcs.toProject(self.pluginName)
-        if config['multi']:
-            self._createCollectionMultiLayers(grp, lcs)
-        else:
-            self._createCollectionLayers(grp, lcs)
-        return lcs
 
     def _configureDrawing(self, grp):
         self.rawDrawingDir(grp).mkpath('.')
@@ -542,51 +480,6 @@ class ArkSpatialPlugin(Plugin):
         # self.actions.append(action)
         return action
 
-    # Project level settings
-    # TODO Move to json file
-
-    def logUpdates(self):
-        return self.readBoolEntry('logUpdates', True)
-
-    def setLogUpdates(self, logUpdates):
-        self.writeEntry('logUpdates', logUpdates)
-
-    def useCustomStyles(self):
-        return self.readBoolEntry('useCustomStyles', False)
-
-    def styleDir(self):
-        return QDir(self.stylePath())
-
-    def stylePath(self):
-        path = self.readEntry('stylePath', '')
-        if (not path):
-            return self.pluginPath + '/styles'
-        return path
-
-    def setStylePath(self, useCustomStyles, absolutePath):
-        self.writeEntry('useCustomStyles', useCustomStyles)
-        if useCustomStyles:
-            self.writeEntry('stylePath', absolutePath)
-        else:
-            self.writeEntry('stylePath', '')
-
-    # Group settings
-
-    def _drawingEntry(self, group, key, default=None):
-        if default is None:
-            default = Config.drawings[group][key]
-        return self.readEntry(group + '/' + key, default)
-
-    def _drawingBoolEntry(self, group, key, default=None):
-        if default is None:
-            default = Config.drawings[group][key]
-        return self.readBoolEntry(group + '/' + key, default)
-
-    def _setdrawingEntry(self, group, key, value, default=None):
-        if default is None:
-            default = Config.drawings[group][key]
-        self.setEntry(group + '/' + key, value, default)
-
     def collection(self, collection):
         if collection == 'plan':
             return self.plan
@@ -596,53 +489,6 @@ class ArkSpatialPlugin(Plugin):
             return self.grid
         elif collection == 'site':
             return self.site
-
-    # Raster Drawings settings
-
-    def drawingDir(self, group):
-        return QDir(self.drawingPath(group))
-
-    def drawingPath(self, group):
-        if self.useCustomPath(group):
-            return self._drawingEntry(group, 'path')
-        else:
-            return self.projectPath() + '/' + Config.drawings[group]['path']
-
-    def setDrawingPath(self, group, useCustomPath, absolutePath):
-        self._setDrawingEntry(group, 'useCustomPath', useCustomPath, False)
-        if useCustomPath:
-            self._setDrawingEntry(group, 'path', absolutePath)
-        else:
-            self._setDrawingEntry(group, 'path', '')
-
-    def useCustomPath(self, group):
-        return self._drawingBoolEntry(group, 'useCustomPath', False)
-
-    def rawDrawingDir(self, group):
-        return QDir(self.rawDrawingPath(group))
-
-    def rawDrawingPath(self, group):
-        return self.drawingPath(group)
-
-    def georefDrawingDir(self, group):
-        return QDir(self.georefDrawingPath(group))
-
-    def georefDrawingPath(self, group):
-        if self.useGeorefFolder():
-            return self.rawDrawingPath(group) + '/georef'
-        return self.rawDrawingPath(group)
-
-    def useGeorefFolder(self):
-        return self.readBoolEntry('useGeorefFolder', True)
-
-    def setUseGeorefFolder(self, useGeorefFolder):
-        self.writeEntry('useGeorefFolder', useGeorefFolder)
-
-    def drawingTransparency(self):
-        return self.readNumEntry('drawingTransparency', 50)
-
-    def setDrawingTransparency(self, transparency):
-        self.writeEntry('drawingTransparency', transparency)
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

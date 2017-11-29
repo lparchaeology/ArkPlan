@@ -32,8 +32,8 @@ from ArkSpatial.ark.lib.core import CollectionFieldSettings, CollectionLayerSett
 class Config():
 
     pluginName = u'ARKspatial'
-    pluginScope = u'ARK/Spatial'
-    projectGroupName = u'ARK Spatial'
+    pluginScope = u'ARK'
+    projectGroupName = u'ARK'
     filterSetGroupName = u'Filter Export Data'
     bufferSuffix = u'_buf'
     logSuffix = u'_log'
@@ -281,7 +281,7 @@ class Config():
 
     collections = {
         'plan': {
-            'path': 'vector/collection/plan',
+            'path': 'data/plan',
             'groupName': 'Plan Data',
             'edit': True,
             'class': 'context',
@@ -312,7 +312,7 @@ class Config():
             },
         },
         'section': {
-            'path': 'vector/collection/section',
+            'path': 'data/section',
             'groupName': 'Section Data',
             'edit': True,
             'class': 'section',
@@ -343,7 +343,7 @@ class Config():
             },
         },
         'site': {
-            'path': 'vector/collection/site',
+            'path': 'data/site',
             'groupName': 'Site Data',
             'edit': True,
             'class': 'site',
@@ -374,7 +374,7 @@ class Config():
             },
         },
         'grid': {
-            'path': 'vector/collection/grid',
+            'path': 'data/grid',
             'groupName': 'Grid Data',
             'edit': False,
             'class': '',
@@ -410,19 +410,19 @@ class Config():
         'context': {
             'name': 'Context',
             'groupName': 'Contexts',
-            'path': 'raster/drawing/context',
+            'path': 'drawings/contexts',
             'layersGroupName': 'Drawings',
         },
         'plan': {
             'name': 'Plan',
             'groupName': 'Plans',
-            'path': 'raster/drawing/plan',
+            'path': 'drawings/plans',
             'layersGroupName': 'Drawings',
         },
         'section': {
             'name': 'Section',
             'groupName': 'Sections',
-            'path': 'raster/drawing/section',
+            'path': 'drawings/sections',
             'layersGroupName': 'Drawings',
         },
     }
@@ -489,8 +489,20 @@ class Config():
             'sourceItem': False,
         },
     }
-    sourceCodesOrder = ['drawing', 'unchecked', 'survey', 'sketch', 'geophoto',
-                        'photo', 'cloned', 'modified', 'inferred', 'creator', 'client', 'other']
+    sourceCodesOrder = [
+        'drawing',
+        'unchecked',
+        'survey',
+        'sketch',
+        'geophoto',
+        'photo',
+        'cloned',
+        'modified',
+        'inferred',
+        'creator',
+        'client',
+        'other'
+    ]
 
     # 'code'  = Class Code
     # 'label' = Name label

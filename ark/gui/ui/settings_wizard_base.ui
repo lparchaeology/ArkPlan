@@ -398,15 +398,29 @@ ARK Spatial will automatically organise the data under this folder.
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="5" column="2">
+     <widget class="QLabel" name="projectFullPath"/>
+    </item>
+    <item row="6" column="2">
+     <widget class="QCheckBox" name="clearProjectCheck">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2">
      <widget class="QLabel" name="projectFullPathLabel">
       <property name="text">
        <string>Full Path:</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QLabel" name="projectFullPath"/>
+    <item row="6" column="0" colspan="2">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Clear Project:</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

@@ -35,7 +35,7 @@ class Settings:
 
     @staticmethod
     def setServerUrl(url):
-        Application.setValue("ARK/Server", "url", url)
+        Application.setEntry("ARK/Server", "url", url)
 
     @staticmethod
     def serverUser():
@@ -47,8 +47,8 @@ class Settings:
 
     @staticmethod
     def setServerCredentials(user, password):
-        Application.setValue("ARK/Server", "user", user)
-        Application.setValue("ARK/Server", "password", password)
+        Application.setEntry("ARK/Server", "user", user)
+        Application.setEntry("ARK/Server", "password", password)
 
     @staticmethod
     def userFullName():
@@ -56,6 +56,10 @@ class Settings:
         if name is None or name == '':
             name = QgsApplication.userFullName()
         return name
+
+    @staticmethod
+    def setUserFullName(fullName):
+        Application.setEntry("ARK/User", "fullName", fullName)
 
     @classmethod
     def userInitials(cls):
@@ -67,13 +71,29 @@ class Settings:
         return initials
 
     @staticmethod
+    def setUserInitials(initials):
+        Application.setEntry("ARK/User", "initials", initials)
+
+    @staticmethod
     def projectCode():
         return Project.readEntry('ARK/Project', 'code')
+
+    @staticmethod
+    def setProjectCode(code):
+        Application.setEntry("ARK/Project", "code", code)
 
     @staticmethod
     def projectName():
         return Project.readEntry('ARK/Project', 'name')
 
     @staticmethod
+    def setProjectName(name):
+        Application.setEntry("ARK/Project", "name", name)
+
+    @staticmethod
     def siteCode():
         return Project.readEntry('ARK/Project', 'siteCode')
+
+    @staticmethod
+    def setSiteCode(siteCode):
+        Application.setEntry("ARK/Project", "siteCode", siteCode)

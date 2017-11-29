@@ -105,6 +105,7 @@ class ProjectPage(QWizardPage):
         return True
 
     def _updateArkProject(self):
+        utils.debug(self.field("projectCode"))
         project = self.wizard().projectCodeCombo.itemData(self.field("projectCode"))
         data = self.ark.getProjectDetails(project)
         self._setField('projectName', data)
@@ -136,6 +137,7 @@ class ConfirmPage(QWizardPage):
     def initializePage(self):
         self.registerField("projectFolder*", self.wizard().projectFolderEdit)
         self.registerField("projectFile*", self.wizard().projectFileEdit)
+        self.registerField("clearProject", self.wizard().clearProjectCheck)
         if Project.exists():
             self.setField('projectFolder', Project.filePath())
             self.setField('projectFile', Project.fileName())
@@ -145,9 +147,9 @@ class ConfirmPage(QWizardPage):
         self.wizard().projectFolderButton.clicked.connect(self._selectProjectFolder)
 
     def _updateFilePath(self):
-        self.wizard().projectFullPath.setText(self._fullFilePath())
+        self.wizard().projectFullPath.setText(self.fullFilePath())
 
-    def _fullFilePath(self):
+    def fullFilePath(self):
         return os.path.join(self.field('projectFolder'), self.field('projectFile')) + '.qgs'
 
     def _selectProjectFolder(self):

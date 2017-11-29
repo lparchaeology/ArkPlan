@@ -340,33 +340,33 @@ class ArkSpatialPlugin(Plugin):
             return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
-        if (wizard.exec_() and QDir(wizard.projectPath()).mkpath('.')):
+        if wizard.exec_() and wizard.projectDir().mkpath('.'):
 
-            if (self.project.isDirty() and self.project.fileName()):
-                self.project.write()
-            self.project.clear()
+            if wizard.clearProject():
+                if self.project.fileInfo().exists():
+                    self.project.write()
+                self.project.clear()
 
-            info = QFileInfo(wizard.projectPath() + '/' + wizard.projectFile() + '.qgs')
-            self.project.setFileName(info.filePath())
+            self.project.setFileName(wizard.projectFileInfo().absoluteFilePath())
+            self.project.setTitle(wizard.projectName())
 
-            Settings.setArkUrl(wizard.arkUrl())
-            Settings.setArkUser(wizard.arkUser())
-            Settings.setArkPassword(wizard.arkPassword())
+            Settings.setServerUrl(wizard.arkUrl())
+            Settings.setServerCredentials(wizard.arkUser(), wizard.arkPassword())
 
-            Settings.setUserName(wizard.userFullname())
+            Settings.setUserFullName(wizard.userFullName())
             Settings.setUserInitials(wizard.userInitials())
 
             Settings.setProjectCode(wizard.projectCode())
             Settings.setSiteCode(wizard.siteCode())
 
-            self._configureCollection('grid')
-            self._configureCollection('plan')
-            self._configureCollection('section')
-            self._configureCollection('site')
+            # self._configureCollection('grid')
+            # self._configureCollection('plan')
+            # self._configureCollection('section')
+            # self._configureCollection('site')
 
-            self._configureDrawing('context')
-            self._configureDrawing('plan')
-            self._configureDrawing('section')
+            # self._configureDrawing('context')
+            # self._configureDrawing('plan')
+            # self._configureDrawing('section')
 
             self.writeProject()
             self._setIsConfigured(self.project.write())

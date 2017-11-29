@@ -22,6 +22,7 @@
  ***************************************************************************/
 """
 
+from PyQt4.QtCore import QDir, QFileInfo
 from PyQt4.QtGui import QWizard
 
 from .ui.settings_wizard_base import Ui_SettingsWizard
@@ -69,8 +70,20 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def userInitials(self):
         return self.field('userInitials')
 
-    def projectPath(self):
+    def projectDir(self):
+        return QDir(self.field('projectFolder'))
+
+    def projectFolder(self):
         return self.field('projectFolder')
+
+    def projectFileInfo(self):
+        return QFileInfo(self.confirmPage.fullFilePath())
+
+    def projectFilePath(self):
+        return self.confirmPage.fullFilePath()
 
     def projectFile(self):
         return self.field('projectFile')
+
+    def clearProject(self):
+        return self.field('clearProject')

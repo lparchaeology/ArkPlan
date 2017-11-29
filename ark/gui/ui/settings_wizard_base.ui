@@ -6,22 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>655</width>
-    <height>519</height>
+    <width>704</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ARK Spatial - Settings Wizard</string>
+   <string>ARKspatial Project Wizard</string>
   </property>
   <property name="options">
    <set>QWizard::CancelButtonOnLeft|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
   <widget class="ServerPage" name="serverPage">
    <property name="title">
-    <string>ARK Project Wizard</string>
+    <string>ARKspatial Project Wizard</string>
    </property>
    <property name="subTitle">
-    <string>This wizard will walk you through setting up a new or existing ARK Spatial project.</string>
+    <string>This wizard will walk you through setting up a new or existing ARKspatial project.</string>
    </property>
    <attribute name="pageId">
     <string notr="true">serverPage</string>
@@ -122,7 +122,7 @@
     <item row="0" column="0" colspan="5">
      <widget class="QLabel" name="projectLabel">
       <property name="text">
-       <string>You must enter at least a Project Code and Name. If no Site Code is entered, the Project Code is used instead. If multiple Site Codes are entered then the first Site Code will be used as the default Site Code.</string>
+       <string>You must enter at least a Project Code and Name. If no Site Code is entered, the Project Code is used instead. The Location will be used to create a site centre point and (optionally) a site radius.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -163,9 +163,9 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="siteCodesLabel">
+     <widget class="QLabel" name="siteCodeLabel">
       <property name="text">
-       <string>Site Code(s):</string>
+       <string>Site Code:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -174,12 +174,12 @@
        <bool>true</bool>
       </property>
       <property name="buddy">
-       <cstring>siteCodesEdit</cstring>
+       <cstring>siteCodeEdit</cstring>
       </property>
      </widget>
     </item>
     <item row="3" column="2" colspan="3">
-     <widget class="QLineEdit" name="siteCodesEdit">
+     <widget class="QLineEdit" name="siteCodeEdit">
       <property name="placeholderText">
        <string>SHU28</string>
       </property>
@@ -209,7 +209,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="6" column="0">
      <widget class="QLabel" name="crsLabel">
       <property name="text">
        <string>CRS:</string>
@@ -219,15 +219,18 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="4">
+    <item row="6" column="4">
      <widget class="QToolButton" name="crsButton">
       <property name="text">
        <string>...</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2" colspan="2">
+    <item row="6" column="2" colspan="2">
      <widget class="QLineEdit" name="crsEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="readOnly">
        <bool>true</bool>
       </property>
@@ -249,6 +252,32 @@
       </property>
      </widget>
     </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="radiusLabel">
+      <property name="text">
+       <string>Radius:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QDoubleSpinBox" name="radiusSpin">
+      <property name="suffix">
+       <string> km</string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>0.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="UserPage" name="userPage">
@@ -263,12 +292,12 @@
    </attribute>
    <layout class="QGridLayout" name="userLayout">
     <item row="1" column="0">
-     <widget class="QLabel" name="userFullnameLabel">
+     <widget class="QLabel" name="userFullNameLabel">
       <property name="text">
        <string>Full Name:</string>
       </property>
       <property name="buddy">
-       <cstring>userFullnameEdit</cstring>
+       <cstring>userFullNameEdit</cstring>
       </property>
      </widget>
     </item>
@@ -290,14 +319,14 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="userFullnameEdit">
+     <widget class="QLineEdit" name="userFullNameEdit">
       <property name="placeholderText">
        <string>Dorothy Garrod</string>
       </property>
      </widget>
     </item>
     <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="userPageLabel">
       <property name="text">
        <string>Enter your name and initials to be recorded as metadata on edits that you make.</string>
       </property>
@@ -315,48 +344,30 @@
    <attribute name="pageId">
     <string notr="true">confirmPage</string>
    </attribute>
-   <layout class="QGridLayout" name="confirmLayout">
-    <item row="1" column="0">
-     <widget class="QLabel" name="projectFileLabel_2">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="2">
+     <widget class="QLineEdit" name="projectFolderEdit">
+      <property name="placeholderText">
+       <string>/Disk/Data/Projects/TST01/GIS</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
+     <widget class="QLabel" name="projectFileLabel">
       <property name="text">
-       <string>Project Folder:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <string>Project Filename:</string>
       </property>
       <property name="buddy">
-       <cstring>projectFolderEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1" colspan="2">
-     <widget class="QLineEdit" name="projectFileEdit">
-      <property name="placeholderText">
-       <string>SHU28_DG</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QLabel" name="confirmLabel">
-      <property name="text">
-       <string>Click on the Done button to create your project. All required folders and files will be created. No existing data files will be overwritten.
-
-Once the project is created you can modify these settings or configure more settings in the Settings Dialog.</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <cstring>projectFileEdit</cstring>
       </property>
      </widget>
     </item>
     <item row="0" column="0" colspan="3">
-     <widget class="QLabel" name="folderLabel">
+     <widget class="QLabel" name="confirmPageLabel">
       <property name="text">
        <string>You can choose to save the project details in the currently open project, or to save the project in a new project file.
 
-This folder is usually something like &quot;Projects/TST01&quot; where TST01 is the Project or Site Code. The folder will be created if it does not already exist.
+This folder is usually something like &quot;Projects/TST01/GIS&quot; where TST01 is the Project Code. The folder will be created if it does not already exist.
 
 ARK Spatial will automatically organise the data under this folder.
 </string>
@@ -369,42 +380,25 @@ ARK Spatial will automatically organise the data under this folder.
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="2">
-     <layout class="QHBoxLayout" name="projectFolderLayout">
-      <item>
-       <widget class="QLineEdit" name="projectFolderEdit">
-        <property name="placeholderText">
-         <string>Projects/TST01</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="projectFolderButton">
-        <property name="icon">
-         <iconset>
-          <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="projectFileLabel">
+    <item row="2" column="0" colspan="2">
+     <widget class="QLabel" name="projectFolderLabel">
       <property name="text">
-       <string>Project Filename:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <string>Project Folder:</string>
       </property>
       <property name="buddy">
-       <cstring>projectFileEdit</cstring>
+       <cstring>projectFolderEdit</cstring>
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
+    <item row="2" column="3">
+     <widget class="QToolButton" name="projectFolderButton">
+      <property name="icon">
+       <iconset>
+        <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -416,6 +410,23 @@ ARK Spatial will automatically organise the data under this folder.
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="4" column="2">
+     <widget class="QLineEdit" name="projectFileEdit">
+      <property name="placeholderText">
+       <string>SHU28</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="projectFullPathLabel">
+      <property name="text">
+       <string>Full Path:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QLabel" name="projectFullPath"/>
     </item>
    </layout>
   </widget>
@@ -452,16 +463,13 @@ ARK Spatial will automatically organise the data under this folder.
   <tabstop>arkPasswordEdit</tabstop>
   <tabstop>projectCodeCombo</tabstop>
   <tabstop>projectNameEdit</tabstop>
-  <tabstop>siteCodesEdit</tabstop>
+  <tabstop>siteCodeEdit</tabstop>
   <tabstop>locationEastingEdit</tabstop>
   <tabstop>locationNorthingEdit</tabstop>
   <tabstop>crsEdit</tabstop>
   <tabstop>crsButton</tabstop>
-  <tabstop>userFullnameEdit</tabstop>
+  <tabstop>userFullNameEdit</tabstop>
   <tabstop>userInitialsEdit</tabstop>
-  <tabstop>projectFolderEdit</tabstop>
-  <tabstop>projectFolderButton</tabstop>
-  <tabstop>projectFileEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

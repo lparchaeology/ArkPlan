@@ -6,7 +6,7 @@
     Part of the Archaeological Recording Kit by L - P : Archaeology.
                         http://ark.lparchaeology.com
                               -------------------
-        copyright            : 2017 by L-P : Heritage LLP
+        copyright            : 2017 by L - P : Heritage LLP
         email                : ark@lparchaeology.com
         copyright            : 2017 by John Layt
         email                : john@layt.net
@@ -22,27 +22,25 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWizardPage, QComboBox
+import os
 
-from qgis.core import QgsApplication
+from PyQt4.QtGui import QComboBox, QFileDialog, QWizardPage
 
 from ArkSpatial.ark.lib import Application, Project, utils
 
+from ArkSpatial.ark.core import Settings
 from ArkSpatial.ark.pyARK import Ark
 
 
 class ServerPage(QWizardPage):
 
-    def __init__(self):
-        super(ServerPage, self).__init__()
-
     def initializePage(self):
         self.registerField("arkUrl", self.wizard().arkUrlEdit)
         self.registerField("arkUser", self.wizard().arkUserEdit)
         self.registerField("arkPassword", self.wizard().arkPasswordEdit)
-        self.setField('arkUrl', Application.serverUrl())
-        self.setField('arkUserId', Application.serverUser())
-        self.setField('arkUserId', Application.serverPassword())
+        self.setField('arkUrl', Settings.serverUrl())
+        self.setField('arkUser', Settings.serverUser())
+        self.setField('arkPassword', Settings.serverPassword())
 
     def validatePage(self):
         url = self.field("arkUrl")
@@ -59,9 +57,6 @@ class ProjectPage(QWizardPage):
 
     ark = None
 
-    def __init__(self):
-        super(ProjectPage, self).__init__()
-
     def initializePage(self):
         url = self.field("arkUrl")
         if url is None or url == "":
@@ -71,50 +66,58 @@ class ProjectPage(QWizardPage):
             self.wizard().projectCodeCombo.setMaxVisibleItems(10)
             self.wizard().projectCodeCombo.setInsertPolicy(QComboBox.NoInsert)
             self.wizard().projectNameEdit.setEnabled(False)
-            self.wizard().siteCodesEdit.setEnabled(False)
+            self.wizard().siteCodeEdit.setEnabled(False)
             self.wizard().locationEastingEdit.setEnabled(False)
             self.wizard().locationNorthingEdit.setEnabled(False)
+            self.wizard().projectCodeCombo.currentIndexChanged.connect(self._updateArkProject)
         self.registerField("projectName*", self.wizard().projectNameEdit)
-        self.registerField("siteCodes", self.wizard().siteCodesEdit)
+        self.registerField("siteCode", self.wizard().siteCodeEdit)
         self.registerField("locationEasting", self.wizard().locationEastingEdit)
         self.registerField("locationNorthing", self.wizard().locationNorthingEdit)
         self.registerField("crs", self.wizard().crsEdit)
         self.setField('crs', Application.projectDefaultCrs().authid())
         if url is None or url == "":
             return
+
         user = self.field("arkUser")
         password = self.field("arkPassword")
         self.ark = Ark(url, user, password)
-        response = self.ark.getItems('job_cd')
-        if response.error:
-            utils.debug(response.url)
-            utils.debug(response.message)
-            utils.debug(response.raw)
-            return
-        self.wizard().projectCodeCombo.setMaxCount(len(response.data['job']))
-        for item in response.data['job']:
-            self.wizard().projectCodeCombo.addItem(item["job_no"], item["job_cd"])
+        projects = self.ark.getProjectList()
+        self.wizard().projectCodeCombo.setMaxCount(len(projects))
+        for key in utils.natsorted(projects.keys()):
+            self.wizard().projectCodeCombo.addItem(projects[key], key)
+
+    def validatePage(self):
+        siteCode = self.field("siteCode")
+        if siteCode is None or siteCode == "":
+            self.setField("siteCode", self.wizard().projectCode())
+        return True
+
+    def _updateArkProject(self):
+        project = self.wizard().projectCodeCombo.itemData(self.field("projectCode"))
+        data = self.ark.getProjectDetails(project)
+        self._setField('projectName', data)
+        self._setField('siteCode', data)
+        self._setField('locationEasting', data)
+        self._setField('locationNorthing', data)
+
+    def _setField(self, fieldName, data):
+        value = None
+        if fieldName in data:
+            value = data[fieldName]
+        self.setField(fieldName, value)
 
 
 class UserPage(QWizardPage):
 
-    def __init__(self):
-        super(UserPage, self).__init__()
-
     def initializePage(self):
-        self.registerField("userFullname*", self.wizard().userFullnameEdit)
+        self.registerField("userFullName*", self.wizard().userFullNameEdit)
         self.registerField("userInitials*", self.wizard().userInitialsEdit)
-        self.setField('userFullname', QgsApplication.userFullName())
-        initials = ''
-        for name in self.field("userFullname").split(' '):
-            initials += name[0]
-        self.setField('userInitials', initials)
+        self.setField('userFullName', Settings.userFullName())
+        self.setField('userInitials', Settings.userInitials())
 
 
 class ConfirmPage(QWizardPage):
-
-    def __init__(self):
-        super(ConfirmPage, self).__init__()
 
     def initializePage(self):
         self.registerField("projectFolder*", self.wizard().projectFolderEdit)
@@ -122,6 +125,21 @@ class ConfirmPage(QWizardPage):
         if Project.exists():
             self.setField('projectFolder', Project.filePath())
             self.setField('projectFile', Project.fileName())
+            self._updateFilePath()
         else:
-            projectFile = self.field("projectCode") + '_' + self.field("userInitials")
-            self.setField('projectFile', projectFile)
+            self.setField('projectFile', self.field("siteCode"))
+        self.wizard().projectFolderButton.clicked.connect(self._selectProjectFolder)
+
+    def _updateFilePath(self):
+        self.wizard().projectFullPath.setText(self._fullFilePath())
+
+    def _fullFilePath(self):
+        return os.path.join(self.field('projectFolder'), self.field('projectFile')) + '.qgs'
+
+    def _selectProjectFolder(self):
+        folderName = unicode(
+            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.field("projectFolder"))
+        )
+        if folderName:
+            self.setField("projectFolder", folderName)
+            self._updateFilePath()

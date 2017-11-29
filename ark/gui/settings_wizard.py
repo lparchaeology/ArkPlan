@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QFileDialog, QWizard
+from PyQt4.QtGui import QWizard
 
 from .ui.settings_wizard_base import Ui_SettingsWizard
 
@@ -32,37 +32,42 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def __init__(self, parent=None):
         super(SettingsWizard, self).__init__(parent)
         self.setupUi(self)
-        self.projectFolderButton.clicked.connect(self._selectProjectFolder)
-
-    def projectPath(self):
-        return self.projectFolderEdit.text()
-
-    def projectCode(self):
-        return self.projectCodeEdit.text()
-
-    def projectName(self):
-        return self.projectNameEdit.text()
-
-    def siteCodes(self):
-        return self.siteCodesEdit.text()
 
     def arkUrl(self):
-        return self.arkUrlEdit.text()
+        return self.field('arkUrl')
 
-    def arkUserId(self):
-        return self.arkUserIdEdit.text()
+    def arkUser(self):
+        return self.field('arkUser')
 
-    def userFullname(self):
-        return self.userFullnameEdit.text()
+    def arkPassword(self):
+        return self.field('arkPassword')
+
+    def projectCode(self):
+        return self.projectCodeCombo.lineEdit().text()
+
+    def projectName(self):
+        return self.field('projectName')
+
+    def siteCode(self):
+        return self.field('siteCode')
+
+    def locationEasting(self):
+        return self.field('locationEasting')
+
+    def locationNorthing(self):
+        return self.field('locationNorthing')
+
+    def crs(self):
+        return self.field('crs')
+
+    def userFullName(self):
+        return self.field('userFullName')
 
     def userInitials(self):
-        return self.userInitialsEdit.text()
+        return self.field('userInitials')
+
+    def projectPath(self):
+        return self.field('projectFolder')
 
     def projectFile(self):
-        return self.projectFileEdit.text()
-
-    def _selectProjectFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(
-            self, self.tr('Project Folder'), self.projectFolderEdit.text()))
-        if folderName:
-            self.projectFolderEdit.setText(folderName)
+        return self.field('projectFile')

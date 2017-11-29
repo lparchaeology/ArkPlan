@@ -50,6 +50,7 @@ class Plugin(QObject):
     iface = None  # QgsInteface()
     pluginAction = None  # QAction()
     pluginName = ''
+    pluginScope = ''
     pluginPath = ''
     pluginIconPath = ''
     displayName = ''
@@ -62,12 +63,23 @@ class Plugin(QObject):
     _toolbarGroup = 0  # MenuType
     _toolbar = None  # QToolBar()
 
-    def __init__(self, iface, pluginName, pluginIconPath, pluginPath,
-                 menuGroup=PluginsGroup, toolbarGroup=PluginsGroup, checkable=False, parent=None):
+    def __init__(
+        self,
+        iface,
+        pluginName,
+        pluginScope,
+        pluginIconPath,
+        pluginPath,
+        menuGroup=PluginsGroup,
+        toolbarGroup=PluginsGroup,
+        checkable=False,
+        parent=None
+    ):
         """Constructor."""
         super(Plugin, self).__init__(parent)
         self.iface = iface
         self.pluginName = pluginName
+        self.pluginScope = pluginScope
         self.pluginPath = pluginPath
         self.pluginIconPath = pluginIconPath
         self._menuGroup = menuGroup
@@ -247,28 +259,28 @@ class Plugin(QObject):
     # Settings utilities
 
     def setEntry(self, key, value, default=None):
-        return Project.setEntry(self.pluginName, key, value, default)
+        return Project.setEntry(self.pluginScope, key, value, default)
 
     def removeEntry(self, key):
-        return Project.removeEntry(self.pluginName, key)
+        return Project.removeEntry(self.pluginScope, key)
 
     def writeEntry(self, key, value):
-        return Project.writeEntry(self.pluginName, key, value)
+        return Project.writeEntry(self.pluginScope, key, value)
 
     def readEntry(self, key, default=''):
-        return Project.readEntry(self.pluginName, key, default)
+        return Project.readEntry(self.pluginScope, key, default)
 
     def readNumEntry(self, key, default=0):
-        return Project.readNumEntry(self.pluginName, key, default)
+        return Project.readNumEntry(self.pluginScope, key, default)
 
     def readDoubleEntry(self, key, default=0.0):
-        return Project.readDoubleEntry(self.pluginName, key, default)
+        return Project.readDoubleEntry(self.pluginScope, key, default)
 
     def readBoolEntry(self, key, default=False):
-        return Project.readBoolEntry(self.pluginName, key, default)
+        return Project.readBoolEntry(self.pluginScope, key, default)
 
     def readListEntry(self, key, default=[]):
-        return Project.readListEntry(self.pluginName, key, default)
+        return Project.readListEntry(self.pluginScope, key, default)
 
     # QgsInterface utilities
 

@@ -31,25 +31,12 @@ from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem
 class Application:
 
     @staticmethod
-    def serverUrl():
-        return QSettings().value("/ARK/Server/url", "")
+    def readEntry(scope, key, default=""):
+        return QSettings().value("/" + scope + "/" + key, default)
 
     @staticmethod
-    def setServerUrl(url):
-        QSettings().setValue("/ARK/Server/url", url)
-
-    @staticmethod
-    def serverUser():
-        return QSettings().value("/ARK/Server/user", "")
-
-    @staticmethod
-    def serverPassword():
-        return QSettings().value("/ARK/Server/password", "")
-
-    @staticmethod
-    def setServerCredentials(user, password):
-        QSettings().setValue("/ARK/Server/user", user)
-        QSettings().setValue("/ARK/Server/password", password)
+    def setEntry(scope, key, value):
+        QSettings().setValue("/" + scope + "/" + key, value)
 
     @staticmethod
     def getThemeIcon(iconName):

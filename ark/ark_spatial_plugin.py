@@ -34,20 +34,20 @@ from ArkSpatial.ark.lib.gui import ToolDockWidget
 from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
                                          TopologicalEditingAction)
 
-from ArkSpatial.ark.core import Config
+from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
-from ArkSpatial.ark.gui import LayerTreeMenu, SelectItemDialog, SettingsDialog, SettingsWizard, ProjectDialog
+from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, SelectItemDialog, SettingsDialog, SettingsWizard
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
 from .filter_module import FilterModule
 from .plan_module import PlanModule
 from .trench_module import TrenchModule
-
 import georef.ui.resources
 import grid.ui.resources
 import gui.ui.resources
 import lib.snapping.resources
+
 
 class ArkSpatialPlugin(Plugin):
 
@@ -88,10 +88,18 @@ class ArkSpatialPlugin(Plugin):
     _topoAction = None  # TopologicalEditingAction()
 
     def __init__(self, iface, pluginPath):
-        super(ArkSpatialPlugin, self).__init__(iface, Config.pluginName, ':/plugins/ark/icon.png', pluginPath,
-                                               Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
+        super(ArkSpatialPlugin, self).__init__(
+            iface=iface,
+            pluginName=Config.pluginName,
+            pluginScope=Config.pluginScope,
+            pluginIconPath=':/plugins/ark/icon.png',
+            pluginPath=pluginPath,
+            menuGroup=Plugin.PluginsGroup,
+            toolbarGroup=Plugin.PluginsGroup,
+            checkable=True
+        )
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&ARK Spatial'))
+        self.setDisplayName(self.tr(u'&ARKspatial'))
 
         self._snappingAction = ProjectSnappingAction(iface.mainWindow())
         # TODO Snapping Tools - Make own plugin!
@@ -131,7 +139,7 @@ class ArkSpatialPlugin(Plugin):
         self.projectLayerView = QgsLayerTreeView()
         self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
-        self.layerDock.setWindowTitle(self.tr(u'ARK Spatial'))
+        self.layerDock.setWindowTitle(self.pluginName)
         self.layerDock.setObjectName(u'ArkLayerDock')
         self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
         self.iface.legendInterface().addLegendLayerAction(
@@ -172,13 +180,17 @@ class ArkSpatialPlugin(Plugin):
             ':/plugins/ark/filter/identify.png',
             self.tr(u'Identify Items'),
             callback=self.triggerIdentifyAction,
-            checkable=True)
+            checkable=True
+        )
         self.identifyMapTool = MapToolIndentifyItems(self)
         self.identifyMapTool.setAction(self.identifyAction)
 
         # Init the Load Item tool and add to the toolbar
         self.showItemAction = self.addDockAction(
-            ':/plugins/ark/filter/showContext.png', self.tr(u'Show Item'), callback=self._showItem)
+            ':/plugins/ark/filter/showContext.png',
+            self.tr(u'Show Item'),
+            callback=self._showItem
+        )
 
         # Init the modules and add to the toolbar
         self.data = DataModule(self)
@@ -328,26 +340,24 @@ class ArkSpatialPlugin(Plugin):
             return True
         # TODO more validation, check if files exist, etc
         wizard = SettingsWizard()
-        if (wizard.exec_()
-                and wizard.projectPath()
-                and (wizard.projectCode() or wizard.siteCodes())
-                and QDir(wizard.projectPath()).mkpath('.')):
+        if (wizard.exec_() and QDir(wizard.projectPath()).mkpath('.')):
 
             if (self.project.isDirty() and self.project.fileName()):
                 self.project.write()
             self.project.clear()
 
-            QDir(wizard.projectPath()).mkdir('project')
-            info = QFileInfo(wizard.projectPath() + '/project/' + wizard.projectFile() + '.qgs')
+            info = QFileInfo(wizard.projectPath() + '/' + wizard.projectFile() + '.qgs')
             self.project.setFileName(info.filePath())
 
-            self.setProjectCode(wizard.projectCode())
-            self.setSiteCodes(wizard.siteCodes())
-            self.setArkUrl(wizard.arkUrl())
+            Settings.setArkUrl(wizard.arkUrl())
+            Settings.setArkUser(wizard.arkUser())
+            Settings.setArkPassword(wizard.arkPassword())
 
-            self.setUserName(wizard.userFullname())
-            self.setUserInitials(wizard.userInitials())
-            self.setArkUserId(wizard.arkUserId())
+            Settings.setUserName(wizard.userFullname())
+            Settings.setUserInitials(wizard.userInitials())
+
+            Settings.setProjectCode(wizard.projectCode())
+            Settings.setSiteCode(wizard.siteCode())
 
             self._configureCollection('grid')
             self._configureCollection('plan')
@@ -494,7 +504,7 @@ class ArkSpatialPlugin(Plugin):
         if QFile.exists(filePath):
             return filePath
         # Finally, check the plugin folder for the default style
-        filePath = self.pluginPath + '/ark/styles/' + baseName + '.qml'
+        filePath = self.pluginPath + '/ark/styles/' + layerName + '.qml'
         if QFile.exists(filePath):
             return filePath
         # If we didn't find that then something is wrong!
@@ -535,41 +545,11 @@ class ArkSpatialPlugin(Plugin):
     # Project level settings
     # TODO Move to json file
 
-    def projectDir(self):
-        return QDir(self.projectPath())
-
-    def projectPath(self):
-        legacy = self.readEntry('projectPath', '')
-        if legacy:
-            return legacy
-        return self.project.fileInfo().absolutePath() + '/..'
-
     def logUpdates(self):
         return self.readBoolEntry('logUpdates', True)
 
     def setLogUpdates(self, logUpdates):
         self.writeEntry('logUpdates', logUpdates)
-
-    def arkUrl(self):
-        return self.readEntry('arkUrl', '')
-
-    def setArkUrl(self, arkUrl):
-        self.writeEntry('arkUrl', arkUrl)
-
-    def projectCode(self):
-        return self.readEntry('projectCode', '')
-
-    def setProjectCode(self, projectCode):
-        self.writeEntry('projectCode', projectCode)
-
-    def siteCode(self):
-        return self.siteCodes()[0]
-
-    def siteCodes(self):
-        return self.readListEntry('siteCodes', [self.projectCode()])
-
-    def setSiteCodes(self, siteCodes):
-        self.writeEntry('siteCodes', siteCodes)
 
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
@@ -590,47 +570,21 @@ class ArkSpatialPlugin(Plugin):
         else:
             self.writeEntry('stylePath', '')
 
-    # User level settings
-
-    def userName(self):
-        return self.readEntry('userName', '')
-
-    def setUserName(self, userName):
-        self.writeEntry('userName', userName)
-
-    def userInitials(self):
-        return self.readEntry('userInitials', '')
-
-    def setUserInitials(self, userInitials):
-        self.writeEntry('userInitials', userInitials)
-
-    def arkUserId(self):
-        return self.readEntry('arkUserId', '')
-
-    def setArkUserId(self, arkUserId):
-        self.writeEntry('arkUserId', arkUserId)
-
     # Group settings
-
-    def _collectionDefault(self, group, key):
-        return Config.collections[group][key]
-
-    def _drawingDefault(self, group, key):
-        return Config.drawings[group][key]
 
     def _drawingEntry(self, group, key, default=None):
         if default is None:
-            default = self._drawingDefault(group, key)
+            default = Config.drawings[group][key]
         return self.readEntry(group + '/' + key, default)
 
     def _drawingBoolEntry(self, group, key, default=None):
         if default is None:
-            default = self._drawingDefault(group, key)
+            default = Config.drawings[group][key]
         return self.readBoolEntry(group + '/' + key, default)
 
     def _setdrawingEntry(self, group, key, value, default=None):
         if default is None:
-            default = self._drawingDefault(group, key)
+            default = Config.drawings[group][key]
         self.setEntry(group + '/' + key, value, default)
 
     def collection(self, collection):

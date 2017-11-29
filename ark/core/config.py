@@ -32,6 +32,7 @@ from ArkSpatial.ark.lib.core import CollectionFieldSettings, CollectionLayerSett
 class Config():
 
     pluginName = u'ARKspatial'
+    pluginScope = u'ARK/Spatial'
     projectGroupName = u'ARK Spatial'
     filterSetGroupName = u'Filter Export Data'
     bufferSuffix = u'_buf'

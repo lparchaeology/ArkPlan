@@ -22,9 +22,11 @@
  ***************************************************************************/
 """
 
+import base64
 import json
 import urllib2
-import base64
+
+from ArkSpatial.ark.lib import utils
 
 from .ark_response import ArkResponse
 
@@ -96,7 +98,6 @@ class Ark():
         return self._getJson('getFilter', {'retftrset': retftrset})
 
     def getFields(self, itemkey, item_value, fields, aliased=None):
-        # TODO multiple fields!!!
         return self._getJson('getFields', {'itemkey': itemkey, itemkey: item_value, 'fields': fields, 'aliased': aliased})
 
     def transcludeFilter(self, ftype, src, retftrset=None, disp_mode=None):
@@ -113,6 +114,44 @@ class Ark():
 
     def putField(self):
         pass
+
+    def readFieldValue(self, fieldName, data):
+        value = None
+        if fieldName in data and data[fieldName] is not False:
+            for item in data[fieldName]:
+                if 'current' in item:
+                    value = item['current']
+        return value
+
+    def getProjectList(self):
+        response = self.getItems('job_cd')
+        projects = {}
+        if response.error:
+            utils.debug(response.url)
+            utils.debug(response.message)
+            utils.debug(response.raw)
+        else:
+            for item in response.data['job']:
+                projects[item["job_cd"]] = item["job_no"]
+        return projects
+
+    def getProjectDetails(self, project):
+        data = {}
+        response = self.getFields(
+            'job_cd',
+            str(project),
+            ['conf_field_job_name', 'conf_field_sitecode', 'conf_field_easting', 'conf_field_northing']
+        )
+        if response.error:
+            utils.debug(response.url)
+            utils.debug(response.message)
+            utils.debug(response.raw)
+        else:
+            data['projectName'] = self.readFieldValue('conf_field_job_name', response.data)
+            data['siteCode'] = self.readFieldValue('conf_field_sitecode', response.data)
+            data['locationEasting'] = self.readFieldValue('conf_field_easting', response.data)
+            data['locationNorthing'] = self.readFieldValue('conf_field_northing', response.data)
+        return data
 
     def _viewTypeToToken(self, viewType):
         if viewType == Ark.TableView:

@@ -8,4 +8,5 @@ from .filter_set import FilterSet
 from .filter_type import FilterType
 from .item import Item
 from .item_model import ItemModel
+from .settings import Settings
 from .source import Source

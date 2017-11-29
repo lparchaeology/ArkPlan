@@ -46,6 +46,10 @@ class Project:
     def filePath():
         return QgsProject.instance().homePath()
 
+    @classmethod
+    def dir(cls):
+        return cls.fileInfo().dir()
+
     @staticmethod
     def setEntry(scope, key, value, default=None):
         if (value is None or value == '' or value == default):

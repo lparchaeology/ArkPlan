@@ -23,8 +23,12 @@
 """
 
 from PyQt4.QtCore import QUrl, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon
-from PyQt4.QtWebKit import QWebPage
+from PyQt4.QtGui import QAction, QIcon, QWidget
+try:
+    from PyQt4.QtWebKit import QWebPage
+    QWK_AVAILABLE = True
+except ImportError:
+    QWK_AVAILABLE = False
 
 from ArkSpatial.ark.lib import Application
 from ArkSpatial.ark.lib.gui import ToolDockWidget
@@ -32,7 +36,8 @@ from ArkSpatial.ark.lib.gui import ToolDockWidget
 from ArkSpatial.ark.core import Config, Item
 from ArkSpatial.ark.gui import ActionSettingsTool
 
-from .data_widget import DataWidget
+if QWK_AVAILABLE:
+    from .data_widget import DataWidget
 
 
 class DataDock(ToolDockWidget):
@@ -56,13 +61,19 @@ class DataDock(ToolDockWidget):
     drawingActionChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(DataDock, self).__init__(DataWidget(), parent)
+        if QWK_AVAILABLE:
+            super(DataDock, self).__init__(DataWidget(), parent)
+        else:
+            super(DataDock, self).__init__(QWidget(), parent)
 
         self.setWindowTitle(u'ARK Data')
         self.setObjectName(u'DataDock')
 
     def initGui(self, iface, location, menuAction):
         super(DataDock, self).initGui(iface, location, menuAction)
+
+        if not QWK_AVAILABLE:
+            return
 
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]

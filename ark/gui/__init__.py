@@ -1,7 +1,13 @@
+try:
+    from PyQt4.QtWebKit import QWebPage
+    QWK_AVAILABLE = True
+except ImportError:
+    QWK_AVAILABLE = False
 from .action_settings_tool import ActionSettingsTool
 from .base_map_widget import BaseMapWidget
 from .data_dock import DataDock
-from .data_widget import DataWidget
+if QWK_AVAILABLE:
+    from .data_widget import DataWidget
 from .digitising_widget import DigitisingWidget
 from .feature_error_dialog import FeatureErrorDialog
 from .feature_widget import FeatureWidget

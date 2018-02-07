@@ -99,7 +99,7 @@ class Settings:
 
     @staticmethod
     def setProjectName(name):
-        Project.setEntry("ARK, "Project / name", name)
+        Project.setEntry("ARK", "Project / name", name)
 
     @staticmethod
     def siteCode():
@@ -112,9 +112,9 @@ class Settings:
     # Raster Drawings settings
 
     def drawingDir(cls, group):
-        path = os.path.join(Project.homePath(), Config.drawings[group]['path']
+        path = os.path.join(Project.homePath(), Config.drawings[group]['path'])
         if cls.useCustomPath(group):
-            path=self.readEntry("ARK", group + '/path', Config.drawings[group]['path'])
+            path = self.readEntry("ARK", group + '/path', Config.drawings[group]['path'])
         return QDir(path)
 
     def setDrawingPath(cls, group, useCustomPath, absolutePath):
@@ -160,7 +160,7 @@ class Settings:
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path=self.readEntry('stylePath', '')
+        path = self.readEntry('stylePath', '')
         if (not path):
             return self.pluginPath + '/styles'
         return path
@@ -176,10 +176,10 @@ class Settings:
 
     def _drawingBoolEntry(self, group, key, default=None):
         if default is None:
-            default=Config.drawings[group][key]
+            default = Config.drawings[group][key]
         return self.readBoolEntry(group + '/' + key, default)
 
     def _setdrawingEntry(self, group, key, value, default=None):
         if default is None:
-            default=Config.drawings[group][key]
+            default = Config.drawings[group][key]
         self.setEntry(group + '/' + key, value, default)

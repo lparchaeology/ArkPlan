@@ -109,7 +109,7 @@ class Settings:
 
     @staticmethod
     def setProjectName(name):
-        Project.setEntry("ARK", "Project / name", name)
+        Project.setEntry("ARK", "Project/name", name)
 
     @staticmethod
     def siteCode():

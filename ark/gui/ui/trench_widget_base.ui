@@ -14,20 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="2" colspan="5">
-    <spacer name="baseSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="3" colspan="3">
+   <item row="1" column="2" colspan="2">
     <widget class="QComboBox" name="areaCombo">
      <item>
       <property name="text">
@@ -36,28 +23,28 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="2">
+   <item row="1" column="1">
     <widget class="QLabel" name="areaLabel">
      <property name="text">
       <string>Area:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="2">
+   <item row="3" column="1">
     <widget class="QLabel" name="resultLabel">
      <property name="text">
       <string>Result:</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
+   <item row="2" column="1">
     <widget class="QLabel" name="trenchLabel">
      <property name="text">
       <string>Trench:</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="6">
+   <item row="1" column="4">
     <widget class="QDoubleSpinBox" name="areaSpin">
      <property name="frame">
       <bool>false</bool>
@@ -79,7 +66,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="6">
+   <item row="3" column="4">
     <widget class="QDoubleSpinBox" name="sampleAreaSpin">
      <property name="frame">
       <bool>false</bool>
@@ -101,36 +88,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="3">
-    <widget class="QDoubleSpinBox" name="widthSpin">
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="prefix">
-      <string/>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="value">
-      <double>2.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="5">
-    <widget class="QDoubleSpinBox" name="lengthSpin">
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="value">
-      <double>20.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="6">
+   <item row="2" column="4">
     <widget class="QDoubleSpinBox" name="samplePercentSpin">
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -143,7 +101,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="5">
+   <item row="3" column="3">
     <widget class="QDoubleSpinBox" name="sampleLengthSpin">
      <property name="frame">
       <bool>false</bool>
@@ -165,7 +123,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="3" column="2">
     <widget class="QSpinBox" name="sampleCountSpin">
      <property name="frame">
       <bool>false</bool>
@@ -186,6 +144,48 @@
       <number>999</number>
      </property>
     </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QDoubleSpinBox" name="lengthSpin">
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="suffix">
+      <string> m</string>
+     </property>
+     <property name="value">
+      <double>20.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QDoubleSpinBox" name="widthSpin">
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="prefix">
+      <string/>
+     </property>
+     <property name="suffix">
+      <string> m</string>
+     </property>
+     <property name="value">
+      <double>2.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="4">
+    <spacer name="baseSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

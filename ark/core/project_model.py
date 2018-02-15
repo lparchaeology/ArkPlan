@@ -40,9 +40,9 @@ class ProjectModel(QAbstractItemModel):
     PathRole = Qt.UserRole
     CommentRole = Qt.UserRole + 1
 
-    mInitialized = False
-    mRootItems = []  # QVector<QgsDataItem*>
-    mProjectHome = None  # QgsDirectoryItem
+    _initialized = False
+    _rootItems = []  # QVector<QgsDataItem*>
+    _projectHome = None  # QgsDirectoryItem
 
     def __init__(self, initialize, parent=None):
         super(ProjectModel, self).__init__(parent)
@@ -53,37 +53,37 @@ class ProjectModel(QAbstractItemModel):
         self.removeRootItems()
 
     def init(self):
-        if not self.mInitialized:
+        if not self._initialized:
             QgsProject.instance().readProject.connect(self.updateProjectHome)
             QgsProject.instance().writeProject.connect(self.updateProjectHome)
             self.addRootItems()
-            self.mInitialized = True
+            self._initialized = True
 
     def updateProjectHome(self):
         home = QgsProject.instance().homePath()
-        if self.mProjectHome is not None and self.mProjectHome.path() == home:
+        if self._projectHome is not None and self._projectHome.path() == home:
             return
-        idx = self.mRootItems.indexOf(self.mProjectHome)
+        idx = self._rootItems.indexOf(self._projectHome)
         if idx >= 0:
             self.beginRemoveRows(QModelIndex(), idx, idx)
-            self.mRootItems.remove(idx)
+            self._rootItems.remove(idx)
             self.endRemoveRows()
-        self.mProjectHome = None  # delete
+        self._projectHome = None  # delete
         if home:
-            self.mProjectHome = QgsDirectoryItem(None, "Project home", home, "project:" + home)
-        if self.mProjectHome is not None:
-            self.connectItem(self.mProjectHome)
+            self._projectHome = QgsDirectoryItem(None, "Project home", home, "project:" + home)
+        if self._projectHome is not None:
+            self.connectItem(self._projectHome)
             self.beginInsertRows(QModelIndex(), 0, 0)
-            self.mRootItems.insert(0, self.mProjectHome)
+            self._rootItems.insert(0, self._projectHome)
             self.endInsertRows()
 
     def addRootItems(self):
         self.updateProjectHome()
 
     def removeRootItems(self):
-        # for item in self.mRootItems:
+        # for item in self._rootItems:
             # delete item
-        self.mRootItems.clear()
+        self._rootItems.clear()
 
     def flags(self, index):
         if not index.isValid():
@@ -118,3 +118,151 @@ class ProjectModel(QAbstractItemModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return "header"
         return None
+
+    def rowCount(self, parent):
+        if parent is None or not parent.isValid():
+            return self._rootItems.count()
+        return parent.rowCount()
+
+    def hasChildren(self, parent):
+        if parent is None or not parent.isValid():
+            return True
+        return parent.hasChildren()
+
+    def columnCount(self, parent):
+        return 1
+
+    def findPath(self, path, matchFlag):
+        theIndex = None
+        foundChild = True
+        while foundChild:
+            foundChild = False
+            for i in range(0, self.rowCount(theIndex)):
+                idx = self.index(i, 0 theIndex)
+                itemPath = self.data(idx, self.PathRole)
+                if itemPath == path:
+                    return idx
+                if path.startswith(itemPath + '/'):
+                    foundChild = True
+                    theIndex = idx
+                    break
+        if matchFlag == Qt.MatchStartsWith:
+            return theIndex
+        return QModelIndex()
+
+    def reload(self):
+        self.beginResetModel()
+        self.removeRootItems()
+        self.addRootItems()
+        self.endResetModel()
+
+    def reload(self, row, column, parent):
+        if column < 0 or column >= self.columnCount() or row < 0:
+            return QModelIndex()
+
+        p = self.dataItem(parent)
+        items = p.children() if p is not None else self._rootItems
+        item = items.value(row, None)
+        return self.createIndex(row, column, item) if item else QModelIndex()
+
+    def parent(self, index):
+        item = self.dataItem(index)
+        if item is None:
+            return QModelIndex()
+        return self.findItem(item -> parent())
+
+    def parent(self, item, parent):
+        items = parent.children() if parent is not None else _rootItems
+        for i in range(0, items.size()):
+            if items[i] == item:
+                return self.createIndex(i, 0, item)
+            childIndex = self.findItem(item, items[i])
+            if childIndex.isValid():
+                return childIndex
+        return QModelIndex()
+
+    def beginInsertItems(self, parent, first, last):
+        idx = self.findItem(parent)
+        if not idx.isValid():
+            return
+        self.beginInsertRows(idx, first, last)
+
+    def beginInsertItems(self):
+        self.endInsertRows()
+
+    def beginInsertItems(self, parent, first, last):
+        idx = self.findItem(parent)
+        if not idx.isValid():
+            return
+        self.beginRemoveRows(idx, first, last)
+
+    def beginInsertItems(self):
+        self.endRemoveRows()
+
+    def itemDataChanged(self, item):
+        idx = self.findItem(item)
+        if not idx.isValid():
+            return
+        self.dataChanged(idx, idx).emit()
+
+    def itemStateChanged(self, item, oldState):
+        if item is None:
+            return
+        idx = self.findItem(item)
+        if not idx.isValid():
+            return
+        self.stateChanged(idx, oldState).emit()
+
+    def connectItem(self, item):
+        item.beginInsertItems.connect(self.beginInsertItems)
+        item.endInsertItems.connect(self.endInsertItems)
+        item.beginRemoveItems.connect(self.beginRemoveItems)
+        item.endRemoveItems.connect(self.endRemoveItems)
+        item.dataChanged.connect(self.itemDataChanged)
+        item.stateChanged.connect(self.itemStateChanged)
+
+    def mimeTypes(self):
+        return ['application/x-vnd.qgis.qgis.uri']
+
+    def mimeData(self, indexes):
+        lst = QgsMimeDataUtils.UriList
+        for index in indexes:
+            if index.isValid():
+                if index.type() == QgsDataItem.Project:
+                    mimeData = new QMimeData()
+                    url = QUrl.fromLocalFile(index.path())
+                    mimeData -> setUrls([url])
+                    return mimeData
+                if index.type() == QgsDataItem.Layer:
+                    lst.append(QgsMimeDataUtils.Uri(index))
+        return QgsMimeDataUtils.encodeUriList(lst)
+
+    def dropMimeData(self, data, action, row, column, parent):
+        destItem = self.dataItem(parent)
+        if destItem is None:
+            return false
+        return destItem.handleDrop(data, action)
+
+    def dataItem(self, idx):
+        return idx.internalPointer()
+
+    def canFetchMore(self, parent):
+        item = self.dataItem(parent)
+        return item is not None and item.state() == QgsDataItem.NotPopulated
+
+    def fetchMore(self, parent):
+        item = self.dataItem(parent)
+        if item is None or item.state() == QgsDataItem.Populating or item.state() == QgsDataItem:
+            : Populated:
+            return
+        item.populate()
+
+    def fetchMore(self, path):
+        index = self.findPath(path)
+        self.refresh(index)
+
+    def refresh(self, theIndex):
+        item = self.dataItem(theIndex)
+        if item is None or item.state() == QgsDataItem.Populating:
+            return
+        item.refresh()

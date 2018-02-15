@@ -48,7 +48,7 @@
    </attribute>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
-     <widget class="PreferencesWidget" name="projectsWidget" native="true"/>
+     <widget class="PreferencesWidget" name="preferencesWidget" native="true"/>
     </item>
    </layout>
   </widget>

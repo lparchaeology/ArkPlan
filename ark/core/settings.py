@@ -35,6 +35,14 @@ from . import Config
 
 class Settings:
 
+    @staticmethod
+    def isPluginConfigured():
+        return Application.readEntry("ARK", "configured", False)
+
+    @staticmethod
+    def setPluginConfigured():
+        Application.setEntry("ARK", "configured", True)
+
     # Server settings
     # TODO Move to Auth Storage
 

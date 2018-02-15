@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/preferences_wizard_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -40,9 +40,9 @@ class Ui_PreferencesWizard(object):
         self.preferencesPage.setObjectName(_fromUtf8("preferencesPage"))
         self.gridLayout_2 = QtGui.QGridLayout(self.preferencesPage)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.projectsWidget = PreferencesWidget(self.preferencesPage)
-        self.projectsWidget.setObjectName(_fromUtf8("projectsWidget"))
-        self.gridLayout_2.addWidget(self.projectsWidget, 0, 0, 1, 1)
+        self.preferencesWidget = PreferencesWidget(self.preferencesPage)
+        self.preferencesWidget.setObjectName(_fromUtf8("preferencesWidget"))
+        self.gridLayout_2.addWidget(self.preferencesWidget, 0, 0, 1, 1)
         PreferencesWizard.addPage(self.preferencesPage)
         self.serverPage = ServerWizardPage()
         self.serverPage.setObjectName(_fromUtf8("serverPage"))

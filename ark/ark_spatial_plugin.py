@@ -36,7 +36,8 @@ from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappi
 
 from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
-from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, ProjectDock, SelectItemDialog, SettingsDialog, ProjectWizard
+from ArkSpatial.ark.gui import (LayerTreeMenu, ProjectDialog, ProjectDock, SelectItemDialog, SettingsDialog,
+                                ProjectWizard, PreferencesWizard, PreferencesDialog)
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
@@ -148,6 +149,8 @@ class ArkSpatialPlugin(Plugin):
         self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
         self.iface.legendInterface().addLegendLayerAction(
             self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
+        self.addNewAction(':/plugins/ark/settings.svg', self.tr(u'Preferences'),
+                          self._triggerPreferencesDialog, addToToolbar=False)
 
     # Initialise plugin gui
     def initialise(self):
@@ -390,6 +393,12 @@ class ArkSpatialPlugin(Plugin):
         self.projectLayerView.setVisible(enabled)
         self.layerDock.adjustSize()
 
+    def _triggerPreferencesDialog(self):
+        if Settings.isPluginConfigured():
+            self.showPreferencesDialog()
+        else:
+            self.showPreferencesWizard()
+
     def _triggerSettingsDialog(self):
         if self.isConfigured():
             self.showSettingsDialog()
@@ -498,6 +507,14 @@ class ArkSpatialPlugin(Plugin):
             return self.grid
         elif collection == 'site':
             return self.site
+
+    def showPreferencesDialog(self):
+        preferencesDialog = PreferencesDialog(self, self.iface.mainWindow())
+        return preferencesDialog.exec_()
+
+    def showPreferencesWizard(self):
+        wizard = PreferencesWizard(self.iface.mainWindow())
+        return wizard.exec_()
 
     def showSettingsDialog(self):
         settingsDialog = SettingsDialog(self, self.iface.mainWindow())

@@ -21,6 +21,7 @@ from .layer_tree_menu import LayerTreeMenu
 from .open_ark_action import OpenArkAction
 from .plan_dock import PlanDock
 from .plan_widget import PlanWidget
+from .preferences_dialog import PreferencesDialog
 from .preferences_widget import PreferencesWidget
 from .preferences_wizard import PreferencesWizard
 from .preferences_wizard_page import PreferencesWizardPage

@@ -22,25 +22,17 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QFileDialog, QWizardPage
+from PyQt4.QtGui import QDialog
 
-from ArkSpatial.ark.core import Settings
+from .ui.preferences_dialog_base import Ui_PreferencesDialogBase
 
 
-class PreferencesWizardPage(QWizardPage):
+class PreferencesDialog(QDialog, Ui_PreferencesDialogBase):
 
-    def initializePage(self):
-        self.registerField("projectsFolder*", self.wizard().preferencesWidget.projectsFolderEdit)
-        self.registerField("userFullName*", self.wizard().preferencesWidget.userFullNameEdit)
-        self.registerField("userInitials*", self.wizard().preferencesWidget.userInitialsEdit)
-        self.registerField("organisation", self.wizard().preferencesWidget.organisationEdit)
-        self.setField('userFullName', Settings.userFullName())
-        self.setField('userInitials', Settings.userInitials())
-        self.wizard().preferencesWidget.projectsFolderButton.clicked.connect(self._selectProjectsFolder)
+    def __init__(self, parent=None):
+        super(PreferencesDialog, self).__init__(parent)
 
-    def _selectProjectsFolder(self):
-        folderName = unicode(
-            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.field("projectFolder"))
-        )
-        if folderName:
-            self.setField("projectFolder", folderName)
+        self.setupUi(self)
+
+    def accept(self):
+        return super(PreferencesDialog, self).accept()

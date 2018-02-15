@@ -36,7 +36,7 @@ from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappi
 
 from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
-from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, ProjectDock, SelectItemDialog, SettingsDialog, SettingsWizard
+from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, ProjectDock, SelectItemDialog, SettingsDialog, ProjectWizard
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
@@ -347,7 +347,7 @@ class ArkSpatialPlugin(Plugin):
         if self.isConfigured():
             return True
         # TODO more validation, check if files exist, etc
-        wizard = SettingsWizard()
+        wizard = ProjectWizard()
         if wizard.exec_() and wizard.projectDir().mkpath('.'):
 
             if wizard.clearProject():

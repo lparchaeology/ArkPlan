@@ -26,13 +26,9 @@
     Port of QgsBrowserModel to Python and simplified for Project Model requirements
 """
 
-from PyQt4.QtCore import Qt, QFile, QDir, QApplication, QStyle, QtConcurrentMap, QUrl, QSettings, QModelIndex, QAbstractItemModel
+from PyQt4.QtCore import Qt, QUrl, QModelIndex, QAbstractItemModel, QMimeData
 
-from qgis.core import QGis, QgsApplication, QgsDirectoryItem, QgsDataItem, QgsDataItemProvider, QgsDataItemProviderRegistry, QgsDataProvider, QgsMimeDataUtils, QgsLogger, QgsProviderRegistry, QgsProject, QgsBrowserModel
-
-from ArkSpatial.ark.lib.core import TableModel
-
-from ArkSpatial.ark.core import Item
+from qgis.core import QGis, QgsDirectoryItem, QgsDataItem, QgsMimeDataUtils, QgsProject
 
 
 class ProjectModel(QAbstractItemModel):
@@ -104,13 +100,13 @@ class ProjectModel(QAbstractItemModel):
             return item.name()
         if role == Qt.ToolTipRole:
             return item.toolTip()
-        if role == QgsBrowserModel.PathRole:
+        if role == ProjectModel.PathRole:
             return item.path()
         if role == Qt.DecorationRole and index.column() == 0:
             return item.icon()
-        if role == QgsBrowserModel.PathRole:
+        if role == ProjectModel.PathRole:
             return item.path()
-        if role == QgsBrowserModel.CommentRole and item.type() == QgsDataItem.Layer:
+        if role == ProjectModel.CommentRole and item.type() == QgsDataItem.Layer:
             return item.comments()
         return None
 
@@ -138,7 +134,7 @@ class ProjectModel(QAbstractItemModel):
         while foundChild:
             foundChild = False
             for i in range(0, self.rowCount(theIndex)):
-                idx = self.index(i, 0 theIndex)
+                idx = self.index(i, 0, theIndex)
                 itemPath = self.data(idx, self.PathRole)
                 if itemPath == path:
                     return idx
@@ -169,7 +165,7 @@ class ProjectModel(QAbstractItemModel):
         item = self.dataItem(index)
         if item is None:
             return QModelIndex()
-        return self.findItem(item -> parent())
+        return self.findItem(item.parent())
 
     def parent(self, item, parent):
         items = parent.children() if parent is not None else _rootItems
@@ -229,9 +225,9 @@ class ProjectModel(QAbstractItemModel):
         for index in indexes:
             if index.isValid():
                 if index.type() == QgsDataItem.Project:
-                    mimeData = new QMimeData()
+                    mimeData = QMimeData()
                     url = QUrl.fromLocalFile(index.path())
-                    mimeData -> setUrls([url])
+                    mimeData.setUrls([url])
                     return mimeData
                 if index.type() == QgsDataItem.Layer:
                     lst.append(QgsMimeDataUtils.Uri(index))
@@ -252,8 +248,7 @@ class ProjectModel(QAbstractItemModel):
 
     def fetchMore(self, parent):
         item = self.dataItem(parent)
-        if item is None or item.state() == QgsDataItem.Populating or item.state() == QgsDataItem:
-            : Populated:
+        if item is None or item.state() == QgsDataItem.Populating or item.state() == QgsDataItem.Populated:
             return
         item.populate()
 

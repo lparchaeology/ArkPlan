@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFile, QFileInfo, Qt
+from PyQt4.QtCore import QDir, QFile, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
 
 from qgis.core import QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
@@ -36,13 +36,14 @@ from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappi
 
 from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
-from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, SelectItemDialog, SettingsDialog, SettingsWizard
+from ArkSpatial.ark.gui import LayerTreeMenu, ProjectDialog, ProjectDock, SelectItemDialog, SettingsDialog, SettingsWizard
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
 from .filter_module import FilterModule
 from .plan_module import PlanModule
 from .trench_module import TrenchModule
+
 import georef.ui.resources
 import grid.ui.resources
 import gui.ui.resources
@@ -77,6 +78,7 @@ class ArkSpatialPlugin(Plugin):
 
     projectLayerView = None  # QgsLayerTreeView()
     layerDock = None  # ToolDockWidget()
+    projectDock = None  # ProjectDock()
 
     # Private settings
     _initialised = False
@@ -136,6 +138,8 @@ class ArkSpatialPlugin(Plugin):
         super(ArkSpatialPlugin, self).initGui()
 
         # Init the main dock so we have somethign to show on first run
+        self.projectDock = ProjectDock()
+        self.projectDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
         self.projectLayerView = QgsLayerTreeView()
         self.layerDock = ToolDockWidget(self.projectLayerView)
         self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
@@ -195,7 +199,7 @@ class ArkSpatialPlugin(Plugin):
         # Init the modules and add to the toolbar
         self.data = DataModule(self)
         self.data.initGui()
-        self.layerDock.toolbar.addSeparator()
+        self.projectDock.toolbar.addSeparator()
         self.gridModule = GridModule(self)
         self.gridModule.initGui()
         self.filterModule = FilterModule(self)
@@ -206,7 +210,7 @@ class ArkSpatialPlugin(Plugin):
         self.trenchModule.initGui()
 
         # Add Settings to the toolbar
-        self.layerDock.toolbar.addSeparator()
+        self.projectDock.toolbar.addSeparator()
         self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
 
         # If the project or layers or legend indexes change make sure we stay updated
@@ -280,6 +284,7 @@ class ArkSpatialPlugin(Plugin):
 
             # Restore the original QGIS gui
             self.layerDock.menuAction().setChecked(False)
+            self.projectDock.menuAction().setChecked(False)
 
             # Unload the modules in dependence order
             self.planModule.unloadGui()
@@ -308,6 +313,9 @@ class ArkSpatialPlugin(Plugin):
         self.layerDock.unloadGui()
         del self.layerDock
         self.layerDock = None
+        self.projectDock.unloadGui()
+        del self.projectDock
+        self.projectDock = None
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkSpatialPlugin, self).unload()
@@ -369,6 +377,7 @@ class ArkSpatialPlugin(Plugin):
         if not self.isConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
             self.layerDock.menuAction().setChecked(False)
+            self.projectDock.menuAction().setChecked(False)
             return False
         else:
             return True
@@ -467,7 +476,7 @@ class ArkSpatialPlugin(Plugin):
         return self._styleFile(collectionPath, layerName)
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
-        action = QAction(QIcon(iconPath), text, self.layerDock)
+        action = QAction(QIcon(iconPath), text, self.projectDock)
         if callback is not None:
             action.triggered.connect(callback)
         action.setEnabled(enabled)
@@ -476,7 +485,7 @@ class ArkSpatialPlugin(Plugin):
             action.setStatusTip(tip)
         if whatsThis is not None:
             action.setWhatsThis(whatsThis)
-        self.layerDock.toolbar.addAction(action)
+        self.projectDock.toolbar.addAction(action)
         # self.actions.append(action)
         return action
 

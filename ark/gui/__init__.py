@@ -26,6 +26,7 @@ from .preferences_wizard import PreferencesWizard
 from .preferences_wizard_page import PreferencesWizardPage
 from .project_browser_widget import ProjectBrowserWidget
 from .project_dialog import ProjectDialog
+from .project_dock import ProjectDock
 from .project_tree_view import ProjectTreeView
 from .project_widget import ProjectWidget
 from .project_wizard import ProjectWizard

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PreferencesWizard</class>
+ <widget class="QWizard" name="PreferencesWizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>771</width>
+    <height>443</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ARKspatial Preferences Wizard</string>
+  </property>
+  <property name="options">
+   <set>QWizard::CancelButtonOnLeft|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
+  </property>
+  <widget class="QWizardPage" name="welcomePage">
+   <property name="title">
+    <string>ARKspatial Preferences Wizard</string>
+   </property>
+   <property name="subTitle">
+    <string>This is the first time you have run ARKspatial, so we need to set up some default settings first before creating a new project.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">welcomePage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="PreferencesWizardPage" name="preferencesPage">
+   <property name="title">
+    <string>Project Preferences</string>
+   </property>
+   <property name="subTitle">
+    <string>Enter the default location for saving your projects, and your personal details for recording metadata.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">PreferencesPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="PreferencesWidget" name="projectsWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="ServerWizardPage" name="serverPage">
+   <property name="title">
+    <string>ARK Server Settings</string>
+   </property>
+   <property name="subTitle">
+    <string>If you use an ARK database for project management or site recording, enter the server details to enable automatic population of your project details.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">serverPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="serverLayout">
+    <item row="0" column="0">
+     <widget class="ServerWidget" name="serverWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="GlobalPage" name="globalPage">
+   <property name="title">
+    <string>QGIS Preferences</string>
+   </property>
+   <property name="subTitle">
+    <string>We recommend you set some sensible defaults for your QGIS preferences.</string>
+   </property>
+   <attribute name="pageId">
+    <string notr="true">GlobalPage</string>
+   </attribute>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="2" column="0">
+     <widget class="QLabel" name="snappingLabel">
+      <property name="text">
+       <string>Snapping:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="fontLabel">
+      <property name="text">
+       <string>Font:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QDoubleSpinBox" name="snappingToleranceSpin"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="crsAuthidLabel">
+      <property name="text">
+       <string>CRS:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QComboBox" name="snappingUnitCombo"/>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="QFontComboBox" name="fontCombo"/>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ServerWizardPage</class>
+   <extends>QWizardPage</extends>
+   <header>..server_wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgis.gui</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GlobalPage</class>
+   <extends>QWizardPage</extends>
+   <header>..wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PreferencesWizardPage</class>
+   <extends>QWizardPage</extends>
+   <header>..preferences_wizard_page</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PreferencesWidget</class>
+   <extends>QWidget</extends>
+   <header>..preferences_widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ServerWidget</class>
+   <extends>QWidget</extends>
+   <header>..server_widget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

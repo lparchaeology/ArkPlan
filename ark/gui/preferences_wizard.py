@@ -6,9 +6,9 @@
         Part of the Archaeological Recording Kit by L - P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        copyright            : 2017 by L - P : Heritage LLP
+        copyright            : 2018 by L - P : Heritage LLP
         email                : ark@lparchaeology.com
-        copyright            : 2017 by John Layt
+        copyright            : 2018 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -22,16 +22,16 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFileInfo
+from PyQt4.QtCore import QDir
 from PyQt4.QtGui import QWizard
 
-from .ui.settings_wizard_base import Ui_SettingsWizard
+from .ui.preferences_wizard_base import Ui_PreferencesWizard
 
 
-class SettingsWizard(QWizard, Ui_SettingsWizard):
+class PreferencesWizard(QWizard, Ui_PreferencesWizard):
 
     def __init__(self, parent=None):
-        super(SettingsWizard, self).__init__(parent)
+        super(PreferencesWizard, self).__init__(parent)
         self.setupUi(self)
 
     def arkUrl(self):
@@ -43,24 +43,6 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def arkPassword(self):
         return self.field('arkPassword')
 
-    def projectCode(self):
-        return self.projectCodeCombo.lineEdit().text()
-
-    def projectName(self):
-        return self.field('projectName')
-
-    def siteCode(self):
-        return self.field('siteCode')
-
-    def locationEasting(self):
-        return self.field('locationEasting')
-
-    def locationNorthing(self):
-        return self.field('locationNorthing')
-
-    def siteRadius(self):
-        return self.field('locationNorthing')
-
     def crs(self):
         return self.projectPage.crs
 
@@ -70,20 +52,11 @@ class SettingsWizard(QWizard, Ui_SettingsWizard):
     def userInitials(self):
         return self.field('userInitials')
 
-    def projectDir(self):
-        return QDir(self.field('projectFolder'))
+    def userOrganisation(self):
+        return self.field('organisation')
 
-    def projectFolder(self):
-        return self.field('projectFolder')
+    def projectsDir(self):
+        return QDir(self.field('projectsFolder'))
 
-    def projectFileInfo(self):
-        return QFileInfo(self.confirmPage.fullFilePath())
-
-    def projectFilePath(self):
-        return self.confirmPage.fullFilePath()
-
-    def projectFile(self):
-        return self.field('projectFile')
-
-    def clearProject(self):
-        return self.field('clearProject')
+    def projectsFolder(self):
+        return self.field('projectsFolder')

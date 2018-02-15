@@ -34,25 +34,41 @@ from ArkSpatial.ark.core import Settings
 from ArkSpatial.ark.pyARK import Ark
 
 
-class ServerPage(QWizardPage):
+class PreferencesPage(QWizardPage):
 
     def initializePage(self):
-        self.registerField("arkUrl", self.wizard().arkUrlEdit)
-        self.registerField("arkUser", self.wizard().arkUserEdit)
-        self.registerField("arkPassword", self.wizard().arkPasswordEdit)
-        self.setField('arkUrl', Settings.serverUrl())
-        self.setField('arkUser', Settings.serverUser())
-        self.setField('arkPassword', Settings.serverPassword())
+        self.registerField("projectsFolder*", self.wizard().projectsFolderEdit)
+        self.registerField("userFullName*", self.wizard().userFullNameEdit)
+        self.registerField("userInitials*", self.wizard().userInitialsEdit)
+        self.registerField("organisation", self.wizard().organisationEdit)
+        self.setField('userFullName', Settings.userFullName())
+        self.setField('userInitials', Settings.userInitials())
+        self.wizard().projectsFolderButton.clicked.connect(self._selectProjectsFolder)
 
-    def validatePage(self):
-        url = self.field("arkUrl")
-        if url is None or url == "":
-            return True
-        user = self.field("arkUser")
-        password = self.field("arkPassword")
-        if user is None or user == "" or password is None or password == "":
-            return False
-        return True
+    def _selectProjectsFolder(self):
+        folderName = unicode(
+            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.field("projectFolder"))
+        )
+        if folderName:
+            self.setField("projectFolder", folderName)
+
+
+class GlobalPage(QWizardPage):
+
+    crs = None
+
+    def initializePage(self):
+        self.crs = Application.projectDefaultCrs()
+        self.wizard().crsWidget.setCrs(self.crs)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.LayerCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.ProjectCrs, True)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.CurrentCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.DefaultCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.RecentCrs, True)
+        self.wizard().crsWidget.crsChanged.connect(self._crsChanged)
+
+    def _crsChanged(self, crs):
+        self.crs = crs
 
 
 class ProjectPage(QWizardPage):

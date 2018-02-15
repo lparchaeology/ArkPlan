@@ -22,7 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFileInfo
+import os
+
+from PyQt4.QtCore import QDir
 
 from qgis.core import QgsApplication
 
@@ -83,6 +85,14 @@ class Settings:
     def setUserInitials(initials):
         Application.setEntry("ARK", "User/initials", initials)
 
+    @staticmethod
+    def userOrganisation():
+        return Application.readEntry("ARK", "User/organisation")
+
+    @staticmethod
+    def setUserOrganisation(organisation):
+        Application.setEntry("ARK", "User/organisation", organisation)
+
     # Project settings
 
     @staticmethod
@@ -114,7 +124,7 @@ class Settings:
     def drawingDir(cls, group):
         path = os.path.join(Project.homePath(), Config.drawings[group]['path'])
         if cls.useCustomPath(group):
-            path = self.readEntry("ARK", group + '/path', Config.drawings[group]['path'])
+            path = Project.readEntry("ARK", group + '/path', Config.drawings[group]['path'])
         return QDir(path)
 
     def setDrawingPath(cls, group, useCustomPath, absolutePath):
@@ -151,7 +161,7 @@ class Settings:
         return self.readBoolEntry('logUpdates', True)
 
     def setLogUpdates(self, logUpdates):
-        self.writeEntry('logUpdates', logUpdates)
+        Project.writeEntry('logUpdates', logUpdates)
 
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)
@@ -160,17 +170,17 @@ class Settings:
         return QDir(self.stylePath())
 
     def stylePath(self):
-        path = self.readEntry('stylePath', '')
+        path = Project.readEntry('stylePath', '')
         if (not path):
             return self.pluginPath + '/styles'
         return path
 
     def setStylePath(self, useCustomStyles, absolutePath):
-        self.writeEntry('useCustomStyles', useCustomStyles)
+        Project.writeEntry('useCustomStyles', useCustomStyles)
         if useCustomStyles:
-            self.writeEntry('stylePath', absolutePath)
+            Project.writeEntry('stylePath', absolutePath)
         else:
-            self.writeEntry('stylePath', '')
+            Project.writeEntry('stylePath', '')
 
     # Group settings
 

@@ -27,8 +27,6 @@ from PyQt4.QtGui import QColor, QIcon
 
 from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem
 
-from ArkSpatial.ark.lib import utils
-
 
 class Application:
 

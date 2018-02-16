@@ -31,7 +31,7 @@ from qgis.gui import QgsExpressionBuilderDialog
 
 from ArkSpatial.ark.lib.core import layers
 
-from ArkSpatial.ark.core import Config, FilterClause, FilterSet, FilterType
+from ArkSpatial.ark.core import Config, FilterClause, FilterSet, FilterType, Settings
 from ArkSpatial.ark.core.enum import FilterAction
 from ArkSpatial.ark.gui import FilterDock, FilterExportDialog
 
@@ -40,7 +40,7 @@ class FilterModule(QObject):
 
     filterSetCleared = pyqtSignal()
 
-    project = None  # Project()
+    plugin = None  # Plugin()
 
     # Internal variables
     dock = None  # FilterDock()
@@ -51,18 +51,18 @@ class FilterModule(QObject):
     _arkFilterSets = {}  # {str: FilterSet()}
     _schematicFilterSet = FilterSet()  # FilterSet()
 
-    def __init__(self, project):
-        super(FilterModule, self).__init__(project)
-        self.project = project
+    def __init__(self, plugin):
+        super(FilterModule, self).__init__(plugin)
+        self.plugin = plugin
 
     # Standard Dock methods
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = FilterDock(self.project.layerDock)
-        action = self.project.addDockAction(
+        self.dock = FilterDock(self.plugin.iface.mainWindow())
+        action = self.plugin.addDockAction(
             ':/plugins/ark/filter/filter.png', self.tr(u'Filter Tools'), callback=self.run, checkable=True)
-        self.dock.initGui(self.project.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
 
         self.dock.filterChanged.connect(self._filterChanged)
         self.dock.filterClauseAdded.connect(self._filterChanged)
@@ -85,7 +85,7 @@ class FilterModule(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         # Load the Site Codes
-        self.dock.initSiteCodes(self.project.siteCodes())
+        self.dock.initSiteCodes([Settings.siteCode()])
 
         # Load the Class Codes
         self._loadClassCodes()
@@ -95,10 +95,10 @@ class FilterModule(QObject):
 
         # Respond to ARK data load
         self._enableArkData()
-        self.project.data.dataLoaded.connect(self._activateArkData)
+        self.plugin.data.dataLoaded.connect(self._activateArkData)
 
         # Init the schematic filter set
-        self._schematicFilterSet = FilterSet.fromSchematic(self.project)
+        self._schematicFilterSet = FilterSet.fromSchematic(self.plugin)
 
         self._initialised = True
         self.setFilterSet('Default')
@@ -111,7 +111,7 @@ class FilterModule(QObject):
 
     # Close the project
     def closeProject(self):
-        self.project.data.dataLoaded.disconnect(self._activateArkData)
+        self.plugin.data.dataLoaded.disconnect(self._activateArkData)
         # FIXME Doesn't clear on quit as layers already unloaded by main program!
         self.removeFilters()
         # Reset the initialisation
@@ -143,7 +143,7 @@ class FilterModule(QObject):
         self.dock.initClassCodes(codes)
 
     def _enableArkData(self, enable=True):
-        if self.project.arkUrl():
+        if Settings.siteServerUrl():
             self.dock.enableArkData(enable)
 
     def _activateArkData(self):
@@ -292,14 +292,14 @@ class FilterModule(QObject):
     def applyHighlightFilters(self):
         if not self._initialised:
             return
-        self.project.plan.clearHighlight()
+        self.plugin.plan.clearHighlight()
         self._applyHighlightClauses(self.currentFilterSet().clauses())
         self._applyHighlightClauses(self._schematicFilterSet.clauses())
 
     def _applyHighlightClauses(self, clauses):
         for clause in clauses:
             if clause.action == FilterType.Highlight:
-                filterItem = self.project.data.nodesItem(clause.item)
+                filterItem = self.plugin.data.nodesItem(clause.item)
                 self.addHighlight(filterItem.filterClause(), clause.lineColor(), clause.color)
 
     def clearFilters(self):
@@ -307,50 +307,50 @@ class FilterModule(QObject):
         self.setFilterSet('Default')
 
     def _clearFilters(self):
-        self.project.plan.clearFilter()
-        self.project.plan.clearSelection()
-        self.project.plan.clearHighlight()
+        self.plugin.plan.clearFilter()
+        self.plugin.plan.clearSelection()
+        self.plugin.plan.clearHighlight()
 
     def applyFilter(self, expression):
         if not self._initialised:
             return
-        self.project.plan.applyFilter(expression)
+        self.plugin.plan.applyFilter(expression)
 
     def applySelection(self, expression):
-        self.project.plan.applySelection(expression)
+        self.plugin.plan.applySelection(expression)
 
     def applyHighlight(self, expression, lineColor=None, fillColor=None):
-        self.project.plan.applyHighlight(expression, lineColor, fillColor, 0.1, 0.1)
+        self.plugin.plan.applyHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
     def addHighlight(self, expression, lineColor=None, fillColor=None):
-        self.project.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
+        self.plugin.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.project.plan.linesLayer)
-        dialog.setExpressionText(self.project.plan.filter)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog.setExpressionText(self.plugin.plan.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
     def buildSelection(self):
-        dialog = QgsExpressionBuilderDialog(self.project.plan.linesLayer)
-        dialog.setExpressionText(self.project.plan.selection)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog.setExpressionText(self.plugin.plan.selection)
         if (dialog.exec_()):
             self.applySelection(dialog.expressionText())
 
     def buildHighlight(self):
-        dialog = QgsExpressionBuilderDialog(self.project.plan.linesLayer)
-        dialog.setExpressionText(self.project.plan.highlight)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog.setExpressionText(self.plugin.plan.highlight)
         if (dialog.exec_()):
             self.applyHighlight(dialog.expressionText())
 
     def _loadArkData(self):
-        self.project.data.loadData()
+        self.plugin.data.loadData()
 
     def _refreshArkData(self):
-        self.project.data.refreshData()
+        self.plugin.data.refreshData()
 
     def zoomFilter(self):
-        self.project.plan.zoomToExtent()
+        self.plugin.plan.zoomToExtent()
 
     # Filter Set methods
 
@@ -379,18 +379,18 @@ class FilterModule(QObject):
         groups = settings.childGroups()
         settings.endGroup()
         for group in groups:
-            filterSet = FilterSet.fromSettings(self.project, 'ARK.filterset', group)
+            filterSet = FilterSet.fromSettings(self.plugin, 'ARK.filterset', group)
             self._filterSets[filterSet.key] = filterSet
         if 'Default' not in self._filterSets:
-            filterSet = FilterSet.fromName(self.project, 'ARK.filterset', 'Default', 'Default')
+            filterSet = FilterSet.fromName(self.plugin, 'ARK.filterset', 'Default', 'Default')
             self._filterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _loadArkFilterSets(self):
         self._arkFilterSets = {}
-        filters = self.project.data.getFilters()
+        filters = self.plugin.data.getFilters()
         for key in filters:
-            filterSet = FilterSet.fromArk(self.project, key, filters[key])
+            filterSet = FilterSet.fromArk(self.plugin, key, filters[key])
             self._arkFilterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
@@ -418,7 +418,7 @@ class FilterModule(QObject):
             self._filterSets[key].setClauses(self.dock.filterClauses())
             self._filterSets[key].save()
         else:
-            filterSet = FilterSet.fromName(self.project, 'ARK.filterset', key, name)
+            filterSet = FilterSet.fromName(self.plugin, 'ARK.filterset', key, name)
             filterSet.setClauses(self.dock.filterClauses())
             filterSet.save()
             self._filterSets[key] = filterSet
@@ -457,8 +457,8 @@ class FilterModule(QObject):
     def _exportSchematic(self, key, name, schematicColor):
         if self._filterSetGroupIndex < 0:
             self._filterSetGroupIndex = layers.createLayerGroup(
-                self.project.iface, Config.filterSetGroupName, Config.projectGroupName)
-        layer = self.project.plan.polygonsLayer
+                self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
+        layer = self.plugin.plan.polygonsLayer
         mem = layers.cloneAsMemoryLayer(layer, name, 'DefaultStyle')
         mem.rendererV2().symbols()[0].setColor(schematicColor)
         mem.startEditing()
@@ -467,16 +467,16 @@ class FilterModule(QObject):
             if feature.attribute('category') == 'sch':
                 mem.addFeature(feature)
         mem.commitChanges()
-        mem = layers.addLayerToLegend(self.project.iface, mem, self._filterSetGroupIndex)
+        mem = layers.addLayerToLegend(self.plugin.iface, mem, self._filterSetGroupIndex)
 
     def _exportLayers(self, key, name):
         if self._filterSetGroupIndex < 0:
             self._filterSetGroupIndex = layers.createLayerGroup(
-                self.project.iface, Config.filterSetGroupName, Config.projectGroupName)
-        exportGroup = layers.createLayerGroup(self.project.iface, name, Config.filterSetGroupName)
-        pgMem = layers.duplicateAsMemoryLayer(self.project.plan.polygonsLayer, key + '_pg')
-        plMem = layers.duplicateAsMemoryLayer(self.project.plan.linesLayer, key + '_pl')
-        ptMem = layers.duplicateAsMemoryLayer(self.project.plan.pointsLayer, key + '_pt')
-        layers.addLayerToLegend(self.project.iface, pgMem, exportGroup)
-        layers.addLayerToLegend(self.project.iface, plMem, exportGroup)
-        layers.addLayerToLegend(self.project.iface, ptMem, exportGroup)
+                self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
+        exportGroup = layers.createLayerGroup(self.plugin.iface, name, Config.filterSetGroupName)
+        pgMem = layers.duplicateAsMemoryLayer(self.plugin.plan.polygonsLayer, key + '_pg')
+        plMem = layers.duplicateAsMemoryLayer(self.plugin.plan.linesLayer, key + '_pl')
+        ptMem = layers.duplicateAsMemoryLayer(self.plugin.plan.pointsLayer, key + '_pt')
+        layers.addLayerToLegend(self.plugin.iface, pgMem, exportGroup)
+        layers.addLayerToLegend(self.plugin.iface, plMem, exportGroup)
+        layers.addLayerToLegend(self.plugin.iface, ptMem, exportGroup)

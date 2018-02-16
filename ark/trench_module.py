@@ -22,39 +22,35 @@
  ***************************************************************************/
 """
 
-import re
-
 from PyQt4.QtCore import QObject, Qt
-
-from ArkSpatial.ark.lib.core import layers
 
 from ArkSpatial.ark.gui import TrenchDock
 
 
 class TrenchModule(QObject):
 
-    project = None  # Project()
+    plugin = None  # Plugin()
 
     # Internal variables
     dock = None  # FilterDock()
     _initialised = False
 
-    def __init__(self, project):
-        super(TrenchModule, self).__init__(project)
-        self.project = project
+    def __init__(self, plugin):
+        super(TrenchModule, self).__init__(plugin)
+        self.plugin = plugin
 
     # Standard Dock methods
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = TrenchDock(self.project.layerDock)
-        action = self.project.addDockAction(
+        self.dock = TrenchDock(self.plugin.iface.mainWindow())
+        action = self.plugin.addDockAction(
             ':/plugins/ark/filter/filter.png',
             self.tr(u'Trench Tools'),
             callback=self.run,
             checkable=True
         )
-        self.dock.initGui(self.project.iface, Qt.RightDockWidgetArea, action)
+        self.dock.initGui(self.plugin.iface, Qt.RightDockWidgetArea, action)
 
     # Load the project settings when project is loaded
     def loadProject(self):

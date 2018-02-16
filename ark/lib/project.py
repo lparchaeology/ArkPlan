@@ -22,33 +22,54 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QFile, QSettings
-from PyQt4.QtGui import QColor, QIcon
-
-from qgis.core import QGis, QgsProject
+from qgis.core import QgsProject
 
 
 class Project:
-
-    @classmethod
-    def exists(cls):
-        return cls.fileInfo().exists()
 
     @staticmethod
     def fileInfo():
         return QgsProject.instance().fileInfo()
 
     @staticmethod
+    def dir():
+        return QgsProject.instance().fileInfo().dir()
+
+    @staticmethod
+    def exists():
+        return QgsProject.instance().fileInfo().exists()
+
+    @staticmethod
+    def filePath():
+        return QgsProject.instance().fileInfo().filePath()
+
+    @staticmethod
     def fileName():
         return QgsProject.instance().fileName()
+
+    @staticmethod
+    def setFileName(filePath):
+        return QgsProject.instance().setFileName(filePath)
+
+    @staticmethod
+    def title():
+        return QgsProject.instance().title()
+
+    @staticmethod
+    def setTitle(title):
+        return QgsProject.instance().setTitle(title)
 
     @staticmethod
     def homePath():
         return QgsProject.instance().homePath()
 
-    @classmethod
-    def dir(cls):
-        return cls.fileInfo().dir()
+    @staticmethod
+    def write():
+        return QgsProject.instance().write()
+
+    @staticmethod
+    def clear():
+        return QgsProject.instance().clear()
 
     @staticmethod
     def setEntry(scope, key, value, default=None):

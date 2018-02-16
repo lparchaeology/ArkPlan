@@ -80,7 +80,7 @@ class TrenchDock(ToolDockWidget):
     def unloadGui(self):
         pass
 
-    def loadProject(self, project):
+    def loadProject(self, plugin):
         self.areaCombo.clear()
         for area in []:
             self.areaCombo.addItem(area, area)

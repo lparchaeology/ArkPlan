@@ -51,7 +51,7 @@ class Settings:
     def setProjectsFolder(path):
         Application.setEntry("ARK", "projectsFolder", path)
 
-    # Server settings
+    # Projects Server settings
     # TODO Move to Auth Storage
 
     @staticmethod
@@ -112,6 +112,14 @@ class Settings:
     # Project settings
 
     @staticmethod
+    def isProjectConfigured():
+        return Project.readBoolEntry("ARK", "configured", False)
+
+    @staticmethod
+    def setProjectConfigured():
+        Project.setEntry("ARK", "configured", True)
+
+    @staticmethod
     def projectCode():
         return Project.readEntry('ARK', 'Project/code')
 
@@ -127,6 +135,10 @@ class Settings:
     def setProjectName(name):
         Project.setEntry("ARK", "Project/name", name)
 
+    @classmethod
+    def siteCodes(cls):
+        return [cls.siteCode]
+
     @staticmethod
     def siteCode():
         return Project.readEntry('ARK', 'Project/siteCode')
@@ -134,6 +146,30 @@ class Settings:
     @staticmethod
     def setSiteCode(siteCode):
         Project.setEntry("ARK", "Project/siteCode", siteCode)
+
+    # Projects Server settings
+    # TODO Move to Auth Storage
+
+    @staticmethod
+    def siteServerUrl():
+        return Project.readEntry("ARK", "Server/url")
+
+    @staticmethod
+    def setSiteServerUrl(url):
+        Project.setEntry("ARK", "Server/url", url)
+
+    @staticmethod
+    def siteServerUser():
+        return Project.readEntry("ARK", "Server/user")
+
+    @staticmethod
+    def siteServerPassword():
+        return Project.readEntry("ARK", "Server/password")
+
+    @staticmethod
+    def setSiteServerCredentials(user, password):
+        Project.setEntry("ARK", "Server/user", user)
+        Project.setEntry("ARK", "Server/password", password)
 
     # Raster Drawings settings
 

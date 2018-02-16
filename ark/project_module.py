@@ -25,28 +25,31 @@
 import bisect
 import webbrowser
 
-from PyQt4.QtCore import QObject, Qt
+from PyQt4.QtCore import QObject
 from PyQt4.QtGui import QApplication
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.gui import ProjectDialog
 
-from ArkSpatial.ark.core import Config, Item
+from ArkSpatial.ark.core import Config, Item, Settings
 from ArkSpatial.ark.pyARK import Ark
 
 
 class ProjectModule(QObject):
 
+    plugin = None  # Plugin()
+
     _ark = None
     _dialog = None
 
-    def __init__(self):
-        super(ProjectModule, self).__init__()
+    def __init__(self, plugin):
+        super(ProjectModule, self).__init__(plugin)
+        self.plugin = plugin
 
     # Create the gui when the plugin is first created
     def initGui(self):
         self._dialog = ProjectDialog(self)
-        self._dialog.initGui(self.project.iface, action)
+        self._dialog.initGui(self.plugin.iface, action)
         self.__dict__dialog.projectChanged.connect(self._projectChanged)
 
     def run(self, checked):
@@ -57,7 +60,7 @@ class ProjectModule(QObject):
     def _createArkSession(self):
         dialog = CredentialsDialog()
         if dialog.exec_():
-            self._ark = Ark(self.project.arkUrl(), dialog.username(), dialog.password())
+            self._ark = Ark(Settings.siteServerUrl(), Settings.siteServerUser(), Settings.siteServerPassword())
 
     def _loadIndex(self):
         self._indexLoaded = False
@@ -69,7 +72,7 @@ class ProjectModule(QObject):
         self.dock.setItemNavEnabled(self._indexLoaded)
 
     def _loadOnlineClassIndex(self, classCode):
-        if not self.project.arkUrl():
+        if not Settings.siteServerUrl():
             return False
         if self._ark is None:
             self._createArkSession()
@@ -77,9 +80,9 @@ class ProjectModule(QObject):
             return False
         response = self._ark.getItems(classCode + '_cd')
         if response.error:
-            self.project.logMessage(response.url)
-            self.project.logMessage(response.message)
-            self.project.logMessage(response.raw)
+            self.plugin.logMessage(response.url)
+            self.plugin.logMessage(response.message)
+            self.plugin.logMessage(response.raw)
         else:
             lst = response.data[classCode]
             items = set()
@@ -88,7 +91,7 @@ class ProjectModule(QObject):
                 if item.isValid():
                     items.add(item)
             self.items[classCode] = sorted(items)
-            self.project.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.items[classCode])))
+            self.plugin.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.items[classCode])))
             if (len(self.items[classCode]) > 0):
                 self._indexLoaded = True
                 return True
@@ -96,7 +99,7 @@ class ProjectModule(QObject):
 
     def haveItem(self, item):
         try:
-            return item in self.project.data.items[item.classCode()]
+            return item in self.plugin.data.items[item.classCode()]
         except KeyError:
             return False
 
@@ -132,22 +135,22 @@ class ProjectModule(QObject):
         return Item()
 
     def openItem(self, item):
-        if not self.project.arkUrl():
-            self.project.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
+        if not Settings.siteServerUrl():
+            self.plugin.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
         elif not self.haveItem(item):
-            self.project.showWarningMessage('Item not in ARK.')
+            self.plugin.showWarningMessage('Item not in ARK.')
         else:
             mod_cd = item.classCode() + '_cd'
             item_cd = item.siteCode() + '_' + item.itemId()
-            url = self.project.arkUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
+            url = Settings.siteServerUrl() + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item_cd
             try:
                 webbrowser.get().open_new_tab(url)
             except Exception:
                 QApplication.clipboard().setText(url)
-                self.project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
+                self.plugin.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
     def _getOnlineLinks(self, item, linkClassCode):
-        if not self.project.arkUrl():
+        if not Settings.siteServerUrl():
             return []
         xmi = unicode('conf_field_' + item.classCode() + linkClassCode + 'xmi')
         data = self.getItemFields(item, [xmi])
@@ -193,7 +196,7 @@ class ProjectModule(QObject):
         self._showItem(item)
 
     def _showItem(self, item):
-        if not self.project.arkUrl():
+        if not Settings.siteServerUrl():
             return
         self._prevItem = item
         url = ''

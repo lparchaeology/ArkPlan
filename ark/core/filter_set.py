@@ -41,7 +41,7 @@ class FilterSet():
     selection = ''
     _clauses = []  # [Item()]
     _group = ''
-    _project = None  # Project()
+    _plugin = None  # Plugin()
 
     def __str__(self):
         return ('FilterSet('
@@ -137,7 +137,7 @@ class FilterSet():
         settings.endArray()
 
     def _loadArk(self):
-        items = self._project.data.getFilterItems(self._group)
+        items = self._plugin.data.getFilterItems(self._group)
         siteItems = {}
         for item in items:
             if item.siteCode not in siteItems:
@@ -162,7 +162,7 @@ class FilterSet():
         selectString = ''
         firstSelect = True
         for clause in self._clauses:
-            filterItem = self._project.data.nodesItem(clause.key)
+            filterItem = self._plugin.data.nodesItem(clause.key)
             if clause.action == FilterType.Select:
                 if firstSelect:
                     firstSelect = False
@@ -190,9 +190,9 @@ class FilterSet():
         self.selection = selectString
 
     @staticmethod
-    def fromSettings(project, path, key):
+    def fromSettings(plugin, path, key):
         fs = FilterSet()
-        fs._project = project
+        fs._plugin = plugin
         fs._group = path + '/' + key
         fs.key = key
         fs.name = QSettings().value(fs._group + '/Name')
@@ -201,9 +201,9 @@ class FilterSet():
         return fs
 
     @staticmethod
-    def fromArk(project, key, name):
+    def fromArk(plugin, key, name):
         fs = FilterSet()
-        fs._project = project
+        fs._plugin = plugin
         fs._group = key
         fs.key = 'ark_' + str(key)
         fs.name = name
@@ -212,9 +212,9 @@ class FilterSet():
         return fs
 
     @staticmethod
-    def fromSchematic(project):
+    def fromSchematic(plugin):
         fs = FilterSet()
-        fs._project = project
+        fs._plugin = plugin
         fs._group = 'schematic'
         fs.key = 'schematic'
         fs.name = 'schematic'
@@ -223,9 +223,9 @@ class FilterSet():
         return fs
 
     @staticmethod
-    def fromName(project, path, key, name):
+    def fromName(plugin, path, key, name):
         fs = FilterSet()
-        fs._project = project
+        fs._plugin = plugin
         fs._group = path + '/' + key
         fs.key = key
         fs.name = name

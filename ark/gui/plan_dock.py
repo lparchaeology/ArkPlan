@@ -131,10 +131,10 @@ class PlanDock(ToolDockWidget):
         super(PlanDock, self).unloadGui()
 
     # Load the project settings when project is loaded
-    def loadProject(self, project):
-        self.widget.digitisingWidget.loadProject(project)
-        self.widget.schematicWidget.loadProject(project)
-        self.widget.snappingWidget.loadProject(project)
+    def loadProject(self, plugin):
+        self.widget.digitisingWidget.loadProject(plugin)
+        self.widget.schematicWidget.loadProject(plugin)
+        self.widget.snappingWidget.loadProject(plugin)
 
     # Close the project
     def closeProject(self):

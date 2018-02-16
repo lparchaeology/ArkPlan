@@ -25,7 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QGroupBox
 
-from ArkSpatial.ark.core import Config, Feature, Item, Source
+from ArkSpatial.ark.core import Config, Feature, Item, Source, Settings
 
 from .ui.metadata_widget_base import Ui_MetadataWidget
 
@@ -72,11 +72,11 @@ class MetadataWidget(QGroupBox, Ui_MetadataWidget):
     def unloadGui(self):
         pass
 
-    def loadProject(self, project):
+    def loadProject(self, plugin):
         self.siteCodeCombo.clear()
-        for siteCode in sorted(set(project.siteCodes())):
+        for siteCode in sorted(set(Settings.siteCodes())):
             self.siteCodeCombo.addItem(siteCode, siteCode)
-        self.setSiteCode(project.siteCode())
+        self.setSiteCode(Settings.siteCode())
 
     def closeProject(self):
         pass

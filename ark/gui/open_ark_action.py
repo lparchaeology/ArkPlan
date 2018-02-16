@@ -43,4 +43,4 @@ class OpenArkAction(QAction):
         try:
             webbrowser.get().open_new_tab(self._url)
         except Exception:
-            self._project.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
+            self._plugin.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')

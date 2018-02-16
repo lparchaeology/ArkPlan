@@ -34,28 +34,29 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
 
     _iface = None
     _view = None
+    _plugin = None
 
-    def __init__(self, project, view):
+    def __init__(self, plugin, view):
         QgsLayerTreeViewMenuProvider.__init__(self)
-        self._project = project
+        self._plugin = plugin
         self._view = view
 
         # Default actions
-        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._project.mapCanvas())
-        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._project.mapCanvas())
-        self._featureCount = self._view.defaultActions().actionShowFeatureCount(self._project.mapCanvas())
-        self._remove = self._view.defaultActions().actionRemoveGroupOrLayer(self._project.mapCanvas())
-        self._rename = self._view.defaultActions().actionRenameGroupOrLayer(self._project.mapCanvas())
+        self._zoomGroup = self._view.defaultActions().actionZoomToGroup(self._plugin.mapCanvas())
+        self._zoomLayer = self._view.defaultActions().actionZoomToLayer(self._plugin.mapCanvas())
+        self._featureCount = self._view.defaultActions().actionShowFeatureCount(self._plugin.mapCanvas())
+        self._remove = self._view.defaultActions().actionRemoveGroupOrLayer(self._plugin.mapCanvas())
+        self._rename = self._view.defaultActions().actionRenameGroupOrLayer(self._plugin.mapCanvas())
 
         # Custom actions
         self._removeDrawings = QAction('Remove All Drawings', view)
-        self._removeDrawings.triggered.connect(self._project.clearDrawings)
+        self._removeDrawings.triggered.connect(self._plugin.clearDrawings)
 
         self._openAttributes = QAction(
-            Application.getThemeIcon('mActionOpenTable.svg'), project.tr('&Open Attribute Table'), view)
+            Application.getThemeIcon('mActionOpenTable.svg'), plugin.tr('&Open Attribute Table'), view)
         self._openAttributes.triggered.connect(self._showAttributeTable)
 
-        self._openProperties = QAction(project.tr('&Properties'), view)
+        self._openProperties = QAction(plugin.tr('&Properties'), view)
         self._openProperties.triggered.connect(self._showLayerProperties)
 
     def createContextMenu(self):
@@ -65,10 +66,10 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
         node = self._view.currentNode()
         if node.nodeType() == QgsLayerTreeNode.NodeGroup:
             menu.addAction(self._zoomGroup)
-            if not self._project.isArkGroup(node.name()):
+            if not self._plugin.isArkGroup(node.name()):
                 menu.addAction(self._rename)
                 menu.addAction(self._remove)
-            if node.name() == self._project.drawingsGroupName:
+            if node.name() == self._plugin.drawingsGroupName:
                 menu.addAction(self._removeDrawings)
         elif node.nodeType() == QgsLayerTreeNode.NodeLayer:
             menu.addAction(self._zoomLayer)
@@ -77,9 +78,9 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
                 menu.addAction(self._openAttributes)
             layerId = node.layerId()
             parent = node.parent()
-            if parent.nodeType() == QgsLayerTreeNode.NodeGroup and parent.name() == self._project.drawingsGroupName:
+            if parent.nodeType() == QgsLayerTreeNode.NodeGroup and parent.name() == self._plugin.drawingsGroupName:
                 menu.addAction(self._removeDrawings)
-            if not self._project.isArkLayer(layerId):
+            if not self._plugin.isArkLayer(layerId):
                 menu.addSeparator()
                 menu.addAction(self._rename)
                 menu.addAction(self._remove)
@@ -90,9 +91,9 @@ class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
     def _showAttributeTable(self):
         node = self._view.currentNode()
         if node.nodeType() == QgsLayerTreeNode.NodeLayer and node.layer().type() == QgsMapLayer.VectorLayer:
-            self._project.iface.showAttributeTable(node.layer())
+            self._plugin.iface.showAttributeTable(node.layer())
 
     def _showLayerProperties(self):
         node = self._view.currentNode()
         if node.nodeType() == QgsLayerTreeNode.NodeLayer:
-            self._project.iface.showLayerProperties(node.layer())
+            self._plugin.iface.showLayerProperties(node.layer())

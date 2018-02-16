@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QDockWidget, QIcon
 from qgis.core import QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
 from qgis.gui import QgsLayerTreeView
 
-from ArkSpatial.ark.lib import Plugin
+from ArkSpatial.ark.lib import Plugin, Project
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
@@ -55,8 +55,6 @@ class ArkSpatialPlugin(Plugin):
 
     """QGIS Plugin Implementation."""
 
-    project = None  # QgsProject()
-
     # Tools
     identifyMapTool = None  # MapToolIndentifyItems()
 
@@ -77,15 +75,13 @@ class ArkSpatialPlugin(Plugin):
     grid = None  # Collection()
     site = None  # Collection()
 
-    projectLayerView = None  # QgsLayerTreeView()
-    layerDock = None  # ToolDockWidget()
+    # projectLayerView = None  # QgsLayerTreeView()
     projectDock = None  # ProjectDock()
 
     # Private settings
     _initialised = False
     _loaded = False
     _layerSnappingAction = None  # LayerSnappingAction()
-    _userDocks = []
     _snappingAction = None  # ProjectSnappingAction()
     _interAction = None  # IntersectionSnappingAction()
     _topoAction = None  # TopologicalEditingAction()
@@ -113,7 +109,7 @@ class ArkSpatialPlugin(Plugin):
         self._topoAction = TopologicalEditingAction(iface.mainWindow())
         self.iface.addToolBarIcon(self._topoAction)
 
-        # TODO Excalibur Tools - Make wn plugin
+        # TODO Excalibur Tools - Make own plugin
         self._excalibur = QAction(QIcon(':/plugins/ark/excalibur.svg'), 'Excalibur', self.iface.mainWindow())
         self._excalibur.triggered.connect(self.pullExcalibur)
         self._excalibur.setEnabled(True)
@@ -126,14 +122,6 @@ class ArkSpatialPlugin(Plugin):
     def isLoaded(self):
         return self._loaded
 
-    def isConfigured(self):
-        return self.readBoolEntry('configured', False)
-
-    def _setIsConfigured(self, configured):
-        self.writeEntry('configured', configured)
-        if not configured:
-            self._initialised = False
-
     # Load the plugin gui
     def initGui(self):
         super(ArkSpatialPlugin, self).initGui()
@@ -141,14 +129,10 @@ class ArkSpatialPlugin(Plugin):
         # Init the main dock so we have somethign to show on first run
         self.projectDock = ProjectDock()
         self.projectDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
-        self.projectLayerView = QgsLayerTreeView()
-        self.layerDock = ToolDockWidget(self.projectLayerView)
-        self.layerDock.initGui(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
-        self.layerDock.setWindowTitle(self.pluginName)
-        self.layerDock.setObjectName(u'ArkLayerDock')
-        self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
-        self.iface.legendInterface().addLegendLayerAction(
-            self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
+        # self.projectLayerView = QgsLayerTreeView()
+        # self._layerSnappingAction = LayerSnappingAction(self.iface, self.projectLayerView)
+        # self.iface.legendInterface().addLegendLayerAction(
+        #    self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
         self.addNewAction(':/plugins/ark/settings.svg', self.tr(u'Preferences'),
                           self._triggerPreferencesDialog, addToToolbar=False)
 
@@ -157,6 +141,7 @@ class ArkSpatialPlugin(Plugin):
         if self._initialised:
             return True
 
+        """
         # Create the Layer Model and View
         # TODO Should only show our subgroup but crashes!
         # self.projectLayerModel
@@ -181,6 +166,7 @@ class ArkSpatialPlugin(Plugin):
         self.layerViewAction = self.addDockAction(
             ':/plugins/ark/tree.svg', self.tr(u'Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
         self.layerViewAction.setChecked(True)
+        """
 
         # Init the identify tool and add to the toolbar
         self.identifyAction = self.addDockAction(
@@ -214,14 +200,13 @@ class ArkSpatialPlugin(Plugin):
 
         # Add Settings to the toolbar
         self.projectDock.toolbar.addSeparator()
-        self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Settings'), self._triggerSettingsDialog)
+        self.addDockAction(':/plugins/ark/settings.svg', self.tr(u'Project Settings'), self._triggerSettingsDialog)
 
         # If the project or layers or legend indexes change make sure we stay updated
         self.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
         self.iface.projectRead.connect(self.loadProject)
         self.iface.newProjectCreated.connect(self.closeProject)
 
-        self.project = QgsProject.instance()
         self._initialised = True
         return self._initialised
 
@@ -229,7 +214,7 @@ class ArkSpatialPlugin(Plugin):
     def loadProject(self):
         if self.isLoaded():
             self.closeProject()
-        if self.isInitialised() and self.isConfigured():
+        if self.isInitialised() and Settings.isProjectConfigured():
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
             # Load the layer collections
             self.grid = self._loadCollection('grid')
@@ -286,7 +271,6 @@ class ArkSpatialPlugin(Plugin):
             self.closeProject()
 
             # Restore the original QGIS gui
-            self.layerDock.menuAction().setChecked(False)
             self.projectDock.menuAction().setChecked(False)
 
             # Unload the modules in dependence order
@@ -311,11 +295,8 @@ class ArkSpatialPlugin(Plugin):
         self.iface.removeToolBarIcon(self._excalibur)
 
         # Unload this dock and uninitialise
-        del self.projectLayerView
-        self.projectLayerView = None
-        self.layerDock.unloadGui()
-        del self.layerDock
-        self.layerDock = None
+        # del self.projectLayerView
+        # self.projectLayerView = None
         self.projectDock.unloadGui()
         del self.projectDock
         self.projectDock = None
@@ -327,13 +308,6 @@ class ArkSpatialPlugin(Plugin):
         if checked and self.initialise() and self.configure():
             if not self._loaded:
                 self.loadProject()
-            # Close all open docks
-            self._userDocks = []
-            docks = self.iface.mainWindow().findChildren(QDockWidget)
-            for dock in docks:
-                if dock.isVisible() and dock.objectName() != 'ArkLayerDock':
-                    self._userDocks.append(dock.objectName())
-                    dock.setVisible(False)
         else:
             if self._initialised:
                 self.data.dock.setVisible(False)
@@ -341,28 +315,25 @@ class ArkSpatialPlugin(Plugin):
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)
                 self.trenchModule.dock.setVisible(False)
-            for dock in self._userDocks:
-                self.iface.mainWindow().findChild(QDockWidget, dock).setVisible(True)
-            self._userDocks = []
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
-        if self.isConfigured():
+        if Settings.isProjectConfigured():
             return True
         # TODO more validation, check if files exist, etc
         wizard = ProjectWizard()
         if wizard.exec_() and wizard.projectDir().mkpath('.'):
 
             if wizard.clearProject():
-                if self.project.fileInfo().exists():
-                    self.project.write()
-                self.project.clear()
+                if Project.exists():
+                    Project.write()
+                Project.clear()
 
-            self.project.setFileName(wizard.projectFileInfo().absoluteFilePath())
-            self.project.setTitle(wizard.projectName())
+            Project.setFileName(wizard.projectFileInfo().absoluteFilePath())
+            Project.setTitle(wizard.projectName())
 
-            Settings.setServerUrl(wizard.arkUrl())
-            Settings.setServerCredentials(wizard.arkUser(), wizard.arkPassword())
+            Settings.setServerUrl(wizard.server().url())
+            Settings.setServerCredentials(wizard.server().user(), wizard.server().password())
 
             Settings.setUserFullName(wizard.userFullName())
             Settings.setUserInitials(wizard.userInitials())
@@ -375,11 +346,12 @@ class ArkSpatialPlugin(Plugin):
             # self._configureDrawing('section')
 
             self.writeProject()
-            self._setIsConfigured(self.project.write())
+            self._initialised = Project.write()
+            if self._initialised:
+                Settings.setProjectConfigured()
 
-        if not self.isConfigured():
+        if not Settings.isProjectConfigured():
             self.showCriticalMessage('ARK Project not configured, unable to continue!')
-            self.layerDock.menuAction().setChecked(False)
             self.projectDock.menuAction().setChecked(False)
             return False
         else:
@@ -389,10 +361,6 @@ class ArkSpatialPlugin(Plugin):
         self.rawDrawingDir(grp).mkpath('.')
         self.georefDrawingDir(grp).mkpath('.')
 
-    def _toggleLayerView(self, enabled):
-        self.projectLayerView.setVisible(enabled)
-        self.layerDock.adjustSize()
-
     def _triggerPreferencesDialog(self):
         if Settings.isPluginConfigured():
             self.showPreferencesDialog()
@@ -400,7 +368,7 @@ class ArkSpatialPlugin(Plugin):
             self.showPreferencesWizard()
 
     def _triggerSettingsDialog(self):
-        if self.isConfigured():
+        if Settings.isProjectConfigured():
             self.showSettingsDialog()
         else:
             self.configure()
@@ -517,7 +485,7 @@ class ArkSpatialPlugin(Plugin):
         return wizard.exec_()
 
     def showSettingsDialog(self):
-        settingsDialog = SettingsDialog(self, self.iface.mainWindow())
+        settingsDialog = SettingsDialog(self.iface.mainWindow())
         return settingsDialog.exec_()
 
     # Identify Tool
@@ -532,7 +500,7 @@ class ArkSpatialPlugin(Plugin):
 
     def _showItem(self):
         classCodes = sorted(set(self.plan.uniqueValues('class')))
-        dialog = SelectItemDialog(self.siteCodes(), self.siteCode(), classCodes, self.iface.mainWindow())
+        dialog = SelectItemDialog(Settings.siteCodes(), Settings.siteCode(), classCodes, self.iface.mainWindow())
         if dialog.exec_():
             self.planModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())
 

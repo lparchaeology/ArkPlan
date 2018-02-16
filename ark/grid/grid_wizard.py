@@ -29,6 +29,8 @@ from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
+from ArkSpatial.ark.core import Settings
+
 from .ui.grid_wizard_base import Ui_GridWizard
 
 
@@ -41,17 +43,17 @@ class GridWizard(QWizard, Ui_GridWizard):
     _iface = None  # QgisInterface()
     _mapTool = None  # MapToolEmitPoint
 
-    def __init__(self, iface, project, parent=None):
+    def __init__(self, iface, plugin, parent=None):
         super(GridWizard, self).__init__(parent)
         self._iface = iface
 
         self.setupUi(self)
-        self.gridFolderEdit.setText(project.grid.settings.collectionPath)
-        self.gridGroupNameEdit.setText(project.grid.settings.collectionGroupName)
-        self.gridPointsNameEdit.setText(project.grid.settings.pointsLayerName)
-        self.gridLinesNameEdit.setText(project.grid.settings.linesLayerName)
-        self.gridPolygonsNameEdit.setText(project.grid.settings.polygonsLayerName)
-        self.siteCodeEdit.setText(project.siteCode())
+        self.gridFolderEdit.setText(plugin.grid.settings.collectionPath)
+        self.gridGroupNameEdit.setText(plugin.grid.settings.collectionGroupName)
+        self.gridPointsNameEdit.setText(plugin.grid.settings.pointsLayerName)
+        self.gridLinesNameEdit.setText(plugin.grid.settings.linesLayerName)
+        self.gridPolygonsNameEdit.setText(plugin.grid.settings.polygonsLayerName)
+        self.siteCodeEdit.setText(Settings.siteCode())
         self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)
         self.methodCombo.currentIndexChanged.connect(self.setMethodType)

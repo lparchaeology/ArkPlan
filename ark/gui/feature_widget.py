@@ -107,8 +107,8 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
             if action.isChecked():
                 action.setChecked(False)
 
-    def loadProject(self, project, collection):
-        collection = project.collection(collection)
+    def loadProject(self, plugin, collection):
+        collection = plugin.collection(collection)
         self._pointsLayer = collection.pointsBuffer if collection.pointsBuffer else collection.pointsLayer
         self._linesLayer = collection.linesBuffer if collection.linesBuffer else collection.linesLayer
         self._polygonsLayer = collection.polygonsBuffer if collection.polygonsBuffer else collection.polygonsLayer
@@ -315,4 +315,4 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         outLayer.beginEditCommand("Add Auto Schematic")
         outLayer.addFeature(schematic)
         outLayer.endEditCommand()
-        self.project.mapCanvas().refresh()
+        self.plugin.mapCanvas().refresh()

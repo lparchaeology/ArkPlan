@@ -41,8 +41,7 @@ class SelectItemWidget(QWidget, Ui_SelectItemWidget):
         super(SelectItemWidget, self).__init__(parent)
         self.setupUi(self)
 
-    def initGui(self, project):
-
+    def initGui(self, plugin):
         self.siteCodeCombo.currentIndexChanged.connect(self._siteCodeIndexChanged)
         self.classCodeCombo.currentIndexChanged.connect(self._classCodeIndexChanged)
         self.itemIdEdit.editingFinished.connect(self.itemIdChanged)

@@ -47,11 +47,11 @@ class DigitisingWidget(QWidget, Ui_DigitisingWidget):
         self.siteFeatureWidget.unloadGui()
         self.sourceWidget.sourceChanged.disconnect(self._updateSource)
 
-    def loadProject(self, project):
-        self.sourceWidget.loadProject(project)
-        self.planFeatureWidget.loadProject(project, 'plan')
-        self.sectionFeatureWidget.loadProject(project, 'section')
-        self.siteFeatureWidget.loadProject(project, 'site')
+    def loadProject(self, plugin):
+        self.sourceWidget.loadProject(plugin)
+        self.planFeatureWidget.loadProject(plugin, 'plan')
+        self.sectionFeatureWidget.loadProject(plugin, 'section')
+        self.siteFeatureWidget.loadProject(plugin, 'site')
 
     def closeProject(self):
         self.sourceWidget.closeProject()

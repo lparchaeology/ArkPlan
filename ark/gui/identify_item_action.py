@@ -29,7 +29,7 @@ from qgis.core import QGis
 
 from ArkSpatial.ark.lib.gui import ClipboardAction
 
-from ArkSpatial.ark.core import Config, Item, Source
+from ArkSpatial.ark.core import Config, Item, Source, Settings
 
 from open_ark_action import OpenArkAction
 
@@ -51,9 +51,9 @@ class IdentifyItemAction(QAction):
 
     _iface = None
 
-    def __init__(self, item, project, parent=None):
+    def __init__(self, item, plugin, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
-        self._iface = project.iface
+        self._iface = plugin.iface
         self.item = item
         self.setText(item.itemLabel())
         menu = QMenu()
@@ -61,7 +61,7 @@ class IdentifyItemAction(QAction):
         area = []
         haveSchematic = False
         sectionSchematics = []
-        for feature in project.plan.polygonsLayer.getFeatures(item.featureRequest()):
+        for feature in plugin.plan.polygonsLayer.getFeatures(item.featureRequest()):
             category = feature.attribute('category')
             if category == 'sch' or category == 'scs':
                 haveSchematic = True
@@ -94,8 +94,8 @@ class IdentifyItemAction(QAction):
         self.addHighlightAction = QAction('Add Item to Selection', parent)
         self.addHighlightAction.triggereConfigd.connect(self._addHighlightItem)
         menu.addAction(self.addHighlightAction)
-        if project.arkUrl():
-            self.linkAction = OpenArkAction(project.arkUrl(), item, 'Open in ARK', parent)
+        if Settings.siteServerUrl():
+            self.linkAction = OpenArkAction(Settimgs.siteServerUrl(), item, 'Open in ARK', parent)
             menu.addAction(self.linkAction)
         self.drawingAction = QAction('Open Drawings', parent)
         self.drawingAction.triggered.connect(self._openDrawings)
@@ -120,17 +120,17 @@ class IdentifyItemAction(QAction):
         else:
             menu.addAction('No Schematic')
         if item.classCode() == 'context':
-            subItem = project.data.parentItem(item)
+            subItem = plugin.data.parentItem(item)
             if subItem and subItem.isValid():
                 menu.addSeparator()
-                grpItem = project.data.parentItem(subItem)
-                if project.arkUrl():
+                grpItem = plugin.data.parentItem(subItem)
+                if Settings.siteServerUrl():
                     self.subAction = OpenArkAction(
-                        project.arkUrl(), subItem, 'Sub-group: ' + str(subItem.itemId()), parent)
+                        Settings.siteServerUrl(), subItem, 'Sub-group: ' + str(subItem.itemId()), parent)
                     menu.addAction(self.subAction)
                     if grpItem:
                         self.grpAction = OpenArkAction(
-                            project.arkUrl(), grpItem, 'Group: ' + str(grpItem.itemId()), parent)
+                            Settings.siteServerUrl(), grpItem, 'Group: ' + str(grpItem.itemId()), parent)
                         menu.addAction(self.grpAction)
                 else:
                     menu.addAction('Sub-group: ' + str(subItem.itemId()))

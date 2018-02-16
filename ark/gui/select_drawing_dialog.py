@@ -27,7 +27,7 @@ from PyQt4.QtGui import QAbstractItemView, QDialog, QDialogButtonBox
 
 from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
-from ArkSpatial.ark.core import Config
+from ArkSpatial.ark.core import Config, Settings
 
 from .ui.select_drawing_dialog_base import Ui_SelectDrawingDialog
 
@@ -37,10 +37,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
     _dir = None  # QDir
     _fileList = []
 
-    def __init__(self, project, drawingType, siteCode='', georef=False, parent=None):
+    def __init__(self, drawingType, siteCode='', georef=False, parent=None):
         super(SelectDrawingDialog, self).__init__(parent)
         self.setupUi(self)
-        self._project = project
         self._georef = georef
 
         keys = sorted(Config.classCodes.keys())
@@ -61,9 +60,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         self.buttonBox.button(QDialogButtonBox.Open).setDefault(True)
 
         if georef:
-            self._dir = QDir(project.georefDrawingPath(drawingType))
+            self._dir = QDir(Settings.georefDrawingPath(drawingType))
         else:
-            self._dir = QDir(project.rawDrawingPath(drawingType))
+            self._dir = QDir(Settings.rawDrawingPath(drawingType))
         self._dir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         self.siteCodeEdit.setText(siteCode)
         self.findButton.clicked.connect(self._findFiles)
@@ -82,9 +81,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
     def _findFiles(self):
         drawingType = self.drawingTypeCombo.itemData(self.drawingTypeCombo.currentIndex())
         if self._georef:
-            self._dir.setPath(self._project.georefDrawingPath(drawingType))
+            self._dir.setPath(Settings.georefDrawingPath(drawingType))
         else:
-            self._dir.setPath(self._project.rawDrawingPath(drawingType))
+            self._dir.setPath(Settings.rawDrawingPath(drawingType))
         name = drawingType + '_' + self._str(self.siteCodeEdit.text()) + '_' + self._str(self.idSpin.value())
         if self.eastingSpin.value() > 0 or self.northingSpin.value() > 0:
             name = name + '_' + self._str(self.eastingSpin.value()) + 'e' + self._str(self.northingSpin.value()) + 'n'

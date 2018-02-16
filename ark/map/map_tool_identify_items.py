@@ -39,16 +39,16 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
     _menu = None  # QMenu()
     _actions = []
     _highlights = []
-    _project = None
+    _plugin = None
     _vertexMarker = None  # QgsVertexMarker
 
-    def __init__(self, project):
-        super(MapToolIndentifyItems, self).__init__(project.mapCanvas())
+    def __init__(self, plugin):
+        super(MapToolIndentifyItems, self).__init__(plugin.mapCanvas())
         mToolName = self.tr('Identify feature')
-        self._vertexMarker = QgsVertexMarker(project.mapCanvas())
+        self._vertexMarker = QgsVertexMarker(plugin.mapCanvas())
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
-        self._project = project
-        self._menu = QMenu(project.mapCanvas())
+        self._plugin = plugin
+        self._menu = QMenu(plugin.mapCanvas())
         self._menu.hovered.connect(self._highlight)
 
     def deactivate(self):
@@ -64,7 +64,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         mapPoint = self.toMapCoordinates(e.pos())
         self._vertexMarker.setCenter(mapPoint)
-        layers = [self._project.plan.pointsLayer, self._project.plan.linesLayer, self._project.plan.polygonsLayer]
+        layers = [self._plugin.plan.pointsLayer, self._plugin.plan.linesLayer, self._plugin.plan.polygonsLayer]
         results = self.identify(e.x(), e.y(), layers, QgsMapToolIdentify.TopDownAll)
         if (len(results) < 1):
             return
@@ -87,7 +87,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
                 action = QAction('Site ' + site + ':', self._menu)
                 action.setData('top')
                 self._menu.addAction(action)
-            action = IdentifyItemAction(item, self._project, self._menu)
+            action = IdentifyItemAction(item, self._plugin, self._menu)
             action.setData('top')
             action.zoomToItemSelected.connect(self._zoom)
             action.panToItemSelected.connect(self._pan)
@@ -104,8 +104,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         action = ClipboardAction('Map: ', mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
-        if self._project.gridModule.mapTransformer is not None:
-            localPoint = self._project.gridModule.mapTransformer.map(mapPoint)
+        if self._plugin.gridModule.mapTransformer is not None:
+            localPoint = self._plugin.gridModule.mapTransformer.map(mapPoint)
             self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
         menuPos = QPoint(e.globalX() + 100, e.globalY() - 50)
         selected = self._menu.exec_(menuPos)
@@ -131,12 +131,12 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         if not isinstance(item, IdentifyItemAction):
             return
         request = item.item.featureRequest()
-        for feature in self._project.plan.polygonsLayer.getFeatures(request):
-            self._addHighlight(self._project.mapCanvas(), feature.geometry(), self._project.plan.polygonsLayer)
-        for feature in self._project.plan.linesLayer.getFeatures(request):
-            self._addHighlight(self._project.mapCanvas(), feature.geometry(), self._project.plan.linesLayer)
-        for feature in self._project.plan.pointsLayer.getFeatures(request):
-            self._addHighlight(self._project.mapCanvas(), feature.geometry(), self._project.plan.pointsLayer)
+        for feature in self._plugin.plan.polygonsLayer.getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.polygonsLayer)
+        for feature in self._plugin.plan.linesLayer.getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.linesLayer)
+        for feature in self._plugin.plan.pointsLayer.getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.pointsLayer)
 
     def _addHighlight(self, canvas, geometry, layer):
         hl = QgsHighlight(canvas, geometry, layer)
@@ -152,28 +152,28 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._highlights.append(hl)
 
     def _zoom(self, item):
-        self._project.planModule.zoomToItem(item, highlight=True)
+        self._plugin.planModule.zoomToItem(item, highlight=True)
 
     def _pan(self, item):
-        self._project.planModule.moveToItem(item, highlight=True)
+        self._plugin.planModule.moveToItem(item, highlight=True)
 
     def _filterItem(self, item):
-        self._project.planModule.filterItem(item)
+        self._plugin.planModule.filterItem(item)
 
     def _excludeFilterItem(self, item):
-        self._project.planModule.excludeFilterItem(item)
+        self._plugin.planModule.excludeFilterItem(item)
 
     def _highlightItem(self, item):
-        self._project.planModule.highlightItem(item)
+        self._plugin.planModule.highlightItem(item)
 
     def _addHighlightItem(self, item):
-        self._project.planModule.addHighlightItem(item)
+        self._plugin.planModule.addHighlightItem(item)
 
     def _openDrawings(self, item):
-        self._project.planModule.loadDrawing(item)
+        self._plugin.planModule.loadDrawing(item)
 
     def _editInBuffers(self, item):
-        self._project.planModule.editInBuffers(item)
+        self._plugin.planModule.editInBuffers(item)
 
     def _delete(self, item):
-        self._project.planModule.deleteItem(item)
+        self._plugin.planModule.deleteItem(item)

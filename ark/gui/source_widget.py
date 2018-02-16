@@ -25,7 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QWidget
 
-from ArkSpatial.ark.core import Config, Item, Source
+from ArkSpatial.ark.core import Config, Item, Source, Settings
 
 from .ui.source_widget_base import Ui_SourceWidget
 
@@ -57,11 +57,11 @@ class SourceWidget(QWidget, Ui_SourceWidget):
     def unloadGui(self):
         pass
 
-    def loadProject(self, project):
+    def loadProject(self, plugin):
         self.siteCodeCombo.clear()
-        for siteCode in sorted(set(project.siteCodes())):
+        for siteCode in sorted(set(Settings.siteCodes())):
             self.siteCodeCombo.addItem(siteCode, siteCode)
-        self._setSiteCode(project.siteCode())
+        self._setSiteCode(Settings.siteCode())
 
     def closeProject(self):
         pass

@@ -34,6 +34,12 @@ class ProjectWizard(QWizard, Ui_ProjectWizard):
         super(ProjectWizard, self).__init__(parent)
         self.setupUi(self)
 
+    def preferences(self):
+        return self.preferencesWidget
+
+    def server(self):
+        return self.serverWidget
+
     def arkUrl(self):
         return self.field('arkUrl')
 

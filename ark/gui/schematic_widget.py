@@ -27,7 +27,7 @@ from PyQt4.QtGui import QPixmap, QWidget
 
 from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
-from ArkSpatial.ark.core import Item
+from ArkSpatial.ark.core import Item, Settings
 from ArkSpatial.ark.core.enum import FilterAction, SearchStatus
 
 from .ui.schematic_widget_base import Ui_SchematicWidget
@@ -105,14 +105,14 @@ class SchematicWidget(QWidget, Ui_SchematicWidget):
     def unloadGui(self):
         pass
 
-    def loadProject(self, project):
-        if project.arkUrl():
+    def loadProject(self, plugin):
+        if Settings.siteServerUrl():
             self.loadArkTool.setEnabled(True)
         self._enableArkNav(False)
         self.siteCodeCombo.clear()
-        for siteCode in sorted(set(project.siteCodes())):
+        for siteCode in sorted(set(Settings.siteCodes())):
             self.siteCodeCombo.addItem(siteCode, siteCode)
-        idx = self.siteCodeCombo.findData(project.siteCode())
+        idx = self.siteCodeCombo.findData(Settings.siteCode())
         if idx >= 0:
             self.siteCodeCombo.setCurrentIndex(idx)
         self.resetContext()

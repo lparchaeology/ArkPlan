@@ -24,66 +24,64 @@
 
 from PyQt4.QtGui import QDialog, QFileDialog
 
+from ArkSpatial.ark.core import Settings
+
 from .ui.settings_dialog_base import Ui_SettingsDialogBase
 
 
 class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
-    _project = None  # Project()
-
-    def __init__(self, project, parent=None):
+    def __init__(self, parent=None):
         super(SettingsDialog, self).__init__(parent)
-        self._project = project
-
         self.setupUi(self)
 
-        # Project tab settings
-        self.siteCodeEdit.setText(project.siteCode())
-        self.styleFolderCheck.setChecked(project.useCustomStyles())
-        if project.useCustomStyles():
+        # Settings tab settings
+        self.siteCodeEdit.setText(Settings.siteCode())
+        self.styleFolderCheck.setChecked(Settings.useCustomStyles())
+        if Settings.useCustomStyles():
             self.styleFolderEdit.setEnabled(True)
             self.styleFolderButton.setEnabled(True)
         self.styleFolderButton.clicked.connect(self._selectStyleFolder)
-        self.arkUrlEdit.setText(project.arkUrl())
-        if project.isConfigured():
+        self.arkUrlEdit.setText(Settings.arkUrl())
+        if Settings.isSettingsConfigured():
             self.useArkCheck.setEnabled(False)
-        self.logUpdatesCheck.setChecked(project.logUpdates())
+        self.logUpdatesCheck.setChecked(Settings.logUpdates())
 
         # Drawings tab settings
-        self.drawingTransparencySpin.setValue(project.drawingTransparency())
-        self.georefFolderCheck.setChecked(project.useGeorefFolder())
-        self.contextDrawingFolderCheck.setChecked(project.useCustomPath('context'))
-        if project.useCustomPath('context'):
+        self.drawingTransparencySpin.setValue(Settings.drawingTransparency())
+        self.georefFolderCheck.setChecked(Settings.useGeorefFolder())
+        self.contextDrawingFolderCheck.setChecked(Settings.useCustomPath('context'))
+        if Settings.useCustomPath('context'):
             self.contextDrawingFolderEdit.setEnabled(True)
             self.contextDrawingFolderButton.setEnabled(True)
-        self.contextDrawingFolderEdit.setText(project.drawingPath('context'))
+        self.contextDrawingFolderEdit.setText(Settings.drawingPath('context'))
         self.contextDrawingFolderButton.clicked.connect(self._selectContextDrawingFolder)
-        if project.useCustomPath('plan'):
+        if Settings.useCustomPath('plan'):
             self.planDrawingFolderEdit.setEnabled(True)
             self.planDrawingFolderButton.setEnabled(True)
-        self.planDrawingFolderEdit.setText(project.drawingPath('plan'))
+        self.planDrawingFolderEdit.setText(Settings.drawingPath('plan'))
         self.planDrawingFolderButton.clicked.connect(self._selectPlanDrawingFolder)
-        if project.useCustomPath('section'):
+        if Settings.useCustomPath('section'):
             self.sectionDrawingFolderEdit.setEnabled(True)
             self.sectionDrawingFolderButton.setEnabled(True)
-        self.sectionDrawingFolderEdit.setText(project.drawingPath('section'))
+        self.sectionDrawingFolderEdit.setText(Settings.drawingPath('section'))
         self.sectionDrawingFolderButton.clicked.connect(self._selectSectionDrawingFolder)
 
     def accept(self):
-        # Project tab settings
-        self._project.setSiteCode(self.siteCodeEdit.text())
-        self._project.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
-        self._project.setArkUrl(self.arkUrlEdit.text())
-        self._project.setLogUpdates(self.logUpdatesCheck.isChecked())
+        # Settings tab settings
+        Settings.setSiteCode(self.siteCodeEdit.text())
+        Settings.setStylePath(self.styleFolderCheck.isChecked(), self.styleFolderEdit.text())
+        Settings.setArkUrl(self.arkUrlEdit.text())
+        Settings.setLogUpdates(self.logUpdatesCheck.isChecked())
 
         # Drawings tab settings
-        self._project.setDrawingPath(
+        Settings.setDrawingPath(
             'context', self.contextDrawingFolderCheck.isChecked(), self.contextDrawingFolderEdit.text())
-        self._project.setDrawingPath('plan', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
-        self._project.setDrawingPath(
+        Settings.setDrawingPath('plan', self.planDrawingFolderCheck.isChecked(), self.planDrawingFolderEdit.text())
+        Settings.setDrawingPath(
             'section', self.sectionDrawingFolderCheck.isChecked(), self.sectionDrawingFolderEdit.text())
-        self._project.setUseGeorefFolder(self.georefFolderCheck.isChecked())
-        self._project.setDrawingTransparency(self.drawingTransparencySpin.value())
+        Settings.setUseGeorefFolder(self.georefFolderCheck.isChecked())
+        Settings.setDrawingTransparency(self.drawingTransparencySpin.value())
 
         return super(SettingsDialog, self).accept()
 

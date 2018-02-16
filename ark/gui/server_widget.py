@@ -24,6 +24,8 @@
 
 from PyQt4.QtGui import QWidget
 
+from ArkSpatial.ark.core import Settings
+
 from .ui.server_widget_base import Ui_ServerWidget
 
 
@@ -32,3 +34,26 @@ class ServerWidget(QWidget, Ui_ServerWidget):
     def __init__(self, parent=None):
         super(ServerWidget, self).__init__(parent)
         self.setupUi(self)
+
+    def load(self):
+        self.setUrl(Settings.serverUrl())
+        self.setUser(Settings.serverUser())
+        self.setPassword(Settings.serverPassword())
+
+    def url(self):
+        return self.urlEdit.text()
+
+    def setUrl(self, url):
+        self.urlEdit.setText(url)
+
+    def user(self):
+        return self.userEdit.text()
+
+    def setUser(self, user):
+        self.userEdit.setText(user)
+
+    def password(self):
+        return self.passwordEdit.text()
+
+    def setPassword(self, password):
+        self.passwordEdit.setText(password)

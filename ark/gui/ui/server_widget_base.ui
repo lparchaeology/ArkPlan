@@ -15,34 +15,34 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
-    <widget class="QLabel" name="arkPasswordLabel">
+    <widget class="QLabel" name="passwordLabel">
      <property name="text">
       <string>Password:</string>
      </property>
      <property name="buddy">
-      <cstring>arkPasswordEdit</cstring>
+      <cstring>passwordEdit</cstring>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="arkUserEdit">
+    <widget class="QLineEdit" name="userEdit">
      <property name="placeholderText">
       <string>dgarrod</string>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="arkUserLabel">
+    <widget class="QLabel" name="userLabel">
      <property name="text">
       <string>User ID:</string>
      </property>
      <property name="buddy">
-      <cstring>arkUserEdit</cstring>
+      <cstring>userEdit</cstring>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="arkPasswordEdit">
+    <widget class="QLineEdit" name="passwordEdit">
      <property name="text">
       <string/>
      </property>
@@ -55,7 +55,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="arkUrlEdit">
+    <widget class="QLineEdit" name="urlEdit">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -65,7 +65,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="arkUrlLabel">
+    <widget class="QLabel" name="urlLabel">
      <property name="text">
       <string>ARK URL:</string>
      </property>
@@ -76,7 +76,7 @@
       <bool>true</bool>
      </property>
      <property name="buddy">
-      <cstring>arkUrlEdit</cstring>
+      <cstring>urlEdit</cstring>
      </property>
     </widget>
    </item>

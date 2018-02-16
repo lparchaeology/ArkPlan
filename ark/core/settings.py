@@ -43,6 +43,14 @@ class Settings:
     def setPluginConfigured():
         Application.setEntry("ARK", "configured", True)
 
+    @staticmethod
+    def projectsFolder():
+        return Application.readEntry("ARK", "projectsFolder", "")
+
+    @staticmethod
+    def setProjectsFolder(path):
+        Application.setEntry("ARK", "projectsFolder", path)
+
     # Server settings
     # TODO Move to Auth Storage
 

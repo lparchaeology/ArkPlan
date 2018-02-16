@@ -24,25 +24,21 @@
 
 from PyQt4.QtGui import QWizardPage
 
-from ArkSpatial.ark.core import Settings
-
 
 class ServerWizardPage(QWizardPage):
 
     def initializePage(self):
-        self.registerField("arkUrl", self.wizard().serverWidget.arkUrlEdit)
-        self.registerField("arkUser", self.wizard().serverWidget.arkUserEdit)
-        self.registerField("arkPassword", self.wizard().serverWidget.arkPasswordEdit)
-        self.setField('arkUrl', Settings.serverUrl())
-        self.setField('arkUser', Settings.serverUser())
-        self.setField('arkPassword', Settings.serverPassword())
+        self.registerField("url", self.wizard().server().urlEdit)
+        self.registerField("user", self.wizard().server().userEdit)
+        self.registerField("password", self.wizard().server().passwordEdit)
+        self.wizard().server().load()
 
     def validatePage(self):
-        url = self.field("arkUrl")
+        url = self.field("url")
         if url is None or url == "":
             return True
-        user = self.field("arkUser")
-        password = self.field("arkPassword")
+        user = self.field("user")
+        password = self.field("password")
         if user is None or user == "" or password is None or password == "":
             return False
         return True

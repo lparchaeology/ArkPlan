@@ -509,7 +509,7 @@ class ArkSpatialPlugin(Plugin):
             return self.site
 
     def showPreferencesDialog(self):
-        preferencesDialog = PreferencesDialog(self, self.iface.mainWindow())
+        preferencesDialog = PreferencesDialog(self.iface.mainWindow())
         return preferencesDialog.exec_()
 
     def showPreferencesWizard(self):

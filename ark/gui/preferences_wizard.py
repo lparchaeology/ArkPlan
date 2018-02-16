@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir
 from PyQt4.QtGui import QWizard
 
 from .ui.preferences_wizard_base import Ui_PreferencesWizard
@@ -34,29 +33,8 @@ class PreferencesWizard(QWizard, Ui_PreferencesWizard):
         super(PreferencesWizard, self).__init__(parent)
         self.setupUi(self)
 
-    def arkUrl(self):
-        return self.field('arkUrl')
+    def preferences(self):
+        return self.preferencesWidget
 
-    def arkUser(self):
-        return self.field('arkUser')
-
-    def arkPassword(self):
-        return self.field('arkPassword')
-
-    def crs(self):
-        return self.projectPage.crs
-
-    def userFullName(self):
-        return self.field('userFullName')
-
-    def userInitials(self):
-        return self.field('userInitials')
-
-    def userOrganisation(self):
-        return self.field('organisation')
-
-    def projectsDir(self):
-        return QDir(self.field('projectsFolder'))
-
-    def projectsFolder(self):
-        return self.field('projectsFolder')
+    def server(self):
+        return self.serverWidget

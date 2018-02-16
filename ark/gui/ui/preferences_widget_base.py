@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/preferences_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12.1
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -76,5 +76,4 @@ class Ui_PreferencesWidget(object):
         self.userInitialsLabel.setText(_translate("PreferencesWidget", "Initials:", None))
         self.userInitialsEdit.setPlaceholderText(_translate("PreferencesWidget", "DG", None))
         self.organisationLabel.setText(_translate("PreferencesWidget", "Organisation:", None))
-        self.organisationEdit.setPlaceholderText(_translate("PreferencesWidget", "Disney Professor of Archaeology, University of Cambridge", None))
 

@@ -36,3 +36,9 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialogBase):
 
     def accept(self):
         return super(PreferencesDialog, self).accept()
+
+    def preferences(self):
+        return self.preferencesWidget
+
+    def server(self):
+        return self.serverWidget

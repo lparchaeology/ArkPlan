@@ -22,7 +22,10 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWidget
+from PyQt4.QtCore import QDir
+from PyQt4.QtGui import QWidget, QFileDialog
+
+from ArkSpatial.ark.core import Settings
 
 from .ui.preferences_widget_base import Ui_PreferencesWidget
 
@@ -32,3 +35,44 @@ class PreferencesWidget(QWidget, Ui_PreferencesWidget):
     def __init__(self, parent=None):
         super(PreferencesWidget, self).__init__(parent)
         self.setupUi(self)
+        self.projectsFolderButton.clicked.connect(self._selectProjectsFolder)
+
+    def load(self):
+        self.setProjectsFolder(Settings.projectsFolder())
+        self.setUserFullName(Settings.userFullName())
+        self.setUserInitials(Settings.userInitials())
+        self.setUserOrganisation(Settings.userOrganisation())
+
+    def userFullName(self):
+        return self.userFullNameEdit.text()
+
+    def setUserFullName(self, fullName):
+        return self.userFullNameEdit.setText(fullName)
+
+    def userInitials(self):
+        return self.userInitialsEdit.text()
+
+    def setUserInitials(self, initials):
+        return self.userInitialsEdit.setText(initials)
+
+    def userOrganisation(self):
+        return self.organisationEdit.text()
+
+    def setUserOrganisation(self, organisation):
+        return self.organisationEdit.setText(organisation)
+
+    def projectsDir(self):
+        return QDir(self.projectsFolder())
+
+    def projectsFolder(self):
+        return self.projectsFolderEdit.text()
+
+    def setProjectsFolder(self, path):
+        return self.projectsFolderEdit.setText(path)
+
+    def _selectProjectsFolder(self):
+        path = unicode(
+            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectsFolder())
+        )
+        if path:
+            self.setProjectsFolder(path)

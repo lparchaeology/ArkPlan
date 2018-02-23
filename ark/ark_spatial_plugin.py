@@ -134,7 +134,7 @@ class ArkSpatialPlugin(Plugin):
         # self.iface.legendInterface().addLegendLayerAction(
         #    self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
         self.addNewAction(':/plugins/ark/settings.svg', self.tr(u'Preferences'),
-                          self._triggerPreferencesDialog, addToToolbar=False)
+                          self.configurePlugin(), addToToolbar=False)
 
     # Initialise plugin gui
     def initialise(self):
@@ -316,6 +316,60 @@ class ArkSpatialPlugin(Plugin):
                 self.filterModule.dock.setVisible(False)
                 self.trenchModule.dock.setVisible(False)
 
+    def configurePlugin(self):
+        if Settings.isPluginConfigured():
+            prefs = PreferencesDialog(self.iface.mainWindow())
+        else:
+            prefs = PreferencesWizard(self.iface.mainWindow())
+
+        ok = prefs.exec_() and prefs.preferences().projectsDir().exists()
+
+        if ok:
+            Settings.setUserFullName(prefs.preferences().userFullName())
+            Settings.setUserInitials(prefs.preferences().userInitials())
+            Settings.setUserOrganisation(prefs.preferences().userOrganisation())
+            Settings.setProjectsFolder(prefs.preferences().projectsFolder())
+
+            Settings.setServerUrl(prefs.server().url())
+            Settings.setServerCredentials(prefs.server().user(), prefs.server().password())
+
+            Settings.setPluginConfigured()
+
+        return ok
+
+    def configureProject(self):
+        if Settings.isProjectConfigured():
+            settings = ProjectDialog(self.iface.mainWindow())
+        else:
+            settings = ProjectWizard(self.iface.mainWindow())
+
+        ok = settings.exec_()
+
+        if ok and settings.projectDir().mkpath('.'):
+
+            if wizard.clearProject():
+                if Project.exists():
+                    Project.write()
+                Project.clear()
+
+            Project.setFileName(wizard.projectFileInfo().absoluteFilePath())
+            Project.setTitle(wizard.projectName())
+
+            Settings.setServerUrl(wizard.server().url())
+            Settings.setServerCredentials(wizard.server().user(), wizard.server().password())
+
+            Settings.setProjectCode(wizard.projectCode())
+            Settings.setSiteCode(wizard.siteCode())
+
+            # self._configureDrawing('context')
+            # self._configureDrawing('plan')
+            # self._configureDrawing('section')
+
+            self.writeProject()
+            self._initialised = Project.write()
+            if self._initialised:
+                Settings.setProjectConfigured()
+
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
         if Settings.isProjectConfigured():
@@ -334,9 +388,6 @@ class ArkSpatialPlugin(Plugin):
 
             Settings.setServerUrl(wizard.server().url())
             Settings.setServerCredentials(wizard.server().user(), wizard.server().password())
-
-            Settings.setUserFullName(wizard.userFullName())
-            Settings.setUserInitials(wizard.userInitials())
 
             Settings.setProjectCode(wizard.projectCode())
             Settings.setSiteCode(wizard.siteCode())
@@ -360,12 +411,6 @@ class ArkSpatialPlugin(Plugin):
     def _configureDrawing(self, grp):
         self.rawDrawingDir(grp).mkpath('.')
         self.georefDrawingDir(grp).mkpath('.')
-
-    def _triggerPreferencesDialog(self):
-        if Settings.isPluginConfigured():
-            self.showPreferencesDialog()
-        else:
-            self.showPreferencesWizard()
 
     def _triggerSettingsDialog(self):
         if Settings.isProjectConfigured():
@@ -475,18 +520,6 @@ class ArkSpatialPlugin(Plugin):
             return self.grid
         elif collection == 'site':
             return self.site
-
-    def showPreferencesDialog(self):
-        preferencesDialog = PreferencesDialog(self.iface.mainWindow())
-        return preferencesDialog.exec_()
-
-    def showPreferencesWizard(self):
-        wizard = PreferencesWizard(self.iface.mainWindow())
-        return wizard.exec_()
-
-    def showSettingsDialog(self):
-        settingsDialog = SettingsDialog(self.iface.mainWindow())
-        return settingsDialog.exec_()
 
     # Identify Tool
 

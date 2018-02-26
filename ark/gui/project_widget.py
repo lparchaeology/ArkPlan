@@ -93,12 +93,12 @@ class ProjectWidget(QWidget, Ui_ProjectWidget):
         if easting is None or northing is None or easting == '' or northing == '':
             easting = ''
             northing = ''
-        self.locationEastingEdit.setText(easting)
-        self.locationNorthingEdit.setText(northing)
+        self.locationEastingEdit.setText(str(easting))
+        self.locationNorthingEdit.setText(str(northing))
 
     def _selectProject(self, index):
         project = self.projectCodeCombo.itemData(index)
-        data = self.ark.getProjectDetails(project)
+        data = self._ark.getProjectDetails(project)
         self.setProjectName(data['projectName'])
         self.setSiteCode(data['siteCode'])
         self.setLocation(data['locationEasting'], data['locationNorthing'])

@@ -31,7 +31,10 @@ class ServerWizardPage(QWizardPage):
         self.registerField("url", self.wizard().server().urlEdit)
         self.registerField("user", self.wizard().server().userEdit)
         self.registerField("password", self.wizard().server().passwordEdit)
-        self.wizard().server().load()
+        if self.wizard().objectName() == 'ProjectWizard':
+            self.wizard().server().loadSite()
+        else:
+            self.wizard().server().load()
 
     def validatePage(self):
         url = self.field("url")

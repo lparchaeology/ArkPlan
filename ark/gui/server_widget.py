@@ -40,6 +40,11 @@ class ServerWidget(QWidget, Ui_ServerWidget):
         self.setUser(Settings.serverUser())
         self.setPassword(Settings.serverPassword())
 
+    def loadSite(self):
+        self.setUrl(Settings.siteServerUrl())
+        self.setUser(Settings.siteServerUser())
+        self.setPassword(Settings.siteServerPassword())
+
     def url(self):
         return self.urlEdit.text()
 

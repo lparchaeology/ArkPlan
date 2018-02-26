@@ -151,9 +151,9 @@ class UserPage(QWizardPage):
 class ConfirmPage(QWizardPage):
 
     def initializePage(self):
+        self.registerField("newProject", self.wizard().newProjectCheck)
         self.registerField("projectFolder*", self.wizard().projectFolderEdit)
         self.registerField("projectFile*", self.wizard().projectFileEdit)
-        self.registerField("clearProject", self.wizard().clearProjectCheck)
         if Project.exists():
             self.setField('projectFolder', Project.filePath())
             self.setField('projectFile', Project.fileName())

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>ProjectWidget</class>
+ <widget class="QWidget" name="ProjectWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>ProjectWidget</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1" colspan="2">

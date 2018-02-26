@@ -57,11 +57,15 @@ class ProjectWidget(QWidget, Ui_ProjectWidget):
         self.setProjectCode(Settings.projectCode())
         self.setProjectName(Settings.projectName())
         self.setSiteCode(Settings.siteCode())
-        self.setLocation(Settings.userOrganisation())
+        self.setLocation(Settings.locationEasting(), Settings.locationNorthing)
 
     def projectCode(self):
-        if Settings.useProjectServer():
-            return self.projectCodeCombo.lineEdit().text()
+        return self.projectCodeCombo.lineEdit().text()
+
+    def setProjectCode(self, code):
+        if code is None:
+            code = ''
+        return self.projectCodeCombo.lineEdit().setText(code)
 
     def projectName(self):
         return self.projectNameEdit.text()

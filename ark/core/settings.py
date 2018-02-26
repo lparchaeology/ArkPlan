@@ -152,6 +152,19 @@ class Settings:
     def setSiteCode(siteCode):
         Project.setEntry("ARK", "Project/siteCode", siteCode)
 
+    @staticmethod
+    def locationEasting():
+        return Project.readEntry('ARK', 'Project/easting')
+
+    @staticmethod
+    def locationNorthing():
+        return Project.readEntry('ARK', 'Project/northing')
+
+    @staticmethod
+    def setLocation(easting, northing):
+        Project.setEntry("ARK", "Project/easting", easting)
+        Project.setEntry("ARK", "Project/northing", northing)
+
     # Projects Server settings
     # TODO Move to Auth Storage
 

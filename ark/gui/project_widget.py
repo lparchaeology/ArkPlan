@@ -22,13 +22,79 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QComboBox
+
+from ArkSpatial.ark.lib import utils
+from ArkSpatial.ark.core import Settings
+from ArkSpatial.ark.pyARK import Ark
 
 from .ui.project_widget_base import Ui_ProjectWidget
 
 
 class ProjectWidget(QWidget, Ui_ProjectWidget):
 
+    _ark = None
+
     def __init__(self, parent=None):
         super(ProjectWidget, self).__init__(parent)
         self.setupUi(self)
+        if Settings.useProjectServer():
+            self.projectNameEdit.setEnabled(False)
+            self.siteCodeEdit.setEnabled(False)
+            self.locationEastingEdit.setEnabled(False)
+            self.locationNorthingEdit.setEnabled(False)
+            self.projectCodeCombo.setMaxVisibleItems(10)
+            self.projectCodeCombo.setInsertPolicy(QComboBox.NoInsert)
+            self.projectCodeCombo.currentIndexChanged.connect(self._selectProject)
+
+    def load(self):
+        if Settings.useProjectServer():
+            self._ark = Ark(Settings.serverUrl(), Settings.serverUser(), Settings.serverPassword())
+            projects = self._ark.getProjectList()
+            self.projectCodeCombo.setMaxCount(len(projects))
+            for key in utils.natsorted(projects.keys()):
+                self.projectCodeCombo.addItem(projects[key], key)
+        self.setProjectCode(Settings.projectCode())
+        self.setProjectName(Settings.projectName())
+        self.setSiteCode(Settings.siteCode())
+        self.setLocation(Settings.userOrganisation())
+
+    def projectCode(self):
+        if Settings.useProjectServer():
+            return self.projectCodeCombo.lineEdit().text()
+
+    def projectName(self):
+        return self.projectNameEdit.text()
+
+    def setProjectName(self, name):
+        if name is None:
+            name = ''
+        self.projectNameEdit.setText(name)
+
+    def siteCode(self):
+        return self.siteCodeEdit.text()
+
+    def setSiteCode(self, siteCode):
+        if siteCode is None:
+            siteCode = ''
+        self.siteCodeEdit.setText(siteCode)
+
+    def locationEasting(self):
+        return self.locationEastingEdit.text()
+
+    def locationNorthing(self):
+        return self.locationNorthingEdit.text()
+
+    def setLocation(self, easting, northing):
+        if easting is None or northing is None or easting == '' or northing == '':
+            easting = ''
+            northing = ''
+        self.locationEastingEdit.setText(easting)
+        self.locationNorthingEdit.setText(northing)
+
+    def _selectProject(self, index):
+        project = self.projectCodeCombo.itemData(index)
+        data = self.ark.getProjectDetails(project)
+        self.setProjectName(data['projectName'])
+        self.setSiteCode(data['siteCode'])
+        self.setLocation(data['locationEasting'], data['locationNorthing'])

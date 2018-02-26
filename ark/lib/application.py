@@ -25,14 +25,17 @@
 from PyQt4.QtCore import QFile, QSettings
 from PyQt4.QtGui import QColor, QIcon
 
-from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem
+from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem, NULL
 
 
 class Application:
 
     @staticmethod
     def readEntry(scope, key, default=""):
-        return QSettings().value("/" + scope + "/" + key, default)
+        value = QSettings().value("/" + scope + "/" + key, default)
+        if value == NULL:
+            return None
+        return value
 
     @staticmethod
     def setEntry(scope, key, value):

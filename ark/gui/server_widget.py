@@ -44,16 +44,19 @@ class ServerWidget(QWidget, Ui_ServerWidget):
         return self.urlEdit.text()
 
     def setUrl(self, url):
-        self.urlEdit.setText(url)
+        if url is not None:
+            self.urlEdit.setText(url)
 
     def user(self):
         return self.userEdit.text()
 
     def setUser(self, user):
-        self.userEdit.setText(user)
+        if user is not None:
+            self.userEdit.setText(user)
 
     def password(self):
         return self.passwordEdit.text()
 
     def setPassword(self, password):
-        self.passwordEdit.setText(password)
+        if password is not None:
+            self.passwordEdit.setText(password)

@@ -78,11 +78,13 @@
      <property name="text">
       <string>Organisation:</string>
      </property>
+     <property name="buddy">
+      <cstring>organisationEdit</cstring>
+     </property>
     </widget>
    </item>
    <item row="3" column="1" colspan="2">
-    <widget class="QLineEdit" name="organisationEdit">
-    </widget>
+    <widget class="QLineEdit" name="organisationEdit"/>
    </item>
    <item row="4" column="0" colspan="3">
     <spacer name="verticalSpacer">
@@ -99,6 +101,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>projectsFolderEdit</tabstop>
+  <tabstop>projectsFolderButton</tabstop>
+  <tabstop>userFullNameEdit</tabstop>
+  <tabstop>userInitialsEdit</tabstop>
+  <tabstop>organisationEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

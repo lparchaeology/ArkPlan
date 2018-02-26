@@ -54,6 +54,11 @@ class Settings:
     # Projects Server settings
     # TODO Move to Auth Storage
 
+    @classmethod
+    def useProjectServer(cls):
+        serverUrl = cls.serverUrl()
+        return serverUrl is not None and serverUrl != ''
+
     @staticmethod
     def serverUrl():
         return Application.readEntry("ARK", "Server/url")

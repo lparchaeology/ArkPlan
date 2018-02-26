@@ -134,7 +134,7 @@ class ArkSpatialPlugin(Plugin):
         # self.iface.legendInterface().addLegendLayerAction(
         #    self._layerSnappingAction, '', 'arksnap', QgsMapLayer.VectorLayer, True)
         self.addNewAction(':/plugins/ark/settings.svg', self.tr(u'Preferences'),
-                          self.configurePlugin(), addToToolbar=False)
+                          self.configurePlugin, addToToolbar=False)
 
     # Initialise plugin gui
     def initialise(self):

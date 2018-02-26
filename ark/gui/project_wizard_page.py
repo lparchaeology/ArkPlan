@@ -22,38 +22,20 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFileInfo
-from PyQt4.QtGui import QWizard
+from PyQt4.QtGui import QWizardPage
 
-from .ui.project_wizard_base import Ui_ProjectWizard
+from ArkSpatial.ark.core import Settings
 
 
-class ProjectWizard(QWizard, Ui_ProjectWizard):
+class ProjectWizardPage(QWizardPage):
 
-    def __init__(self, parent=None):
-        super(ProjectWizard, self).__init__(parent)
-        self.setupUi(self)
-
-    def project(self):
-        return self.projectWidget
-
-    def server(self):
-        return self.serverWidget
-
-    def newProject(self):
-        return self.field('newProject')
-
-    def projectDir(self):
-        return QDir(self.field('projectFolder'))
-
-    def projectFolder(self):
-        return self.field('projectFolder')
-
-    def projectFileInfo(self):
-        return QFileInfo(self.confirmPage.fullFilePath())
-
-    def projectFilePath(self):
-        return self.confirmPage.fullFilePath()
-
-    def projectFile(self):
-        return self.field('projectFile')
+    def initializePage(self):
+        if Settings.useProjectServer():
+            self.registerField("projectCode*", self.wizard().project().projectCodeCombo)
+        else:
+            self.registerField("projectCode*", self.wizard().project().projectCodeCombo.lineEdit())
+        self.registerField("projectName*", self.wizard().project().projectNameEdit)
+        self.registerField("siteCode", self.wizard().project().siteCodeEdit)
+        self.registerField("locationEasting", self.wizard().project().locationEastingEdit)
+        self.registerField("locationNorthing", self.wizard().project().locationNorthingEdit)
+        self.wizard().project().load()

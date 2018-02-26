@@ -67,7 +67,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="urlLabel">
      <property name="text">
-      <string>ARK URL:</string>
+      <string>URL:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -95,6 +95,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>urlEdit</tabstop>
+  <tabstop>userEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

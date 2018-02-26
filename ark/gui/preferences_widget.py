@@ -47,19 +47,22 @@ class PreferencesWidget(QWidget, Ui_PreferencesWidget):
         return self.userFullNameEdit.text()
 
     def setUserFullName(self, fullName):
-        return self.userFullNameEdit.setText(fullName)
+        if fullName is not None:
+            self.userFullNameEdit.setText(fullName)
 
     def userInitials(self):
         return self.userInitialsEdit.text()
 
     def setUserInitials(self, initials):
-        return self.userInitialsEdit.setText(initials)
+        if initials is not None:
+            self.userInitialsEdit.setText(initials)
 
     def userOrganisation(self):
         return self.organisationEdit.text()
 
     def setUserOrganisation(self, organisation):
-        return self.organisationEdit.setText(organisation)
+        if organisation is not None:
+            self.organisationEdit.setText(organisation)
 
     def projectsDir(self):
         return QDir(self.projectsFolder())
@@ -68,7 +71,8 @@ class PreferencesWidget(QWidget, Ui_PreferencesWidget):
         return self.projectsFolderEdit.text()
 
     def setProjectsFolder(self, path):
-        return self.projectsFolderEdit.setText(path)
+        if path is not None:
+            self.projectsFolderEdit.setText(path)
 
     def _selectProjectsFolder(self):
         path = unicode(

@@ -59,6 +59,8 @@ class Ui_ServerWidget(object):
 
         self.retranslateUi(ServerWidget)
         QtCore.QMetaObject.connectSlotsByName(ServerWidget)
+        ServerWidget.setTabOrder(self.urlEdit, self.userEdit)
+        ServerWidget.setTabOrder(self.userEdit, self.passwordEdit)
 
     def retranslateUi(self, ServerWidget):
         ServerWidget.setWindowTitle(_translate("ServerWidget", "ServerWidget", None))
@@ -67,5 +69,5 @@ class Ui_ServerWidget(object):
         self.userLabel.setText(_translate("ServerWidget", "User ID:", None))
         self.passwordEdit.setPlaceholderText(_translate("ServerWidget", "********", None))
         self.urlEdit.setPlaceholderText(_translate("ServerWidget", "http://www.arch.cam.ac.uk/shuqba", None))
-        self.urlLabel.setText(_translate("ServerWidget", "ARK URL:", None))
+        self.urlLabel.setText(_translate("ServerWidget", "URL:", None))
 

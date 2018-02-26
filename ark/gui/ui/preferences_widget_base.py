@@ -63,9 +63,14 @@ class Ui_PreferencesWidget(object):
         self.projectsFolderLabel.setBuddy(self.projectsFolderEdit)
         self.userFullNameLabel.setBuddy(self.userFullNameEdit)
         self.userInitialsLabel.setBuddy(self.userInitialsEdit)
+        self.organisationLabel.setBuddy(self.organisationEdit)
 
         self.retranslateUi(PreferencesWidget)
         QtCore.QMetaObject.connectSlotsByName(PreferencesWidget)
+        PreferencesWidget.setTabOrder(self.projectsFolderEdit, self.projectsFolderButton)
+        PreferencesWidget.setTabOrder(self.projectsFolderButton, self.userFullNameEdit)
+        PreferencesWidget.setTabOrder(self.userFullNameEdit, self.userInitialsEdit)
+        PreferencesWidget.setTabOrder(self.userInitialsEdit, self.organisationEdit)
 
     def retranslateUi(self, PreferencesWidget):
         PreferencesWidget.setWindowTitle(_translate("PreferencesWidget", "PreferencesWidget", None))

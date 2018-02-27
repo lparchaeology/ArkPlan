@@ -34,25 +34,6 @@ from ArkSpatial.ark.core import Settings
 from ArkSpatial.ark.pyARK import Ark
 
 
-class PreferencesPage(QWizardPage):
-
-    def initializePage(self):
-        self.registerField("projectsFolder*", self.wizard().projectsFolderEdit)
-        self.registerField("userFullName*", self.wizard().userFullNameEdit)
-        self.registerField("userInitials*", self.wizard().userInitialsEdit)
-        self.registerField("organisation", self.wizard().organisationEdit)
-        self.setField('userFullName', Settings.userFullName())
-        self.setField('userInitials', Settings.userInitials())
-        self.wizard().projectsFolderButton.clicked.connect(self._selectProjectsFolder)
-
-    def _selectProjectsFolder(self):
-        folderName = unicode(
-            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.field("projectFolder"))
-        )
-        if folderName:
-            self.setField("projectFolder", folderName)
-
-
 class GlobalPage(QWizardPage):
 
     crs = None
@@ -137,15 +118,6 @@ class ProjectPage(QWizardPage):
 
     def _crsChanged(self, crs):
         self.crs = crs
-
-
-class UserPage(QWizardPage):
-
-    def initializePage(self):
-        self.registerField("userFullName*", self.wizard().userFullNameEdit)
-        self.registerField("userInitials*", self.wizard().userInitialsEdit)
-        self.setField('userFullName', Settings.userFullName())
-        self.setField('userInitials', Settings.userInitials())
 
 
 class ConfirmPage(QWizardPage):

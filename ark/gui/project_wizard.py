@@ -37,9 +37,6 @@ class ProjectWizard(QWizard, Ui_ProjectWizard):
     def project(self):
         return self.projectWidget
 
-    def server(self):
-        return self.serverWidget
-
     def newProject(self):
         return self.field('newProject')
 
@@ -55,5 +52,5 @@ class ProjectWizard(QWizard, Ui_ProjectWizard):
     def projectFilePath(self):
         return self.confirmPage.fullFilePath()
 
-    def projectFile(self):
-        return self.field('projectFile')
+    def projectFilename(self):
+        return self.field('projectFilename')

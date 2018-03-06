@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/project_wizard_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12.1
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -49,14 +49,6 @@ class Ui_ProjectWizard(object):
         self.projectWidget.setObjectName(_fromUtf8("projectWidget"))
         self.projectLayout.addWidget(self.projectWidget, 1, 0, 1, 2)
         ProjectWizard.addPage(self.projectPage)
-        self.serverPage = ServerWizardPage()
-        self.serverPage.setObjectName(_fromUtf8("serverPage"))
-        self.serverLayout = QtGui.QGridLayout(self.serverPage)
-        self.serverLayout.setObjectName(_fromUtf8("serverLayout"))
-        self.serverWidget = ServerWidget(self.serverPage)
-        self.serverWidget.setObjectName(_fromUtf8("serverWidget"))
-        self.serverLayout.addWidget(self.serverWidget, 0, 0, 1, 2)
-        ProjectWizard.addPage(self.serverPage)
         self.confirmPage = ConfirmPage()
         self.confirmPage.setObjectName(_fromUtf8("confirmPage"))
         self.gridLayout = QtGui.QGridLayout(self.confirmPage)
@@ -76,9 +68,9 @@ class Ui_ProjectWizard(object):
         self.projectFolderEdit = QtGui.QLineEdit(self.confirmPage)
         self.projectFolderEdit.setObjectName(_fromUtf8("projectFolderEdit"))
         self.gridLayout.addWidget(self.projectFolderEdit, 3, 2, 1, 1)
-        self.projectFileLabel = QtGui.QLabel(self.confirmPage)
-        self.projectFileLabel.setObjectName(_fromUtf8("projectFileLabel"))
-        self.gridLayout.addWidget(self.projectFileLabel, 6, 0, 1, 2)
+        self.projectFilenameLabel = QtGui.QLabel(self.confirmPage)
+        self.projectFilenameLabel.setObjectName(_fromUtf8("projectFilenameLabel"))
+        self.gridLayout.addWidget(self.projectFilenameLabel, 6, 0, 1, 2)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 9, 2, 1, 1)
         self.projectFullPathLabel = QtGui.QLabel(self.confirmPage)
@@ -89,9 +81,9 @@ class Ui_ProjectWizard(object):
         self.confirmPageLabel.setWordWrap(True)
         self.confirmPageLabel.setObjectName(_fromUtf8("confirmPageLabel"))
         self.gridLayout.addWidget(self.confirmPageLabel, 0, 0, 1, 3)
-        self.projectFileEdit = QtGui.QLineEdit(self.confirmPage)
-        self.projectFileEdit.setObjectName(_fromUtf8("projectFileEdit"))
-        self.gridLayout.addWidget(self.projectFileEdit, 6, 2, 1, 1)
+        self.projectFilenameEdit = QtGui.QLineEdit(self.confirmPage)
+        self.projectFilenameEdit.setObjectName(_fromUtf8("projectFilenameEdit"))
+        self.gridLayout.addWidget(self.projectFilenameEdit, 6, 2, 1, 1)
         self.newProjectCheck = QtGui.QCheckBox(self.confirmPage)
         self.newProjectCheck.setText(_fromUtf8(""))
         self.newProjectCheck.setObjectName(_fromUtf8("newProjectCheck"))
@@ -101,17 +93,17 @@ class Ui_ProjectWizard(object):
         self.gridLayout.addWidget(self.newProjectLabel, 2, 0, 1, 2)
         ProjectWizard.addPage(self.confirmPage)
         self.projectFolderLabel.setBuddy(self.projectFolderEdit)
-        self.projectFileLabel.setBuddy(self.projectFileEdit)
+        self.projectFilenameLabel.setBuddy(self.projectFilenameEdit)
         self.newProjectLabel.setBuddy(self.newProjectCheck)
 
         self.retranslateUi(ProjectWizard)
         QtCore.QObject.connect(self.newProjectCheck, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.projectFolderEdit.setEnabled)
         QtCore.QObject.connect(self.newProjectCheck, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.projectFolderButton.setEnabled)
-        QtCore.QObject.connect(self.newProjectCheck, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.projectFileEdit.setEnabled)
+        QtCore.QObject.connect(self.newProjectCheck, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.projectFilenameEdit.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(ProjectWizard)
         ProjectWizard.setTabOrder(self.newProjectCheck, self.projectFolderEdit)
         ProjectWizard.setTabOrder(self.projectFolderEdit, self.projectFolderButton)
-        ProjectWizard.setTabOrder(self.projectFolderButton, self.projectFileEdit)
+        ProjectWizard.setTabOrder(self.projectFolderButton, self.projectFilenameEdit)
 
     def retranslateUi(self, ProjectWizard):
         ProjectWizard.setWindowTitle(_translate("ProjectWizard", "ARKspatial Project Wizard", None))
@@ -120,13 +112,11 @@ class Ui_ProjectWizard(object):
         self.projectPage.setTitle(_translate("ProjectWizard", "Project Details", None))
         self.projectPage.setSubTitle(_translate("ProjectWizard", "Enter the details for the Project.", None))
         self.projectLabel.setText(_translate("ProjectWizard", "You must enter at least a Project Code and Name. If no Site Code is entered, the Project Code is used instead. The Location will be used to create a site centre point.", None))
-        self.serverPage.setTitle(_translate("ProjectWizard", "ARK Server Settings", None))
-        self.serverPage.setSubTitle(_translate("ProjectWizard", "If you use an ARK database for site recording, enter the server details to enable querying the database.", None))
         self.confirmPage.setTitle(_translate("ProjectWizard", "Create Project", None))
         self.confirmPage.setSubTitle(_translate("ProjectWizard", "Confirm your project file details.", None))
         self.projectFolderLabel.setText(_translate("ProjectWizard", "Project Folder:", None))
         self.projectFolderEdit.setPlaceholderText(_translate("ProjectWizard", "/Disk/Data/Projects/TST01/GIS", None))
-        self.projectFileLabel.setText(_translate("ProjectWizard", "Project Filename:", None))
+        self.projectFilenameLabel.setText(_translate("ProjectWizard", "Project Filename:", None))
         self.projectFullPathLabel.setText(_translate("ProjectWizard", "Full Path:", None))
         self.confirmPageLabel.setText(_translate("ProjectWizard", "You can choose to save the project details in the currently open project, or to save the project in a new project file.\n"
 "\n"
@@ -134,11 +124,8 @@ class Ui_ProjectWizard(object):
 "\n"
 "ARK Spatial will automatically organise the data under this folder.\n"
 "", None))
-        self.projectFileEdit.setPlaceholderText(_translate("ProjectWizard", "SHU28_DG", None))
         self.newProjectLabel.setText(_translate("ProjectWizard", "Create New Project File:", None))
 
 from ..project_widget import ProjectWidget
 from ..project_wizard_page import ProjectWizardPage
-from ..server_widget import ServerWidget
-from ..server_wizard_page import ServerWizardPage
 from ..wizard_page import ConfirmPage

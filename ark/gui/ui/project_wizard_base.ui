@@ -62,22 +62,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="ServerWizardPage" name="serverPage">
-   <property name="title">
-    <string>ARK Server Settings</string>
-   </property>
-   <property name="subTitle">
-    <string>If you use an ARK database for site recording, enter the server details to enable querying the database.</string>
-   </property>
-   <attribute name="pageId">
-    <string notr="true">serverPage</string>
-   </attribute>
-   <layout class="QGridLayout" name="serverLayout">
-    <item row="0" column="0" colspan="2">
-     <widget class="ServerWidget" name="serverWidget" native="true"/>
-    </item>
-   </layout>
-  </widget>
   <widget class="ConfirmPage" name="confirmPage">
    <property name="title">
     <string>Create Project</string>
@@ -118,12 +102,12 @@
      </widget>
     </item>
     <item row="6" column="0" colspan="2">
-     <widget class="QLabel" name="projectFileLabel">
+     <widget class="QLabel" name="projectFilenameLabel">
       <property name="text">
        <string>Project Filename:</string>
       </property>
       <property name="buddy">
-       <cstring>projectFileEdit</cstring>
+       <cstring>projectFilenameEdit</cstring>
       </property>
      </widget>
     </item>
@@ -166,11 +150,7 @@ ARK Spatial will automatically organise the data under this folder.
      </widget>
     </item>
     <item row="6" column="2">
-     <widget class="QLineEdit" name="projectFileEdit">
-      <property name="placeholderText">
-       <string>SHU28_DG</string>
-      </property>
-     </widget>
+     <widget class="QLineEdit" name="projectFilenameEdit"/>
     </item>
     <item row="2" column="2">
      <widget class="QCheckBox" name="newProjectCheck">
@@ -200,18 +180,6 @@ ARK Spatial will automatically organise the data under this folder.
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ServerWizardPage</class>
-   <extends>QWizardPage</extends>
-   <header>..server_wizard_page</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ServerWidget</class>
-   <extends>QWidget</extends>
-   <header>..server_widget</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ProjectWidget</class>
    <extends>QWidget</extends>
    <header>..project_widget</header>
@@ -228,7 +196,7 @@ ARK Spatial will automatically organise the data under this folder.
   <tabstop>newProjectCheck</tabstop>
   <tabstop>projectFolderEdit</tabstop>
   <tabstop>projectFolderButton</tabstop>
-  <tabstop>projectFileEdit</tabstop>
+  <tabstop>projectFilenameEdit</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -267,7 +235,7 @@ ARK Spatial will automatically organise the data under this folder.
   <connection>
    <sender>newProjectCheck</sender>
    <signal>toggled(bool)</signal>
-   <receiver>projectFileEdit</receiver>
+   <receiver>projectFilenameEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

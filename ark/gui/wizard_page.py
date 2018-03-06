@@ -125,20 +125,34 @@ class ConfirmPage(QWizardPage):
     def initializePage(self):
         self.registerField("newProject", self.wizard().newProjectCheck)
         self.registerField("projectFolder*", self.wizard().projectFolderEdit)
-        self.registerField("projectFile*", self.wizard().projectFileEdit)
+        self.registerField("projectFilename*", self.wizard().projectFilenameEdit)
         if Project.exists():
-            self.setField('projectFolder', Project.filePath())
-            self.setField('projectFile', Project.fileName())
+            self.setField('projectFolder', Project.fileInfo().absolutePath())
+            self.setField('projectFilename', Project.fileInfo().baseName())
+            self.wizard().newProjectCheck.setChecked(False)
+            self.wizard().projectFolderEdit.setEnabled(False)
+            self.wizard().projectFolderButton.setEnabled(False)
+            self.wizard().projectFilenameEdit.setEnabled(False)
             self._updateFilePath()
         else:
-            self.setField('projectFile', self.field("siteCode"))
+            self.wizard().newProjectCheck.setChecked(True)
+            self.wizard().newProjectCheck.setEnabled(False)
+            self.wizard().projectFolderEdit.setEnabled(True)
+            self.wizard().projectFolderButton.setEnabled(True)
+            self.wizard().projectFilenameEdit.setEnabled(True)
+            filename = ''
+            if (self.field("siteCode") != ''):
+                filename = str(self.field("siteCode")) + '_' + str(Settings.userInitials())
+            else:
+                filename = str(self.field("projectCode")) + '_' + str(Settings.userInitials())
+            self.setField('projectFilename', filename)
         self.wizard().projectFolderButton.clicked.connect(self._selectProjectFolder)
 
     def _updateFilePath(self):
         self.wizard().projectFullPath.setText(self.fullFilePath())
 
     def fullFilePath(self):
-        return os.path.join(self.field('projectFolder'), self.field('projectFile')) + '.qgs'
+        return os.path.join(self.field('projectFolder'), self.field('projectFilename')) + '.qgs'
 
     def _selectProjectFolder(self):
         folderName = unicode(

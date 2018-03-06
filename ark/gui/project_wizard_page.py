@@ -30,10 +30,7 @@ from ArkSpatial.ark.core import Settings
 class ProjectWizardPage(QWizardPage):
 
     def initializePage(self):
-        if Settings.useProjectServer():
-            self.registerField("projectCode*", self.wizard().project().projectCodeCombo)
-        else:
-            self.registerField("projectCode*", self.wizard().project().projectCodeCombo.lineEdit())
+        self.registerField("projectCode*", self.wizard().project().projectCodeCombo.lineEdit())
         self.registerField("projectName*", self.wizard().project().projectNameEdit)
         self.registerField("siteCode", self.wizard().project().siteCodeEdit)
         self.registerField("locationEasting", self.wizard().project().locationEastingEdit)

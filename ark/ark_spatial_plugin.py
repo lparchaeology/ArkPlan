@@ -378,7 +378,7 @@ class ArkSpatialPlugin(Plugin):
         wizard = ProjectWizard()
         if wizard.exec_() and wizard.projectDir().mkpath('.'):
 
-            if wizard.clearProject():
+            if wizard.newProject():
                 if Project.exists():
                     Project.write()
                 Project.clear()

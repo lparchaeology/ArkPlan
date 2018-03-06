@@ -71,11 +71,7 @@
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QLineEdit" name="siteCodeEdit">
-     <property name="placeholderText">
-      <string>SHU28</string>
-     </property>
-    </widget>
+    <widget class="QLineEdit" name="siteCodeEdit"/>
    </item>
    <item row="0" column="0">
     <widget class="QLabel" name="projectCodeLabel">
@@ -98,9 +94,6 @@
     <widget class="QLineEdit" name="projectNameEdit">
      <property name="enabled">
       <bool>true</bool>
-     </property>
-     <property name="placeholderText">
-      <string>Shuqba Cave, Wadi an-Natuf</string>
      </property>
     </widget>
    </item>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ark/gui/ui/project_widget_base.ui'
 #
-# Created by: PyQt4 UI code generator 4.12.1
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -81,8 +81,6 @@ class Ui_ProjectWidget(object):
         self.locationLabel.setText(_translate("ProjectWidget", "Location:", None))
         self.locationEastingEdit.setPlaceholderText(_translate("ProjectWidget", "Easting", None))
         self.projectNameLabel.setText(_translate("ProjectWidget", "Project Name:", None))
-        self.siteCodeEdit.setPlaceholderText(_translate("ProjectWidget", "SHU28", None))
         self.projectCodeLabel.setText(_translate("ProjectWidget", "Project Code:", None))
         self.locationNorthingEdit.setPlaceholderText(_translate("ProjectWidget", "Northing", None))
-        self.projectNameEdit.setPlaceholderText(_translate("ProjectWidget", "Shuqba Cave, Wadi an-Natuf", None))
 

@@ -140,6 +140,9 @@ class ConfirmPage(QWizardPage):
             self.wizard().projectFolderEdit.setEnabled(True)
             self.wizard().projectFolderButton.setEnabled(True)
             self.wizard().projectFilenameEdit.setEnabled(True)
+            projectFolder = os.path.join(Settings.projectsFolder(), self.field("projectName"))
+            if os.path.exists(projectFolder):
+                self.setField('projectFolder', projectFolder)
             filename = ''
             if (self.field("siteCode") != ''):
                 filename = str(self.field("siteCode")) + '_' + str(Settings.userInitials())

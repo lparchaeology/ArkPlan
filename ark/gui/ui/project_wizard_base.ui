@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>768</width>
-    <height>425</height>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -73,45 +73,7 @@
     <string notr="true">confirmPage</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="3">
-     <widget class="QToolButton" name="projectFolderButton">
-      <property name="icon">
-       <iconset>
-        <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QLabel" name="projectFolderLabel">
-      <property name="text">
-       <string>Project Folder:</string>
-      </property>
-      <property name="buddy">
-       <cstring>projectFolderEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="2">
-     <widget class="QLabel" name="projectFullPath"/>
-    </item>
-    <item row="3" column="2">
-     <widget class="QLineEdit" name="projectFolderEdit">
-      <property name="placeholderText">
-       <string>/Disk/Data/Projects/TST01/GIS</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QLabel" name="projectFilenameLabel">
-      <property name="text">
-       <string>Project Filename:</string>
-      </property>
-      <property name="buddy">
-       <cstring>projectFilenameEdit</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="2">
+    <item row="8" column="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -124,38 +86,11 @@
       </property>
      </spacer>
     </item>
-    <item row="7" column="0" colspan="2">
-     <widget class="QLabel" name="projectFullPathLabel">
-      <property name="text">
-       <string>Full Path:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="3">
-     <widget class="QLabel" name="confirmPageLabel">
-      <property name="text">
-       <string>You can choose to save the project details in the currently open project, or to save the project in a new project file.
-
-This folder is usually something like &quot;Projects/TST01/GIS&quot; where TST01 is the Project Code. The folder will be created if it does not already exist.
-
-ARK Spatial will automatically organise the data under this folder.
-</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2">
-     <widget class="QLineEdit" name="projectFilenameEdit"/>
-    </item>
-    <item row="2" column="2">
-     <widget class="QCheckBox" name="newProjectCheck">
-      <property name="text">
-       <string/>
+    <item row="3" column="3">
+     <widget class="QToolButton" name="projectFolderButton">
+      <property name="icon">
+       <iconset>
+        <normaloff>:/plugins/ark/folder.png</normaloff>:/plugins/ark/folder.png</iconset>
       </property>
      </widget>
     </item>
@@ -168,6 +103,59 @@ ARK Spatial will automatically organise the data under this folder.
        <cstring>newProjectCheck</cstring>
       </property>
      </widget>
+    </item>
+    <item row="6" column="0" colspan="2">
+     <widget class="QLabel" name="projectFilenameLabel">
+      <property name="text">
+       <string>QGIS Project Filename:</string>
+      </property>
+      <property name="buddy">
+       <cstring>projectFilenameEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLineEdit" name="projectFolderEdit">
+      <property name="placeholderText">
+       <string>/Disk/Data/Projects/TST01/GIS</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QLabel" name="projectFolderLabel">
+      <property name="text">
+       <string>GIS Root Folder:</string>
+      </property>
+      <property name="buddy">
+       <cstring>projectFolderEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QCheckBox" name="newProjectCheck">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="4">
+     <widget class="QLabel" name="confirmPageLabel">
+      <property name="text">
+       <string>You can choose to save the project details in the currently open project, or to create a new project file.
+
+The GIS Folder is usually something like &quot;Projects/TST01 - My Project/GIS&quot; where TST01 is the Project Code. The folder will be created if it does not already exist. ARK Spatial will automatically organise the data under this folder.
+</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2" colspan="2">
+     <widget class="QLineEdit" name="projectFilenameEdit"/>
     </item>
    </layout>
   </widget>

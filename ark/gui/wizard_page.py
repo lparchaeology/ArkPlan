@@ -124,25 +124,22 @@ class ConfirmPage(QWizardPage):
 
     def initializePage(self):
         self.registerField("newProject", self.wizard().newProjectCheck)
-        self.registerField("projectFolder*", self.wizard().projectFolderEdit)
-        self.registerField("projectFilename*", self.wizard().projectFilenameEdit)
+        self.registerField("projectFolder", self.wizard().projectFolderEdit)
+        self.registerField("projectFilename", self.wizard().projectFilenameEdit)
         if Project.exists():
-            self.setField('projectFolder', Project.fileInfo().absolutePath())
-            self.setField('projectFilename', Project.fileInfo().baseName())
             self.wizard().newProjectCheck.setChecked(False)
             self.wizard().projectFolderEdit.setEnabled(False)
             self.wizard().projectFolderButton.setEnabled(False)
             self.wizard().projectFilenameEdit.setEnabled(False)
-            self._updateFilePath()
         else:
             self.wizard().newProjectCheck.setChecked(True)
             self.wizard().newProjectCheck.setEnabled(False)
             self.wizard().projectFolderEdit.setEnabled(True)
             self.wizard().projectFolderButton.setEnabled(True)
             self.wizard().projectFilenameEdit.setEnabled(True)
-            projectFolder = os.path.join(Settings.projectsFolder(), self.field("projectName"))
-            if os.path.exists(projectFolder):
-                self.setField('projectFolder', projectFolder)
+            projectFolderName = self.field("projectCode") + ' - ' + self.field("projectName")
+            projectFolder = os.path.join(Settings.projectsFolder(), projectFolderName, 'GIS')
+            self.setField('projectFolder', projectFolder)
             filename = ''
             if (self.field("siteCode") != ''):
                 filename = str(self.field("siteCode")) + '_' + str(Settings.userInitials())
@@ -151,15 +148,17 @@ class ConfirmPage(QWizardPage):
             self.setField('projectFilename', filename)
         self.wizard().projectFolderButton.clicked.connect(self._selectProjectFolder)
 
-    def _updateFilePath(self):
-        self.wizard().projectFullPath.setText(self.fullFilePath())
-
-    def fullFilePath(self):
-        return os.path.join(self.field('projectFolder'), self.field('projectFilename')) + '.qgs'
+    def validatePage(self):
+        if self.field("newProject"):
+            return self.field("projectFolder") != '' and self.field("projectFilename") != ''
+        return True
 
     def _selectProjectFolder(self):
+        defaultPath = self.field("projectFolder")
+        if defaultPath == '':
+            defaultPath = Settings.projectsFolder()
         folderName = unicode(
-            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.field("projectFolder"))
+            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), defaultPath)
         )
         if folderName:
             self.setField("projectFolder", folderName)

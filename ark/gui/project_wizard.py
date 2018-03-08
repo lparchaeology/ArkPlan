@@ -40,17 +40,8 @@ class ProjectWizard(QWizard, Ui_ProjectWizard):
     def newProject(self):
         return self.field('newProject')
 
-    def projectDir(self):
-        return QDir(self.field('projectFolder'))
-
     def projectFolder(self):
         return self.field('projectFolder')
-
-    def projectFileInfo(self):
-        return QFileInfo(self.confirmPage.fullFilePath())
-
-    def projectFilePath(self):
-        return self.confirmPage.fullFilePath()
 
     def projectFilename(self):
         return self.field('projectFilename')

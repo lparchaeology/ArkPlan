@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+import os
+
 from PyQt4.QtCore import QDir, QFile, Qt
 from PyQt4.QtGui import QAction, QDockWidget, QIcon
 
@@ -306,6 +308,7 @@ class ArkSpatialPlugin(Plugin):
 
     def run(self, checked):
         if checked and self.initialise() and self.configure():
+            return
             if not self._loaded:
                 self.loadProject()
         else:
@@ -338,59 +341,25 @@ class ArkSpatialPlugin(Plugin):
         return ok
 
     def configureProject(self):
-        if Settings.isProjectConfigured():
-            settings = ProjectDialog(self.iface.mainWindow())
-        else:
-            settings = ProjectWizard(self.iface.mainWindow())
+        wizard = ProjectWizard(self.iface.mainWindow())
 
-        ok = settings.exec_()
+        ok = wizard.exec_()
 
-        if ok and settings.projectDir().mkpath('.'):
-
-            if wizard.clearProject():
-                if Project.exists():
-                    Project.write()
-                Project.clear()
-
-            Project.setFileName(wizard.projectFileInfo().absoluteFilePath())
-            Project.setTitle(wizard.projectName())
-
-            Settings.setServerUrl(wizard.server().url())
-            Settings.setServerCredentials(wizard.server().user(), wizard.server().password())
-
-            Settings.setProjectCode(wizard.projectCode())
-            Settings.setSiteCode(wizard.siteCode())
-
-            # self._configureDrawing('context')
-            # self._configureDrawing('plan')
-            # self._configureDrawing('section')
-
-            self.writeProject()
-            self._initialised = Project.write()
-            if self._initialised:
-                Settings.setProjectConfigured()
-
-    # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
-    def configure(self):
-        if Settings.isProjectConfigured():
-            return True
-        # TODO more validation, check if files exist, etc
-        wizard = ProjectWizard()
-        if wizard.exec_() and wizard.projectDir().mkpath('.'):
+        if ok:
 
             if wizard.newProject():
                 if Project.exists():
                     Project.write()
                 Project.clear()
+                projectFolderPath = os.path.join(wizard.projectFolder(), 'project')
+                if not QDir(projectFolderPath).mkpath('.'):
+                    return False
+                projectFilePath = os.path.join(projectFolderPath, wizard.projectFilename() + '.qgs')
+                Project.setFileName(projectFilePath)
+                Project.setTitle(wizard.project().projectName())
 
-            Project.setFileName(wizard.projectFileInfo().absoluteFilePath())
-            Project.setTitle(wizard.projectName())
-
-            Settings.setServerUrl(wizard.server().url())
-            Settings.setServerCredentials(wizard.server().user(), wizard.server().password())
-
-            Settings.setProjectCode(wizard.projectCode())
-            Settings.setSiteCode(wizard.siteCode())
+            Settings.setProjectCode(wizard.project().projectCode())
+            Settings.setSiteCode(wizard.project().siteCode())
 
             # self._configureDrawing('context')
             # self._configureDrawing('plan')
@@ -401,12 +370,24 @@ class ArkSpatialPlugin(Plugin):
             if self._initialised:
                 Settings.setProjectConfigured()
 
+        return ok
+
+    # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
+    def configure(self):
+        # Configure the plugin if required
+        if not Settings.isPluginConfigured():
+            if not self.configurePlugin():
+                return False
+
         if not Settings.isProjectConfigured():
-            self.showCriticalMessage('ARK Project not configured, unable to continue!')
-            self.projectDock.menuAction().setChecked(False)
-            return False
-        else:
+            self.configureProject()
+
+        if Settings.isProjectConfigured():
             return True
+
+        self.showCriticalMessage('ARK Spatial not configured, unable to continue!')
+        self.projectDock.menuAction().setChecked(False)
+        return False
 
     def _configureDrawing(self, grp):
         self.rawDrawingDir(grp).mkpath('.')

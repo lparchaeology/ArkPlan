@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+import os
+
 from PyQt4.QtCore import QFile, QVariant
 
 from qgis.core import NULL, QgsField, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
@@ -44,14 +46,15 @@ class CollectionLayer:
     # Internal variables
 
     _iface = None  # QgsInterface()
-    _collection = None  # Collection()
+    _projectPath = ''
     _settings = None  # CollectionLayerSettings()
 
     _highlights = []  # [QgsHighlight]
 
-    def __init__(self, collection, layer):
-        self._iface = collection._iface
-        self.settings = collection.settings.layers[layer]
+    def __init__(self, iface, projectPath, settings):
+        self._iface = iface
+        self._projectPath = projectPath
+        self._settings = settings
         # If the layers are removed we need to remove them too
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
@@ -59,10 +62,10 @@ class CollectionLayer:
         self.loadLayer()
 
     def unload(self):
-        pass
+        QgsMapLayerRegistry.instance().layersRemoved.disconnect(self._layersRemoved)
 
     def isCollectionLayer(self, layerId):
-        return (layerId == self.layerId or layerId == self.bufferLayerId or layerId == self.logLayerId)
+        return (self.layerId == layerId or self.bufferLayerId == layerId or self.logLayerId == layerId)
 
     # Load the collection layers if not already loaded
     def loadLayer(self):
@@ -70,26 +73,27 @@ class CollectionLayer:
         self._loadLayer()
 
         # Load the edit buffer if required
-        if self.settings.bufferLayer:
+        if self._settings.bufferLayer:
             self._loadBufferLayer()
 
         # Load the log buffer if required
-        if self.settings.logLayer:
-            self._loadLogLayer(self.layer, self.settings.logPath, self.settings.logName)
+        if self._settings.logLayer:
+            self._loadLogLayer()
 
     # Load the main layer, must alreay exist
     def _loadLayer(self):
-        layer = None
-        layerList = QgsMapLayerRegistry.instance().mapLayersByName(self.settings.layerName)
-        if (len(layerList) > 0):
-            layer = layerList[0]
-        else:
-            fullLayerPath = self._collection.projectPath + '/' + self.settings.layerPath
-            layer = QgsVectorLayer(fullLayerPath, self.settings.layerName, 'ogr')
-            layer = layers.addLayerToLegend(self._iface, layer)
+        fullLayerPath = os.path.join(self._projectPath, self._settings.path)
+        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.name)
+        if layer is None:
+            layers.createShapefile(fullLayerPath,
+                                   self._settings.name,
+                                   QGis.WKBPoint25D,
+                                   self._settings.crs,
+                                   self._settings.fields)
         if layer and layer.isValid():
+            layer = layers.addLayerToLegend(self._iface, layer)
             self._setDefaultSnapping(layer)
-            layer.loadNamedStyle(self.settings.stylePath)
+            layer.loadNamedStyle(self._settings.stylePath)
             self.layer = layer
             self.layerId = layer.id()
         else:
@@ -98,21 +102,12 @@ class CollectionLayer:
 
     # Load the buffer layer, create it if it doesn't alreay exist
     def _loadBufferLayer(self):
-        layer = None
-        layerList = QgsMapLayerRegistry.instance().mapLayersByName(self.settings.bufferName)
-        if (len(layerList) > 0):
-            layer = layerList[0]
-        else:
-            fullLayerPath = self._collection.projectPath + '/' + self.settings.bufferPath
-            if (self.settings.bufferName and self.settings.bufferPath and self.layer and self.layer.isValid()):
-                if not QFile.exists(fullLayerPath):
-                    # If the layer doesn't exist, clone from the source layer
-                    layer = layers.cloneAsShapefile(self.layer, fullLayerPath, self.settings.bufferName)
-                else:
-                    # If the layer does exist, then load it and copy the style
-                    layer = QgsVectorLayer(fullLayerPath, self.settings.bufferName, 'ogr')
-                layer = layers.addLayerToLegend(self._iface, layer)
+        fullLayerPath = os.path.join(self._projectPath, self._settings.bufferPath)
+        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.bufferName)
+        if layer is None:
+            layer = layers.cloneAsShapefile(self.layer, fullLayerPath, self._settings.bufferName)
         if layer and layer.isValid():
+            layer = layers.addLayerToLegend(self._iface, layer)
             layers.loadStyle(layer, fromLayer=self.layer)
             self._setDefaultSnapping(layer)
             layer.startEditing()
@@ -124,26 +119,14 @@ class CollectionLayer:
             self.bufferLayerId = ''
 
     # Load the log layer, create it if it doesn't alreay exist
-    def _loadLogLayer(self, sourceLayer, layerPath, layerName):
-        layer = None
-        layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
-        if (len(layerList) > 0):
-            layer = layerList[0]
-        else:
-            fullLayerPath = self._collection.projectPath + '/' + layerPath
-            if (layerName and layerPath and sourceLayer and sourceLayer.isValid()):
-                if not QFile.exists(fullLayerPath):
-                    # If the layer doesn't exist, clone from the source layer
-                    layer = layers.cloneAsShapefile(sourceLayer, fullLayerPath, layerName)
-                    if layer and layer.isValid():
-                        layer.dataProvider().addAttributes(
-                            [QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp')])
-                        layer.dataProvider().addAttributes([QgsField('event', QVariant.String, '', 6, 0, 'event')])
-                else:
-                    # If the layer does exist, then load it and copy the style
-                    layer = QgsVectorLayer(fullLayerPath, layerName, 'ogr')
-                    if layer and layer.isValid():
-                        layers.loadStyle(layer, fromLayer=sourceLayer)
+    def _loadLogLayer(self):
+        fullLayerPath = os.path.join(self._projectPath, self._settings.logPath)
+        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.logName)
+        if layer is None:
+            layer = layers.cloneAsShapefile(self.layer, fullLayerPath, self._settings.logName)
+            if layer and layer.isValid():
+                layer.dataProvider().addAttributes([QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp')])
+                layer.dataProvider().addAttributes([QgsField('event', QVariant.String, '', 6, 0, 'event')])
         if layer and layer.isValid():
             layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
             self.logLayer = layer
@@ -197,26 +180,26 @@ class CollectionLayer:
                 and (self.logLayer is None or layers.isWritable(self.logLayer)))
 
     def mergeBuffer(self, undoMessage='Merge Buffers', timestamp=None):
-        if timestamp is None and self.settings.log:
+        if timestamp is None and self._settings.log:
             timestamp = utils.timestamp()
         merge = True
         if layers.copyAllFeatures(self.bufferLayer,
                                   self.layer,
-                                  undoMessage + ' - copy ' + self.settings.layer,
-                                  self.settings.logLayer,
+                                  undoMessage + ' - copy ' + self._settings.layer,
+                                  self._settings.logLayer,
                                   self.logLayer,
                                   timestamp):
-            self._clearBuffer(self.buffer, undoMessage + ' - delete ' + self.settings.layer)
+            self._clearBuffer(self.buffer, undoMessage + ' - delete ' + self._settings.layer)
         else:
             merge = False
         return merge
 
     def resetBuffer(self, undoMessage='Reset Buffers'):
-        undoMessage += ' - ' + self.settings.layer
+        undoMessage += ' - ' + self._settings.layer
         return self.bufferLayer.rollBack() and self.bufferLayer.startEditing()
 
     def clearBuffer(self, undoMessage='Clear Buffers'):
-        undoMessage += ' - ' + self.settings.layer
+        undoMessage += ' - ' + self._settings.layer
         return (layers.deleteAllFeatures(self.bufferLayer, undoMessage)
                 and self.bufferLayer.commitChanges()
                 and self.bufferLayer.startEditing())
@@ -234,7 +217,7 @@ class CollectionLayer:
         return layers.copyFeatureRequest(featureRequest, self.layer, self.bufferLayer, logMessage)
 
     def deleteFeatureRequest(self, featureRequest, logMessage='Delete Features', timestamp=None):
-        if timestamp is None and self.settings.logLayer:
+        if timestamp is None and self._settings.logLayer:
             timestamp = utils.timestamp()
         return layers.deleteFeatureRequest(featureRequest, self.layer, logMessage, self.logLayer, timestamp)
 

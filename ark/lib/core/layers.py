@@ -75,6 +75,16 @@ def shapeFilePath(layerPath, layerName):
     return layerPath + '/' + layerName + '.shp'
 
 
+def loadShapefileLayer(filePath, layerName):
+    layer = None
+    layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
+    if (len(layerList) > 0):
+        layer = layerList[0]
+    elif QFile.exists(filePath):
+        layer = QgsVectorLayer(filePath, layerName, 'ogr')
+    return layer
+
+
 def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
     writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)

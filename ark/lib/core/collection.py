@@ -87,9 +87,8 @@ class Collection:
 
     # Load the collection layers if not already loaded
     def loadCollection(self):
-        self.points.loadLayer()
-        self.lines.loadLayer()
-        self.polygons.loadLayer()
+        for layer in self._layers():
+            layer.loadLayer()
 
         # Load the main layers
         self._collectionGroupIndex = layers.createLayerGroup(

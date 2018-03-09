@@ -28,7 +28,7 @@ from PyQt4.QtGui import QAction, QDockWidget, QIcon
 from qgis.core import QGis, QgsField, QgsFields, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject
 
 from ..project import Project
-from collection import Collection, Collectionsettings, layers
+from collection import Collection, CollectionSettings, layers
 
 
 class CollectionFactory:
@@ -91,7 +91,7 @@ class CollectionFactory:
         return settings
 
     def loadCollection(self, iface, projectPath, scope, collection):
-        settings = Collectionsettings.fromProject(scope, collection)
+        settings = CollectionSettings.fromProject(scope, collection)
         if (settings.collection == ''):
             settings = self._configureCollection(collection)
         if settings.pointsStylePath == '':

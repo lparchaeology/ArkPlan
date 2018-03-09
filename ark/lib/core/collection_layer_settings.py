@@ -30,6 +30,7 @@ from ..project import Project
 class CollectionLayerSettings:
 
     layer = ''
+    crs = ''
     geometry = QGis.NoGeometry
     label = ''
     name = ''
@@ -45,6 +46,7 @@ class CollectionLayerSettings:
     logLayer = False
     logName = ''
     logPath = ''
+    logFields = {}
 
     def setLayer(self, layer, label, name, path):
         self.layer = layer

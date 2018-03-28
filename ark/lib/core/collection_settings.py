@@ -56,9 +56,9 @@ class CollectionSettings:
         settings.log = config['log']
         settings.multi = config['multi']
         for field in config['fields']:
-            settings.fields[field] = CollectionFieldSettings.fromArray(config['fields'][field])
+            settings.fields[field['attribute']] = CollectionFieldSettings.fromArray(field)
         for layer in config['layers']:
-            settings.layers[layer] = CollectionLayerSettings.fromProject(scope, path, field)
+            settings.layers[layer] = CollectionLayerSettings.fromArray(layer)
         settings.crs = config['crs']
         return settings
 

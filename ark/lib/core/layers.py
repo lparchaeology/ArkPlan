@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+import os
+
 from PyQt4.QtCore import QFile, QFileInfo, QVariant
 from PyQt4.QtXml import QDomDocument, QDomImplementation
 
@@ -58,7 +60,7 @@ wkbMemoryType = {
 }
 
 
-def geometryToWkbType(geometry, multi = True):
+def geometryToWkbType(geometry, multi=True):
     if multi:
         return geometryMultiType.get(geometry, QGis.Unknown)
     return geometryType.get(geometry, QGis.Unknown)
@@ -68,29 +70,37 @@ def wkbToMemoryType(wkbType):
     return wkbMemoryType.get(wkbType, 'unknown')
 
 
-def styleFilePath(layerPath, layerName, customStylePath, customStyleName, defaultStylePath, defaultStyleName):
+def styleFile(name, layerPath, customPath, defaultPath):
     # Try find a style file to match a layer
     # First see if the layer itself has a default style saved
-    if layerPath and layerName:
-        filePath = layerPath + '/' + layerName + '.qml'
+    if layerPath and name:
+        filePath = styleFilePath(layerPath, name)
         if QFile.exists(filePath):
             return filePath
     # Next see if the default name has a style in the style folder
-    if customStylePath and customStyleName:
-        filePath = customStylePath + '/' + customStyleName + '.qml'
+    if customPath and name:
+        filePath = styleFilePath(customPath, name)
         if QFile.exists(filePath):
             return filePath
     # Finally, check the plugin folder for the default style
-    if defaultStylePath and defaultStyleName:
-        filePath = defaultStylePath + '/' + defaultStyleName + '.qml'
+    if defaultPath and name:
+        filePath = styleFilePath(defaultPath, name)
         if QFile.exists(filePath):
             return filePath
-    # If we didn't anythign then don't use a style
+    # If we didn't find anything then don't use a style
     return ''
 
 
-def shapeFilePath(layerPath, layerName):
-    return layerPath + '/' + layerName + '.shp'
+def filePath(path, name, suffix):
+    return os.path.join(path, name + '.' + suffix)
+
+
+def styleFilePath(path, name):
+    return filePath(path, name, 'qml')
+
+
+def shapeFilePath(path, name):
+    return filePath(path, name, 'shp')
 
 
 def loadShapefileLayer(filePath, layerName):
@@ -143,12 +153,12 @@ def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
         if styleURI is None and symbology is None:
             symbology = getSymbology(layer)
         return createShapefile(filePath,
-                                  name,
-                                  layer.wkbType(),
-                                  layer.crs(),
-                                  layer.dataProvider().fields(),
-                                  styleURI,
-                                  symbology)
+                               name,
+                               layer.wkbType(),
+                               layer.crs(),
+                               layer.dataProvider().fields(),
+                               styleURI,
+                               symbology)
     return QgsVectorLayer()
 
 

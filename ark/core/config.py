@@ -22,11 +22,13 @@
  ***************************************************************************/
 """
 
+import os
+
 from PyQt4.QtCore import QVariant
 
 from qgis.core import QGis
 
-from ArkSpatial.ark.lib.core import CollectionFieldSettings, CollectionLayerSettings, CollectionSettings, FeatureType
+from ArkSpatial.ark.lib.core import Collection, CollectionSettings, FeatureType, layers
 
 
 class Config():
@@ -754,12 +756,12 @@ class Config():
     }
 
     @classmethod
-    def collectionSettings(cls, collection, crs):
-        config = Config.collectionSettingsArray('site', self.projectCrs())
+    def collectionSettings(cls, collection, crs, stylesPath):
+        config = cls.collectionSettingsArray('site', crs, stylesPath)
         return CollectionSettings.fromArray(config)
 
     @staticmethod
-    def collectionSettingsArray(collection, crs):
+    def collectionSettingsArray(collection, crs, stylesPath):
         config = Config.collections[collection]
         path = config['path']
         bufferPath = path + '/buffer'
@@ -769,19 +771,25 @@ class Config():
         config['crs'] = crs
         config['parentGroupName'] = Config.projectGroupName
 
+        fields = []
+        for fieldKey in config['fields']:
+            fields.append(Config.fields[fieldKey])
+        config['fields'] = fields
+
         for layer in config['layers']:
             name = config['layers'][layer]['name']
-            config['layers'][layer]['fields'] = config['fields']
+            config['layers'][layer]['fields'] = fields
             config['layers'][layer]['crs'] = crs
-            config['layers'][layer]['filePath'] = self._shapeFile(path, name)
-            config['layers'][layer]['stylePath'] = self._styleFile(path, name, config['pointsBaseName'])
+            config['layers'][layer]['filePath'] = layers.shapeFilePath(path, name)
+            config['layers'][layer]['stylePath'] = layers.styleFilePath(stylesPath, name)
             if config['buffer']:
                 bufferName = name + Config.bufferSuffix
                 config['layers'][layer]['bufferName'] = bufferName
-                config['layers'][layer]['bufferPath'] = self._shapeFile(bufferPath, bufferName)
+                config['layers'][layer]['bufferPath'] = layers.shapeFilePath(bufferPath, bufferName)
             if config['log']:
+                logName = name + Config.logSuffix
                 config['layers'][layer]['logFields'] = config['fields']
                 config['layers'][layer]['logName'] = logName
-                config['layers'][layer]['logPath'] = self._shapeFile(logPath, logName)
+                config['layers'][layer]['logPath'] = layers.shapeFilePath(logPath, logName)
 
         return config

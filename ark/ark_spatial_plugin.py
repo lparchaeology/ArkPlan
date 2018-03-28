@@ -443,8 +443,8 @@ class ArkSpatialPlugin(Plugin):
                 or self.site.isCollectionLayer(layerId)
                 or self.grid.isCollectionLayer(layerId))
 
-    def _shapeFile(self, layerPath, layerName):
-        return layerPath + '/' + layerName + '.shp'
+    def stylesPath(self):
+        return os.path.join(self.pluginPath, '/ark/styles')
 
     def _styleFile(self, layerPath, layerName):
         # First see if the layer itself has a default style saved
@@ -464,11 +464,8 @@ class ArkSpatialPlugin(Plugin):
         return ''
 
     def _configureCollection(self, collection):
-        settings = Config.collectionSettings(collection, self.projectCrs())
+        settings = Config.collectionSettings(collection, self.projectCrs(), self.stylesPath())
         return Collection(self._iface, wizard.projectFolder(), siteSettings)
-
-    def _stylePath(self, collection, collectionPath, layerName):
-        return self._styleFile(collectionPath, layerName)
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         action = QAction(QIcon(iconPath), text, self.projectDock)

@@ -74,7 +74,7 @@ class Collection:
 
     # Load the collection layers if not already loaded
     def loadCollection(self):
-        if self._layers.length === self.settings.layers.length:
+        if self._layers.length == self.settings.layers.length:
             return True
 
         for layerKey in self.settings.layers:
@@ -98,7 +98,7 @@ class Collection:
             for layerKey in self._layers:
                 self._layers[layerKey].moveBufferLayer(self._bufferGroupIndex)
 
-        return self._layers.length === self.settings.layers.length
+        return self._layers.length == self.settings.layers.length
 
     def isWritable(self):
         for layerKey in self._layers:

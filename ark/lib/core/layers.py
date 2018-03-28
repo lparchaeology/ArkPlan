@@ -30,6 +30,12 @@ from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsField, QgsL
 
 from .. import utils
 
+geometryType = {
+    QGis.Point: QGis.WKBPoint25D,
+    QGis.Line: QGis.WKBLineString25D,
+    QGis.Polygon: QGis.WKBPolygon25D
+}
+
 wkbMemoryType = {
     QGis.WKBPoint: 'point',
     QGis.WKBLineString: 'linestring',
@@ -44,6 +50,10 @@ wkbMemoryType = {
     QGis.WKBMultiLineString25D: 'multilinestring',
     QGis.WKBMultiPolygon25D: 'multipolygon'
 }
+
+
+def geometryToWkbType(geometry):
+    return geometryType.get(geometry, QGis.Unknown)
 
 
 def wkbToMemoryType(wkbType):
@@ -85,7 +95,17 @@ def loadShapefileLayer(filePath, layerName):
     return layer
 
 
-def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
+def createShapefile(filePath, name, geometry, crs, fields, styleURI=None, symbology=None):
+    # WARNING This will overwrite existing files
+    wkbType = geometryToWkbType(geometry)
+    writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
+    del writer
+    layer = QgsVectorLayer(filePath, name, 'ogr')
+    loadStyle(layer, styleURI, symbology)
+    return layer
+
+
+def createWkbShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
     writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
     del writer
@@ -124,13 +144,13 @@ def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
         if styleURI is None and symbology is None:
             symbology = getSymbology(layer)
-        return createShapefile(filePath,
-                               name,
-                               layer.wkbType(),
-                               layer.crs(),
-                               layer.dataProvider().fields(),
-                               styleURI,
-                               symbology)
+        return createWkbShapefile(filePath,
+                                  name,
+                                  layer.wkbType(),
+                                  layer.crs(),
+                                  layer.dataProvider().fields(),
+                                  styleURI,
+                                  symbology)
     return QgsVectorLayer()
 
 

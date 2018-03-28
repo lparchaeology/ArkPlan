@@ -268,7 +268,7 @@ class Config():
         'modifier',
     ]
 
-    gridFieldsDefaults = [
+    gridFields = [
         'site',
         'label',
         'local_x',
@@ -382,7 +382,7 @@ class Config():
             'bufferGroupName': '',
             'log': False,
             'multi': False,
-            'fields': gridFieldsDefaults,
+            'fields': gridFields,
             'layers': {
                 'points': {
                     'layer': 'points',
@@ -753,55 +753,30 @@ class Config():
         ]
     }
 
-    def toCollectionSettings(self, collection):
+    def collectionSettingsArray(self, collection, path, crs):
         config = Config.collections[collection]
-        path = config['path']
+        path = os.path.join(path, config['path'])
+        config['path'] = path
         bufferPath = path + '/buffer'
         logPath = path + '/log'
 
-        settings = CollectionSettings()
-        settings.collection = collection
-        settings.collectionPath = path
-        settings.parentGroupName = Config.projectGroupName
-        settings.collectionGroupName = config['groupName']
-        settings.bufferGroupName = config['bufferGroupName']
-        settings.log = config['log']
-        settings.multi = config['multi']
-
-        for field in config['fields']:
-            fieldConfig = config['fields'][field]
-            fs = CollectionFieldSettings()
-            fs.attribute = fieldConfig['attribute']
-            fs.type = fieldConfig['type']
-            fs.len = fieldConfig['len']
-            fs.decimals = fieldConfig['decimals']
-            fs.min = fieldConfig['min']
-            fs.max = fieldConfig['max']
-            fs.default = fieldConfig['default']
-            fs.label = fieldConfig['label']
-            fs.query = fieldConfig['query']
-            settings.fields[field] = fs
+        config['collection'] = collection
+        config['crs'] = crs
+        config['parentGroupName'] = Config.projectGroupName
 
         for layer in config['layers']:
-            layerConfig = config['layers'][layer]
-            ls = CollectionLayerSettings()
-            ls.label = layerConfig['label']
-            ls.name = layerConfig['name']
-            ls.path = self._shapeFile(path, ls.name)
-            ls.stylePath = self._styleFile(path, ls.name, config['pointsBaseName'])
+            name = config['layers'][layer]['name']
+            config['layers'][layer]['fields'] = config['fields']
+            config['layers'][layer]['crs'] = crs
+            config['layers'][layer]['filePath'] = self._shapeFile(path, name)
+            config['layers'][layer]['stylePath'] = self._styleFile(path, name, config['pointsBaseName'])
             if config['buffer']:
-                ls.bufferLayer = True
-                ls.bufferName = ls.name + Config.bufferSuffix
-                ls.bufferPath = self._shapeFile(bufferPath, ls.bufferName)
+                bufferName = name + Config.bufferSuffix
+                config['layers'][layer]['bufferName'] = bufferName
+                config['layers'][layer]['bufferPath'] = self._shapeFile(bufferPath, bufferName)
             if config['log']:
-                ls.logLayer = True
-                ls.logName = ls.name + Config.logSuffix
-                ls.logPath = self._shapeFile(logPath, ls.logName)
-            if layer == 'points':
-                settings.points = ls
-            if layer == 'lines':
-                settings.lines = ls
-            if layer == 'polygons':
-                settings.polygons = ls
+                config['layers'][layer]['logFields'] = config['fields']
+                config['layers'][layer]['logName'] = logName
+                config['layers'][layer]['logPath'] = self._shapeFile(logPath, logName)
 
-        return settings
+        return config

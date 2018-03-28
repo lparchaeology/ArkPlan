@@ -85,11 +85,11 @@ class CollectionLayer:
         fullLayerPath = os.path.join(self._projectPath, self._settings.path)
         layer = layers.loadShapefileLayer(fullLayerPath, self._settings.name)
         if layer is None:
-            layers.createShapefile(fullLayerPath,
-                                   self._settings.name,
-                                   QGis.WKBPoint25D,
-                                   self._settings.crs,
-                                   self._settings.fields)
+            layer = layers.createShapefile(fullLayerPath,
+                                           self._settings.name,
+                                           self._settings.geometry,
+                                           self._settings.crs,
+                                           self._settings.fields)
         if layer and layer.isValid():
             layer = layers.addLayerToLegend(self._iface, layer)
             self._setDefaultSnapping(layer)
@@ -123,10 +123,16 @@ class CollectionLayer:
         fullLayerPath = os.path.join(self._projectPath, self._settings.logPath)
         layer = layers.loadShapefileLayer(fullLayerPath, self._settings.logName)
         if layer is None:
-            layer = layers.cloneAsShapefile(self.layer, fullLayerPath, self._settings.logName)
-            if layer and layer.isValid():
-                layer.dataProvider().addAttributes([QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp')])
-                layer.dataProvider().addAttributes([QgsField('event', QVariant.String, '', 6, 0, 'event')])
+            fields = [
+                QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp'),
+                QgsField('event', QVariant.String, '', 6, 0, 'event')
+            ]
+            fields = fields + self._settings.fields
+            layer = layers.createShapefile(fullLayerPath,
+                                           self._settings.logName,
+                                           self._settings.geometry,
+                                           self._settings.crs,
+                                           fields)
         if layer and layer.isValid():
             layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
             self.logLayer = layer

@@ -46,31 +46,25 @@ class CollectionLayerSettings:
     logLayer = False
     logName = ''
     logPath = ''
-    logFields = {}
-
-    def setLayer(self, layer, label, name, path):
-        self.layer = layer
-        self.label = label
-        self.name = name
-        self.path = path
-
-    def setBufferLayer(self, name, path):
-        self.bufferLayer = True
-        self.bufferName = name
-        self.bufferPath = path
-
-    def setLogLayer(self, name, path):
-        self.logLayer = True
-        self.logName = name
-        self.logPath = path
 
     @staticmethod
     def fromArray(config):
         settings = CollectionLayerSettings()
         settings.layer = config['layer']
+        settings.crs = config['crs']
         settings.geometry = config['geometry']
         settings.label = config['label']
         settings.name = config['name']
+        settings.fields = config['fields']
+        settings.path = config['path']
+        settings.stylePath = config['stylePath']
+        settings.bufferLayer = config['buffer']
+        settings.bufferName = config['bufferName']
+        settings.bufferPath = config['bufferPath']
+        settings.logLayer = config['log']
+        settings.logName = config['logName']
+        settings.logPath = config['logPath']
+        return settings
 
     @staticmethod
     def fromProject(scope, path, layer):

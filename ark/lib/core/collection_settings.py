@@ -36,12 +36,31 @@ class CollectionSettings:
     collectionGroupName = ''
     bufferGroupName = ''
 
+    buffer = False
     log = False
     multi = False
 
     fields = {}
     layers = {}
     crs = ''
+
+    @staticmethod
+    def fromArray(config):
+        settings = CollectionSettings()
+        settings.collection = config['collection']
+        settings.collectionPath = config['path']
+        settings.collectionGroupName = config['groupName']
+        settings.parentGroupName = config['parentGroupName']
+        settings.buffer = config['buffer']
+        settings.bufferGroupName = config['bufferGroupName']
+        settings.log = config['log']
+        settings.multi = config['multi']
+        for field in config['fields']:
+            settings.fields[field] = CollectionFieldSettings.fromArray(config['fields'][field])
+        for layer in config['layers']:
+            settings.layers[layer] = CollectionLayerSettings.fromProject(scope, path, field)
+        settings.crs = config['crs']
+        return settings
 
     @staticmethod
     def fromProject(scope, collection):

@@ -361,11 +361,12 @@ class ArkSpatialPlugin(Plugin):
             Settings.setProjectCode(wizard.project().projectCode())
             Settings.setSiteCode(wizard.project().siteCode())
 
+            self.site = self._loadCollection('site')
+
             # self._configureDrawing('context')
             # self._configureDrawing('plan')
             # self._configureDrawing('section')
 
-            self.writeProject()
             self._initialised = Project.write()
             if self._initialised:
                 Settings.setProjectConfigured()

@@ -753,10 +753,15 @@ class Config():
         ]
     }
 
-    def collectionSettingsArray(self, collection, path, crs):
+    @classmethod
+    def collectionSettings(cls, collection, crs):
+        config = Config.collectionSettingsArray('site', self.projectCrs())
+        return CollectionSettings.fromArray(config)
+
+    @staticmethod
+    def collectionSettingsArray(collection, crs):
         config = Config.collections[collection]
-        path = os.path.join(path, config['path'])
-        config['path'] = path
+        path = config['path']
         bufferPath = path + '/buffer'
         logPath = path + '/log'
 

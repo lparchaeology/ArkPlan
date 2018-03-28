@@ -36,6 +36,12 @@ geometryType = {
     QGis.Polygon: QGis.WKBPolygon25D
 }
 
+geometryMultiType = {
+    QGis.Point: QGis.WKBMultiPoint25D,
+    QGis.Line: QGis.WKBMultiLineString25D,
+    QGis.Polygon: QGis.WKBMultiPolygon25D
+}
+
 wkbMemoryType = {
     QGis.WKBPoint: 'point',
     QGis.WKBLineString: 'linestring',
@@ -52,7 +58,9 @@ wkbMemoryType = {
 }
 
 
-def geometryToWkbType(geometry):
+def geometryToWkbType(geometry, multi = True):
+    if multi:
+        return geometryMultiType.get(geometry, QGis.Unknown)
     return geometryType.get(geometry, QGis.Unknown)
 
 
@@ -95,17 +103,7 @@ def loadShapefileLayer(filePath, layerName):
     return layer
 
 
-def createShapefile(filePath, name, geometry, crs, fields, styleURI=None, symbology=None):
-    # WARNING This will overwrite existing files
-    wkbType = geometryToWkbType(geometry)
-    writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
-    del writer
-    layer = QgsVectorLayer(filePath, name, 'ogr')
-    loadStyle(layer, styleURI, symbology)
-    return layer
-
-
-def createWkbShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
+def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
     writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
     del writer
@@ -144,7 +142,7 @@ def cloneAsShapefile(layer, filePath, name, styleURI=None, symbology=None):
     if (layer is not None and layer.isValid() and layer.type() == QgsMapLayer.VectorLayer):
         if styleURI is None and symbology is None:
             symbology = getSymbology(layer)
-        return createWkbShapefile(filePath,
+        return createShapefile(filePath,
                                   name,
                                   layer.wkbType(),
                                   layer.crs(),

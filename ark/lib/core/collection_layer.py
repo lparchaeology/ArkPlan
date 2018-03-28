@@ -26,7 +26,7 @@ import os
 
 from PyQt4.QtCore import QFile, QVariant
 
-from qgis.core import NULL, QgsField, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
+from qgis.core import NULL, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
 
 from . import layers
 from .. import utils
@@ -43,6 +43,8 @@ class CollectionLayer:
     logLayer = None
     logLayerId = ''
 
+    fields = QgsFields()
+
     # Internal variables
 
     _iface = None  # QgsInterface()
@@ -55,11 +57,18 @@ class CollectionLayer:
         self._iface = iface
         self._projectPath = projectPath
         self._settings = settings
+        for fieldKey in self._settings['fields']:
+            field = self._settings['fields'][fieldKey].toField()
+            self.fields.append(field)
         # If the layers are removed we need to remove them too
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
+    def isValid(self):
+        self.layer !== None && self.layer.isValid()
+
     def initialise(self):
         self.loadLayer()
+        return self.isValid()
 
     def unload(self):
         QgsMapLayerRegistry.instance().layersRemoved.disconnect(self._layersRemoved)
@@ -85,11 +94,12 @@ class CollectionLayer:
         fullLayerPath = os.path.join(self._projectPath, self._settings.path)
         layer = layers.loadShapefileLayer(fullLayerPath, self._settings.name)
         if layer is None:
+            wkbType = layers.geometryToWkbType(self._settings.geometry, self._settings.multi)
             layer = layers.createShapefile(fullLayerPath,
                                            self._settings.name,
-                                           self._settings.geometry,
+                                           wkbType,
                                            self._settings.crs,
-                                           self._settings.fields)
+                                           self.fields)
         if layer and layer.isValid():
             layer = layers.addLayerToLegend(self._iface, layer)
             self._setDefaultSnapping(layer)
@@ -109,7 +119,7 @@ class CollectionLayer:
         if layer and layer.isValid():
             layer = layers.addLayerToLegend(self._iface, layer)
             layers.loadStyle(layer, fromLayer=self.layer)
-            self._setDefaultSnapping(layer)
+                self._setDefaultSnapping(layer)
             layer.startEditing()
             layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
             self.bufferLayer = layer
@@ -127,10 +137,10 @@ class CollectionLayer:
                 QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp'),
                 QgsField('event', QVariant.String, '', 6, 0, 'event')
             ]
-            fields = fields + self._settings.fields
+            fields = fields + self.fields
             layer = layers.createShapefile(fullLayerPath,
                                            self._settings.logName,
-                                           self._settings.geometry,
+                                           self.layer.wkbType(),
                                            self._settings.crs,
                                            fields)
         if layer and layer.isValid():

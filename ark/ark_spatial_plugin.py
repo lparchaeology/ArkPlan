@@ -219,10 +219,10 @@ class ArkSpatialPlugin(Plugin):
         if self.isInitialised() and Settings.isProjectConfigured():
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
             # Load the layer collections
-            self.grid = self._loadCollection('grid')
-            self.plan = self._loadCollection('plan')
-            self.section = self._loadCollection('section')
-            self.site = self._loadCollection('site')
+            self.grid = self._configureCollection('grid')
+            self.plan = self._configureCollection('plan')
+            self.section = self._configureCollection('section')
+            self.site = self._configureCollection('site')
             self.drawingsGroupName = Config.drawings['context']['layersGroupName']
             if (self.grid.initialise()
                     and self.plan.initialise()
@@ -361,7 +361,9 @@ class ArkSpatialPlugin(Plugin):
             Settings.setProjectCode(wizard.project().projectCode())
             Settings.setSiteCode(wizard.project().siteCode())
 
-            self.site = self._loadCollection('site')
+            # We always want the site collection
+            self.site = self._configureCollection('site')
+            self.site.loadCollection()
 
             # self._configureDrawing('context')
             # self._configureDrawing('plan')
@@ -461,20 +463,9 @@ class ArkSpatialPlugin(Plugin):
         # If we didn't find that then something is wrong!
         return ''
 
-    def _loadCollection(self, collection):
-        lcs = CollectionSettings.fromProject(self.pluginName, collection)
-        if (lcs.collection == ''):
-            lcs = self._configureCollection(collection)
-        if lcs.pointsStylePath == '':
-            lcs.pointsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.pointsLayerName)
-        if lcs.linesStylePath == '':
-            lcs.linesStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.linesLayerName)
-        if lcs.polygonsStylePath == '':
-            lcs.polygonsStylePath = self._stylePath(
-                lcs.collection, lcs.collectionPath, lcs.polygonsLayerName)
-        return Collection(self.iface, self.projectPath(), lcs)
+    def _configureCollection(self, collection):
+        settings = Config.collectionSettings(collection, self.projectCrs())
+        return Collection(self._iface, wizard.projectFolder(), siteSettings)
 
     def _stylePath(self, collection, collectionPath, layerName):
         return self._styleFile(collectionPath, layerName)

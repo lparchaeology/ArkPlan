@@ -30,7 +30,7 @@ from PyQt4.QtGui import QAction, QDockWidget, QIcon
 from qgis.core import QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsRasterLayer
 from qgis.gui import QgsLayerTreeView
 
-from ArkSpatial.ark.lib import Plugin, Project
+from ArkSpatial.ark.lib import Plugin, Project, utils
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, LayerSnappingAction, ProjectSnappingAction,
@@ -361,19 +361,25 @@ class ArkSpatialPlugin(Plugin):
             Settings.setProjectCode(wizard.project().projectCode())
             Settings.setSiteCode(wizard.project().siteCode())
 
-            # We always want the site collection
-            self.site = self._configureCollection('site')
-            self.site.loadCollection()
-
-            # self._configureDrawing('context')
-            # self._configureDrawing('plan')
-            # self._configureDrawing('section')
-
             self._initialised = Project.write()
             if self._initialised:
+
+                # We always want the site collection
+                self.site = self._configureCollection('site')
+                self.site.loadCollection()
+
+                # self._configureDrawing('context')
+                # self._configureDrawing('plan')
+                # self._configureDrawing('section')
+
                 Settings.setProjectConfigured()
 
         return ok
+
+    def projectFolder(self):
+        proj = Project.dir()
+        proj.cdUp()
+        return proj.absolutePath()
 
     # Configure the project, i.e. load all settings for QgsProject but don't load anything until needed
     def configure(self):
@@ -464,8 +470,43 @@ class ArkSpatialPlugin(Plugin):
         return ''
 
     def _configureCollection(self, collection):
-        settings = Config.collectionSettings(collection, self.projectCrs(), self.stylesPath())
-        return Collection(self._iface, wizard.projectFolder(), siteSettings)
+        config = Config.collections[collection]
+        path = config['path']
+        bufferPath = path + '/buffer'
+        logPath = path + '/log'
+
+        config['collection'] = collection
+        config['crs'] = self.projectCrs()
+        config['parentGroupName'] = Config.projectGroupName
+
+        for layer in config['layers']:
+            name = layer['name']
+            layer['fields'] = config['fields']
+            layer['crs'] = self.projectCrs()
+            layer['path'] = layers.shapeFilePath(path, name)
+            layer['stylePath'] = layers.styleFilePath(self.stylesPath(), name)
+            layer['buffer'] = config['buffer']
+            if config['buffer']:
+                bufferName = name + Config.bufferSuffix
+                layer['bufferName'] = bufferName
+                layer['bufferName'] = bufferName
+                layer['bufferPath'] = layers.shapeFilePath(bufferPath, bufferName)
+            else:
+                layer['bufferName'] = ''
+                layer['bufferPath'] = ''
+            layer['log'] = config['log']
+            if config['log']:
+                logName = name + Config.logSuffix
+                layer['logName'] = logName
+                layer['logPath'] = layers.shapeFilePath(logPath, logName)
+            else:
+                layer['logName'] = ''
+                layer['logPath'] = ''
+
+        utils.debug(config)
+        settings = CollectionSettings.fromArray(config)
+        coll = Collection(self.iface, self.projectFolder(), settings)
+        return coll
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
         action = QAction(QIcon(iconPath), text, self.projectDock)

@@ -24,6 +24,8 @@
 
 from qgis.core import QgsField
 
+from ArkSpatial.ark.lib import utils
+
 from ..project import Project
 
 
@@ -41,6 +43,8 @@ class CollectionFieldSettings:
 
     @staticmethod
     def fromArray(config):
+        utils.debug('CollectionFieldSettings')
+        utils.debug(config)
         settings = CollectionFieldSettings()
         settings.attribute = config['attribute']
         settings.type = config['type']

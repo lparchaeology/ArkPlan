@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from ArkSpatial.ark.lib import utils
+
 from ..project import Project
 from collection_field_settings import CollectionFieldSettings
 from collection_layer_settings import CollectionLayerSettings
@@ -40,12 +42,13 @@ class CollectionSettings:
     log = False
     multi = False
 
-    fields = {}
-    layers = {}
+    layers = []
     crs = ''
 
     @staticmethod
     def fromArray(config):
+        utils.debug('CollectionSettings')
+        utils.debug(config)
         settings = CollectionSettings()
         settings.collection = config['collection']
         settings.collectionPath = config['path']
@@ -55,11 +58,9 @@ class CollectionSettings:
         settings.bufferGroupName = config['bufferGroupName']
         settings.log = config['log']
         settings.multi = config['multi']
-        for field in config['fields']:
-            settings.fields[field['attribute']] = CollectionFieldSettings.fromArray(field)
-        for layer in config['layers']:
-            settings.layers[layer] = CollectionLayerSettings.fromArray(layer)
         settings.crs = config['crs']
+        for layer in config['layers']:
+            settings.layers.append(CollectionLayerSettings.fromArray(layer))
         return settings
 
     @staticmethod
@@ -72,12 +73,9 @@ class CollectionSettings:
         settings.parentGroupName = Project.readEntry(scope, path + 'parentGroupName')
         settings.bufferGroupName = Project.readEntry(scope, path + 'bufferGroupName')
         settings.log = Project.readBoolEntry(scope, path + 'log')
-        fields = Project.readListEntry(scope, path + 'fields')
-        for field in fields:
-            settings.fields[field] = CollectionFieldSettings.fromProject(scope, path, field)
         layers = Project.readListEntry(scope, path + 'layers')
         for layer in layers:
-            settings.layers[layer] = CollectionLayerSettings.fromProject(scope, path, layer)
+            settings.layers.append(CollectionLayerSettings.fromProject(scope, path, layer))
         settings.crs = Project.readEntry(scope, path + 'crs')
         return settings
 
@@ -89,8 +87,6 @@ class CollectionSettings:
         Project.writeEntry(scope, path + 'parentGroupName', self.parentGroupName)
         Project.writeEntry(scope, path + 'bufferGroupName', self.bufferGroupName)
         Project.writeEntry(scope, path + 'log', self.log)
-        for field in self.fields:
-            field.toProject(scope, path)
         for layer in self.layers:
             layer.toProject(scope, path)
         Project.writeEntry(scope, path + 'crs', self.crs.authid())

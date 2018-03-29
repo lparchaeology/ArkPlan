@@ -64,7 +64,7 @@ class CollectionLayer:
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
     def isValid(self):
-        self.layer !== None && self.layer.isValid()
+        self.layer != None and self.layer.isValid()
 
     def initialise(self):
         self.loadLayer()

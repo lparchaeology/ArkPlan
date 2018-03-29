@@ -254,31 +254,31 @@ class Config():
     }
 
     collectionFields = [
-        'site',
-        'class',
-        'id',
-        'label',
-        'category',
-        'source_cd',
-        'source_cl',
-        'source_id',
-        'file',
-        'comment',
-        'created',
-        'creator',
-        'modified',
-        'modifier',
+        fields['site'],
+        fields['class'],
+        fields['id'],
+        fields['label'],
+        fields['category'],
+        fields['source_cd'],
+        fields['source_cl'],
+        fields['source_id'],
+        fields['file'],
+        fields['comment'],
+        fields['created'],
+        fields['creator'],
+        fields['modified'],
+        fields['modifier'],
     ]
 
     gridFields = [
-        'site',
-        'label',
-        'local_x',
-        'local_y',
-        'map_x',
-        'map_y',
-        'created',
-        'creator',
+        fields['site'],
+        fields['label'],
+        fields['local_x'],
+        fields['local_y'],
+        fields['map_x'],
+        fields['map_y'],
+        fields['created'],
+        fields['creator'],
     ]
 
     collections = {
@@ -292,26 +292,26 @@ class Config():
             'log': True,
             'multi': True,
             'fields': collectionFields,
-            'layers': {
-                'points': {
+            'layers': [
+                {
                     'layer': 'points',
                     'geometry': QGis.Point,
                     'name': 'plan_pt',
                     'label': 'Plan Points',
                 },
-                'lines': {
+                {
                     'layer': 'lines',
                     'geometry': QGis.Line,
                     'name': 'plan_pl',
                     'label': 'Plan Lines',
                 },
-                'polygons': {
+                {
                     'layer': 'polygons',
                     'geometry': QGis.Polygon,
                     'name': 'plan_pg',
                     'label': 'Plan Polygons',
                 },
-            },
+            ],
         },
         'section': {
             'path': 'data/section',
@@ -323,26 +323,26 @@ class Config():
             'log': True,
             'multi': True,
             'fields': collectionFields,
-            'layers': {
-                'points': {
+            'layers': [
+                {
                     'layer': 'points',
                     'geometry': QGis.Point,
                     'name': 'section_pt',
                     'label': 'Section Points',
                 },
-                'lines': {
+                {
                     'layer': 'lines',
                     'geometry': QGis.Line,
                     'name': 'section_pl',
                     'label': 'Section Lines',
                 },
-                'polygons': {
+                {
                     'layer': 'polygons',
                     'geometry': QGis.Polygon,
                     'name': 'section_pg',
                     'label': 'Section Polygons',
                 },
-            },
+            ],
         },
         'site': {
             'path': 'data/site',
@@ -354,26 +354,26 @@ class Config():
             'log': True,
             'multi': True,
             'fields': collectionFields,
-            'layers': {
-                'points': {
+            'layers': [
+                {
                     'layer': 'points',
                     'geometry': QGis.Point,
                     'name': 'site_pt',
                     'label': 'Site Points',
                 },
-                'lines': {
+                {
                     'layer': 'lines',
                     'geometry': QGis.Line,
                     'name': 'site_pl',
                     'label': 'Site Lines',
                 },
-                'polygons': {
+                {
                     'layer': 'polygons',
                     'geometry': QGis.Polygon,
                     'name': 'site_pg',
                     'label': 'Site Polygons',
                 },
-            },
+            ],
         },
         'grid': {
             'path': 'data/grid',
@@ -385,26 +385,26 @@ class Config():
             'log': False,
             'multi': False,
             'fields': gridFields,
-            'layers': {
-                'points': {
+            'layers': [
+                {
                     'layer': 'points',
                     'geometry': QGis.Point,
                     'name': 'grid_pt',
                     'label': 'Grid Points',
                 },
-                'lines': {
+                {
                     'layer': 'lines',
                     'geometry': QGis.Line,
                     'name': 'grid_pl',
                     'label': 'Grid Lines',
                 },
-                'polygons': {
+                {
                     'layer': 'polygons',
                     'geometry': QGis.Polygon,
                     'name': 'grid_pg',
                     'label': 'Grid Polygons',
                 },
-            },
+            ],
         },
     }
 
@@ -754,42 +754,3 @@ class Config():
             {'class': 'site', 'category': 'tpt', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Test Pit'},
         ]
     }
-
-    @classmethod
-    def collectionSettings(cls, collection, crs, stylesPath):
-        config = cls.collectionSettingsArray('site', crs, stylesPath)
-        return CollectionSettings.fromArray(config)
-
-    @staticmethod
-    def collectionSettingsArray(collection, crs, stylesPath):
-        config = Config.collections[collection]
-        path = config['path']
-        bufferPath = path + '/buffer'
-        logPath = path + '/log'
-
-        config['collection'] = collection
-        config['crs'] = crs
-        config['parentGroupName'] = Config.projectGroupName
-
-        fields = []
-        for fieldKey in config['fields']:
-            fields.append(Config.fields[fieldKey])
-        config['fields'] = fields
-
-        for layer in config['layers']:
-            name = config['layers'][layer]['name']
-            config['layers'][layer]['fields'] = fields
-            config['layers'][layer]['crs'] = crs
-            config['layers'][layer]['filePath'] = layers.shapeFilePath(path, name)
-            config['layers'][layer]['stylePath'] = layers.styleFilePath(stylesPath, name)
-            if config['buffer']:
-                bufferName = name + Config.bufferSuffix
-                config['layers'][layer]['bufferName'] = bufferName
-                config['layers'][layer]['bufferPath'] = layers.shapeFilePath(bufferPath, bufferName)
-            if config['log']:
-                logName = name + Config.logSuffix
-                config['layers'][layer]['logFields'] = config['fields']
-                config['layers'][layer]['logName'] = logName
-                config['layers'][layer]['logPath'] = layers.shapeFilePath(logPath, logName)
-
-        return config

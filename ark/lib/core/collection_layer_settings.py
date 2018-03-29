@@ -24,7 +24,11 @@
 
 from qgis.core import QGis
 
+from ArkSpatial.ark.lib import utils
+
 from ..project import Project
+
+from collection_field_settings import CollectionFieldSettings
 
 
 class CollectionLayerSettings:
@@ -34,7 +38,7 @@ class CollectionLayerSettings:
     geometry = QGis.NoGeometry
     label = ''
     name = ''
-    fields = {}
+    fields = []
 
     path = ''
     stylePath = ''
@@ -49,13 +53,14 @@ class CollectionLayerSettings:
 
     @staticmethod
     def fromArray(config):
+        utils.debug('CollectionLayerSettings')
+        utils.debug(config)
         settings = CollectionLayerSettings()
         settings.layer = config['layer']
         settings.crs = config['crs']
         settings.geometry = config['geometry']
         settings.label = config['label']
         settings.name = config['name']
-        settings.fields = config['fields']
         settings.path = config['path']
         settings.stylePath = config['stylePath']
         settings.bufferLayer = config['buffer']
@@ -64,6 +69,8 @@ class CollectionLayerSettings:
         settings.logLayer = config['log']
         settings.logName = config['logName']
         settings.logPath = config['logPath']
+        for field in config['fields']:
+            settings.fields.append(CollectionFieldSettings.fromArray(field))
         return settings
 
     @staticmethod
@@ -80,6 +87,9 @@ class CollectionLayerSettings:
         settings.logLayer = Project.readBoolEntry(scope, path + 'logLayer')
         settings.logName = Project.readEntry(scope, path + 'logName')
         settings.logPath = Project.readEntry(scope, path + 'logPath')
+        fields = Project.readListEntry(scope, path + 'fields')
+        for field in fields:
+            settings.fields[field] = CollectionFieldSettings.fromProject(scope, path, field)
 
     def toProject(self, scope, path):
         path = path + self.layer + '/'
@@ -92,3 +102,5 @@ class CollectionLayerSettings:
         Project.writeEntry(scope, path + 'logLayer', self.logLayer)
         Project.writeEntry(scope, path + 'logName', self.logName)
         Project.writeEntry(scope, path + 'logPath', self.logPath)
+        for field in self.fields:
+            field.toProject(scope, path)

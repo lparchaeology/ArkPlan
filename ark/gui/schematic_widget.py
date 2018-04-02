@@ -25,6 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QPixmap, QWidget
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
 from ArkSpatial.ark.core import Item, Settings
@@ -106,6 +107,7 @@ class SchematicWidget(QWidget, Ui_SchematicWidget):
         pass
 
     def loadProject(self, plugin):
+        utils.debug('Schematic widget loadProject')
         if Settings.siteServerUrl():
             self.loadArkTool.setEnabled(True)
         self._enableArkNav(False)

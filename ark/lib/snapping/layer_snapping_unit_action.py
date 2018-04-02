@@ -38,10 +38,10 @@ class LayerSnappingUnitAction(AbstractSnappingUnitAction):
     snappingUnitChanged = pyqtSignal(str, int)
 
     def __init__(self, snapLayer, snapUnit, parent=None):
-        super(LayerSnappingUnitAction, self).__init__(snapUnit, parent)
-
         self._layerId = ''
         self._iface = None  # QgisInteface
+
+        super(LayerSnappingUnitAction, self).__init__(snapUnit, parent)
 
         if isinstance(snapLayer, QgisInterface):
             self._iface = snapLayer

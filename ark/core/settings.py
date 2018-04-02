@@ -142,7 +142,9 @@ class Settings:
 
     @classmethod
     def siteCodes(cls):
-        return [cls.siteCode]
+        if cls.siteCode():
+            return [cls.siteCode()]
+        return []
 
     @staticmethod
     def siteCode():

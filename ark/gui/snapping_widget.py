@@ -26,6 +26,7 @@ from PyQt4.QtGui import QGroupBox
 
 from qgis.core import QgsProject
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction, Snapping
 
 from .ui.snapping_widget_base import Ui_SnappingWidget
@@ -61,6 +62,7 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):
+        utils.debug('Schematic widget loadProject')
         self._setLayer(plugin.iface, plugin.plan.buffer('points'), self.snapBufferPointsTool)
         self._setLayer(plugin.iface, plugin.plan.buffer('lines'), self.snapBufferLinesTool)
         self._setLayer(plugin.iface, plugin.plan.buffer('polygons'), self.snapBufferPolygonsTool)

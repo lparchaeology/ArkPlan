@@ -24,6 +24,7 @@
 
 import bisect
 import copy
+import os
 
 from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
 from PyQt4.QtGui import QFileDialog, QInputDialog
@@ -99,11 +100,14 @@ class PlanModule(QObject):
 
     # Load the project settings when project is loaded
     def loadProject(self):
+        utils.debug('Plan loadProject')
         # Assume layers are loaded and filters cleared
         self.dock.loadProject(self.plugin)
 
         if self.plugin.plan.settings.log:
-            self._itemLogPath = Settings.projectPath() + '/' + self.plugin.plan.settings.collectionPath + '/log/itemLog.csv'
+            self._itemLogPath = os.path.join(self.plugin.plan.projectPath,
+                                             self.plugin.plan.settings.collectionPath,
+                                             'log/itemLog.csv')
             if not QFile.exists(self._itemLogPath):
                 fd = open(self._itemLogPath, 'a')
                 fd.write('timestamp,action,siteCode,classCode,itemId\n')
@@ -115,6 +119,7 @@ class PlanModule(QObject):
 
         self.plugin.data.dataLoaded.connect(self.dock.activateArkData)
 
+        utils.debug('Plan set initialised')
         self.initialised = True
 
     # Save the project

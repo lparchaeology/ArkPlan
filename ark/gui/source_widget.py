@@ -61,7 +61,12 @@ class SourceWidget(QWidget, Ui_SourceWidget):
         self.siteCodeCombo.clear()
         for siteCode in sorted(set(Settings.siteCodes())):
             self.siteCodeCombo.addItem(siteCode, siteCode)
-        self._setSiteCode(Settings.siteCode())
+        if Settings.siteCode():
+            self._setSiteCode(Settings.siteCode())
+        else:
+            projectCode = Settings.projectCode()
+            self.siteCodeCombo.addItem(projectCode, projectCode)
+            self._setSiteCode(projectCode)
 
     def closeProject(self):
         pass

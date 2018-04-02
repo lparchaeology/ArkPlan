@@ -377,6 +377,11 @@ class ArkSpatialPlugin(Plugin):
                 self.grid = self._configureCollection('grid')
                 self.grid.loadCollection()
 
+                self.planModule.loadProject()
+                self.gridModule.loadProject()
+                self.filterModule.loadProject()
+                self._loaded = True
+
                 # self._configureDrawing('context')
                 # self._configureDrawing('plan')
                 # self._configureDrawing('section')

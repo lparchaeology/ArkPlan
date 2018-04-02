@@ -105,11 +105,11 @@ class Collection:
         return None
 
     def hasBuffer(self, name):
-        return name in self._layers and self._layers[name].buffer != None
+        return name in self._layers and self._layers[name].bufferLayer != None
 
     def buffer(self, name):
         if name in self._layers:
-            return self._layers[name].buffer
+            return self._layers[name].bufferLayer
         return None
 
     def isWritable(self):

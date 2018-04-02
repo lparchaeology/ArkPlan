@@ -26,6 +26,8 @@ from PyQt4.QtGui import QWidget
 
 from .ui.digitising_widget_base import Ui_DigitisingWidget
 
+from ArkSpatial.ark.lib import utils
+
 
 class DigitisingWidget(QWidget, Ui_DigitisingWidget):
 
@@ -48,6 +50,7 @@ class DigitisingWidget(QWidget, Ui_DigitisingWidget):
         self.sourceWidget.sourceChanged.disconnect(self._updateSource)
 
     def loadProject(self, plugin):
+        utils.debug('Digitising loadProject')
         self.sourceWidget.loadProject(plugin)
         self.planFeatureWidget.loadProject(plugin, 'plan')
         self.sectionFeatureWidget.loadProject(plugin, 'section')

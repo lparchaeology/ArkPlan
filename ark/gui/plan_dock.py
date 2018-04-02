@@ -25,6 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QIcon
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 
 from .plan_widget import PlanWidget
@@ -132,6 +133,7 @@ class PlanDock(ToolDockWidget):
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):
+        utils.debug('Plan Dock loadProject')
         self.widget.digitisingWidget.loadProject(plugin)
         self.widget.schematicWidget.loadProject(plugin)
         self.widget.snappingWidget.loadProject(plugin)

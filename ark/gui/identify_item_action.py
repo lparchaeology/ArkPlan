@@ -59,7 +59,7 @@ class IdentifyItemAction(QAction):
         area = []
         haveSchematic = False
         sectionSchematics = []
-        for feature in plugin.plan.polygonsLayer.getFeatures(item.featureRequest()):
+        for feature in plugin.plan.layer('polygons').getFeatures(item.featureRequest()):
             category = feature.attribute('category')
             if category == 'sch' or category == 'scs':
                 haveSchematic = True

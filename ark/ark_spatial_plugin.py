@@ -452,8 +452,7 @@ class ArkSpatialPlugin(Plugin):
                 or name == self.drawingsGroupName)
 
     def isArkLayer(self, layerId):
-        return (layerId == self.plan.pointsLayerId
-                or self.plan.isCollectionLayer(layerId)
+        return (self.plan.isCollectionLayer(layerId)
                 or self.section.isCollectionLayer(layerId)
                 or self.site.isCollectionLayer(layerId)
                 or self.grid.isCollectionLayer(layerId))

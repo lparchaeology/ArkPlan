@@ -325,19 +325,19 @@ class FilterModule(QObject):
         self.plugin.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
         dialog.setExpressionText(self.plugin.plan.filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
     def buildSelection(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
         dialog.setExpressionText(self.plugin.plan.selection)
         if (dialog.exec_()):
             self.applySelection(dialog.expressionText())
 
     def buildHighlight(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.linesLayer)
+        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
         dialog.setExpressionText(self.plugin.plan.highlight)
         if (dialog.exec_()):
             self.applyHighlight(dialog.expressionText())
@@ -457,7 +457,7 @@ class FilterModule(QObject):
         if self._filterSetGroupIndex < 0:
             self._filterSetGroupIndex = layers.createLayerGroup(
                 self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
-        layer = self.plugin.plan.polygonsLayer
+        layer = self.plugin.plan.layer('polygons')
         mem = layers.cloneAsMemoryLayer(layer, name, 'DefaultStyle')
         mem.rendererV2().symbols()[0].setColor(schematicColor)
         mem.startEditing()
@@ -473,9 +473,9 @@ class FilterModule(QObject):
             self._filterSetGroupIndex = layers.createLayerGroup(
                 self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
         exportGroup = layers.createLayerGroup(self.plugin.iface, name, Config.filterSetGroupName)
-        pgMem = layers.duplicateAsMemoryLayer(self.plugin.plan.polygonsLayer, key + '_pg')
-        plMem = layers.duplicateAsMemoryLayer(self.plugin.plan.linesLayer, key + '_pl')
-        ptMem = layers.duplicateAsMemoryLayer(self.plugin.plan.pointsLayer, key + '_pt')
+        pgMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('polygons'), key + '_pg')
+        plMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('lines'), key + '_pl')
+        ptMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('points'), key + '_pt')
         layers.addLayerToLegend(self.plugin.iface, pgMem, exportGroup)
         layers.addLayerToLegend(self.plugin.iface, plMem, exportGroup)
         layers.addLayerToLegend(self.plugin.iface, ptMem, exportGroup)

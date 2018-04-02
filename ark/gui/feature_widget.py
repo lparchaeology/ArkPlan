@@ -109,9 +109,11 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
 
     def loadProject(self, plugin, collection):
         collection = plugin.collection(collection)
-        self._pointsLayer = collection.pointsBuffer if collection.pointsBuffer else collection.pointsLayer
-        self._linesLayer = collection.linesBuffer if collection.linesBuffer else collection.linesLayer
-        self._polygonsLayer = collection.polygonsBuffer if collection.polygonsBuffer else collection.polygonsLayer
+        self._pointsLayer = collection.buffer('points') if collection.hasBuffer(
+            'points') else collection.layer('points')
+        self._linesLayer = collection.buffer('lines') if collection.hasBuffer('lines') else collection.layer('lines')
+        self._polygonsLayer = collection.buffer('polygons') if collection.hasBuffer(
+            'polygons') else collection.layer('polygons')
 
     def closeProject(self):
         pass

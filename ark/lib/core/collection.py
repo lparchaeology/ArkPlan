@@ -96,6 +96,22 @@ class Collection:
 
         return len(self._layers) == len(self.settings.layers)
 
+    def hasLayer(self, name):
+        return name in self._layers and self._layers[name].layer != None
+
+    def layer(self, name):
+        if name in self._layers:
+            return self._layers[name].layer
+        return None
+
+    def hasBuffer(self, name):
+        return name in self._layers and self._layers[name].buffer != None
+
+    def buffer(self, name):
+        if name in self._layers:
+            return self._layers[name].buffer
+        return None
+
     def isWritable(self):
         for layerKey in self._layers:
             if not self._layers[layerKey].isWritable():

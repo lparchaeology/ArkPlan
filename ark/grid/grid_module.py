@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QObject, Qt, QVariant
 from PyQt4.QtGui import QApplication, QIcon
 
-from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPointV2, QgsVectorLayer
+from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPoint, QgsPointV2, QgsVectorLayer
 from qgis.gui import QgsVertexMarker
 
 from ArkSpatial.ark.lib import utils
@@ -100,7 +100,7 @@ class GridModule(QObject):
         # Check if files exist or need creating
         # Run create if needed
 
-        if self.plugin.grid.pointsLayer is None:
+        if not self.plugin.grid.hasLayer('points'):
             return
 
         if self.loadGridNames():
@@ -141,15 +141,15 @@ class GridModule(QObject):
         if checked:
             if not self.initialised:
                 self.loadProject()
-            self._vertexMarker.setCenter(self.mapPoint())
+            self._vertexMarker.setCenter(QgsPoint(self.mapPoint().x(), self.mapPoint().y()))
         else:
-            self._vertexMarker.setCenter(QgsPointV2())
+            self._vertexMarker.setCenter(QgsPoint())
 
     def loadGridNames(self):
         self.plugin.grid.clearFilter()
         names = set()
         default = None
-        for feature in self.plugin.grid.pointsLayer.getFeatures():
+        for feature in self.plugin.grid.layer('points').getFeatures():
             name = (feature.attribute('site'),
                     feature.attribute('name'))
             names.add(name)
@@ -165,11 +165,11 @@ class GridModule(QObject):
         prevFilter = self.plugin.grid.filter
         expr = utils.eqClause('site', siteCode) + ' and ' + utils.eqClause('name', gridName)
         self.plugin.grid.applyFilter(expr)
-        if self.plugin.grid.pointsLayer.featureCount() < 2:
+        if self.plugin.grid.layer('points').featureCount() < 2:
             self.plugin.grid.applyFilter(prevFilter)
             return False
         features = []
-        for feature in self.plugin.grid.pointsLayer.getFeatures():
+        for feature in self.plugin.grid.layer('points').getFeatures():
             features.append(feature)
             if len(features) >= 2:
                 break
@@ -268,7 +268,7 @@ class GridModule(QObject):
         map_x = 'map_x'
         map_y = 'map_y'
 
-        points = self.plugin.grid.pointsLayer
+        points = self.plugin.grid.layer('points')
         if (points is None or not points.isValid()):
             self.plugin.showCriticalMessage('Invalid grid points file, cannot create grid!')
             return False
@@ -278,7 +278,7 @@ class GridModule(QObject):
                                    self._attributes(points, siteCode, gridName), local_x, local_y, map_x, map_y)
 
         if self.plugin.grid.settings.linesLayerName:
-            lines = self.plugin.grid.linesLayer
+            lines = self.plugin.grid.layer('lines')
             if lines is None or not lines.isValid():
                 self.plugin.showCriticalMessage('Invalid grid lines file!')
             else:
@@ -288,7 +288,7 @@ class GridModule(QObject):
                                           self._attributes(lines, siteCode, gridName), local_x, local_y, map_x, map_y)
 
         if self.plugin.grid.settings.polygonsLayerName:
-            polygons = self.plugin.grid.polygonsLayer
+            polygons = self.plugin.grid.layer('polygons')
             if lines is None or not lines.isValid():
                 self.plugin.showCriticalMessage('Invalid grid polygons file!')
             else:

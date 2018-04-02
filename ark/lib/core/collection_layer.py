@@ -35,6 +35,7 @@ from .. import utils
 class CollectionLayer:
 
     def __init__(self, iface, projectPath, settings):
+        self.name = ''
         self.layer = None
         self.layerId = ''
         self.bufferLayer = None
@@ -103,6 +104,7 @@ class CollectionLayer:
             layer = layers.addLayerToLegend(self._iface, layer)
             self._setDefaultSnapping(layer)
             layer.loadNamedStyle(self._settings.stylePath)
+            self.name = self._settings.name
             self.layer = layer
             self.layerId = layer.id()
         else:

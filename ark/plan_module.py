@@ -203,15 +203,15 @@ class PlanModule(QObject):
         sourceKeys = set()
         sourceKeys.add(item)
         itemRequest = item.featureRequest()
-        for feature in self.plugin.plan.polygonsLayer.getFeatures(itemRequest):
+        for feature in self.plugin.plan.layer('polygons').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
-        for feature in self.plugin.plan.linesLayer.getFeatures(itemRequest):
+        for feature in self.plugin.plan.layer('lines').getFeatures(itemRequest):
             source = Source(feature)
             if source.item.isValid():
                 sourceKeys.add(source.item())
-        for feature in self.plugin.plan.pointsLayer.getFeatures(itemRequest):
+        for feature in self.plugin.plan.layer('points').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
@@ -233,7 +233,7 @@ class PlanModule(QObject):
             drawings[drawing]['geo'] = Settings.georefDrawingDir(drawing)
             drawings[drawing]['suffix'] = '_r'
             drawings[drawing]['crs'] = self.plugin.projectCrs().authid()
-            drawings[drawing]['grid'] = self.plugin.grid.pointsLayer
+            drawings[drawing]['grid'] = self.plugin.grid.layer('points')
             drawings[drawing]['local_x'] = 'local_x'
             drawings[drawing]['local_y'] = 'local_y'
         georefDialog = GeorefDialog(drawings)
@@ -259,9 +259,9 @@ class PlanModule(QObject):
             return
 
         # Check the buffers contain valid data
-        errors = self._preMergeBufferCheck(collection.pointsBuffer)
-        errors.extend(self._preMergeBufferCheck(collection.linesBuffer))
-        errors.extend(self._preMergeBufferCheck(collection.polygonsBuffer))
+        errors = self._preMergeBufferCheck(collection.buffer('points'))
+        errors.extend(self._preMergeBufferCheck(collection.buffer('lines')))
+        errors.extend(self._preMergeBufferCheck(collection.buffer('polygons')))
         if len(errors) > 0:
             dialog = FeatureErrorDialog()
             dialog.loadErrors(errors)
@@ -272,9 +272,9 @@ class PlanModule(QObject):
         # Update the audit attributes
         timestamp = utils.timestamp()
         user = self.metadata.editor()
-        self._preMergeBufferUpdate(collection.pointsBuffer, timestamp, user)
-        self._preMergeBufferUpdate(collection.linesBuffer, timestamp, user)
-        self._preMergeBufferUpdate(collection.polygonsBuffer, timestamp, user)
+        self._preMergeBufferUpdate(collection.buffer('points'), timestamp, user)
+        self._preMergeBufferUpdate(collection.buffer('lines'), timestamp, user)
+        self._preMergeBufferUpdate(collection.buffer('polygons'), timestamp, user)
 
         # Finally actually merge the data
         if collection.mergeBuffers('Merge data', Settings.logUpdates(), timestamp):
@@ -524,9 +524,9 @@ class PlanModule(QObject):
     def itemExtent(self, item):
         requestKey = self.plugin.data.nodesItem(item)
         request = requestKey.featureRequest()
-        points = self._requestAsLayer(request, self.plugin.plan.pointsLayer, 'points')
-        lines = self._requestAsLayer(request, self.plugin.plan.linesLayer, 'lines')
-        polygons = self._requestAsLayer(request, self.plugin.plan.polygonsLayer, 'polygons')
+        points = self._requestAsLayer(request, self.plugin.plan.layer('points'), 'points')
+        lines = self._requestAsLayer(request, self.plugin.plan.layer('lines'), 'lines')
+        polygons = self._requestAsLayer(request, self.plugin.plan.layer('polygons'), 'polygons')
         extent = None
         extent = self._combineExtentWith(extent, polygons)
         extent = self._combineExtentWith(extent, lines)
@@ -553,7 +553,7 @@ class PlanModule(QObject):
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
         request = self._classItemsRequest(siteCode, 'sec')
-        features = layers.getAllFeaturesRequest(request, self.plugin.plan.linesLayer)
+        features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('lines'))
         lst = []
         for feature in features:
             lst.append(Feature(feature))
@@ -563,7 +563,7 @@ class PlanModule(QObject):
     def _sectionLineGeometry(self, item):
         if item and item.isValid():
             request = self._categoryRequest(item, 'sln')
-            features = layers.getAllFeaturesRequest(request, self.plugin.plan.linesLayer)
+            features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('lines'))
             for feature in features:
                 return QgsGeometry(feature.geometry())
         return QgsGeometry()
@@ -575,23 +575,23 @@ class PlanModule(QObject):
             pass
 
     def _metadataFromBuffers(self, item):
-        feature = self._getFeature(self.plugin.plan.polygonsBuffer, item, 'sch')
+        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item, 'sch')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.polygonsBuffer, item, 'scs')
+        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item, 'scs')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.polygonsBuffer, item)
+        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.linesBuffer, item)
+        feature = self._getFeature(self.plugin.plan.buffer('lines'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.pointsBuffer, item)
+        feature = self._getFeature(self.plugin.plan.buffer('points'), item)
         if feature:
             self.metadata.fromFeature(feature)
 
@@ -721,7 +721,7 @@ class PlanModule(QObject):
 
     def _getAllSchematicFeatures(self):
         req = self._featureRequest(self._categoryClause('sch'))
-        return layers.getAllFeaturesRequest(req, self.plugin.plan.polygonsLayer)
+        return layers.getAllFeaturesRequest(req, self.plugin.plan.layer('polygons'))
 
     def _editSchematicContext(self):
         self._editSchematic = True
@@ -761,7 +761,7 @@ class PlanModule(QObject):
     def _featureStatus(self, item, copyMetadata=False):
         itemRequest = item.featureRequest()
         try:
-            feature = self.plugin.plan.linesLayer.getFeatures(itemRequest).next()
+            feature = self.plugin.plan.layer('lines').getFeatures(itemRequest).next()
             if copyMetadata:
                 self._copyFeatureMetadata(feature)
         except StopIteration:
@@ -771,7 +771,7 @@ class PlanModule(QObject):
     def _schematicStatus(self, item):
         schRequest = self._categoryRequest(item, 'sch')
         try:
-            self.plugin.plan.polygonsLayer.getFeatures(schRequest).next()
+            self.plugin.plan.layer('polygons').getFeatures(schRequest).next()
         except StopIteration:
             return SearchStatus.NotFound
         return SearchStatus.Found
@@ -792,7 +792,7 @@ class PlanModule(QObject):
             polyRequest = self._notCategoryRequest(context, 'sch')
             haveFeature = SearchStatus.Found
             try:
-                self.plugin.plan.polygonsLayer.getFeatures(polyRequest).next()
+                self.plugin.plan.layer('polygons').getFeatures(polyRequest).next()
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
@@ -801,7 +801,7 @@ class PlanModule(QObject):
         scsRequest = self._categoryRequest(context, 'scs')
         haveSectionSchematic = SearchStatus.Found
         try:
-            self.plugin.plan.polygonsLayer.getFeatures(scsRequest).next()
+            self.plugin.plan.layer('polygons').getFeatures(scsRequest).next()
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 
@@ -846,7 +846,7 @@ class PlanModule(QObject):
     def _copySourceSchematic(self):
         self.metadata.validate()
         request = self._categoryRequest(self.dock.sourceItem(), 'sch')
-        features = layers.getAllFeaturesRequest(request, self.plugin.plan.polygonsLayer)
+        features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('polygons'))
         for feature in features:
             feature.setAttribute('site', self.metadata.siteCode())
             feature.setAttribute('class', 'context')
@@ -860,16 +860,16 @@ class PlanModule(QObject):
             feature.setAttribute('comment', self.metadata.comment())
             feature.setAttribute('created', self.metadata.editor())
             feature.setAttribute('creator', None)
-            self.plugin.plan.polygonsBuffer.addFeature(feature)
+            self.plugin.plan.buffer('polygons').addFeature(feature)
 
     def _editSourceSchematic(self):
         self._clearSchematicFilters()
         self._copySourceSchematic()
         self._editSchematic = True
         self.dock.widget.setCurrentIndex(0)
-        self.plugin.iface.setActiveLayer(self.plugin.plan.polygonsBuffer)
+        self.plugin.iface.setActiveLayer(self.plugin.plan.buffer('polygons'))
         self.plugin.iface.actionZoomToLayer().trigger()
-        self.plugin.plan.polygonsBuffer.selectAll()
+        self.plugin.plan.buffer('polygons').selectAll()
         self.plugin.iface.actionNodeTool().trigger()
 
     def _cloneSourceSchematic(self):
@@ -879,18 +879,18 @@ class PlanModule(QObject):
 
     def _showSchematicReport(self):
         features = set()
-        for feature in self.plugin.plan.pointsLayer.getFeatures():
+        for feature in self.plugin.plan.layer('points').getFeatures():
             features.add(Item(feature))
-        for feature in self.plugin.plan.linesLayer.getFeatures():
+        for feature in self.plugin.plan.layer('lines').getFeatures():
             features.add(Item(feature))
-        for feature in self.plugin.plan.polygonsLayer.getFeatures():
+        for feature in self.plugin.plan.layer('polygons').getFeatures():
             features.add(Item(feature))
         schRequest = self._featureRequest(self._categoryClause('sch'))
         scsRequest = self._featureRequest(self._categoryClause('scs'))
         schematics = set()
-        for feature in self.plugin.plan.polygonsLayer.getFeatures(schRequest):
+        for feature in self.plugin.plan.layer('polygons').getFeatures(schRequest):
             schematics.add(Item(feature))
-        for feature in self.plugin.plan.polygonsLayer.getFeatures(scsRequest):
+        for feature in self.plugin.plan.layer('polygons').getFeatures(scsRequest):
             schematics.add(Item(feature))
         missing = []
         contexts = self.plugin.data.items['context']

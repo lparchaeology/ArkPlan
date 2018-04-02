@@ -61,7 +61,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         mapPoint = self.toMapCoordinates(e.pos())
         self._vertexMarker.setCenter(mapPoint)
-        layers = [self._plugin.plan.pointsLayer, self._plugin.plan.linesLayer, self._plugin.plan.polygonsLayer]
+        layers = [self._plugin.plan.layer('points'), self._plugin.plan.layer('lines'), self._plugin.plan.layer('polygons')]
         results = self.identify(e.x(), e.y(), layers, QgsMapToolIdentify.TopDownAll)
         if (len(results) < 1):
             return
@@ -128,12 +128,12 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         if not isinstance(item, IdentifyItemAction):
             return
         request = item.item.featureRequest()
-        for feature in self._plugin.plan.polygonsLayer.getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.polygonsLayer)
-        for feature in self._plugin.plan.linesLayer.getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.linesLayer)
-        for feature in self._plugin.plan.pointsLayer.getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.pointsLayer)
+        for feature in self._plugin.plan.layer('polygons').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('polygons'))
+        for feature in self._plugin.plan.layer('lines').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('lines'))
+        for feature in self._plugin.plan.layer('points').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('points'))
 
     def _addHighlight(self, canvas, geometry, layer):
         hl = QgsHighlight(canvas, geometry, layer)

@@ -40,19 +40,18 @@ from .update_layer_dialog import UpdateLayerDialog
 
 class GridModule(QObject):
 
-    plugin = None  # Plugin()
-
-    # Internal variables
-    mapTool = None  # MapToolEmitPoint()
-    initialised = False
-    gridWizard = None  # QWizard
-    _vertexMarker = None  # QgsVertexMarker
-    mapTransformer = None  # LinearTransformer()
-    localTransformer = None  # LinearTransformer()
-
     def __init__(self, plugin):
         super(GridModule, self).__init__(plugin)
-        self.plugin = plugin
+
+        self.plugin = plugin  # Plugin()
+
+        # Internal variables
+        self.mapTool = None  # MapToolEmitPoint()
+        self.initialised = False
+        self.gridWizard = None  # QWizard
+        self._vertexMarker = None  # QgsVertexMarker
+        self.mapTransformer = None  # LinearTransformer()
+        self.localTransformer = None  # LinearTransformer()
 
     # Standard Dock methods
 

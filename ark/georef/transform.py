@@ -25,8 +25,9 @@
 
 class Transform():
 
-    crs = 'EPSG:27700'
-    _points = {}
+    def __init__(self):
+        self.crs = 'EPSG:27700'
+        self._points = {}
 
     def points(self):
         return self._points

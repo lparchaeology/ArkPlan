@@ -43,29 +43,24 @@ class DataModule(QObject):
 
     dataLoaded = pyqtSignal()
 
-    plugin = None  # Plugin()
-
-    # Internal variables
-    dock = None  # DataDock()
-
-    _classDataModels = {}  # {classCode: ItemModel()}
-    _classDataProxyModels = {}  # {classCode: QSortFilterProxyModel()}
-    _linkModel = ParentChildModel()
-
-    _ark = None
-    _indexLoaded = False
-    _dataMode = ''
-    _prevItem = Item()
-
-    _mapAction = MapAction.MoveMap
-    _filterAction = FilterAction.ExclusiveHighlightFilter
-    _drawingAction = DrawingAction.NoDrawingAction
-
-    items = {}  # {classCode: [Item]}
-
     def __init__(self, plugin):
         super(DataModule, self).__init__(plugin)
-        self.plugin = plugin
+
+        self.plugin = plugin  # Plugin()
+        self.items = {}  # {classCode: [Item]}
+
+        # Internal variables
+        self.dock = None  # DataDock()
+        self._classDataModels = {}  # {classCode: ItemModel()}
+        self._classDataProxyModels = {}  # {classCode: QSortFilterProxyModel()}
+        self._linkModel = ParentChildModel()
+        self._ark = None
+        self._indexLoaded = False
+        self._dataMode = ''
+        self._prevItem = Item()
+        self._mapAction = MapAction.MoveMap
+        self._filterAction = FilterAction.ExclusiveHighlightFilter
+        self._drawingAction = DrawingAction.NoDrawingAction
 
     # Standard Dock methods
 

@@ -33,15 +33,16 @@ from .filter_type import FilterType
 
 class FilterSet():
 
-    key = ''
-    name = ''
-    source = ''  # qgis, ark
-    status = ''  # created/loaded/edited/?
-    expression = ''
-    selection = ''
-    _clauses = []  # [Item()]
-    _group = ''
-    _plugin = None  # Plugin()
+    def __init__(self):
+        self.key = ''
+        self.name = ''
+        self.source = ''  # qgis, ark
+        self.status = ''  # created/loaded/edited/?
+        self.expression = ''
+        self.selection = ''
+        self._clauses = []  # [Item()]
+        self._group = ''
+        self._plugin = None  # Plugin()
 
     def __str__(self):
         return ('FilterSet('

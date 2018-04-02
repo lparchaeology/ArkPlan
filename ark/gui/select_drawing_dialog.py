@@ -34,12 +34,12 @@ from .ui.select_drawing_dialog_base import Ui_SelectDrawingDialog
 
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
 
-    _dir = None  # QDir
-    _fileList = []
-
     def __init__(self, drawingType, siteCode='', georef=False, parent=None):
         super(SelectDrawingDialog, self).__init__(parent)
         self.setupUi(self)
+
+        self._dir = None  # QDir
+        self._fileList = []
         self._georef = georef
 
         keys = sorted(Config.classCodes.keys())

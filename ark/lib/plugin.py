@@ -46,23 +46,6 @@ class Plugin(QObject):
     VectorGroup = 5
     WebGroup = 6
 
-    # Public variables
-    iface = None  # QgsInteface()
-    pluginAction = None  # QAction()
-    pluginName = ''
-    pluginScope = ''
-    pluginPath = ''
-    pluginIconPath = ''
-    displayName = ''
-
-    # Private variables
-    _actions = []
-    _checkable = False
-    _menuGroup = 0  # MenuType
-    _menu = None  # QMenu()
-    _toolbarGroup = 0  # MenuType
-    _toolbar = None  # QToolBar()
-
     def __init__(
         self,
         iface,
@@ -77,14 +60,23 @@ class Plugin(QObject):
     ):
         """Constructor."""
         super(Plugin, self).__init__(parent)
-        self.iface = iface
+
+        # Public variables
+        self.iface = iface  # QgsInteface()
+        self.pluginAction = None  # QAction()
         self.pluginName = pluginName
         self.pluginScope = pluginScope
         self.pluginPath = pluginPath
         self.pluginIconPath = pluginIconPath
-        self._menuGroup = menuGroup
-        self._toolbarGroup = toolbarGroup
+        self.displayName = ''
+
+        # Private variables
+        self._actions = []
         self._checkable = checkable
+        self._menuGroup = menuGroup  # MenuType
+        self._menu = None  # QMenu()
+        self._toolbarGroup = toolbarGroup  # MenuType
+        self._toolbar = None  # QToolBar()
 
         # initialize translation
         locale = QSettings().value('locale/userLocale')[0:2]

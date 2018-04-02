@@ -40,20 +40,19 @@ class FilterModule(QObject):
 
     filterSetCleared = pyqtSignal()
 
-    plugin = None  # Plugin()
-
-    # Internal variables
-    dock = None  # FilterDock()
-    _initialised = False
-    _useGroups = False
-    _filterSetGroupIndex = -1
-    _filterSets = {}  # {str: FilterSet()}
-    _arkFilterSets = {}  # {str: FilterSet()}
-    _schematicFilterSet = FilterSet()  # FilterSet()
-
     def __init__(self, plugin):
         super(FilterModule, self).__init__(plugin)
-        self.plugin = plugin
+
+        self.plugin = plugin  # Plugin()
+
+        # Internal variables
+        self.dock = None  # FilterDock()
+        self._initialised = False
+        self._useGroups = False
+        self._filterSetGroupIndex = -1
+        self._filterSets = {}  # {str: FilterSet()}
+        self._arkFilterSets = {}  # {str: FilterSet()}
+        self._schematicFilterSet = FilterSet()  # FilterSet()
 
     # Standard Dock methods
 

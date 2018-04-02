@@ -32,11 +32,13 @@ from .item import Item
 
 
 class Source():
-    _sourceCode = ''
-    _item = Item()
-    _filename = ''
 
     def __init__(self, sourceCode=None, item=None, filename=None):
+
+        self._sourceCode = ''
+        self._item = Item()
+        self._filename = ''
+
         if isinstance(sourceCode, QgsFeature):
             self.fromFeature(sourceCode)
         else:

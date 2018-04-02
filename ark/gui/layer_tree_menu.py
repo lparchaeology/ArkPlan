@@ -32,10 +32,6 @@ from ArkSpatial.ark.lib import Application
 
 class LayerTreeMenu(QgsLayerTreeViewMenuProvider):
 
-    _iface = None
-    _view = None
-    _plugin = None
-
     def __init__(self, plugin, view):
         QgsLayerTreeViewMenuProvider.__init__(self)
         self._plugin = plugin

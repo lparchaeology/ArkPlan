@@ -36,7 +36,8 @@ from ArkSpatial.ark.pyARK import Ark
 
 class GlobalPage(QWizardPage):
 
-    crs = None
+    def __init__(self):
+        self.crs = None
 
     def initializePage(self):
         self.crs = Application.projectDefaultCrs()
@@ -54,8 +55,9 @@ class GlobalPage(QWizardPage):
 
 class ProjectPage(QWizardPage):
 
-    ark = None
-    crs = None
+    def __init__(self):
+        self.ark = None
+        self.crs = None
 
     def initializePage(self):
         self.registerField("projectName*", self.wizard().projectNameEdit)

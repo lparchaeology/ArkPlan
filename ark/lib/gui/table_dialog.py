@@ -31,13 +31,13 @@ from .ui.table_dialog_base import Ui_TableDialog
 
 class TableDialog(QDialog, Ui_TableDialog):
 
-    _fields = []
-    _nullRecord = {}
-    _model = None  # TableModel()
-
     def __init__(self, title, text, fields, nullRecord, parent=None):
         super(TableDialog, self).__init__(parent)
         self.setupUi(self)
+
+        self._fields = []
+        self._nullRecord = {}
+        self._model = None  # TableModel()
 
         self.setWindowTitle(title)
         self.label.setText(text)

@@ -40,12 +40,10 @@ class GridWizard(QWizard, Ui_GridWizard):
     PointOnXAxis = 1
     PointOnYAxis = 2
 
-    _iface = None  # QgisInterface()
-    _mapTool = None  # MapToolEmitPoint
-
     def __init__(self, iface, plugin, parent=None):
         super(GridWizard, self).__init__(parent)
-        self._iface = iface
+        self._iface = iface  # QgisInterface()
+        self._mapTool = None  # MapToolEmitPoint
 
         self.setupUi(self)
         self.gridFolderEdit.setText(plugin.grid.settings.collectionPath)

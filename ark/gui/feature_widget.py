@@ -38,25 +38,25 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
     featureChanged = pyqtSignal()
     autoToolSelected = pyqtSignal()
 
-    _item = Item()
-    _source = Source()
-    _audit = Audit()
-    _actions = {}
-    _mapTools = {}
-    _currentMapTool = None
-    _pointsLayer = None
-    _linesLayer = None
-    _polygonsLayer = None
-    _iface = None
-    _definitiveCategories = set()
-    _colMax = 6
-    _pointTool = 0
-    _lineTool = 0
-    _polygonTool = 0
-
     def __init__(self, parent=None):
         super(FeatureWidget, self).__init__(parent)
         self.setupUi(self)
+
+        self._item = Item()
+        self._source = Source()
+        self._audit = Audit()
+        self._actions = {}
+        self._mapTools = {}
+        self._currentMapTool = None
+        self._pointsLayer = None
+        self._linesLayer = None
+        self._polygonsLayer = None
+        self._iface = None
+        self._definitiveCategories = set()
+        self._colMax = 6
+        self._pointTool = 0
+        self._lineTool = 0
+        self._polygonTool = 0
 
     def initGui(self, iface, collection):
         self._iface = iface

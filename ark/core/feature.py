@@ -33,14 +33,16 @@ from .source import Source
 
 
 class Feature():
-    _category = ''
-    _label = ''
-    _comment = ''
-    _item = Item()
-    _source = Source()
-    _audit = Audit()
 
     def __init__(self, item=None, category=None, label=None, source=None, comment=None, audit=None):
+
+        self._category = ''
+        self._label = ''
+        self._comment = ''
+        self._item = Item()
+        self._source = Source()
+        self._audit = Audit()
+
         if isinstance(item, QgsFeature):
             self.fromFeature(item)
         else:

@@ -37,14 +37,12 @@ from ArkSpatial.ark.pyARK import Ark
 
 class ProjectModule(QObject):
 
-    plugin = None  # Plugin()
-
-    _ark = None
-    _dialog = None
-
     def __init__(self, plugin):
         super(ProjectModule, self).__init__(plugin)
-        self.plugin = plugin
+        self.plugin = plugin  # Plugin()
+
+        self._ark = None
+        self._dialog = None
 
     # Create the gui when the plugin is first created
     def initGui(self):

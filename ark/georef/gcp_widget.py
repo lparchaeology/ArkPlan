@@ -33,17 +33,16 @@ class GcpWidget(QWidget, Ui_GcpWidget):
 
     rawPointChanged = pyqtSignal(QPointF)
 
-    # Internal variables
-    _gcp = None
-
-    _gridEditable = False
-    _mapEditable = False
-    _rawEditable = True
-
-    _gcpItem = None  # QGraphicsItem
-
     def __init__(self, parent=None):
         super(GcpWidget, self).__init__(parent)
+
+        # Internal variables
+        self._gcp = None
+        self._gridEditable = False
+        self._mapEditable = False
+        self._rawEditable = True
+        self._gcpItem = None  # QGraphicsItem
+
         self.setupUi(self)
         self._gcp = GroundControlPoint()
 

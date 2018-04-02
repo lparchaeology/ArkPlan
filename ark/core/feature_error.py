@@ -29,13 +29,14 @@ from ArkSpatial.ark.core import Feature
 
 class FeatureError:
 
-    layer = ''
-    row = -1
-    fid = -1
-    feature = Feature()
-    field = ''
-    message = ''
-    ignore = False
+    def __init__(self, fileInfo=None):
+        self.layer = ''
+        self.row = -1
+        self.fid = -1
+        self.feature = Feature()
+        self.field = ''
+        self.message = ''
+        self.ignore = False
 
     def toDict(self):
         d = {}

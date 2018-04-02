@@ -37,10 +37,10 @@ class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
 
     snappingToleranceChanged = pyqtSignal(float)
 
-    _iface = None
-
     def __init__(self, parent=None):
         super(ProjectSnappingToleranceAction, self).__init__(parent)
+
+        self._iface = None
 
         # Make sure we catch changes in the main snapping dialog
         QgsProject.instance().snapSettingsChanged.connect(self._refresh)

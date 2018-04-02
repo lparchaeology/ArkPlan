@@ -27,10 +27,6 @@ from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 class TableModel(QAbstractTableModel):
 
-    _table = []
-    _fields = []
-    _nullRecord = {}
-
     def __init__(self, fields=[], nullRecord={}, parent=None):
         super(QAbstractTableModel, self).__init__(parent)
         self._fields = fields

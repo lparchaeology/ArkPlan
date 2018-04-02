@@ -31,11 +31,9 @@ from ArkSpatial.ark.lib.map import MapToolAddFeature
 class MapToolSectionSchematic(MapToolAddFeature):
     # Tool to take a line segment and 'snap' it to a section line then save as a buffer polygon
 
-    _sectionGeometry = None  # QgsGeometry
-
     def __init__(self, iface, sectionGeometry,  polygonLayer, toolName=''):
         super(MapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
-        self._sectionGeometry = sectionGeometry
+        self._sectionGeometry = sectionGeometry  # QgsGeometry
 
     def setSectionGeometry(self, sectionGeometry):
         self._sectionGeometry = QgsGeometry(sectionGeometry)

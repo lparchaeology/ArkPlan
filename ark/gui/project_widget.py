@@ -33,11 +33,10 @@ from .ui.project_widget_base import Ui_ProjectWidget
 
 class ProjectWidget(QWidget, Ui_ProjectWidget):
 
-    _ark = None
-
     def __init__(self, parent=None):
         super(ProjectWidget, self).__init__(parent)
         self.setupUi(self)
+        self._ark = None
         if Settings.useProjectServer():
             self.projectNameEdit.setEnabled(False)
             self.siteCodeEdit.setEnabled(False)

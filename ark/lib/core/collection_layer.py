@@ -26,7 +26,7 @@ import os
 
 from PyQt4.QtCore import QFile, QVariant, QFileInfo
 
-from qgis.core import NULL, QGis, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
+from qgis.core import NULL, QGis, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer, QgsEditFormConfig
 
 from . import layers
 from .. import utils
@@ -126,7 +126,7 @@ class CollectionLayer:
             self._setDefaultSnapping(layer)
             layers.loadStyle(layer, fromLayer=self.layer)
             layer.startEditing()
-            layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+            layer.editFormConfig().setSuppress(QgsEditFormConfig.SuppressOn)
             self.bufferLayer = layer
             self.bufferLayerId = layer.id()
         else:
@@ -153,7 +153,7 @@ class CollectionLayer:
                                            self._settings.crs,
                                            fields)
         if layer and layer.isValid():
-            layer.editFormConfig().setSuppress()
+            layer.editFormConfig().setSuppress(QgsEditFormConfig.SuppressOn)
             self.logLayer = layer
             self.logLayerId = layer.id()
         else:

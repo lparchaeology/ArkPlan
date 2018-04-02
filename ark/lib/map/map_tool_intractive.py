@@ -38,25 +38,20 @@ class MapToolInteractive(QgsMapTool):
 
     """Tool to interact with map, including panning, zooming, and snapping"""
 
-    _active = False
-
-    _dragging = False
-    _panningEnabled = False
-
-    _zoomingEnabled = False
-    _zoomRubberBand = None  # QgsRubberBand()
-    _zoomRect = None  # QRect()
-
-    _snappingEnabled = False
-    _snapper = None  # QgsMapCanvasSnapper()
-    _snappingMarker = None  # QgsVertexMarker()
-
-    _showSnappableVertices = False
-    _snappableVertices = []  # [QgsPointV2()]
-    _snappableMarkers = []  # [QgsVertexMarker()]
-
     def __init__(self, canvas, snappingEnabled=False, showSnappableVertices=False):
         super(MapToolInteractive, self).__init__(canvas)
+        self._active = False
+        self._dragging = False
+        self._panningEnabled = False
+        self._zoomingEnabled = False
+        self._zoomRubberBand = None  # QgsRubberBand()
+        self._zoomRect = None  # QRect()
+        self._snappingEnabled = False
+        self._snapper = None  # QgsMapCanvasSnapper()
+        self._snappingMarker = None  # QgsVertexMarker()
+        self._showSnappableVertices = False
+        self._snappableVertices = []  # [QgsPointV2()]
+        self._snappableMarkers = []  # [QgsVertexMarker()]
         self._snappingEnabled = snappingEnabled
         self._showSnappableVertices = showSnappableVertices
 

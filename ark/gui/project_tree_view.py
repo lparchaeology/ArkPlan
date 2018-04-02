@@ -36,12 +36,11 @@ from ArkSpatial.ark.core import ProjectModel
 
 class ProjectTreeView(QTreeView):
 
-    mSettingsSection = 'browser'
-    mExpandPaths = []
-    _projectModel = None  # ProjectModel
-
     def __init__(self, parent):
         super(ProjectTreeView, self).__init__(parent)
+        self.mSettingsSection = 'browser'
+        self.mExpandPaths = []
+        self._projectModel = None  # ProjectModel
 
     def setProjectModel(self, model):
         self._projectModel = model

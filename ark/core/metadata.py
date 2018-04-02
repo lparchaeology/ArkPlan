@@ -32,13 +32,10 @@ class Metadata(QObject):
 
     metadataChanged = pyqtSignal()
 
-    feature = Feature()
-    _planWidget = None  # MetadataWidget
-
     def __init__(self, planWidget, parent=None):
         super(Metadata, self).__init__(parent)
-        self._planWidget = planWidget
         self.feature = planWidget.feature()
+        self._planWidget = planWidget  # MetadataWidget
         self._connectWidget(self._planWidget)
 
     def _connectWidget(self, widget):

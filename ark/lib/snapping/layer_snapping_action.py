@@ -43,11 +43,11 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
 
     snapSettingsChanged = pyqtSignal(str)
 
-    _toleranceAction = None  # LayerSnappingToleranceAction()
-    _avoidAction = None  # LayerSnappingAvoidIntersectionsAction()
-
     def __init__(self, snapLayer, parent=None):
         super(LayerSnappingAction, self).__init__(snapLayer, parent)
+
+        self._toleranceAction = None  # LayerSnappingToleranceAction()
+        self._avoidAction = None  # LayerSnappingAvoidIntersectionsAction()
 
         self._vertexAction = LayerSnappingTypeAction(snapLayer, Snapping.Vertex, self)
         self._segmentAction = LayerSnappingTypeAction(snapLayer, Snapping.Segment, self)

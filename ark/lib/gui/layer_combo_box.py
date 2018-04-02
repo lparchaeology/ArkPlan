@@ -32,12 +32,9 @@ class LayerComboBox(QComboBox):
 
     layerChanged = pyqtSignal()
 
-    _layerType = None
-    _geometryType = None
-    _iface = None
-
     def __init__(self, iface, layerType=None, geometryType=None, parent=None):
         super(LayerComboBox, self).__init__(parent)
+
         self._iface = iface
         self._layerType = layerType
         self._geometryType = geometryType

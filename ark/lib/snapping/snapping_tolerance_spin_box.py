@@ -35,11 +35,11 @@ class SnappingToleranceSpinBox(QDoubleSpinBox):
 
     snappingToleranceChanged = pyqtSignal(float)
 
-    _iface = None
-
     def __init__(self, parent=None):
 
         super(SnappingToleranceSpinBox, self).__init__(parent)
+
+        self._iface = None
 
         self.setDecimals(5)
         self.setRange(0.0, 100000000.0)

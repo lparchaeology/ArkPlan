@@ -28,11 +28,10 @@ from PyQt4.QtGui import QGraphicsView
 
 class FixedGraphicsView(QGraphicsView):
 
-    _rect = QRectF()
-
     def __init__(self, parent=None):
         super(FixedGraphicsView, self).__init__(parent)
         self.setCursor(Qt.ArrowCursor)
+        self._rect = QRectF()
 
     def setSceneView(self, scene, rect):
         self.setScene(scene)

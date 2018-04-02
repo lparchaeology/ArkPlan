@@ -34,12 +34,12 @@ class SnappingModeCombo(QComboBox):
 
     snappingModeChanged = pyqtSignal(int)
 
-    _snapMode = ''
-    _snapType = ''
-
     def __init__(self, parent=None):
 
         super(SnappingModeCombo, self).__init__(parent)
+
+        self._snapMode = ''
+        self._snapType = ''
 
         self.addItem('Off', Snapping.Off)
         self.addItem('Current Layer', Snapping.CurrentLayer)

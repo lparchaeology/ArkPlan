@@ -26,13 +26,14 @@ from ..application import Application
 class GeometryHighlightItem(QgsMapCanvasItem):
     # Code ported from QGIS QgsHighlight
 
-    _mapCanvas = None  # QgsMapCanvas
-    _geometry = None  # QgsGeometry()
-    _brush = QBrush()
-    _pen = QPen()
-
     def __init__(self, mapCanvas, geometry, layer):
         super(GeometryHighlightItem, self).__init__(mapCanvas)
+
+        self._mapCanvas = None  # QgsMapCanvas
+        self._geometry = None  # QgsGeometry()
+        self._brush = QBrush()
+        self._pen = QPen()
+
         self._mapCanvas = mapCanvas
         if not geometry or not isinstance(geometry, QgsGeometry) or geometry.isEmpty() or not geometry.isGeosValid():
             return

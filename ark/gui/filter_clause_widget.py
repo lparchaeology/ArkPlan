@@ -41,14 +41,14 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
     clauseRemoved = pyqtSignal(int)
     clauseChanged = pyqtSignal(int)
 
-    _filterIndex = -1
-    _filterType = FilterType.Include
-    _filterActionStatus = -1
-    _siteCode = ''
-
     def __init__(self, parent=None):
         super(FilterClauseWidget, self).__init__(parent)
         self.setupUi(self)
+
+        self._filterIndex = -1
+        self._filterType = FilterType.Include
+        self._filterActionStatus = -1
+        self._siteCode = ''
 
         self._addIcon = QIcon(':/plugins/ark/filter/addFilter.svg')
         self._addAction = QAction(self._addIcon, 'Add filter', self)

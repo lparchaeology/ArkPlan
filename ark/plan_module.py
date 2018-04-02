@@ -42,27 +42,21 @@ from ArkSpatial.ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog
 
 class PlanModule(QObject):
 
-    # Project settings
-    plugin = None  # Plugin()
-
-    dock = None  # PlanDock()
-
-    # Internal variables
-    initialised = False
-
-    metadata = None  # Metadata()
-
-    _editSchematic = False
-
-    _mapAction = MapAction.MoveMap
-    _filterAction = FilterAction.ExclusiveHighlightFilter
-    _drawingAction = DrawingAction.NoDrawingAction
-
-    _itemLogPath = ''
-
     def __init__(self, plugin):
         super(PlanModule, self).__init__(plugin)
-        self.plugin = plugin
+
+        # Project settings
+        self.plugin = plugin  # Plugin()
+        self.dock = None  # PlanDock()
+        self.initialised = False
+        self.metadata = None  # Metadata()
+
+        # Internal variables
+        self._editSchematic = False
+        self._mapAction = MapAction.MoveMap
+        self._filterAction = FilterAction.ExclusiveHighlightFilter
+        self._drawingAction = DrawingAction.NoDrawingAction
+        self._itemLogPath = ''
 
     # Create the gui when the plugin is first created
     def initGui(self):

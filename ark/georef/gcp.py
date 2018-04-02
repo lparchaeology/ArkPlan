@@ -31,12 +31,13 @@ from ArkSpatial.ark.lib import utils
 
 class GroundControlPoint():
 
-    _raw = QPointF()
-    _map = QgsPointV2()
-    _local = QPointF()
-    _enabled = True
-
     def __init__(self, raw=None, map=None, enabled=True):
+
+        self._raw = QPointF()
+        self._map = QgsPointV2()
+        self._local = QPointF()
+        self._enabled = True
+
         self.setRaw(raw)
         self.setMap(map)
         self.setEnabled(enabled)

@@ -35,21 +35,16 @@ from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext
 # TODO Clean up this and fix dialog problems
 class FeatureAction(QAction):
 
-    _layer = QgsVectorLayer()
-    _feature = QgsFeature()
-    _action = -1
-    _idx = -1
-    _featureSaved = False
-    _lastUsedValues = {}
-    _iface = None
-
     def __init__(self, name, feature, layer, action=-1, defaultAttr=-1, iface=None, parent=None):
         super(FeatureAction, self).__init__(name, parent)
+
         self._layer = layer
         self._feature = feature
         self._action = action
         self._idx = defaultAttr
         self._iface = iface
+        self._featureSaved = False
+        self._lastUsedValues = {}
 
     def execute(self):
         self._layer.actions().doAction(self._action, self._feature, self._idx)

@@ -47,11 +47,11 @@ def _attribute(feature, attribute):
 
 @total_ordering
 class Item():
-    _siteCode = ''
-    _classCode = ''
-    _itemId = ''
 
     def __init__(self, siteCode=None, classCode=None, itemId=None):
+        self._siteCode = ''
+        self._classCode = ''
+        self._itemId = ''
         self.setItem(siteCode, classCode, itemId)
 
     def __eq__(self, other):

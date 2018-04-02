@@ -31,21 +31,22 @@ from .ui.feature_error_dialog_base import Ui_FeatureErrorDialog
 
 class FeatureErrorDialog(QDialog, Ui_FeatureErrorDialog):
 
-    _errors = []
-    _model = None  # TableModel()
-    _ignore = False
-
     def __init__(self, parent=None):
         super(FeatureErrorDialog, self).__init__(parent)
         self.setupUi(self)
-        self.okButton.clicked.connect(self.accept)
-        self.ignoreButton.clicked.connect(self._ignore)
-        self.copyButton.clicked.connect(self._toText)
-        self.csvButton.clicked.connect(self._toCsv)
+
+        self._errors = []
+        self._model = None  # TableModel()
+        self._ignore = False
 
         fields = ['layer', 'row', 'field', 'message']
         nullRecord = {'layer': '', 'row': 0, 'field': '', 'message': ''}
         self._model = TableModel(fields, nullRecord)
+
+        self.okButton.clicked.connect(self.accept)
+        self.ignoreButton.clicked.connect(self._ignore)
+        self.copyButton.clicked.connect(self._toText)
+        self.csvButton.clicked.connect(self._toCsv)
 
     def loadErrors(self, errors):
         self._ignore = False

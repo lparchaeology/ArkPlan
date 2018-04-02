@@ -29,15 +29,14 @@ from ArkSpatial.ark.gui import TrenchDock
 
 class TrenchModule(QObject):
 
-    plugin = None  # Plugin()
-
-    # Internal variables
-    dock = None  # FilterDock()
-    _initialised = False
-
     def __init__(self, plugin):
         super(TrenchModule, self).__init__(plugin)
-        self.plugin = plugin
+
+        self.plugin = plugin  # Plugin()
+
+        # Internal variables
+        self.dock = None  # FilterDock()
+        self._initialised = False
 
     # Standard Dock methods
 

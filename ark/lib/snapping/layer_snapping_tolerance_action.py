@@ -38,11 +38,11 @@ class LayerSnappingToleranceAction(AbstractSnappingToleranceAction):
 
     snappingToleranceChanged = pyqtSignal(str, float)
 
-    _layerId = ''
-    _iface = None  # QgisInteface
-
     def __init__(self, snapLayer, parent=None):
         super(LayerSnappingToleranceAction, self).__init__(parent)
+
+        self._layerId = ''
+        self._iface = None  # QgisInteface
 
         if isinstance(snapLayer, QgisInterface):
             self._iface = snapLayer

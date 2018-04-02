@@ -58,16 +58,16 @@ class SchematicWidget(QWidget, Ui_SchematicWidget):
     resetSelected = pyqtSignal()
     schematicReportSelected = pyqtSignal()
 
-    _contextSearchStatus = SearchStatus.Unknown
-    _contextArkDataStatus = SearchStatus.Unknown
-    _contextFeatureDataStatus = SearchStatus.Unknown
-    _contextSchematicStatus = SearchStatus.Unknown
-    _sourceDataStatus = SearchStatus.Unknown
-    _sourceSchematicStatus = SearchStatus.Unknown
-
     def __init__(self, parent=None):
         super(SchematicWidget, self).__init__(parent)
         self.setupUi(self)
+
+        self._contextSearchStatus = SearchStatus.Unknown
+        self._contextArkDataStatus = SearchStatus.Unknown
+        self._contextFeatureDataStatus = SearchStatus.Unknown
+        self._contextSchematicStatus = SearchStatus.Unknown
+        self._sourceDataStatus = SearchStatus.Unknown
+        self._sourceSchematicStatus = SearchStatus.Unknown
 
     def initGui(self):
         self.loadArkTool.clicked.connect(self.loadArkData)

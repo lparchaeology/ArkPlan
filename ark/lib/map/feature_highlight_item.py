@@ -35,16 +35,17 @@ from ..application import Application
 class FeatureHighlightItem(QgsMapCanvasItem):
     # Code ported from QGIS QgsHighlight
 
-    _mapCanvas = None  # QgsMapCanvas
-    _brush = QBrush()
-    _pen = QPen()
-    _feature = None  # QgsFeature()
-    _layer = None  # QgsMapLayer()
-    _buffer = 0.0
-    _minWidth = 0.0
-
     def __init__(self, mapCanvas, feature, layer):
         super(FeatureHighlightItem, self).__init__(mapCanvas)
+
+        self._mapCanvas = None  # QgsMapCanvas
+        self._brush = QBrush()
+        self._pen = QPen()
+        self._feature = None  # QgsFeature()
+        self._layer = None  # QgsMapLayer()
+        self._buffer = 0.0
+        self._minWidth = 0.0
+
         self._mapCanvas = mapCanvas
         if (not layer
                 or not feature

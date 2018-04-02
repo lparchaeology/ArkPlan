@@ -27,8 +27,6 @@ from PyQt4.QtGui import QAction, QApplication
 
 class ClipboardAction(QAction):
 
-    _text = ''
-
     def __init__(self, label, text, parent=None):
         super(ClipboardAction, self).__init__(label + text, parent)
         self.triggered.connect(self._copy)

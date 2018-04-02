@@ -50,11 +50,10 @@ class Ark():
     NumberClass = 5
     FileClass = 6
 
-    url = u''
-    handle = u''
-    passwd = u''
-
     def __init__(self, url, handle=None, passwd=None):
+        self.url = u''
+        self.handle = u''
+        self.passwd = u''
         self.setUrl(url)
         self.setCredentials(handle, passwd)
 

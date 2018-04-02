@@ -30,11 +30,13 @@ from PyQt4.QtGui import QGraphicsView
 class GcpGraphicsView(QGraphicsView):
 
     pointSelected = pyqtSignal(QPointF)
-    buttonDown = False
-    panning = False
 
     def __init__(self, parent=None):
         super(GcpGraphicsView, self).__init__(parent)
+
+        self.buttonDown = False
+        self.panning = False
+
         self.setCursor(Qt.CrossCursor)
 
     def viewRect(self):

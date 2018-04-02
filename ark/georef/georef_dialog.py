@@ -38,14 +38,14 @@ from .ui.georef_dialog_base import Ui_GeorefDialogBase
 
 class GeorefDialog(QDialog, Ui_GeorefDialogBase):
 
-    # Internal variables
-    _closeOnDone = False
-    _types = {}
-    _georeferencer = None
-
     def __init__(self, types, parent=None):
         super(GeorefDialog, self).__init__(parent)
         self.setupUi(self)
+
+        # Internal variables
+        self._closeOnDone = False
+        self._types = {}
+        self._georeferencer = None
 
         self._types = types
         self._scene = QGraphicsScene(self)

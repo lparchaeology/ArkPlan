@@ -33,8 +33,6 @@ from ..snapping import LayerSnappingWidget
 
 class SnappingDock(DockWidget):
 
-    _iface = None  # QgisInterface()
-
     def __init__(self, iface, parent=None):
         super(SnappingDock, self).__init__(parent)
         self._iface = iface

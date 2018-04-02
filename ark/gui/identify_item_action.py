@@ -47,14 +47,12 @@ class IdentifyItemAction(QAction):
     addHighlightItemSelected = pyqtSignal(object)
     openDrawingsSelected = pyqtSignal(object)
 
-    item = Item()
-
-    _iface = None
-
     def __init__(self, item, plugin, parent=None):
         super(IdentifyItemAction, self).__init__(parent)
+
         self._iface = plugin.iface
         self.item = item
+
         self.setText(item.itemLabel())
         menu = QMenu()
         sourceSet = set()

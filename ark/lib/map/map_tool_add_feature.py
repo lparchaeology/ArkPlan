@@ -39,21 +39,22 @@ from .map_tool_capture import MapToolCapture
 
 class MapToolAddFeature(MapToolCapture):
 
-    _layer = None  # QgsVectorLayer()
-    _featureType = 0  # NoFeature
-    _defaultAttributes = {}  # key = fieldName, value = fieldValue
-
-    # TODO Eventually merge this with the input action?
-    _queryAttributeName = None
-    _queryType = None
-    _queryAttributeDefault = None
-    _queryTitle = ''
-    _queryLabel = ''
-    _queryDecimals = 0
-    _queryMin = 0
-    _queryMax = 0
-
     def __init__(self, iface, layer, featureType=0, toolName=''):
+
+        self._layer = None  # QgsVectorLayer()
+        self._featureType = 0  # NoFeature
+        self._defaultAttributes = {}  # key = fieldName, value = fieldValue
+
+        # TODO Eventually merge this with the input action?
+        self._queryAttributeName = None
+        self._queryType = None
+        self._queryAttributeDefault = None
+        self._queryTitle = ''
+        self._queryLabel = ''
+        self._queryDecimals = 0
+        self._queryMin = 0
+        self._queryMax = 0
+
         geometryType = QGis.UnknownGeometry
         if (layer is not None and layer.isValid()):
             geometryType = layer.geometryType()

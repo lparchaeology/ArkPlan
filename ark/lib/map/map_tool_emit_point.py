@@ -39,10 +39,9 @@ class MapToolEmitPoint(MapToolInteractive):
 
     canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
 
-    _vertexMarker = None  # QgsVertexMarker
-
     def __init__(self, canvas):
         super(MapToolEmitPoint, self).__init__(canvas)
+
         self._vertexMarker = QgsVertexMarker(canvas)
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_NONE)
 

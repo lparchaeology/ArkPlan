@@ -32,10 +32,11 @@ from .item import Item
 
 class FilterClause():
 
-    item = Item()
-    action = FilterType.Include
-    color = Application.highlightLineColor()
-    _viewIdx = -1
+    def __init__(self):
+        self.item = Item()
+        self.action = FilterType.Include
+        self.color = Application.highlightLineColor()
+        self._viewIdx = -1
 
     def __str__(self):
         return ('FilterClause('

@@ -57,37 +57,6 @@ class ArkSpatialPlugin(Plugin):
 
     """QGIS Plugin Implementation."""
 
-    # Tools
-    identifyMapTool = None  # MapToolIndentifyItems()
-
-    # Modules
-    data = None  # Data()
-    gridModule = None  # Grid()
-    planModule = None  # Plan()
-    filterModule = None  # FilterModule()
-    trenchModule = None  # TrenchModule()
-
-    projectGroupIndex = -1
-    drawingsGroupIndex = -1
-    drawingsGroupName = ''
-
-    geoLayer = None  # QgsRasterLayer()
-    plan = None  # Collection()
-    section = None  # Collection()
-    grid = None  # Collection()
-    site = None  # Collection()
-
-    # projectLayerView = None  # QgsLayerTreeView()
-    projectDock = None  # ProjectDock()
-
-    # Private settings
-    _initialised = False
-    _loaded = False
-    _layerSnappingAction = None  # LayerSnappingAction()
-    _snappingAction = None  # ProjectSnappingAction()
-    _interAction = None  # IntersectionSnappingAction()
-    _topoAction = None  # TopologicalEditingAction()
-
     def __init__(self, iface, pluginPath):
         super(ArkSpatialPlugin, self).__init__(
             iface=iface,
@@ -99,6 +68,38 @@ class ArkSpatialPlugin(Plugin):
             toolbarGroup=Plugin.PluginsGroup,
             checkable=True
         )
+
+        # Tools
+        self.identifyMapTool = None  # MapToolIndentifyItems()
+
+        # Modules
+        self.data = None  # Data()
+        self.gridModule = None  # Grid()
+        self.planModule = None  # Plan()
+        self.filterModule = None  # FilterModule()
+        self.trenchModule = None  # TrenchModule()
+
+        self.projectGroupIndex = -1
+        self.drawingsGroupIndex = -1
+        self.drawingsGroupName = ''
+
+        self.geoLayer = None  # QgsRasterLayer()
+        self.plan = None  # Collection()
+        self.section = None  # Collection()
+        self.grid = None  # Collection()
+        self.site = None  # Collection()
+
+        # projectLayerView = None  # QgsLayerTreeView()
+        self.projectDock = None  # ProjectDock()
+
+        # Private settings
+        self._initialised = False
+        self._loaded = False
+        self._layerSnappingAction = None  # LayerSnappingAction()
+        self._snappingAction = None  # ProjectSnappingAction()
+        self._interAction = None  # IntersectionSnappingAction()
+        self._topoAction = None  # TopologicalEditingAction()
+
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr(u'&ARKspatial'))
 

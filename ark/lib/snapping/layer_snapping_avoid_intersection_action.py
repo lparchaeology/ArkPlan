@@ -35,14 +35,14 @@ class LayerSnappingAvoidIntersectionsAction(QAction):
 
     """Action to toggle Layer Avoid Intersections."""
 
-    _layerId = ''
-    _iface = None  # QgisInteface
-
     avoidIntersectionsChanged = pyqtSignal(str, bool)
 
     def __init__(self, snapLayer, parent=None):
 
         super(LayerSnappingAvoidIntersectionsAction, self).__init__(parent)
+
+        self._layerId = ''
+        self._iface = None  # QgisInteface
 
         if isinstance(snapLayer, QgisInterface):
             self._iface = snapLayer

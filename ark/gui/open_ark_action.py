@@ -29,8 +29,6 @@ from PyQt4.QtGui import QAction, QApplication
 
 class OpenArkAction(QAction):
 
-    _url = ''
-
     def __init__(self, arkUrl, item, label, parent=None):
         super(OpenArkAction, self).__init__(label, parent)
         mod_cd = item.classCode() + '_cd'

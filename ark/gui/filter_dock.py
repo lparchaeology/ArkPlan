@@ -38,7 +38,6 @@ class FilterDock(ToolDockWidget):
 
     filterChanged = pyqtSignal()
     filterClauseAdded = pyqtSignal()
-
     buildFilterSelected = pyqtSignal()
     buildSelectionSelected = pyqtSignal()
     buildHighlightSelected = pyqtSignal()
@@ -53,18 +52,18 @@ class FilterDock(ToolDockWidget):
     deleteFilterSetSelected = pyqtSignal(str)
     exportFilterSetSelected = pyqtSignal(str, str)
 
-    newFilterClauseWidget = None  # FilterClauseWidget()
-
-    _filterIndex = 0
-    _filterClauses = {}
-    _items = {}
-    _schematicClauses = []
-    _schematicItems = []
-    _classCodes = {}
-    _history = []
-
     def __init__(self, parent=None):
         super(FilterDock, self).__init__(FilterSetWidget(), parent)
+
+        self.newFilterClauseWidget = None  # FilterClauseWidget()
+
+        self._filterIndex = 0
+        self._filterClauses = {}
+        self._items = {}
+        self._schematicClauses = []
+        self._schematicItems = []
+        self._classCodes = {}
+        self._history = []
 
         self.setWindowTitle(u'ARK Filter')
         self.setObjectName(u'FilterDock')

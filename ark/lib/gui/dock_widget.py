@@ -27,14 +27,13 @@ from PyQt4.QtGui import QDockWidget
 
 class DockWidget(QDockWidget):
 
-    _iface = None  # QgisInterface
-    _dockLocation = None  # Qt.DockWidgetArea
-    _action = None  # QAction
-
     def __init__(self, parent=None):
         super(DockWidget, self).__init__(parent)
         # HACK Work around a crash when dragging!
         self.setFeatures(QDockWidget.DockWidgetClosable)
+        self._iface = None  # QgisInterface
+        self._dockLocation = None  # Qt.DockWidgetArea
+        self._action = None  # QAction
 
     def initGui(self, iface, location, menuAction):
         self._iface = iface

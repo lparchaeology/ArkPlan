@@ -26,12 +26,12 @@ from ArkSpatial.ark.lib import utils
 
 
 class Audit():
-    _creator = ''
-    _created = ''
-    _modifier = ''
-    _modified = ''
 
     def __init__(self, creator=None, created=None, modifier=None, modified=None):
+        self._creator = ''
+        self._created = ''
+        self._modifier = ''
+        self._modified = ''
         self.setAudit(creator, created, modifier, modified)
 
     def __hash__(self):

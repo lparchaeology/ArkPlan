@@ -52,27 +52,26 @@ class Georeferencer(QObject):
     # Georeferencer.Step, Message
     error = pyqtSignal(int, str)
 
-    # Internal variables
-    _debug = True
-    _gdalDir = QDir()
-    _step = 0
-    _status = 0
-    _translate = QFileInfo()
-    _warp = QFileInfo()
-    _overview = QFileInfo()
-    _command = ''
-    _args = ''
-    _process = QProcess()
-
-    _gc = Transform()
-    _rawFile = QFileInfo()
-    _pointFile = QFileInfo()
-    _cropFile = QFileInfo()
-    _translateFile = QFileInfo()
-    _geoFile = QFileInfo()
-
     def __init__(self, parent=None):
         super(Georeferencer, self).__init__(parent)
+
+        # Internal variables
+        self._debug = True
+        self._gdalDir = QDir()
+        self._step = 0
+        self._status = 0
+        self._translate = QFileInfo()
+        self._warp = QFileInfo()
+        self._overview = QFileInfo()
+        self._command = ''
+        self._args = ''
+        self._process = QProcess()
+        self._gc = Transform()
+        self._rawFile = QFileInfo()
+        self._pointFile = QFileInfo()
+        self._cropFile = QFileInfo()
+        self._translateFile = QFileInfo()
+        self._geoFile = QFileInfo()
 
         self._cropFile.setFile(QDir.tempPath() + '.ark_georef_crop.png')
         self._translateFile = QFileInfo(QDir.tempPath() + '.ark_georef_translate.tiff')

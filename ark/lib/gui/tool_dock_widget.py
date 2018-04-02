@@ -30,14 +30,14 @@ from ..gui import DockWidget
 
 class ToolDockWidget(DockWidget):
 
-    toolbar = None  # QToolBar()
-    widget = None  # QWidget()
-
-    _spacer = None  # QSpacerItem()
-    _contents = None  # QWidget()
-
     def __init__(self, widget, parent=None):
         super(ToolDockWidget, self).__init__(parent)
+
+        self.toolbar = None  # QToolBar()
+        self.widget = None  # QWidget()
+
+        self._spacer = None  # QSpacerItem()
+        self._contents = None  # QWidget()
 
         self.toolbar = QToolBar(self)
         self.toolbar.setObjectName(u'toolbar')

@@ -41,21 +41,20 @@ class MapToolCapture(MapToolInteractive):
 
     canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
 
-    _iface = None
-    _useCurrentLayerGeometry = False
-    _geometryType = QGis.NoGeometry
-    _mapPointList = []  # QList<QgsPointV2>
-    _rubberBand = None  # QgsRubberBand()
-    _moveRubberBand = None  # QgsRubberBand()
-    _tip = ''
-    _validator = None  # QgsGeometryValidator()
-    _geometryErrors = []  # QList<QgsGeometry.Error>
-    _geometryErrorMarkers = []  # QList<QgsVertexMarker>
-
     def __init__(self, iface, geometryType=QGis.UnknownGeometry):
         super(MapToolCapture, self).__init__(iface.mapCanvas())
+
         self._iface = iface
+        self._useCurrentLayerGeometry = False
         self._geometryType = geometryType
+        self._mapPointList = []  # QList<QgsPointV2>
+        self._rubberBand = None  # QgsRubberBand()
+        self._moveRubberBand = None  # QgsRubberBand()
+        self._tip = ''
+        self._validator = None  # QgsGeometryValidator()
+        self._geometryErrors = []  # QList<QgsGeometry.Error>
+        self._geometryErrorMarkers = []  # QList<QgsVertexMarker>
+
         if (geometryType == QGis.UnknownGeometry):
             self._useCurrentLayerGeometry = True
         self.setCursor(CapturePointCursor)

@@ -32,11 +32,10 @@ class AbstractSnappingToleranceAction(QWidgetAction):
 
     snappingToleranceChanged = pyqtSignal(float)
 
-    _iface = None
-
     def __init__(self, parent=None):
         super(AbstractSnappingToleranceAction, self).__init__(parent)
 
+        self._iface = None
         self._toleranceSpin = QDoubleSpinBox(parent)
         self._toleranceSpin.setDecimals(5)
         self._toleranceSpin.setRange(0.0, 100000000.0)

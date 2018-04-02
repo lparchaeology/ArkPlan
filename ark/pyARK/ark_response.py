@@ -24,11 +24,13 @@
 
 
 class ArkResponse():
-    url = ''
-    response = None
-    data = ''
-    raw = ''
-    message = ''
-    error = True
-    code = -1
-    reason = ''
+
+    def __init__(self):
+        self.response = None
+        self.url = ''
+        self.data = ''
+        self.raw = ''
+        self.message = ''
+        self.error = True
+        self.code = -1
+        self.reason = ''

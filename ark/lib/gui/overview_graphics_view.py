@@ -28,12 +28,13 @@ from PyQt4.QtGui import QGraphicsView
 
 class OverviewGraphicsView(QGraphicsView):
 
-    _rect = QRectF()
-    buttonDown = False
-    panning = False
-
     def __init__(self, parent=None):
         super(OverviewGraphicsView, self).__init__(parent)
+
+        self.buttonDown = False
+        self.panning = False
+        self._rect = QRectF()
+
         self.setCursor(Qt.OpenHandCursor)
 
     def setSceneView(self, scene, rect):

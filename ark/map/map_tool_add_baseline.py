@@ -30,22 +30,20 @@ from ArkSpatial.ark.lib.map import MapToolAddFeature
 
 class MapToolAddBaseline(MapToolAddFeature):
 
-    _pointLayer = None  # QgsVectorLayer()
-    _pointAttributes = {}  # QMap<int, QList<QVariant> >
-    _idFieldName = ''
-
-    _pointQueryField = None  # QgsField
-    _pointQueryTitle = ''
-    _pointQueryLabel = ''
-    _pointDefaultValue = ''
-    _pointQueryMin = 0
-    _pointQueryMax = 0
-    _pointQueryDecimals = 0
-    _pointQueryValues = []
-
     def __init__(self, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
         super(MapToolAddBaseline, self).__init__(iface, lineLayer, toolName)
-        self._pointLayer = pointLayer
+
+        self._pointLayer = pointLayer  # QgsVectorLayer()
+        self._pointAttributes = {}  # QMap<int, QList<QVariant> >
+        self._idFieldName = ''
+        self._pointQueryField = None  # QgsField
+        self._pointQueryTitle = ''
+        self._pointQueryLabel = ''
+        self._pointDefaultValue = ''
+        self._pointQueryMin = 0
+        self._pointQueryMax = 0
+        self._pointQueryDecimals = 0
+        self._pointQueryValues = []
 
     def pointLayer(self):
         return self._pointLayer

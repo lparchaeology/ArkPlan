@@ -36,12 +36,13 @@ class ProjectModel(QAbstractItemModel):
     PathRole = Qt.UserRole
     CommentRole = Qt.UserRole + 1
 
-    _initialized = False
-    _rootItems = []  # QVector<QgsDataItem*>
-    _projectHome = None  # QgsDirectoryItem
-
     def __init__(self, initialize, parent=None):
         super(ProjectModel, self).__init__(parent)
+
+        self._initialized = False
+        self._rootItems = []  # QVector<QgsDataItem*>
+        self._projectHome = None  # QgsDirectoryItem
+
         if initialize:
             self.init()
 

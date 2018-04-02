@@ -36,20 +36,17 @@ from ArkSpatial.ark.gui import IdentifyItemAction
 
 class MapToolIndentifyItems(QgsMapToolIdentify):
 
-    _menu = None  # QMenu()
-    _actions = []
-    _highlights = []
-    _plugin = None
-    _vertexMarker = None  # QgsVertexMarker
-
     def __init__(self, plugin):
         super(MapToolIndentifyItems, self).__init__(plugin.mapCanvas())
         mToolName = self.tr('Identify feature')
-        self._vertexMarker = QgsVertexMarker(plugin.mapCanvas())
-        self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
-        self._plugin = plugin
+
         self._menu = QMenu(plugin.mapCanvas())
         self._menu.hovered.connect(self._highlight)
+        self._actions = []
+        self._highlights = []
+        self._plugin = plugin
+        self._vertexMarker = QgsVertexMarker(plugin.mapCanvas())
+        self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
 
     def deactivate(self):
         self._reset()

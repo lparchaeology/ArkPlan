@@ -27,16 +27,17 @@ import string
 
 class Drawing:
 
-    siteCode = ''
-    sourceClass = ''
-    name = ''
-    sourceId = None
-    easting = None
-    northing = None
-    suffix = ''
-    filename = ''
-
     def __init__(self, fileInfo=None):
+
+        self.siteCode = ''
+        self.sourceClass = ''
+        self.name = ''
+        self.sourceId = None
+        self.easting = None
+        self.northing = None
+        self.suffix = ''
+        self.filename = ''
+
         if fileInfo is not None:
             self.setFile(fileInfo)
 

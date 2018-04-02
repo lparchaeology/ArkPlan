@@ -368,6 +368,14 @@ class ArkSpatialPlugin(Plugin):
                 self.site = self._configureCollection('site')
                 self.site.loadCollection()
 
+                # Temp load of other collection, later do on demand
+                self.plan = self._configureCollection('plan')
+                self.plan.loadCollection()
+                self.section = self._configureCollection('section')
+                self.section.loadCollection()
+                self.grid = self._configureCollection('grid')
+                self.grid.loadCollection()
+
                 # self._configureDrawing('context')
                 # self._configureDrawing('plan')
                 # self._configureDrawing('section')
@@ -482,6 +490,7 @@ class ArkSpatialPlugin(Plugin):
         for layer in config['layers']:
             name = layer['name']
             layer['fields'] = config['fields']
+            layer['multi'] = config['multi']
             layer['crs'] = self.projectCrs()
             layer['path'] = layers.shapeFilePath(path, name)
             layer['stylePath'] = layers.styleFilePath(self.stylesPath(), name)
@@ -503,7 +512,6 @@ class ArkSpatialPlugin(Plugin):
                 layer['logName'] = ''
                 layer['logPath'] = ''
 
-        utils.debug(config)
         settings = CollectionSettings.fromArray(config)
         coll = Collection(self.iface, self.projectFolder(), settings)
         return coll

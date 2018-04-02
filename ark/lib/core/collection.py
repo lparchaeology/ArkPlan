@@ -24,30 +24,27 @@
 
 from qgis.core import QgsFeatureRequest
 
-from . import layers
+import layers
 from .. import utils
+
+from collection_layer import CollectionLayer
 
 
 class Collection:
 
-    projectPath = ''
-    settings = None  # CollectionSettings()
-
-    # Internal variables
-
-    _iface = None  # QgsInterface()
-    _collectionGroupIndex = -1
-    _bufferGroupIndex = -1
-    _layers = {}  # CollectionLayer()
-
-    filter = ''
-    selection = ''
-    highlight = ''
-
     def __init__(self, iface, projectPath, settings):
-        self._iface = iface
         self.projectPath = projectPath
-        self.settings = settings
+        self.settings = settings  # CollectionSettings()
+        self.filter = ''
+        self.selection = ''
+        self.highlight = ''
+
+        # Internal variables
+        self._iface = iface  # QgsInterface()
+        self._collectionGroupIndex = -1
+        self._bufferGroupIndex = -1
+        self._layers = {}  # CollectionLayer()
+
         # If the legend indexes change make sure we stay updated
         self._iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
@@ -74,20 +71,19 @@ class Collection:
 
     # Load the collection layers if not already loaded
     def loadCollection(self):
-        if self._layers.length == self.settings.layers.length:
+        if len(self._layers) == len(self.settings.layers):
             return True
 
-        for layerKey in self.settings.layers:
-            settings = self.settings.layers[layerKey]
-            layer = CollectionLayer(self._iface, self.projectPath, self.settings.layers[layerKey])
-            if layer and layer.initialise():
-                self._layers[layerKey] = layer
+        for settings in self.settings.layers:
+            layer = CollectionLayer(self._iface, self.projectPath, settings)
+            if layer != None and layer.initialise():
+                self._layers[settings.layer] = layer
 
         # Load the main layers
         self._collectionGroupIndex = layers.createLayerGroup(
             self._iface, self.settings.collectionGroupName, self.settings.parentGroupName)
-        for layerKey in self._layers:
-            self._layers[layerKey].moveLayer(self._collectionGroupIndex)
+        for layer in reversed(self.settings.layers):
+            self._layers[layer.layer].moveLayer(self._collectionGroupIndex)
 
         # Load the edit buffers if required
         if self.settings.bufferGroupName:
@@ -95,10 +91,10 @@ class Collection:
                 self._iface, self.settings.bufferGroupName, self.settings.collectionGroupName)
             layers.moveChildGroup(self.settings.collectionGroupName, self.settings.bufferGroupName, 0)
             self._bufferGroupIndex = layers.getGroupIndex(self._iface, self.settings.bufferGroupName)
-            for layerKey in self._layers:
-                self._layers[layerKey].moveBufferLayer(self._bufferGroupIndex)
+            for layer in reversed(self.settings.layers):
+                self._layers[layer.layer].moveBufferLayer(self._bufferGroupIndex)
 
-        return self._layers.length == self.settings.layers.length
+        return len(self._layers) == len(self.settings.layers)
 
     def isWritable(self):
         for layerKey in self._layers:

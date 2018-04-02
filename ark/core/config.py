@@ -283,7 +283,7 @@ class Config():
 
     collections = {
         'plan': {
-            'path': 'data/plan',
+            'path': 'plan',
             'groupName': 'Plan Data',
             'edit': True,
             'class': 'context',
@@ -314,12 +314,12 @@ class Config():
             ],
         },
         'section': {
-            'path': 'data/section',
+            'path': 'section',
             'groupName': 'Section Data',
             'edit': True,
             'class': 'section',
-            'buffer': False,
-            'bufferGroupName': '',
+            'buffer': True,
+            'bufferGroupName': 'Section Edit',
             'log': True,
             'multi': True,
             'fields': collectionFields,
@@ -345,12 +345,12 @@ class Config():
             ],
         },
         'site': {
-            'path': 'data/site',
+            'path': 'site',
             'groupName': 'Site Data',
             'edit': True,
             'class': 'site',
-            'buffer': False,
-            'bufferGroupName': '',
+            'buffer': True,
+            'bufferGroupName': 'Site Edit',
             'log': True,
             'multi': True,
             'fields': collectionFields,
@@ -376,7 +376,7 @@ class Config():
             ],
         },
         'grid': {
-            'path': 'data/grid',
+            'path': 'grid',
             'groupName': 'Grid Data',
             'edit': False,
             'class': '',

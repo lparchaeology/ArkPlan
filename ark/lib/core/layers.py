@@ -62,8 +62,8 @@ wkbMemoryType = {
 
 def geometryToWkbType(geometry, multi=True):
     if multi:
-        return geometryMultiType.get(geometry, QGis.Unknown)
-    return geometryType.get(geometry, QGis.Unknown)
+        return geometryMultiType.get(geometry, QGis.UnknownGeometry)
+    return geometryType.get(geometry, QGis.UnknownGeometry)
 
 
 def wkbToMemoryType(wkbType):
@@ -116,6 +116,8 @@ def loadShapefileLayer(filePath, layerName):
 def createShapefile(filePath, name, wkbType, crs, fields, styleURI=None, symbology=None):
     # WARNING This will overwrite existing files
     writer = QgsVectorFileWriter(filePath, 'System', fields, wkbType, crs)
+    if writer.hasError():
+        utils.debug(writer.errorMessage())
     del writer
     layer = QgsVectorLayer(filePath, name, 'ogr')
     loadStyle(layer, styleURI, symbology)

@@ -162,3 +162,7 @@ def debug(msg, group='Debug'):
         QgsMessageLog.logMessage(msg, group, QgsMessageLog.INFO)
     else:
         QgsMessageLog.logMessage(printable(msg), group, QgsMessageLog.INFO)
+
+
+def dump(msg, group='Debug'):
+    debug(msg, group)

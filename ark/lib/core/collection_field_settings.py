@@ -24,27 +24,24 @@
 
 from qgis.core import QgsField
 
-from ArkSpatial.ark.lib import utils
-
 from ..project import Project
 
 
 class CollectionFieldSettings:
 
-    attribute = ''
-    type = None  # QVariant.Type
-    length = None
-    decimals = None
-    min = None
-    max = None
-    default = None
-    label = ''
-    query = ''
+    def __init__(self):
+        self.attribute = ''
+        self.type = None  # QVariant.Type
+        self.length = None
+        self.decimals = None
+        self.min = None
+        self.max = None
+        self.default = None
+        self.label = ''
+        self.query = ''
 
     @staticmethod
     def fromArray(config):
-        utils.debug('CollectionFieldSettings')
-        utils.debug(config)
         settings = CollectionFieldSettings()
         settings.attribute = config['attribute']
         settings.type = config['type']

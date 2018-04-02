@@ -251,7 +251,7 @@ class Plugin(QObject):
     # Project utilities
 
     def projectCrs(self):
-        return self.iface.mapCanvas().mapRenderer().destinationCrs()
+        return self.iface.mapCanvas().mapSettings().destinationCrs()
 
     def projectFilePath():
         return Project.filePath()

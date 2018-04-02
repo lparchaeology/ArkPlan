@@ -22,8 +22,6 @@
  ***************************************************************************/
 """
 
-from ArkSpatial.ark.lib import utils
-
 from ..project import Project
 from collection_field_settings import CollectionFieldSettings
 from collection_layer_settings import CollectionLayerSettings
@@ -31,24 +29,20 @@ from collection_layer_settings import CollectionLayerSettings
 
 class CollectionSettings:
 
-    collection = ''
-    collectionPath = ''
-
-    parentGroupName = ''
-    collectionGroupName = ''
-    bufferGroupName = ''
-
-    buffer = False
-    log = False
-    multi = False
-
-    layers = []
-    crs = ''
+    def __init__(self):
+        self.collection = ''
+        self.collectionPath = ''
+        self.parentGroupName = ''
+        self.collectionGroupName = ''
+        self.bufferGroupName = ''
+        self.buffer = False
+        self.log = False
+        self.multi = False
+        self.layers = []
+        self.crs = ''
 
     @staticmethod
     def fromArray(config):
-        utils.debug('CollectionSettings')
-        utils.debug(config)
         settings = CollectionSettings()
         settings.collection = config['collection']
         settings.collectionPath = config['path']

@@ -24,9 +24,9 @@
 
 import os
 
-from PyQt4.QtCore import QFile, QVariant
+from PyQt4.QtCore import QFile, QVariant, QFileInfo
 
-from qgis.core import NULL, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
+from qgis.core import NULL, QGis, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer
 
 from . import layers
 from .. import utils
@@ -34,37 +34,30 @@ from .. import utils
 
 class CollectionLayer:
 
-    layer = None
-    layerId = ''
-
-    bufferLayer = None
-    bufferLayerId = ''
-
-    logLayer = None
-    logLayerId = ''
-
-    fields = QgsFields()
-
-    # Internal variables
-
-    _iface = None  # QgsInterface()
-    _projectPath = ''
-    _settings = None  # CollectionLayerSettings()
-
-    _highlights = []  # [QgsHighlight]
-
     def __init__(self, iface, projectPath, settings):
-        self._iface = iface
+        self.layer = None
+        self.layerId = ''
+        self.bufferLayer = None
+        self.bufferLayerId = ''
+        self.logLayer = None
+        self.logLayerId = ''
+        self.fields = QgsFields()
+
+        # Internal variables
+        self._iface = iface  # QgsInterface()
         self._projectPath = projectPath
-        self._settings = settings
-        for fieldKey in self._settings['fields']:
-            field = self._settings['fields'][fieldKey].toField()
+        self._settings = settings  # CollectionLayerSettings()
+        self._highlights = []  # [QgsHighlight]
+
+        for settings in self._settings.fields:
+            field = settings.toField()
             self.fields.append(field)
+
         # If the layers are removed we need to remove them too
         QgsMapLayerRegistry.instance().layersRemoved.connect(self._layersRemoved)
 
     def isValid(self):
-        self.layer != None and self.layer.isValid()
+        return self.layer != None and self.layer.isValid()
 
     def initialise(self):
         self.loadLayer()
@@ -82,24 +75,30 @@ class CollectionLayer:
         self._loadLayer()
 
         # Load the edit buffer if required
-        if self._settings.bufferLayer:
+        if self.layer and self._settings.bufferLayer:
             self._loadBufferLayer()
 
         # Load the log buffer if required
-        if self._settings.logLayer:
+        if self.layer and self._settings.logLayer:
             self._loadLogLayer()
 
     # Load the main layer, must alreay exist
     def _loadLayer(self):
         fullLayerPath = os.path.join(self._projectPath, self._settings.path)
-        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.name)
-        if layer is None:
+        filePath = QFileInfo(fullLayerPath)
+        layer = None
+        if filePath.exists():
+            layer = layers.loadShapefileLayer(fullLayerPath, self._settings.name)
+        else:
             wkbType = layers.geometryToWkbType(self._settings.geometry, self._settings.multi)
+            if not filePath.dir().exists():
+                os.makedirs(filePath.dir().absolutePath())
             layer = layers.createShapefile(fullLayerPath,
                                            self._settings.name,
                                            wkbType,
                                            self._settings.crs,
                                            self.fields)
+
         if layer and layer.isValid():
             layer = layers.addLayerToLegend(self._iface, layer)
             self._setDefaultSnapping(layer)
@@ -113,13 +112,19 @@ class CollectionLayer:
     # Load the buffer layer, create it if it doesn't alreay exist
     def _loadBufferLayer(self):
         fullLayerPath = os.path.join(self._projectPath, self._settings.bufferPath)
-        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.bufferName)
-        if layer is None:
+        filePath = QFileInfo(fullLayerPath)
+        layer = None
+        if filePath.exists():
+            layer = layers.loadShapefileLayer(fullLayerPath, self._settings.bufferName)
+        else:
+            if not filePath.dir().exists():
+                os.makedirs(filePath.dir().absolutePath())
             layer = layers.cloneAsShapefile(self.layer, fullLayerPath, self._settings.bufferName)
+
         if layer and layer.isValid():
             layer = layers.addLayerToLegend(self._iface, layer)
+            self._setDefaultSnapping(layer)
             layers.loadStyle(layer, fromLayer=self.layer)
-                self._setDefaultSnapping(layer)
             layer.startEditing()
             layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
             self.bufferLayer = layer
@@ -131,20 +136,24 @@ class CollectionLayer:
     # Load the log layer, create it if it doesn't alreay exist
     def _loadLogLayer(self):
         fullLayerPath = os.path.join(self._projectPath, self._settings.logPath)
-        layer = layers.loadShapefileLayer(fullLayerPath, self._settings.logName)
-        if layer is None:
-            fields = [
-                QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp'),
-                QgsField('event', QVariant.String, '', 6, 0, 'event')
-            ]
-            fields = fields + self.fields
+        filePath = QFileInfo(fullLayerPath)
+        layer = None
+        if filePath.exists():
+            layer = layers.loadShapefileLayer(fullLayerPath, self._settings.logName)
+        else:
+            if not filePath.dir().exists():
+                os.makedirs(filePath.dir().absolutePath())
+            fields = QgsFields()
+            fields.append(QgsField('timestamp', QVariant.String, '', 10, 0, 'timestamp'))
+            fields.append(QgsField('event', QVariant.String, '', 6, 0, 'event'))
+            fields.extend(self.fields)
             layer = layers.createShapefile(fullLayerPath,
                                            self._settings.logName,
                                            self.layer.wkbType(),
                                            self._settings.crs,
                                            fields)
         if layer and layer.isValid():
-            layer.setFeatureFormSuppress(QgsVectorLayer.SuppressOn)
+            layer.editFormConfig().setSuppress()
             self.logLayer = layer
             self.logLayerId = layer.id()
         else:

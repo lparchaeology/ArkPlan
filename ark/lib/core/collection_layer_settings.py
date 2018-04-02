@@ -24,8 +24,6 @@
 
 from qgis.core import QGis
 
-from ArkSpatial.ark.lib import utils
-
 from ..project import Project
 
 from collection_field_settings import CollectionFieldSettings
@@ -33,32 +31,30 @@ from collection_field_settings import CollectionFieldSettings
 
 class CollectionLayerSettings:
 
-    layer = ''
-    crs = ''
-    geometry = QGis.NoGeometry
-    label = ''
-    name = ''
-    fields = []
-
-    path = ''
-    stylePath = ''
-
-    bufferLayer = False
-    bufferName = ''
-    bufferPath = ''
-
-    logLayer = False
-    logName = ''
-    logPath = ''
+    def __init__(self):
+        self.layer = ''
+        self.crs = ''
+        self.geometry = QGis.NoGeometry
+        self.multi = False
+        self.label = ''
+        self.name = ''
+        self.fields = []
+        self.path = ''
+        self.stylePath = ''
+        self.bufferLayer = False
+        self.bufferName = ''
+        self.bufferPath = ''
+        self.logLayer = False
+        self.logName = ''
+        self.logPath = ''
 
     @staticmethod
     def fromArray(config):
-        utils.debug('CollectionLayerSettings')
-        utils.debug(config)
         settings = CollectionLayerSettings()
         settings.layer = config['layer']
         settings.crs = config['crs']
         settings.geometry = config['geometry']
+        settings.multi = config['multi']
         settings.label = config['label']
         settings.name = config['name']
         settings.path = config['path']

@@ -38,6 +38,8 @@ from ArkSpatial.ark.gui import ActionSettingsTool
 
 if QWK_AVAILABLE:
     from .data_widget import DataWidget
+else:
+    from .data_item_widget import DataItemWidget
 
 
 class DataDock(ToolDockWidget):
@@ -64,16 +66,13 @@ class DataDock(ToolDockWidget):
         if QWK_AVAILABLE:
             super(DataDock, self).__init__(DataWidget(), parent)
         else:
-            super(DataDock, self).__init__(QWidget(), parent)
+            super(DataDock, self).__init__(DataItemWidget(), parent)
 
         self.setWindowTitle(u'ARK Data')
         self.setObjectName(u'DataDock')
 
     def initGui(self, iface, location, menuAction):
         super(DataDock, self).initGui(iface, location, menuAction)
-
-        if not QWK_AVAILABLE:
-            return
 
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
@@ -142,8 +141,9 @@ class DataDock(ToolDockWidget):
         self.widget.classCodeCombo.currentIndexChanged.connect(self._itemChanged)
         self.widget.itemIdSpin.editingFinished.connect(self._itemChanged)
 
-        self.widget.itemDataView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
-        self.widget.itemDataView.linkClicked.connect(self._linkClicked)
+        if QWK_AVAILABLE:
+            self.widget.itemDataView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+            self.widget.itemDataView.linkClicked.connect(self._linkClicked)
 
     def initSiteCodes(self, siteCodes):
         self.widget.siteCodeCombo.clear()
@@ -189,7 +189,8 @@ class DataDock(ToolDockWidget):
         self._lastItemAction.setEnabled(enabled)
 
     def setItemUrl(self, url=''):
-        self.widget.itemDataView.load(QUrl(url))
+        if QWK_AVAILABLE:
+            self.widget.itemDataView.load(QUrl(url))
 
     def _itemChanged(self):
         self.itemChanged.emit()

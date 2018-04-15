@@ -245,11 +245,13 @@ def getLayerId(layerName):
 def addLayerToLegend(iface, layer, group=-1):
     if (layer is not None and layer.isValid()):
         ret = QgsMapLayerRegistry.instance().addMapLayer(layer)
+        if ret is not None:
+            layer = ret
         if group >= 0:
             iface.legendInterface().moveLayer(layer, group)
         iface.legendInterface().refreshLayerSymbology(layer)
-        iface.legendInterface().setLayerExpanded(ret, False)
-        return ret
+        iface.legendInterface().setLayerExpanded(layer, False)
+        return layer
     return layer
 
 
@@ -565,7 +567,7 @@ def applySelectionRequest(layer, request):
     if (layer is None or not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer):
         return
     fit = layer.getFeatures(request)
-    layer.setSelectedFeatures([f.id() for f in fit])
+    layer.selectByIds([f.id() for f in fit])
 
 
 def uniqueValues(layer, fieldName):

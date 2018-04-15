@@ -8,6 +8,8 @@ from .base_map_widget import BaseMapWidget
 from .data_dock import DataDock
 if QWK_AVAILABLE:
     from .data_widget import DataWidget
+else:
+    from .data_item_widget import DataItemWidget
 from .digitising_widget import DigitisingWidget
 from .feature_error_dialog import FeatureErrorDialog
 from .feature_widget import FeatureWidget

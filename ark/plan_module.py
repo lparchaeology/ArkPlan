@@ -100,7 +100,6 @@ class PlanModule(QObject):
 
     # Load the project settings when project is loaded
     def loadProject(self):
-        utils.debug('Plan loadProject')
         # Assume layers are loaded and filters cleared
         self.dock.loadProject(self.plugin)
 
@@ -119,7 +118,6 @@ class PlanModule(QObject):
 
         self.plugin.data.dataLoaded.connect(self.dock.activateArkData)
 
-        utils.debug('Plan set initialised')
         self.initialised = True
 
     # Save the project

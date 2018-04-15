@@ -216,7 +216,7 @@ class ArkSpatialPlugin(Plugin):
     # Load the project settings when project is loaded
     def loadProject(self):
         if self.isLoaded():
-            self.closeProject()
+            return
         if self.isInitialised() and Settings.isProjectConfigured():
             self.projectGroupIndex = layers.createLayerGroup(self.iface, Config.projectGroupName)
             # Load the layer collections
@@ -225,10 +225,10 @@ class ArkSpatialPlugin(Plugin):
             self.section = self._configureCollection('section')
             self.site = self._configureCollection('site')
             self.drawingsGroupName = Config.drawings['context']['layersGroupName']
-            if (self.grid.initialise()
-                    and self.plan.initialise()
-                    and self.section.initialise()
-                    and self.site.initialise()):
+            if (self.grid.loadCollection()
+                    and self.plan.loadCollection()
+                    and self.section.loadCollection()
+                    and self.site.loadCollection()):
                 self.data.loadProject()
                 self.gridModule.loadProject()
                 self.planModule.loadProject()
@@ -309,7 +309,6 @@ class ArkSpatialPlugin(Plugin):
 
     def run(self, checked):
         if checked and self.initialise() and self.configure():
-            return
             if not self._loaded:
                 self.loadProject()
         else:

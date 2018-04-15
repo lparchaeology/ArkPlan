@@ -107,19 +107,19 @@ class MapToolCapture(MapToolInteractive):
             return
         if (self._moveRubberBand is not None):
             # Capture mode
-            mapPoint, snapped = self._snapCursorPoint(e.pos())
+            mapPoint, mapPointV2, snapped = self._snapCursorPoint(e.pos())
             self._moveRubberBand.movePoint(mapPoint)
 
     def canvasReleaseEvent(self, e):
         super(MapToolCapture, self).canvasReleaseEvent(e)
         if e.isAccepted():
             return
-        mapPoint, snapped = self._snapCursorPoint(e.pos())
+        mapPoint, mapPointV2, snapped = self._snapCursorPoint(e.pos())
         if (e.button() == Qt.LeftButton):
             # Capture mode
-            self._addVertex(mapPoint)
+            self._addVertex(mapPoint, mapPointV2)
         # Emit mode
-        self.canvasClicked.emit(mapPoint, e.button())
+        self.canvasClicked.emit(mapPointV2, e.button())
 
     def keyPressEvent(self, e):
         if (e.key() == Qt.Key_Escape):
@@ -149,7 +149,7 @@ class MapToolCapture(MapToolInteractive):
         rb.show()
         return rb
 
-    def _addVertex(self, mapPoint):
+    def _addVertex(self, mapPoint, mapPointV2):
         self._mapPointList.append(mapPoint)
         self._rubberBand.addPoint(mapPoint)
         self._updateMoveRubberBand(mapPoint)

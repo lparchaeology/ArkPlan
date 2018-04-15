@@ -48,9 +48,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         self._actions = {}
         self._mapTools = {}
         self._currentMapTool = None
-        self._pointsLayer = None
-        self._linesLayer = None
-        self._polygonsLayer = None
+        self._collection = None
         self._iface = None
         self._definitiveCategories = set()
         self._colMax = 6
@@ -108,12 +106,17 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
                 action.setChecked(False)
 
     def loadProject(self, plugin, collection):
-        collection = plugin.collection(collection)
-        self._pointsLayer = collection.buffer('points') if collection.hasBuffer(
-            'points') else collection.layer('points')
-        self._linesLayer = collection.buffer('lines') if collection.hasBuffer('lines') else collection.layer('lines')
-        self._polygonsLayer = collection.buffer('polygons') if collection.hasBuffer(
-            'polygons') else collection.layer('polygons')
+        self._collection = plugin.collection(collection)
+        for category in self._mapTools:
+            mapTool = self._mapTools[category]
+            layer = None
+            if mapTool.featureType() == FeatureType.Point:
+                layer = self._collection.buffer('points')
+            elif mapTool.featureType() == FeatureType.Polygon:
+                layer = self._collection.buffer('polygons')
+            elif mapTool.featureType() == FeatureType.Line or mapTool.featureType() == FeatureType.Segment:
+                layer = self._collection.buffer('lines')
+            self._mapTools[category].setLayer(layer)
 
     def closeProject(self):
         pass
@@ -191,15 +194,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         action.setToolTip(toolName)
         action.setCheckable(True)
 
-        layer = None
-        if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            layer = self._linesLayer
-        elif featureType == FeatureType.Polygon:
-            layer = self._polygonsLayer
-        else:
-            layer = self._pointsLayer
-
-        mapTool = MapToolAddFeature(self._iface, layer, featureType, toolName)
+        mapTool = MapToolAddFeature(self._iface, featureType, toolName)
         mapTool.setAction(action)
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
@@ -236,6 +231,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
                 self._setMapToolAttributes(mapTool)
 
     def _setMapToolAttributes(self, mapTool):
+        return
         if mapTool is None:
             return
         toolData = mapTool.action().data()
@@ -270,30 +266,30 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         self._iface.actionNodeTool().trigger()
 
     def _editPointsLayer(self):
-        self._editLayer(self._pointsLayer)
+        self._editLayer(self._collection.layer('points'))
 
     def _editLinesLayer(self):
-        self._editLayer(self._linesLayer)
+        self._editLayer(self._collection.layer('lines'))
 
     def _editPolygonsLayer(self):
-        self._editLayer(self._polygonsLayer)
+        self._editLayer(self._collection.layer('polygons'))
 
     def _selectLayer(self, layer):
         self._iface.setActiveLayer(layer)
         self._iface.actionSelect().trigger()
 
     def _selectPointsLayer(self):
-        self._selectLayer(self._pointsLayer)
+        self._selectLayer(self._collection.layer('points'))
 
     def _selectLinesLayer(self):
-        self._selectLayer(self._linesLayer)
+        self._selectLayer(self._collection.layer('lines'))
 
     def _selectPolygonsLayer(self):
-        self._selectLayer(self._polygonsLayer)
+        self._selectLayer(self._collection.layer('polygons'))
 
     def _autoSchematicSelected(self):
         self.actions['sch'].trigger()
-        self._autoSchematic(self.metadata, self._linesLayer, self._polygonsLayer)
+        self._autoSchematic(self.metadata, self._collection.layer('lines'), self._collection.layer('polygons'))
 
     def _autoSchematic(self, md, inLayer, outLayer):
         definitiveFeatures = []

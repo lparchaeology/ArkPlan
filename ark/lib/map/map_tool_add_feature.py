@@ -39,11 +39,23 @@ from .map_tool_capture import MapToolCapture
 
 class MapToolAddFeature(MapToolCapture):
 
-    def __init__(self, iface, layer, featureType=0, toolName=''):
+    def __init__(self, iface, featureType, toolName=''):
+
+        if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
+            self._geometryType = QGis.Line
+        elif featureType == FeatureType.Polygon:
+            self._geometryType = QGis.Polygon
+        elif FeatureType.Point:
+            self._geometryType = QGis.Point
+        else:
+            self._geometryType = QGis.UnknownGeometry
+
+        super(MapToolAddFeature, self).__init__(iface, self._geometryType)
 
         self._layer = None  # QgsVectorLayer()
-        self._featureType = 0  # NoFeature
+        self._featureType = featureType
         self._defaultAttributes = {}  # key = fieldName, value = fieldValue
+        self.mToolName = toolName if toolName else self.tr('Add feature')
 
         # TODO Eventually merge this with the input action?
         self._queryAttributeName = None
@@ -55,31 +67,14 @@ class MapToolAddFeature(MapToolCapture):
         self._queryMin = 0
         self._queryMax = 0
 
-        geometryType = QGis.UnknownGeometry
-        if (layer is not None and layer.isValid()):
-            geometryType = layer.geometryType()
-        super(MapToolAddFeature, self).__init__(iface, geometryType)
-        self._layer = layer
-
-        if (featureType == FeatureType.NoFeature):
-            if (geometryType == QGis.Point):
-                self._featureType = FeatureType.Point
-            elif (geometryType == QGis.Line):
-                self._featureType = FeatureType.Line
-            elif (geometryType == QGis.Polygon):
-                self._featureType = FeatureType.Polygon
-            else:
-                self._featureType = FeatureType.NoFeature
-        else:
-            self._featureType = featureType
-
-        if (toolName):
-            self.mToolName = toolName
-        else:
-            self.mToolName = self.tr('Add feature')
+    def featureType(self):
+        return self._featureType
 
     def layer(self):
         return self._layer
+
+    def setLayer(self, layer):
+        self._layer = layer
 
     def isEditTool(self):
         return True

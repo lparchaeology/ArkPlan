@@ -177,7 +177,7 @@ class MapToolInteractive(QgsMapTool):
                 self._zoomRubberBand.show()
             e.accept()
         elif self._snappingEnabled:
-            mapPoint, snapped = self._snapCursorPoint(e.pos())
+            mapPoint, mapPointV2, snapped = self._snapCursorPoint(e.pos())
             if (snapped):
                 self._createSnappingMarker(mapPoint)
             else:
@@ -225,11 +225,14 @@ class MapToolInteractive(QgsMapTool):
     def _snapCursorPoint(self, cursorPoint):
         res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
         if (res != 0 or len(snapResults) < 1):
-            return self.toMapCoordinates(cursorPoint), False
+            clicked = self.toMapCoordinates(cursorPoint)
+            clickedV2 = QgsPointV2(clicked)
+            return clicked, clickedV2, False
         else:
             # Take a copy as QGIS will delete the result!
-            snappedVertex = QgsPointV2(snapResults[0].snappedVertex)
-            return snappedVertex, True
+            snapped = QgsPoint(snapResults[0].snappedVertex)
+            snappedV2 = QgsPointV2(snapped)
+            return snapped, snappedV2, True
 
     def _createSnappingMarker(self, snapPoint):
         if (self._snappingMarker is None):
@@ -245,6 +248,7 @@ class MapToolInteractive(QgsMapTool):
             self._snappingMarker = None
 
     def _createSnappableMarkers(self):
+        return
         if (not self._showSnappableVertices or not self._snappingEnabled):
             return
         extent = self.canvas().extent()

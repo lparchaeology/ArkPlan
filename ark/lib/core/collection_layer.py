@@ -24,9 +24,10 @@
 
 import os
 
-from PyQt4.QtCore import QFile, QVariant, QFileInfo
+from PyQt4.QtCore import QFile, QFileInfo, QVariant
 
-from qgis.core import NULL, QGis, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper, QgsTolerance, QgsVectorLayer, QgsEditFormConfig
+from qgis.core import (NULL, QGis, QgsEditFormConfig, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper,
+                       QgsTolerance, QgsVectorLayer)
 
 from . import layers
 from .. import utils
@@ -203,7 +204,7 @@ class CollectionLayer:
 
     def isWritable(self):
         return ((self.layer is None or layers.isWritable(self.layer))
-                and (self.bufferLayer is None or layers.isWritable(self.bufferLayeruffer))
+                and (self.bufferLayer is None or layers.isWritable(self.bufferLayer))
                 and (self.logLayer is None or layers.isWritable(self.logLayer)))
 
     def mergeBuffer(self, undoMessage='Merge Buffers', timestamp=None):

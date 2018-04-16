@@ -44,7 +44,7 @@ class FeatureErrorDialog(QDialog, Ui_FeatureErrorDialog):
         self._model = TableModel(fields, nullRecord)
 
         self.okButton.clicked.connect(self.accept)
-        self.ignoreButton.clicked.connect(self._ignore)
+        self.ignoreButton.clicked.connect(self._ignoreError)
         self.copyButton.clicked.connect(self._toText)
         self.csvButton.clicked.connect(self._toCsv)
 
@@ -62,7 +62,7 @@ class FeatureErrorDialog(QDialog, Ui_FeatureErrorDialog):
     def ignoreErrors(self):
         return self._ignore
 
-    def _ignore(self):
+    def _ignoreError(self):
         self._ignore = True
         self.accept()
 

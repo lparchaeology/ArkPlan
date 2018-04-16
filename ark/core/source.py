@@ -40,7 +40,7 @@ class Source():
         self._filename = ''
 
         if isinstance(sourceCode, QgsFeature):
-            self.fromFeature(sourceCode)
+            self.setAttributes(sourceCode.attributes())
         else:
             self.setSource(sourceCode, item, filename)
 

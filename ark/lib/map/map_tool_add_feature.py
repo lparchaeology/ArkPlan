@@ -31,6 +31,7 @@ from PyQt4.QtGui import QInputDialog
 from qgis.core import QGis, QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 from qgis.gui import QgsMessageBar
 
+from .. import utils
 from ..core import FeatureType
 from ..gui import FeatureAction
 from ..snapping import Snapping
@@ -155,25 +156,31 @@ class MapToolAddFeature(MapToolCapture):
                 QgsMessageBar.CRITICAL)
             return False
 
-        layerWKBType = layer.wkbType()
+        geometryType = layer.geometryType()
+        multiType = QGis.isMultiType(layer.wkbType())
+        utils.debug(geometryType)
+        utils.debug(multiType)
         layerPoints = self._layerPoints(mapPointList, layer)
         feature = QgsFeature(layer.pendingFields(), 0)
         geometry = None
 
-        if (layerWKBType == QGis.WKBPoint or layerWKBType == QGis.WKBPoint25D):
-            geometry = QgsGeometry(layerPoints[0])
-        elif (layerWKBType == QGis.WKBMultiPoint or layerWKBType == QGis.WKBMultiPoint25D):
-            geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
-        elif (layerWKBType == QGis.WKBLineString or layerWKBType == QGis.WKBLineString25D):
-            geometry = QgsGeometry.fromPolyline(layerPoints)
-        elif (layerWKBType == QGis.WKBMultiLineString or layerWKBType == QGis.WKBMultiLineString25D):
-            geometry = QgsGeometry.fromMultiPolyline([layerPoints])
-        elif (layerWKBType == QGis.WKBPolygon or layerWKBType == QGis.WKBPolygon25D):
-            geometry = QgsGeometry.fromPolygon([layerPoints])
-        elif (layerWKBType == QGis.WKBMultiPolygon or layerWKBType == QGis.WKBMultiPolygon25D):
-            geometry = QgsGeometry.fromMultiPolygon([layerPoints])
+        if (geometryType == QGis.Point):
+            if multiType:
+                geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
+            else:
+                geometry = QgsGeometry(layerPoints[0])
+        elif (geometryType == QGis.Line):
+            if multiType:
+                geometry = QgsGeometry.fromMultiPolyline([layerPoints])
+            else:
+                geometry = QgsGeometry.fromPolyline(layerPoints)
+        elif (geometryType == QGis.Polygon):
+            if multiType:
+                geometry = QgsGeometry.fromMultiPolygon([layerPoints])
+            else:
+                geometry = QgsGeometry.fromPolygon([layerPoints])
         else:
-            self.messageEmitted.emit(self.tr('Cannot add feature. Unknown WKB type'), QgsMessageBar.CRITICAL)
+            self.messageEmitted.emit(self.tr('Cannot add feature. Unknown geometry type'), QgsMessageBar.CRITICAL)
             return False
 
         if (geometry is None):

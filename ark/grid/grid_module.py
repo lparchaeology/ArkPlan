@@ -115,7 +115,7 @@ class GridModule(QObject):
 
     # Close the project
     def closeProject(self):
-        self._vertexMarker.setCenter(QgsPointV2())
+        self._vertexMarker.setCenter(QgsPoint())
         self.collection().clearFilter()
         self.initialised = False
 

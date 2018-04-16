@@ -61,7 +61,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         mapPoint = self.toMapCoordinates(e.pos())
         self._vertexMarker.setCenter(mapPoint)
-        layers = [self._plugin.plan.layer('points'), self._plugin.plan.layer('lines'), self._plugin.plan.layer('polygons')]
+        layers = [self._plugin.plan.layer('points'), self._plugin.plan.layer('lines'),
+                  self._plugin.plan.layer('polygons')]
         results = self.identify(e.x(), e.y(), layers, QgsMapToolIdentify.TopDownAll)
         if (len(results) < 1):
             return
@@ -149,28 +150,28 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._highlights.append(hl)
 
     def _zoom(self, item):
-        self._plugin.planModule.zoomToItem(item, highlight=True)
+        self._plugin.drawingModule.zoomToItem(item, highlight=True)
 
     def _pan(self, item):
-        self._plugin.planModule.moveToItem(item, highlight=True)
+        self._plugin.drawingModule.moveToItem(item, highlight=True)
 
     def _filterItem(self, item):
-        self._plugin.planModule.filterItem(item)
+        self._plugin.drawingModule.filterItem(item)
 
     def _excludeFilterItem(self, item):
-        self._plugin.planModule.excludeFilterItem(item)
+        self._plugin.drawingModule.excludeFilterItem(item)
 
     def _highlightItem(self, item):
-        self._plugin.planModule.highlightItem(item)
+        self._plugin.drawingModule.highlightItem(item)
 
     def _addHighlightItem(self, item):
-        self._plugin.planModule.addHighlightItem(item)
+        self._plugin.drawingModule.addHighlightItem(item)
 
     def _openDrawings(self, item):
-        self._plugin.planModule.loadDrawing(item)
+        self._plugin.drawingModule.loadDrawing(item)
 
     def _editInBuffers(self, item):
-        self._plugin.planModule.editInBuffers(item)
+        self._plugin.drawingModule.editInBuffers(item)
 
     def _delete(self, item):
-        self._plugin.planModule.deleteItem(item)
+        self._plugin.drawingModule.deleteItem(item)

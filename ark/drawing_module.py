@@ -38,22 +38,21 @@ from ArkSpatial.ark.lib.gui import TableDialog
 from ArkSpatial.ark.core import Config, Drawing, Feature, FeatureError, Item, Source, Settings
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction, SearchStatus
 from ArkSpatial.ark.georef import GeorefDialog
-from ArkSpatial.ark.gui import FeatureErrorDialog, PlanDock, SelectDrawingDialog
+from ArkSpatial.ark.gui import FeatureErrorDialog, DrawingDock, SnappingDock, SelectDrawingDialog
 
 
-class PlanModule(QObject):
+class DrawingModule(QObject):
 
     def __init__(self, plugin):
-        super(PlanModule, self).__init__(plugin)
+        super(DrawingModule, self).__init__(plugin)
 
         # Project settings
         self.plugin = plugin  # Plugin()
-        self.dock = None  # PlanDock()
+        self.dock = None  # DrawingDock()
         self.initialised = False
         self.metadata = None  # Metadata()
 
         # Internal variables
-        self._editSchematic = False
         self._mapAction = MapAction.MoveMap
         self._filterAction = FilterAction.ExclusiveHighlightFilter
         self._drawingAction = DrawingAction.NoDrawingAction
@@ -61,9 +60,13 @@ class PlanModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = PlanDock(self.plugin.iface.mainWindow())
+        self.dock = DrawingDock(self.plugin.iface.mainWindow())
         action = self.plugin.addDockAction(
-            ':/plugins/ark/plan/drawPlans.png', self.tr(u'Drawing Tools'), callback=self.run, checkable=True)
+            ':/plugins/ark/plan/drawPlans.png',
+            self.tr(u'Drawing Tools'),
+            callback=self.run,
+            checkable=True
+        )
         self.dock.initGui(self.plugin.iface, Qt.RightDockWidgetArea, action)
 
         self.dock.loadAnyFileSelected.connect(self._loadAnyPlan)
@@ -73,39 +76,24 @@ class PlanModule(QObject):
         self.dock.resetSelected.connect(self.resetBuffers)
         self.dock.mergeSelected.connect(self.mergeBuffers)
 
-        self.dock.loadArkData.connect(self._loadArkData)
-        self.dock.mapActionChanged.connect(self._mapActionChanged)
-        self.dock.filterActionChanged.connect(self._filterActionChanged)
-        self.dock.drawingActionChanged.connect(self._drawingActionChanged)
-        self.dock.openContextData.connect(self._openContextData)
-        self.dock.openSourceContextData.connect(self._openSourceContextData)
-        self.dock.findContextSelected.connect(self._findContext)
-        self.dock.firstContextSelected.connect(self._firstContext)
-        self.dock.lastContextSelected.connect(self._lastContext)
-        self.dock.prevContextSelected.connect(self._prevContext)
-        self.dock.nextContextSelected.connect(self._nextContext)
-        self.dock.prevMissingSelected.connect(self._prevMissing)
-        self.dock.nextMissingSelected.connect(self._nextMissing)
-        self.dock.schematicReportSelected.connect(self._showSchematicReport)
-        self.dock.editContextSelected.connect(self._editSchematicContext)
-        self.dock.deleteSectionSchematicSelected.connect(self._deleteSectionSchematic)
-        self.dock.findSourceSelected.connect(self._findSource)
-        self.dock.copySourceSelected.connect(self._editSourceSchematic)
-        self.dock.cloneSourceSelected.connect(self._cloneSourceSchematic)
-        self.dock.editSourceSelected.connect(self._editSource)
-        self.dock.contextChanged.connect(self._clearSchematicFilters)
-        self.dock.resetSchematicSelected.connect(self._resetSchematic)
-
-        self.plugin.filterModule.filterSetCleared.connect(self._clearSchematic)
+        self.snapDock = SnappingDock(self.plugin.iface.mainWindow())
+        action = self.plugin.addDockAction(
+            ':/plugins/ark/snapIntersections.png',
+            self.tr(u'Snapping Tools'),
+            callback=self.runSnapping,
+            checkable=True
+        )
+        self.snapDock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
 
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
         self.dock.loadProject(self.plugin)
+        self.snapDock.loadProject(self.plugin)
 
-        if self.plugin.plan.settings.log:
-            self._itemLogPath = os.path.join(self.plugin.plan.projectPath,
-                                             self.plugin.plan.settings.collectionPath,
+        if self.collection().isLogged():
+            self._itemLogPath = os.path.join(self.collection().projectPath,
+                                             self.collection().settings.collectionPath,
                                              'log/itemLog.csv')
             if not QFile.exists(self._itemLogPath):
                 fd = open(self._itemLogPath, 'a')
@@ -116,27 +104,25 @@ class PlanModule(QObject):
         # self.metadata = Metadata(self.dock.widget.sourceWidget)
         # self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
-        self.plugin.data.dataLoaded.connect(self.dock.activateArkData)
-
         self.initialised = True
 
     # Save the project
     def writeProject(self):
-        # We don't want to save the schematic serach or filters
-        self._clearSchematic()
+        pass
 
     # Close the project
     def closeProject(self):
-        self._clearSchematicFilters()
         # TODO Unload the drawing tools!
+        self.snapDock.closeProject()
         self.dock.closeProject()
         # self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
-        # self.plugin.data.dataLoaded.disconnect(self.dock.activateArkData)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Unload the dock
+        self.snapDock.unloadGui()
+        del self.snapDock
         self.dock.unloadGui()
         del self.dock
         # Reset the initialisation
@@ -148,7 +134,16 @@ class PlanModule(QObject):
         else:
             self.dock.menuAction().setChecked(False)
 
+    def runSnapping(self, checked):
+        if checked and self.initialised:
+            pass
+        else:
+            self.snapDock.menuAction().setChecked(False)
+
     # Plan Tools
+
+    def collection(self):
+        return self.plugin.collection('plan')
 
     def _setDrawing(self, pmd):
         self.metadata.setSiteCode(pmd.siteCode)
@@ -206,15 +201,15 @@ class PlanModule(QObject):
         sourceKeys = set()
         sourceKeys.add(item)
         itemRequest = item.featureRequest()
-        for feature in self.plugin.plan.layer('polygons').getFeatures(itemRequest):
+        for feature in self.collection().layer('polygons').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
-        for feature in self.plugin.plan.layer('lines').getFeatures(itemRequest):
+        for feature in self.collection().layer('lines').getFeatures(itemRequest):
             source = Source(feature)
             if source.item.isValid():
                 sourceKeys.add(source.item())
-        for feature in self.plugin.plan.layer('points').getFeatures(itemRequest):
+        for feature in self.collection().layer('points').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
@@ -252,6 +247,7 @@ class PlanModule(QObject):
     def mergeBuffers(self):
         self._mergeBuffers(self.plugin.plan)
         self._mergeBuffers(self.plugin.section)
+        self._mergeBuffers(self.plugin.site)
 
     def _mergeBuffers(self, collection):
         # Check the layers are writable
@@ -392,7 +388,7 @@ class PlanModule(QObject):
                 layer.changeAttributeValue(feature.id(), modifierIdx, user)
 
     def resetBuffers(self):
-        self.plugin.plan.resetBuffers('Clear Buffers')
+        self.collection().resetBuffers('Clear Buffers')
         if self._editSchematic:
             self._editSchematic = False
             self.dock.activateSchematicCheck()
@@ -407,7 +403,7 @@ class PlanModule(QObject):
         return ok and confirm == str(itemId)
 
     def _logItemAction(self, item, action, timestamp=None):
-        if self.plugin.plan.settings.log:
+        if self.collection().settings.log:
             if not timestamp:
                 timestamp = utils.timestamp()
             fd = open(self._itemLogPath, 'a')
@@ -419,7 +415,7 @@ class PlanModule(QObject):
         request = item.featureRequest()
         timestamp = utils.timestamp()
         action = 'Edit Item'
-        if self.plugin.plan.moveFeatureRequestToBuffers(request, action, Settings.logUpdates(), timestamp):
+        if self.collection().moveFeatureRequestToBuffers(request, action, Settings.logUpdates(), timestamp):
             self._logItemAction(item, action, timestamp)
             self._metadataFromBuffers(item)
 
@@ -428,7 +424,7 @@ class PlanModule(QObject):
             request = item.featureRequest()
             timestamp = utils.timestamp()
             action = 'Delete Item'
-            if self.plugin.plan.deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
+            if self.collection().deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
                 self._logItemAction(item, action, timestamp)
 
     def applyItemActions(self,
@@ -527,9 +523,9 @@ class PlanModule(QObject):
     def itemExtent(self, item):
         requestKey = self.plugin.data.nodesItem(item)
         request = requestKey.featureRequest()
-        points = self._requestAsLayer(request, self.plugin.plan.layer('points'), 'points')
-        lines = self._requestAsLayer(request, self.plugin.plan.layer('lines'), 'lines')
-        polygons = self._requestAsLayer(request, self.plugin.plan.layer('polygons'), 'polygons')
+        points = self._requestAsLayer(request, self.collection().layer('points'), 'points')
+        lines = self._requestAsLayer(request, self.collection().layer('lines'), 'lines')
+        polygons = self._requestAsLayer(request, self.collection().layer('polygons'), 'polygons')
         extent = None
         extent = self._combineExtentWith(extent, polygons)
         extent = self._combineExtentWith(extent, lines)
@@ -556,7 +552,7 @@ class PlanModule(QObject):
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
         request = self._classItemsRequest(siteCode, 'sec')
-        features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('lines'))
+        features = layers.getAllFeaturesRequest(request, self.collection().layer('lines'))
         lst = []
         for feature in features:
             lst.append(Feature(feature))
@@ -566,7 +562,7 @@ class PlanModule(QObject):
     def _sectionLineGeometry(self, item):
         if item and item.isValid():
             request = self._categoryRequest(item, 'sln')
-            features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('lines'))
+            features = layers.getAllFeaturesRequest(request, self.collection().layer('lines'))
             for feature in features:
                 return QgsGeometry(feature.geometry())
         return QgsGeometry()
@@ -578,23 +574,23 @@ class PlanModule(QObject):
             pass
 
     def _metadataFromBuffers(self, item):
-        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item, 'sch')
+        feature = self._getFeature(self.collection().buffer('polygons'), item, 'sch')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item, 'scs')
+        feature = self._getFeature(self.collection().buffer('polygons'), item, 'scs')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.buffer('polygons'), item)
+        feature = self._getFeature(self.collection().buffer('polygons'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.buffer('lines'), item)
+        feature = self._getFeature(self.collection().buffer('lines'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.plugin.plan.buffer('points'), item)
+        feature = self._getFeature(self.collection().buffer('points'), item)
         if feature:
             self.metadata.fromFeature(feature)
 
@@ -640,287 +636,3 @@ class PlanModule(QObject):
 
     def _classItemsRequest(self, siteCode, classCode):
         return self._featureRequest(self._eqClause('site', siteCode) + ' and ' + self._eqClause('class', classCode))
-
-    # SchematicDock methods
-
-    def _loadArkData(self):
-        self.plugin.data.loadData()
-
-    def _mapActionChanged(self, mapAction):
-        self._mapAction = mapAction
-
-    def _filterActionChanged(self, filterAction):
-        self._filterAction = filterAction
-
-    def _drawingActionChanged(self, drawingAction):
-        self._drawingAction = drawingAction
-
-    def _openContextData(self):
-        self.openItemInArk(self.dock.contextItem())
-
-    def _openSourceContextData(self):
-        self.openItemInArk(self.dock.sourceItem())
-
-    def openItemInArk(self, item):
-        self.plugin.data.openItem(item)
-
-    def _resetSchematic(self):
-        self._clearSchematic()
-        self.dock.activateSchematicCheck()
-
-    def _clearSchematic(self):
-        self._clearSchematicFilters()
-        self.dock.resetContext()
-
-    def _mergeSchematic(self):
-        self.mergeBuffers()
-        self._findContext()
-
-    def _clearSchematicFilters(self):
-        self.plugin.filterModule.clearSchematicFilter()
-
-    def _firstContext(self):
-        self._findContext(self.plugin.data.firstItem('context'))
-
-    def _lastContext(self):
-        self._findContext(self.plugin.data.lastItem('context'))
-
-    def _prevContext(self):
-        self._findContext(self.plugin.data.prevItem(self.dock.contextItem()))
-
-    def _nextContext(self):
-        self._findContext(self.plugin.data.nextItem(self.dock.contextItem()))
-
-    def _prevMissing(self):
-        context = self.dock.contextItem()
-        idx = 0
-        if context.isValid():
-            idx = bisect.bisect_left(self.plugin.data.items['context'], context)
-        schematics = self._getAllSchematicItems()
-        for prv in reversed(range(idx)):
-            item = self.plugin.data.items['context'][prv]
-            if item not in schematics:
-                self._findContext(item)
-                return
-
-    def _nextMissing(self):
-        context = self.dock.contextItem()
-        idx = 0
-        if context.isValid():
-            idx = bisect.bisect(self.plugin.data.items['context'], context)
-        schematics = self._getAllSchematicItems()
-        for item in self.plugin.data.items['context'][idx:]:
-            if item not in schematics:
-                self._findContext(item)
-                return
-
-    def _getAllSchematicItems(self):
-        features = self._getAllSchematicFeatures()
-        items = set()
-        for feature in features:
-            item = Item(feature)
-            items.add(item)
-        return sorted(items)
-
-    def _getAllSchematicFeatures(self):
-        req = self._featureRequest(self._categoryClause('sch'))
-        return layers.getAllFeaturesRequest(req, self.plugin.plan.layer('polygons'))
-
-    def _editSchematicContext(self):
-        self._editSchematic = True
-        self.editInBuffers(self.dock.contextItem())
-        self.dock.widget.setCurrentIndex(0)
-
-    def _deleteSectionSchematic(self):
-        item = self.dock.contextItem()
-        label = 'This action ***DELETES*** ***ALL*** Section Schematics from item ' + \
-            str(item.itemId()) + '\n\nPlease enter the item ID to confirm.'
-        if self._confirmDelete(item.itemId(), 'Confirm Delete Section Schematic', label):
-            request = self._categoryRequest(item, 'scs')
-            timestamp = utils.timestamp()
-            action = 'Delete Section Schematic'
-            if self.plugin.plan.deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
-                self._logItemAction(item, action, timestamp)
-            self._findContext(item)
-
-    def _arkStatus(self, item):
-        haveArk = SearchStatus.NotFound
-        contextType = 'None'
-        contextDescription = ''
-        try:
-            if item in self.plugin.data.items['context']:
-                haveArk = SearchStatus.Found
-                vals = self.plugin.data.getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
-                if (u'conf_field_cxttype' in vals and vals[u'conf_field_cxttype']):
-                    contextType = str(vals[u'conf_field_cxttype'])
-                if u'conf_field_short_desc' in vals:
-                    contextDescription = str(vals[u'conf_field_short_desc'][0][u'current'])
-            else:
-                contextDescription = 'Context not in ARK'
-        except Exception:
-            haveArk = SearchStatus.Unknown
-        return haveArk, contextType, contextDescription
-
-    def _featureStatus(self, item, copyMetadata=False):
-        itemRequest = item.featureRequest()
-        try:
-            feature = self.plugin.plan.layer('lines').getFeatures(itemRequest).next()
-            if copyMetadata:
-                self._copyFeatureMetadata(feature)
-        except StopIteration:
-            return SearchStatus.NotFound
-        return SearchStatus.Found
-
-    def _schematicStatus(self, item):
-        schRequest = self._categoryRequest(item, 'sch')
-        try:
-            self.plugin.plan.layer('polygons').getFeatures(schRequest).next()
-        except StopIteration:
-            return SearchStatus.NotFound
-        return SearchStatus.Found
-
-    def _findContext(self, context=Item()):
-        self._clearSchematicFilters()
-
-        if not context.isValid():
-            context = self.dock.contextItem()
-
-        self.plugin.filterModule.applySchematicFilter(context, self._filterAction)
-        self.applyItemActions(context, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
-
-        haveArk, contextType, contextDescription = self._arkStatus(context)
-        haveFeature = self._featureStatus(context, True)
-
-        if haveFeature == SearchStatus.NotFound:
-            polyRequest = self._notCategoryRequest(context, 'sch')
-            haveFeature = SearchStatus.Found
-            try:
-                self.plugin.plan.layer('polygons').getFeatures(polyRequest).next()
-            except StopIteration:
-                haveFeature = SearchStatus.NotFound
-
-        haveSchematic = self._schematicStatus(context)
-
-        scsRequest = self._categoryRequest(context, 'scs')
-        haveSectionSchematic = SearchStatus.Found
-        try:
-            self.plugin.plan.layer('polygons').getFeatures(scsRequest).next()
-        except StopIteration:
-            haveSectionSchematic = SearchStatus.NotFound
-
-        self.dock.setContext(context, haveArk, contextType, contextDescription,
-                             haveFeature, haveSchematic, haveSectionSchematic)
-        self.metadata.setItemId(context.itemId())
-
-    def _editSource(self):
-        self.editInBuffers(self.dock.sourceItem())
-        self.dock.widget.setCurrentIndex(0)
-
-    def _findSource(self, source=Item()):
-        if not source.isValid():
-            source = self.dock.sourceItem()
-
-        self.plugin.filterModule.applySchematicFilter(source, self._filterAction)
-        self.applyItemActions(source, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
-
-        haveArk, contextType, contextDescription = self._arkStatus(source)
-        haveFeature = self._featureStatus(source)
-        haveSchematic = self._schematicStatus(source)
-
-        self.dock.setSourceContext(source, haveArk, contextType, contextDescription, haveFeature, haveSchematic)
-
-    def _attribute(self, feature, attribute):
-        val = feature.attribute(attribute)
-        if val == NULL:
-            return None
-        else:
-            return val
-
-    def _copyFeatureMetadata(self, feature):
-        self.metadata.setSiteCode(self._attribute(feature, 'site'))
-        self.metadata.setComment(self._attribute(feature, 'comment'))
-        self.metadata.setClassCode('context')
-        self.metadata.setItemId(self.dock.context())
-        self.metadata.setSourceCode('cloned')
-        self.metadata.setSourceClass('context')
-        self.metadata.setSourceId(self.dock.sourceContext())
-        self.metadata.setSourceFile('')
-
-    def _copySourceSchematic(self):
-        self.metadata.validate()
-        request = self._categoryRequest(self.dock.sourceItem(), 'sch')
-        features = layers.getAllFeaturesRequest(request, self.plugin.plan.layer('polygons'))
-        for feature in features:
-            feature.setAttribute('site', self.metadata.siteCode())
-            feature.setAttribute('class', 'context')
-            feature.setAttribute('id', self.dock.context())
-            feature.setAttribute('label', None)
-            feature.setAttribute('category', 'sch')
-            feature.setAttribute('source_cd', self.metadata.sourceCode())
-            feature.setAttribute('source_cl', self.metadata.sourceClass())
-            feature.setAttribute('source_id', self.metadata.sourceId())
-            feature.setAttribute('file', self.metadata.sourceFile())
-            feature.setAttribute('comment', self.metadata.comment())
-            feature.setAttribute('created', self.metadata.editor())
-            feature.setAttribute('creator', None)
-            self.plugin.plan.buffer('polygons').addFeature(feature)
-
-    def _editSourceSchematic(self):
-        self._clearSchematicFilters()
-        self._copySourceSchematic()
-        self._editSchematic = True
-        self.dock.widget.setCurrentIndex(0)
-        self.plugin.iface.setActiveLayer(self.plugin.plan.buffer('polygons'))
-        self.plugin.iface.actionZoomToLayer().trigger()
-        self.plugin.plan.buffer('polygons').selectAll()
-        self.plugin.iface.actionNodeTool().trigger()
-
-    def _cloneSourceSchematic(self):
-        self._clearSchematicFilters()
-        self._copySourceSchematic()
-        self._mergeSchematic()
-
-    def _showSchematicReport(self):
-        features = set()
-        for feature in self.plugin.plan.layer('points').getFeatures():
-            features.add(Item(feature))
-        for feature in self.plugin.plan.layer('lines').getFeatures():
-            features.add(Item(feature))
-        for feature in self.plugin.plan.layer('polygons').getFeatures():
-            features.add(Item(feature))
-        schRequest = self._featureRequest(self._categoryClause('sch'))
-        scsRequest = self._featureRequest(self._categoryClause('scs'))
-        schematics = set()
-        for feature in self.plugin.plan.layer('polygons').getFeatures(schRequest):
-            schematics.add(Item(feature))
-        for feature in self.plugin.plan.layer('polygons').getFeatures(scsRequest):
-            schematics.add(Item(feature))
-        missing = []
-        contexts = self.plugin.data.items['context']
-        for context in contexts:
-            if context not in schematics:
-                row = {}
-                row['Site Code'] = context.siteCode()
-                row['Context'] = context.itemId()
-                itemData = self.plugin.data.getItemData(context)
-                try:
-                    row['Type'] = itemData['context_type']
-                except Exception:
-                    row['Type'] = ''
-                    try:
-                        vals = self.plugin.data.getItemFields(context, ['conf_field_cxttype'])
-                        row['Type'] = vals[u'conf_field_cxttype']
-                    except Exception:
-                        row['Type'] = ''
-                if context in features:
-                    row['GIS'] = 'Y'
-                else:
-                    row['GIS'] = 'N'
-                missing.append(row)
-        text = '<html><head/><body><p><span style=" font-weight:600;">Missing Schematics:</span></p><p>There are ' + \
-            str(len(contexts)) + ' Contexts in ARK, of which ' + \
-            str(len(missing)) + ' are missing schematics.<br/></p></body></html>'
-        dialog = TableDialog('Missing Schematics', text, ['Site Code', 'Context', 'Type', 'GIS'], {
-                             'Site Code': '', 'Context': '', 'Type': '', 'GIS': ''}, self.dock)
-        dialog.addRows(missing)
-        dialog.exec_()

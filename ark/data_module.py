@@ -338,14 +338,14 @@ class DataModule(QObject):
                      ):
         self.dock.setItem(item)
         self._showItem(item)
-        self.plugin.planModule.applyItemActions(item, mapAction, filterAction, drawingAction)
+        self.plugin.drawingModule.applyItemActions(item, mapAction, filterAction, drawingAction)
 
     def _itemChanged(self):
         item = self.dock.item()
         if self._prevItem == item:
             return
         self._showItem(item)
-        self.plugin.planModule.applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
+        self.plugin.drawingModule.applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
 
     def _showItem(self, item):
         if not Settings.siteServerUrl():
@@ -378,7 +378,7 @@ class DataModule(QObject):
         self._itemChanged()
 
     def _openItemData(self):
-        self.plugin.planModule.openItemInArk(self.dock.item())
+        self.plugin.drawingModule.openItemInArk(self.dock.item())
 
     def _nextItemSelected(self):
         self.dock.setItem(self.nextItem(self.dock.item()))
@@ -389,19 +389,19 @@ class DataModule(QObject):
         self._itemChanged()
 
     def _showItemSelected(self):
-        self.plugin.planModule.showItem(self.dock.item())
+        self.plugin.drawingModule.showItem(self.dock.item())
 
     def _zoomItemSelected(self):
-        self.plugin.planModule.zoomToItem(self.dock.item())
+        self.plugin.drawingModule.zoomToItem(self.dock.item())
 
     def _filterItemSelected(self):
-        self.plugin.planModule.filterItem(self.dock.item())
+        self.plugin.drawingModule.filterItem(self.dock.item())
 
     def _editItemSelected(self):
-        self.plugin.planModule.editInBuffers(self.dock.item())
+        self.plugin.drawingModule.editInBuffers(self.dock.item())
 
     def _loadDrawingsSelected(self):
-        self.plugin.planModule.loadSourceDrawings(self.dock.item())
+        self.plugin.drawingModule.loadSourceDrawings(self.dock.item())
 
     def _itemLinkClicked(self, url):
         item_key = ''

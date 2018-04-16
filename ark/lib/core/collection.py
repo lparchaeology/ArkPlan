@@ -48,6 +48,15 @@ class Collection:
         # If the legend indexes change make sure we stay updated
         self._iface.legendInterface().groupIndexChanged.connect(self._groupIndexChanged)
 
+    def isBuffered(self):
+        return self.settings.buffer
+
+    def isLogged(self):
+        return self.settings.log
+
+    def isMultiType(self):
+        return self.settings.multi
+
     def initialise(self):
         return self.loadCollection()
 

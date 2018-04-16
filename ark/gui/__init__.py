@@ -5,12 +5,14 @@ except ImportError:
     QWK_AVAILABLE = False
 from .action_settings_tool import ActionSettingsTool
 from .base_map_widget import BaseMapWidget
+from .checking_dock import CheckingDock
 from .data_dock import DataDock
 if QWK_AVAILABLE:
     from .data_widget import DataWidget
 else:
     from .data_item_widget import DataItemWidget
 from .digitising_widget import DigitisingWidget
+from .drawing_dock import DrawingDock
 from .feature_error_dialog import FeatureErrorDialog
 from .feature_widget import FeatureWidget
 from .figure_widget import FigureWidget
@@ -21,8 +23,6 @@ from .filter_set_widget import FilterSetWidget
 from .identify_item_action import IdentifyItemAction
 from .layer_tree_menu import LayerTreeMenu
 from .open_ark_action import OpenArkAction
-from .plan_dock import PlanDock
-from .plan_widget import PlanWidget
 from .preferences_dialog import PreferencesDialog
 from .preferences_widget import PreferencesWidget
 from .preferences_wizard import PreferencesWizard
@@ -40,6 +40,7 @@ from .select_item_widget import SelectItemWidget
 from .server_widget import ServerWidget
 from .server_wizard_page import ServerWizardPage
 from .settings_dialog import SettingsDialog
+from .snapping_dock import SnappingDock
 from .snapping_widget import SnappingWidget
 from .source_widget import SourceWidget
 from .trench_dock import TrenchDock

@@ -44,7 +44,8 @@ from ArkSpatial.ark.map import MapToolIndentifyItems
 
 from .data_module import DataModule
 from .filter_module import FilterModule
-from .plan_module import PlanModule
+from .drawing_module import DrawingModule
+from .checking_module import CheckingModule
 from .trench_module import TrenchModule
 
 import georef.ui.resources
@@ -74,8 +75,9 @@ class ArkSpatialPlugin(Plugin):
 
         # Modules
         self.data = None  # Data()
-        self.gridModule = None  # Grid()
-        self.planModule = None  # Plan()
+        self.gridModule = None  # GridModule()
+        self.drawingModule = None  # DrawingModule()
+        self.checkingModule = None  # CheckingModule()
         self.filterModule = None  # FilterModule()
         self.trenchModule = None  # TrenchModule()
 
@@ -111,13 +113,6 @@ class ArkSpatialPlugin(Plugin):
         self.iface.addToolBarIcon(self._interAction)
         self._topoAction = TopologicalEditingAction(iface.mainWindow())
         self.iface.addToolBarIcon(self._topoAction)
-
-        # TODO Excalibur Tools - Make own plugin
-        self._excalibur = QAction(QIcon(':/plugins/ark/excalibur.svg'), 'Excalibur', self.iface.mainWindow())
-        self._excalibur.triggered.connect(self.pullExcalibur)
-        self._excalibur.setEnabled(True)
-        self._excalibur.setCheckable(False)
-        self.iface.addToolBarIcon(self._excalibur)
 
     def isInitialised(self):
         return self._initialised
@@ -196,8 +191,10 @@ class ArkSpatialPlugin(Plugin):
         self.gridModule.initGui()
         self.filterModule = FilterModule(self)
         self.filterModule.initGui()
-        self.planModule = PlanModule(self)
-        self.planModule.initGui()
+        self.drawingModule = DrawingModule(self)
+        self.drawingModule.initGui()
+        self.checkingModule = CheckingModule(self)
+        self.checkingModule.initGui()
         self.trenchModule = TrenchModule(self)
         self.trenchModule.initGui()
 
@@ -231,7 +228,8 @@ class ArkSpatialPlugin(Plugin):
                     and self.site.loadCollection()):
                 self.data.loadProject()
                 self.gridModule.loadProject()
-                self.planModule.loadProject()
+                self.drawingModule.loadProject()
+                self.checkingModule.loadProject()
                 self.filterModule.loadProject()
                 self._loaded = True
 
@@ -240,7 +238,8 @@ class ArkSpatialPlugin(Plugin):
         if self.isLoaded():
             self.data.writeProject()
             self.gridModule.writeProject()
-            self.planModule.writeProject()
+            self.drawingModule.writeProject()
+            self.checkingModule.writeProject()
             self.filterModule.writeProject()
 
     # Close the project
@@ -251,7 +250,8 @@ class ArkSpatialPlugin(Plugin):
             self.writeProject()
             self.data.closeProject()
             self.gridModule.closeProject()
-            self.planModule.closeProject()
+            self.drawingModule.closeProject()
+            self.checkingModule.closeProject()
             self.filterModule.closeProject()
             # Unload the layers
             if self.plan is not None:
@@ -277,7 +277,8 @@ class ArkSpatialPlugin(Plugin):
             self.projectDock.menuAction().setChecked(False)
 
             # Unload the modules in dependence order
-            self.planModule.unloadGui()
+            self.checkingModule.unloadGui()
+            self.drawingModule.unloadGui()
             self.filterModule.unloadGui()
             self.gridModule.unloadGui()
             self.data.unloadGui()
@@ -294,8 +295,6 @@ class ArkSpatialPlugin(Plugin):
         self.iface.removeToolBarIcon(self._topoAction)
         self._topoAction.unload()
         del self._topoAction
-
-        self.iface.removeToolBarIcon(self._excalibur)
 
         # Unload this dock and uninitialise
         # del self.projectLayerView
@@ -314,7 +313,8 @@ class ArkSpatialPlugin(Plugin):
         else:
             if self._initialised:
                 self.data.dock.setVisible(False)
-                self.planModule.dock.setVisible(False)
+                self.drawingModule.dock.setVisible(False)
+                self.checkingModule.dock.setVisible(False)
                 self.gridModule.dock.setVisible(False)
                 self.filterModule.dock.setVisible(False)
                 self.trenchModule.dock.setVisible(False)
@@ -376,7 +376,8 @@ class ArkSpatialPlugin(Plugin):
                 self.grid = self._configureCollection('grid')
                 self.grid.loadCollection()
 
-                self.planModule.loadProject()
+                self.drawingModule.loadProject()
+                self.checkingModule.loadProject()
                 self.gridModule.loadProject()
                 self.filterModule.loadProject()
                 self._loaded = True
@@ -558,7 +559,7 @@ class ArkSpatialPlugin(Plugin):
         classCodes = sorted(set(self.plan.uniqueValues('class')))
         dialog = SelectItemDialog(Settings.siteCodes(), Settings.siteCode(), classCodes, self.iface.mainWindow())
         if dialog.exec_():
-            self.planModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())
+            self.drawingModule.showItem(dialog.item(), dialog.loadDrawings(), dialog.zoomToItem())
 
     def pullExcalibur(self):
         dialog = ProjectDialog(self.iface.mainWindow())

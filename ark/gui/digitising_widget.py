@@ -50,7 +50,6 @@ class DigitisingWidget(QWidget, Ui_DigitisingWidget):
         self.sourceWidget.sourceChanged.disconnect(self._updateSource)
 
     def loadProject(self, plugin):
-        utils.debug('Digitising loadProject')
         self.sourceWidget.loadProject(plugin)
         self.planFeatureWidget.loadProject(plugin, 'plan')
         self.sectionFeatureWidget.loadProject(plugin, 'section')

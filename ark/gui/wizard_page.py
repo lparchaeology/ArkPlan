@@ -36,10 +36,11 @@ from ArkSpatial.ark.pyARK import Ark
 
 class GlobalPage(QWizardPage):
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        super(GlobalPage, self).__init__(parent)
         self.crs = None
 
-    def initializePage(self):
+    def initializePage(self, parent=None):
         self.crs = Application.projectDefaultCrs()
         self.wizard().crsWidget.setCrs(self.crs)
         self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.LayerCrs, False)
@@ -55,7 +56,8 @@ class GlobalPage(QWizardPage):
 
 class ProjectPage(QWizardPage):
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        super(ProjectPage, self).__init__(parent)
         self.ark = None
         self.crs = None
 

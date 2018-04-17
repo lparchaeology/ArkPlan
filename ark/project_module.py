@@ -463,15 +463,15 @@ class ProjectModule(QObject):
         sourceKeys = set()
         sourceKeys.add(item)
         itemRequest = item.featureRequest()
-        for feature in self.collection().layer('polygons').getFeatures(itemRequest):
+        for feature in self.collection('plan').layer('polygons').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
-        for feature in self.collection().layer('lines').getFeatures(itemRequest):
+        for feature in self.collection('plan').layer('lines').getFeatures(itemRequest):
             source = Source(feature)
             if source.item.isValid():
                 sourceKeys.add(source.item())
-        for feature in self.collection().layer('points').getFeatures(itemRequest):
+        for feature in self.collection('plan').layer('points').getFeatures(itemRequest):
             source = Source(feature)
             if source.item().isValid():
                 sourceKeys.add(source.item())
@@ -630,7 +630,7 @@ class ProjectModule(QObject):
                 layer.changeAttributeValue(feature.id(), modifierIdx, user)
 
     def resetBuffers(self):
-        self.collection().resetBuffers('Clear Buffers')
+        self.collection('plan').resetBuffers('Clear Buffers')
         if self._editSchematic:
             self._editSchematic = False
             self.dock.activateSchematicCheck()
@@ -643,7 +643,7 @@ class ProjectModule(QObject):
         return ok and confirm == str(itemId)
 
     def _logItemAction(self, item, action, timestamp=None):
-        if self.collection().settings.log:
+        if self.collection('plan').settings.log:
             if not timestamp:
                 timestamp = utils.timestamp()
             fd = open(self._itemLogPath, 'a')
@@ -655,7 +655,7 @@ class ProjectModule(QObject):
         request = item.featureRequest()
         timestamp = utils.timestamp()
         action = 'Edit Item'
-        if self.collection().moveFeatureRequestToBuffers(request, action, Settings.logUpdates(), timestamp):
+        if self.collection('plan').moveFeatureRequestToBuffers(request, action, Settings.logUpdates(), timestamp):
             self._logItemAction(item, action, timestamp)
             self._metadataFromBuffers(item)
 
@@ -664,7 +664,7 @@ class ProjectModule(QObject):
             request = item.featureRequest()
             timestamp = utils.timestamp()
             action = 'Delete Item'
-            if self.collection().deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
+            if self.collection('plan').deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
                 self._logItemAction(item, action, timestamp)
 
     def applyItemActions(self,
@@ -763,9 +763,9 @@ class ProjectModule(QObject):
     def itemExtent(self, item):
         requestKey = self._plugin.data.nodesItem(item)
         request = requestKey.featureRequest()
-        points = self._requestAsLayer(request, self.collection().layer('points'), 'points')
-        lines = self._requestAsLayer(request, self.collection().layer('lines'), 'lines')
-        polygons = self._requestAsLayer(request, self.collection().layer('polygons'), 'polygons')
+        points = self._requestAsLayer(request, self.collection('plan').layer('points'), 'points')
+        lines = self._requestAsLayer(request, self.collection('plan').layer('lines'), 'lines')
+        polygons = self._requestAsLayer(request, self.collection('plan').layer('polygons'), 'polygons')
         extent = None
         extent = self._combineExtentWith(extent, polygons)
         extent = self._combineExtentWith(extent, lines)
@@ -792,7 +792,7 @@ class ProjectModule(QObject):
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
         request = self._classItemsRequest(siteCode, 'sec')
-        features = layers.getAllFeaturesRequest(request, self.collection().layer('lines'))
+        features = layers.getAllFeaturesRequest(request, self.collection('plan').layer('lines'))
         lst = []
         for feature in features:
             lst.append(Feature(feature))
@@ -802,29 +802,29 @@ class ProjectModule(QObject):
     def _sectionLineGeometry(self, item):
         if item and item.isValid():
             request = self._categoryRequest(item, 'sln')
-            features = layers.getAllFeaturesRequest(request, self.collection().layer('lines'))
+            features = layers.getAllFeaturesRequest(request, self.collection('plan').layer('lines'))
             for feature in features:
                 return QgsGeometry(feature.geometry())
         return QgsGeometry()
 
     def _metadataFromBuffers(self, item):
-        feature = self._getFeature(self.collection().buffer('polygons'), item, 'sch')
+        feature = self._getFeature(self.collection('plan').buffer('polygons'), item, 'sch')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.collection().buffer('polygons'), item, 'scs')
+        feature = self._getFeature(self.collection('plan').buffer('polygons'), item, 'scs')
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.collection().buffer('polygons'), item)
+        feature = self._getFeature(self.collection('plan').buffer('polygons'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.collection().buffer('lines'), item)
+        feature = self._getFeature(self.collection('plan').buffer('lines'), item)
         if feature:
             self.metadata.fromFeature(feature)
             return
-        feature = self._getFeature(self.collection().buffer('points'), item)
+        feature = self._getFeature(self.collection('plan').buffer('points'), item)
         if feature:
             self.metadata.fromFeature(feature)
 

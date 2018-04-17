@@ -185,7 +185,7 @@ class ProjectModule(QObject):
         # Unload the layers
         for collection in self._collections:
             self._collections[collection].unload()
-            self._collections.discard(collection)
+            del self._collections[collection]
         self._plugin.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
         self.initialised = False
 

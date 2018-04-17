@@ -521,10 +521,11 @@ class ProjectModule(QObject):
         if collection.mergeBuffers('Merge data', Settings.logUpdates(), timestamp):
             self._plugin.showInfoMessage(name + ' data successfully merged.')
             self._logItemAction(self.metadata.feature().item(), 'Merge Buffers', timestamp)
-            if self._editSchematic:
-                self._editSchematic = False
-                self.dock.activateSchematicCheck()
-                self._findContext()
+            # TODO Signal out layers merged for schematic dock to catch
+            # if self._editSchematic:
+            #     self._editSchematic = False
+            #     self.dock.activateSchematicCheck()
+            #     self._findContext()
         else:
             self._plugin.showCriticalMessage(
                 name + ' data merge failed! Some data has not been saved, please check your data.', 5)
@@ -631,9 +632,12 @@ class ProjectModule(QObject):
 
     def resetBuffers(self):
         self.collection('plan').resetBuffers('Clear Buffers')
-        if self._editSchematic:
-            self._editSchematic = False
-            self.dock.activateSchematicCheck()
+        self.collection('section').resetBuffers('Clear Buffers')
+        self.collection('site').resetBuffers('Clear Buffers')
+        # TODO Signal out layers reset for schematic dock to catch
+        # if self._editSchematic:
+        #     self._editSchematic = False
+        #     self.dock.activateSchematicCheck()
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item', label=None):
         if not label:

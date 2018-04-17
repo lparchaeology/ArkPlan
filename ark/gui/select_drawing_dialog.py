@@ -46,7 +46,7 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         for key in keys:
             classCode = Config.classCodes[key]
             if classCode['drawing']:
-                self.drawingTypeCombo.addItem(classCode['label'], classCode['code'])
+                self.drawingTypeCombo.addItem(classCode['label'], classCode['class'])
         self.drawingTypeCombo.setCurrentIndex(self.drawingTypeCombo.findData(drawingType))
         self.drawingTypeCombo.currentIndexChanged.connect(self._findFiles)
         self.findFilter = ReturnPressedFilter(self)

@@ -681,7 +681,7 @@ class ProjectModule(QObject):
             self.loadSourceDrawings(item, drawingAction == DrawingAction.LoadDrawings)
 
         if filterAction != FilterAction.NoFilterAction:
-            self._plugin.filterModule.applyItemAction(item, filterAction)
+            self._plugin.filter().applyItemAction(item, filterAction)
 
         if mapAction == MapAction.ZoomMap:
             self._zoomToItem(item)
@@ -693,7 +693,7 @@ class ProjectModule(QObject):
 
     def showItem(self, item, loadDrawings=True, zoom=True):
         self._plugin.showMessage('Loading ' + item.itemLabel())
-        self._plugin.filterModule.filterItem(item)
+        self._plugin.filter().filterItem(item)
         if loadDrawings:
             self.loadSourceDrawings(item, True)
         if zoom:
@@ -701,20 +701,20 @@ class ProjectModule(QObject):
 
     def panToItem(self, item, highlight=False):
         if highlight:
-            self._plugin.filterModule.highlightItem(item)
+            self._plugin.filter().highlightItem(item)
         self._panToItem(item)
         self._plugin.mapCanvas().refresh()
 
     def zoomToItem(self, item, highlight=False):
         if highlight:
-            self._plugin.filterModule.highlightItem(item)
+            self._plugin.filter().highlightItem(item)
         self._zoomToItem(item)
         self._plugin.mapCanvas().refresh()
 
     def moveToItem(self, item, highlight=False):
         ret = -1
         if highlight:
-            ret = self._plugin.filterModule.highlightItem(item)
+            ret = self._plugin.filter().highlightItem(item)
         self._moveToItem(item)
         self._plugin.mapCanvas().refresh()
         return ret
@@ -750,23 +750,23 @@ class ProjectModule(QObject):
         self._plugin.mapCanvas().setExtent(extent)
 
     def filterItem(self, item):
-        self._plugin.filterModule.filterItem(item)
+        self._plugin.filter().filterItem(item)
         self._plugin.mapCanvas().refresh()
 
     def excludeFilterItem(self, item):
-        self._plugin.filterModule.excludeItem(item)
+        self._plugin.filter().excludeItem(item)
         self._plugin.mapCanvas().refresh()
 
     def highlightItem(self, item):
-        self._plugin.filterModule.highlightItem(item)
+        self._plugin.filter().highlightItem(item)
         self._plugin.mapCanvas().refresh()
 
     def addHighlightItem(self, item):
-        self._plugin.filterModule.addHighlightItem(item)
+        self._plugin.filter().addHighlightItem(item)
         self._plugin.mapCanvas().refresh()
 
     def itemExtent(self, item):
-        requestKey = self._plugin.data.nodesItem(item)
+        requestKey = self._plugin.data().nodesItem(item)
         request = requestKey.featureRequest()
         points = self._requestAsLayer(request, self.collection('plan').layer('points'), 'points')
         lines = self._requestAsLayer(request, self.collection('plan').layer('lines'), 'lines')

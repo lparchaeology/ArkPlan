@@ -138,7 +138,7 @@ class FilterSet():
         settings.endArray()
 
     def _loadArk(self):
-        items = self._plugin.data.getFilterItems(self._group)
+        items = self._plugin.data().getFilterItems(self._group)
         siteItems = {}
         for item in items:
             if item.siteCode not in siteItems:
@@ -163,7 +163,7 @@ class FilterSet():
         selectString = ''
         firstSelect = True
         for clause in self._clauses:
-            filterItem = self._plugin.data.nodesItem(clause.key)
+            filterItem = self._plugin.data().nodesItem(clause.key)
             if clause.action == FilterType.Select:
                 if firstSelect:
                     firstSelect = False

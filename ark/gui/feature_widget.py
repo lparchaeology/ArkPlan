@@ -61,26 +61,32 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
             if classCode['source']:
-                self.classCombo.addItem(classCode['label'], classCode['code'])
+                self.classCombo.addItem(classCode['label'], classCode['class'])
 
         self._addStandardTool(
             FeatureType.Point, ':/plugins/ark/plan/editPoints.svg', u'Points Node Tool', self._editPointsLayer)
-        self._addStandardTool(FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg',
-                              u'Points Select Tool', self._selectPointsLayer)
+        self._addStandardTool(
+            FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg', u'Points Select Tool', self._selectPointsLayer
+        )
 
         self._addStandardTool(
-            FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer)
+            FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer
+        )
         self._addStandardTool(
-            FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer)
+            FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer
+        )
 
-        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg',
-                              u'Polygons Node Tool', self._editPolygonsLayer)
-        self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg',
-                              u'Polygons Select Tool', self._selectPolygonsLayer)
+        self._addStandardTool(
+            FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg', u'Polygons Node Tool', self._editPolygonsLayer
+        )
+        self._addStandardTool(
+            FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg', u'Polygons Select Tool', self._selectPolygonsLayer
+        )
         # TODO Make generic somehow
         if collection == 'plan':
-            self._addStandardTool(FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg',
-                                  u'Auto-Schematic Tool', self._autoSchematicSelected)
+            self._addStandardTool(
+                FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg', u'Auto-Schematic Tool', self._autoSchematicSelected
+            )
 
         self._addToolSpacer(self.pointToolLayout)
         self._pointTool = self._colMax
@@ -89,12 +95,14 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         self._addToolSpacer(self.polygonToolLayout)
         self._polygonTool = self._colMax
 
-        for feature in Config.featureCategories[collection]:
-            if 'query' not in feature:
-                feature['query'] = None
+        for feature in Config.featureCollections[collection]:
+            category = Config.featureCategories[feature['category']]
+            if 'query' not in category:
+                category['query'] = None
             self._addDrawingTool(
-                feature['class'], feature['category'], feature['name'], QIcon(), feature['type'], feature['query'])
-            if feature['definitive'] is True:
+                feature['class'], feature['category'], category['name'], QIcon(), category['type'], category['query']
+            )
+            if category['definitive'] is True:
                 self._definitiveCategories.add(feature['category'])
 
         self.idEdit.editingFinished.connect(self.featureChanged)

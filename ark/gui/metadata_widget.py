@@ -51,9 +51,9 @@ class MetadataWidget(QGroupBox, Ui_MetadataWidget):
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
             if classCode['plan']:
-                self.classCombo.addItem(classCode['label'], classCode['code'])
+                self.classCombo.addItem(classCode['label'], classCode['class'])
             if classCode['source']:
-                self.sourceClassCombo.addItem(classCode['label'], classCode['code'])
+                self.sourceClassCombo.addItem(classCode['label'], classCode['class'])
 
         for key in Config.sourceCodesOrder:
             sourceCode = Config.sourceCodes[key]

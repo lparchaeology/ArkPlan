@@ -76,7 +76,7 @@ class DataDock(ToolDockWidget):
 
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
-            self.widget.classCodeCombo.addItem(classCode['label'], classCode['code'])
+            self.widget.classCodeCombo.addItem(classCode['label'], classCode['class'])
 
         self._showItemAction = QAction(QIcon(':/plugins/ark/filter/showContext.png'), self.tr(u'Show Item'), self)
         self._showItemAction.triggered.connect(self.showItemSelected)

@@ -138,7 +138,7 @@ class FilterModule(QObject):
             if classCode['collection']:
                 codeList.add(key)
             elif classCode['group']:
-                codeList.add(classCode['code'])
+                codeList.add(classCode['class'])
         codes = {}
         for code in sorted(codeList):
             codes[code] = code

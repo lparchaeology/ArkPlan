@@ -180,7 +180,6 @@ class ArkSpatialPlugin(Plugin):
             self._filterModule.unloadGui()
             self._gridModule.unloadGui()
             self._trenchModule.unloadGui()
-            self._projectModule.unloadGui()
 
             self._initialised = False
 
@@ -195,6 +194,7 @@ class ArkSpatialPlugin(Plugin):
         del self._topoAction
 
         # Removes the plugin menu item and icon from QGIS GUI.
+        self._projectModule.unloadGui()
         super(ArkSpatialPlugin, self).unload()
 
     def run(self, checked):

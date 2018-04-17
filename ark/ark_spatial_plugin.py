@@ -180,6 +180,7 @@ class ArkSpatialPlugin(Plugin):
             self._filterModule.unloadGui()
             self._gridModule.unloadGui()
             self._trenchModule.unloadGui()
+            self._projectModule.unloadGui()
 
             self._initialised = False
 
@@ -192,9 +193,6 @@ class ArkSpatialPlugin(Plugin):
         self.iface.removeToolBarIcon(self._topoAction)
         self._topoAction.unload()
         del self._topoAction
-
-        # Unload the project dock and uninitialise
-        self._projectModule.unloadGui()
 
         # Removes the plugin menu item and icon from QGIS GUI.
         super(ArkSpatialPlugin, self).unload()

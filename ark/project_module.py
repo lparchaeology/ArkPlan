@@ -186,7 +186,7 @@ class ProjectModule(QObject):
         for collection in self._collections:
             self._collections[collection].unload()
         del self._collections
-        self._collections = None
+        self._collections = {}
         self._plugin.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
         self.initialised = False
 

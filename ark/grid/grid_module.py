@@ -58,7 +58,7 @@ class GridModule(QObject):
     # Load the module when plugin is loaded
     def initGui(self):
         self.dock = GridDock()
-        action = self.plugin.addDockAction(
+        action = self.plugin.project().addDockAction(
             ':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
         self.dock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
 
@@ -146,7 +146,7 @@ class GridModule(QObject):
             self._vertexMarker.setCenter(QgsPoint())
 
     def collection(self):
-        return self.plugin.grid
+        return self.plugin.project().collection('grid')
 
     def loadGridNames(self):
         self.collection().clearFilter()

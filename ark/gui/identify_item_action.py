@@ -29,7 +29,7 @@ from qgis.core import QGis
 
 from ArkSpatial.ark.lib.gui import ClipboardAction
 
-from ArkSpatial.ark.core import Config, Item, Source, Settings
+from ArkSpatial.ark.core import Config, Item, Settings, Source
 
 from open_ark_action import OpenArkAction
 
@@ -59,7 +59,7 @@ class IdentifyItemAction(QAction):
         area = []
         haveSchematic = False
         sectionSchematics = []
-        for feature in plugin.plan.layer('polygons').getFeatures(item.featureRequest()):
+        for feature in plugin.project().collection('plan').layer('polygons').getFeatures(item.featureRequest()):
             category = feature.attribute('category')
             if category == 'sch' or category == 'scs':
                 haveSchematic = True
@@ -118,10 +118,10 @@ class IdentifyItemAction(QAction):
         else:
             menu.addAction('No Schematic')
         if item.classCode() == 'context':
-            subItem = plugin.data.parentItem(item)
+            subItem = plugin.data().parentItem(item)
             if subItem and subItem.isValid():
                 menu.addSeparator()
-                grpItem = plugin.data.parentItem(subItem)
+                grpItem = plugin.data().parentItem(subItem)
                 if Settings.siteServerUrl():
                     self.subAction = OpenArkAction(
                         Settings.siteServerUrl(), subItem, 'Sub-group: ' + str(subItem.itemId()), parent)

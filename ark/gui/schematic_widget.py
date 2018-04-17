@@ -107,7 +107,6 @@ class SchematicWidget(QWidget, Ui_SchematicWidget):
         pass
 
     def loadProject(self, plugin):
-        utils.debug('Schematic widget loadProject')
         if Settings.siteServerUrl():
             self.loadArkTool.setEnabled(True)
         self._enableArkNav(False)

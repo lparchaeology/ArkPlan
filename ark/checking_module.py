@@ -26,19 +26,15 @@ import bisect
 import copy
 import os
 
-from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
-from PyQt4.QtGui import QFileDialog, QInputDialog
-
-from qgis.core import NULL, QgsFeatureRequest, QgsGeometry
+from PyQt4.QtCore import QObject, Qt
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import layers
 from ArkSpatial.ark.lib.gui import TableDialog
 
-from ArkSpatial.ark.core import Config, Drawing, Feature, FeatureError, Item, Source, Settings
+from ArkSpatial.ark.core import Drawing, Feature, FeatureError, Item, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction, SearchStatus
-from ArkSpatial.ark.georef import GeorefDialog
-from ArkSpatial.ark.gui import FeatureErrorDialog, CheckingDock, SelectDrawingDialog
+from ArkSpatial.ark.gui import CheckingDock
 
 
 class CheckingModule(QObject):
@@ -47,7 +43,7 @@ class CheckingModule(QObject):
         super(CheckingModule, self).__init__(plugin)
 
         # Project settings
-        self.plugin = plugin  # Plugin()
+        self._plugin = plugin  # Plugin()
         self.dock = None  # CheckingDock()
         self.initialised = False
 
@@ -60,10 +56,10 @@ class CheckingModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = CheckingDock(self.plugin.iface.mainWindow())
-        action = self.plugin.addDockAction(
+        self.dock = CheckingDock(self._plugin.iface.mainWindow())
+        action = self._plugin.project().addDockAction(
             ':/plugins/ark/plan/schematicReport.svg', self.tr(u'Checking Tools'), callback=self.run, checkable=True)
-        self.dock.initGui(self.plugin.iface, Qt.RightDockWidgetArea, action)
+        self.dock.initGui(self._plugin.iface, Qt.RightDockWidgetArea, action)
 
         self.dock.loadArkData.connect(self._loadArkData)
         self.dock.mapActionChanged.connect(self._mapActionChanged)
@@ -88,13 +84,13 @@ class CheckingModule(QObject):
         self.dock.contextChanged.connect(self._clearSchematicFilters)
         self.dock.resetSchematicSelected.connect(self._resetSchematic)
 
-        self.plugin.filterModule.filterSetCleared.connect(self._clearSchematic)
+        self._plugin.filter().filterSetCleared.connect(self._clearSchematic)
 
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
-        self.dock.loadProject(self.plugin)
-        self.plugin.data.dataLoaded.connect(self.dock.activateArkData)
+        self.dock.loadProject(self._plugin)
+        self._plugin.data().dataLoaded.connect(self.dock.activateArkData)
         self.initialised = True
 
     # Save the project
@@ -107,7 +103,7 @@ class CheckingModule(QObject):
         self._clearSchematicFilters()
         # TODO Unload the drawing tools!
         self.dock.closeProject()
-        # self.plugin.data.dataLoaded.disconnect(self.dock.activateArkData)
+        # self._plugin.data().dataLoaded.disconnect(self.dock.activateArkData)
         self.initialised = False
 
     # Unload the module when plugin is unloaded
@@ -120,19 +116,19 @@ class CheckingModule(QObject):
 
     def run(self, checked):
         if checked and self.initialised:
-            self.plugin.filterModule.showDock()
+            pass
         else:
             self.dock.menuAction().setChecked(False)
 
     # Plan Tools
 
     def collection(self):
-        return self.plugin.plan
+        return self._plugin.project().collection('plan')
 
     # SchematicDock methods
 
     def _loadArkData(self):
-        self.plugin.data.loadData()
+        self._plugin.data().loadData()
 
     def _mapActionChanged(self, mapAction):
         self._mapAction = mapAction
@@ -150,7 +146,7 @@ class CheckingModule(QObject):
         self.openItemInArk(self.dock.sourceItem())
 
     def openItemInArk(self, item):
-        self.plugin.data.openItem(item)
+        self._plugin.data().openItem(item)
 
     def _resetSchematic(self):
         self._clearSchematic()
@@ -165,28 +161,28 @@ class CheckingModule(QObject):
         self._findContext()
 
     def _clearSchematicFilters(self):
-        self.plugin.filterModule.clearSchematicFilter()
+        self._plugin.filter().clearSchematicFilter()
 
     def _firstContext(self):
-        self._findContext(self.plugin.data.firstItem('context'))
+        self._findContext(self._plugin.data().firstItem('context'))
 
     def _lastContext(self):
-        self._findContext(self.plugin.data.lastItem('context'))
+        self._findContext(self._plugin.data().lastItem('context'))
 
     def _prevContext(self):
-        self._findContext(self.plugin.data.prevItem(self.dock.contextItem()))
+        self._findContext(self._plugin.data().prevItem(self.dock.contextItem()))
 
     def _nextContext(self):
-        self._findContext(self.plugin.data.nextItem(self.dock.contextItem()))
+        self._findContext(self._plugin.data().nextItem(self.dock.contextItem()))
 
     def _prevMissing(self):
         context = self.dock.contextItem()
         idx = 0
         if context.isValid():
-            idx = bisect.bisect_left(self.plugin.data.items['context'], context)
+            idx = bisect.bisect_left(self._plugin.data().items['context'], context)
         schematics = self._getAllSchematicItems()
         for prv in reversed(range(idx)):
-            item = self.plugin.data.items['context'][prv]
+            item = self._plugin.data().items['context'][prv]
             if item not in schematics:
                 self._findContext(item)
                 return
@@ -195,9 +191,9 @@ class CheckingModule(QObject):
         context = self.dock.contextItem()
         idx = 0
         if context.isValid():
-            idx = bisect.bisect(self.plugin.data.items['context'], context)
+            idx = bisect.bisect(self._plugin.data().items['context'], context)
         schematics = self._getAllSchematicItems()
-        for item in self.plugin.data.items['context'][idx:]:
+        for item in self._plugin.data().items['context'][idx:]:
             if item not in schematics:
                 self._findContext(item)
                 return
@@ -236,9 +232,9 @@ class CheckingModule(QObject):
         contextType = 'None'
         contextDescription = ''
         try:
-            if item in self.plugin.data.items['context']:
+            if item in self._plugin.data().items['context']:
                 haveArk = SearchStatus.Found
-                vals = self.plugin.data.getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
+                vals = self._plugin.data().getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
                 if (u'conf_field_cxttype' in vals and vals[u'conf_field_cxttype']):
                     contextType = str(vals[u'conf_field_cxttype'])
                 if u'conf_field_short_desc' in vals:
@@ -273,7 +269,7 @@ class CheckingModule(QObject):
         if not context.isValid():
             context = self.dock.contextItem()
 
-        self.plugin.filterModule.applySchematicFilter(context, self._filterAction)
+        self._plugin.filter().applySchematicFilter(context, self._filterAction)
         self.applyItemActions(context, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
 
         haveArk, contextType, contextDescription = self._arkStatus(context)
@@ -308,7 +304,7 @@ class CheckingModule(QObject):
         if not source.isValid():
             source = self.dock.sourceItem()
 
-        self.plugin.filterModule.applySchematicFilter(source, self._filterAction)
+        self._plugin.filter().applySchematicFilter(source, self._filterAction)
         self.applyItemActions(source, self._mapAction, FilterAction.NoFilterAction, self._drawingAction)
 
         haveArk, contextType, contextDescription = self._arkStatus(source)
@@ -358,10 +354,10 @@ class CheckingModule(QObject):
         self._copySourceSchematic()
         self._editSchematic = True
         self.dock.widget.setCurrentIndex(0)
-        self.plugin.iface.setActiveLayer(self.collection().buffer('polygons'))
-        self.plugin.iface.actionZoomToLayer().trigger()
+        self._plugin.iface.setActiveLayer(self.collection().buffer('polygons'))
+        self._plugin.iface.actionZoomToLayer().trigger()
         self.collection().buffer('polygons').selectAll()
-        self.plugin.iface.actionNodeTool().trigger()
+        self._plugin.iface.actionNodeTool().trigger()
 
     def _cloneSourceSchematic(self):
         self._clearSchematicFilters()
@@ -384,19 +380,19 @@ class CheckingModule(QObject):
         for feature in self.collection().layer('polygons').getFeatures(scsRequest):
             schematics.add(Item(feature))
         missing = []
-        contexts = self.plugin.data.items['context']
+        contexts = self._plugin.data().items['context']
         for context in contexts:
             if context not in schematics:
                 row = {}
                 row['Site Code'] = context.siteCode()
                 row['Context'] = context.itemId()
-                itemData = self.plugin.data.getItemData(context)
+                itemData = self._plugin.data().getItemData(context)
                 try:
                     row['Type'] = itemData['context_type']
                 except Exception:
                     row['Type'] = ''
                     try:
-                        vals = self.plugin.data.getItemFields(context, ['conf_field_cxttype'])
+                        vals = self._plugin.data().getItemFields(context, ['conf_field_cxttype'])
                         row['Type'] = vals[u'conf_field_cxttype']
                     except Exception:
                         row['Type'] = ''

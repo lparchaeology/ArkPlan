@@ -48,6 +48,9 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._vertexMarker = QgsVertexMarker(plugin.mapCanvas())
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
 
+    def collection(self):
+        return self._plugin.project().collection('plan')
+
     def deactivate(self):
         self._reset()
         super(MapToolIndentifyItems, self).deactivate()
@@ -61,8 +64,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
             return
         mapPoint = self.toMapCoordinates(e.pos())
         self._vertexMarker.setCenter(mapPoint)
-        layers = [self._plugin.plan.layer('points'), self._plugin.plan.layer('lines'),
-                  self._plugin.plan.layer('polygons')]
+        layers = [self.collection().layer('points'), self.collection().layer('lines'),
+                  self.collection().layer('polygons')]
         results = self.identify(e.x(), e.y(), layers, QgsMapToolIdentify.TopDownAll)
         if (len(results) < 1):
             return
@@ -102,8 +105,8 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         action = ClipboardAction('Map: ', mapPoint.toString(3), self._menu)
         action.setData('top')
         self._menu.addAction(action)
-        if self._plugin.gridModule.mapTransformer is not None:
-            localPoint = self._plugin.gridModule.mapTransformer.map(mapPoint)
+        if self._plugin.grid().mapTransformer is not None:
+            localPoint = self._plugin.grid().mapTransformer.map(mapPoint)
             self._menu.addAction(ClipboardAction('Local: ', localPoint.toString(3), self._menu))
         menuPos = QPoint(e.globalX() + 100, e.globalY() - 50)
         selected = self._menu.exec_(menuPos)
@@ -129,12 +132,12 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         if not isinstance(item, IdentifyItemAction):
             return
         request = item.item.featureRequest()
-        for feature in self._plugin.plan.layer('polygons').getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('polygons'))
-        for feature in self._plugin.plan.layer('lines').getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('lines'))
-        for feature in self._plugin.plan.layer('points').getFeatures(request):
-            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self._plugin.plan.layer('points'))
+        for feature in self.collection().layer('polygons').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self.collection().layer('polygons'))
+        for feature in self.collection().layer('lines').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self.collection().layer('lines'))
+        for feature in self.collection().layer('points').getFeatures(request):
+            self._addHighlight(self._plugin.mapCanvas(), feature.geometry(), self.collection().layer('points'))
 
     def _addHighlight(self, canvas, geometry, layer):
         hl = QgsHighlight(canvas, geometry, layer)
@@ -150,28 +153,28 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
         self._highlights.append(hl)
 
     def _zoom(self, item):
-        self._plugin.drawingModule.zoomToItem(item, highlight=True)
+        self.project().zoomToItem(item, highlight=True)
 
     def _pan(self, item):
-        self._plugin.drawingModule.moveToItem(item, highlight=True)
+        self.project().moveToItem(item, highlight=True)
 
     def _filterItem(self, item):
-        self._plugin.drawingModule.filterItem(item)
+        self.project().filterItem(item)
 
     def _excludeFilterItem(self, item):
-        self._plugin.drawingModule.excludeFilterItem(item)
+        self.project().excludeFilterItem(item)
 
     def _highlightItem(self, item):
-        self._plugin.drawingModule.highlightItem(item)
+        self.project().highlightItem(item)
 
     def _addHighlightItem(self, item):
-        self._plugin.drawingModule.addHighlightItem(item)
+        self.project().addHighlightItem(item)
 
     def _openDrawings(self, item):
-        self._plugin.drawingModule.loadDrawing(item)
+        self.project().loadDrawing(item)
 
     def _editInBuffers(self, item):
-        self._plugin.drawingModule.editInBuffers(item)
+        self.project().editInBuffers(item)
 
     def _delete(self, item):
-        self._plugin.drawingModule.deleteItem(item)
+        self.project().deleteItem(item)

@@ -43,7 +43,7 @@ class FilterModule(QObject):
     def __init__(self, plugin):
         super(FilterModule, self).__init__(plugin)
 
-        self.plugin = plugin  # Plugin()
+        self._plugin = plugin  # Plugin()
 
         # Internal variables
         self.dock = None  # FilterDock()
@@ -58,10 +58,10 @@ class FilterModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = FilterDock(self.plugin.iface.mainWindow())
-        action = self.plugin.addDockAction(
+        self.dock = FilterDock(self._plugin.iface.mainWindow())
+        action = self._plugin.project().addDockAction(
             ':/plugins/ark/filter/filter.png', self.tr(u'Filter Tools'), callback=self.run, checkable=True)
-        self.dock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self._plugin.iface, Qt.LeftDockWidgetArea, action)
 
         self.dock.filterChanged.connect(self._filterChanged)
         self.dock.filterClauseAdded.connect(self._filterChanged)
@@ -94,10 +94,10 @@ class FilterModule(QObject):
 
         # Respond to ARK data load
         self._enableArkData()
-        self.plugin.data.dataLoaded.connect(self._activateArkData)
+        self._plugin.data().dataLoaded.connect(self._activateArkData)
 
         # Init the schematic filter set
-        self._schematicFilterSet = FilterSet.fromSchematic(self.plugin)
+        self._schematicFilterSet = FilterSet.fromSchematic(self._plugin)
 
         self._initialised = True
         self.setFilterSet('Default')
@@ -110,7 +110,7 @@ class FilterModule(QObject):
 
     # Close the project
     def closeProject(self):
-        self.plugin.data.dataLoaded.disconnect(self._activateArkData)
+        self._plugin.data().dataLoaded.disconnect(self._activateArkData)
         # FIXME Doesn't clear on quit as layers already unloaded by main program!
         self.removeFilters()
         # Reset the initialisation
@@ -126,6 +126,9 @@ class FilterModule(QObject):
 
     def showDock(self, show=True):
         self.dock.menuAction().setChecked(show)
+
+    def collection(self):
+        return self._plugin.project().collection('plan')
 
     def _loadClassCodes(self):
         # Load the Class Codes
@@ -291,14 +294,14 @@ class FilterModule(QObject):
     def applyHighlightFilters(self):
         if not self._initialised:
             return
-        self.plugin.plan.clearHighlight()
+        self.collection().clearHighlight()
         self._applyHighlightClauses(self.currentFilterSet().clauses())
         self._applyHighlightClauses(self._schematicFilterSet.clauses())
 
     def _applyHighlightClauses(self, clauses):
         for clause in clauses:
             if clause.action == FilterType.Highlight:
-                filterItem = self.plugin.data.nodesItem(clause.item)
+                filterItem = self._plugin.data().nodesItem(clause.item)
                 self.addHighlight(filterItem.filterClause(), clause.lineColor(), clause.color)
 
     def clearFilters(self):
@@ -306,50 +309,50 @@ class FilterModule(QObject):
         self.setFilterSet('Default')
 
     def _clearFilters(self):
-        self.plugin.plan.clearFilter()
-        self.plugin.plan.clearSelection()
-        self.plugin.plan.clearHighlight()
+        self.collection().clearFilter()
+        self.collection().clearSelection()
+        self.collection().clearHighlight()
 
     def applyFilter(self, expression):
         if not self._initialised:
             return
-        self.plugin.plan.applyFilter(expression)
+        self.collection().applyFilter(expression)
 
     def applySelection(self, expression):
-        self.plugin.plan.applySelection(expression)
+        self.collection().applySelection(expression)
 
     def applyHighlight(self, expression, lineColor=None, fillColor=None):
-        self.plugin.plan.applyHighlight(expression, lineColor, fillColor, 0.1, 0.1)
+        self.collection().applyHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
     def addHighlight(self, expression, lineColor=None, fillColor=None):
-        self.plugin.plan.addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
+        self.collection().addHighlight(expression, lineColor, fillColor, 0.1, 0.1)
 
     def buildFilter(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
-        dialog.setExpressionText(self.plugin.plan.filter)
+        dialog = QgsExpressionBuilderDialog(self.collection().layer('lines'))
+        dialog.setExpressionText(self.collection().filter)
         if (dialog.exec_()):
             self.applyFilter(dialog.expressionText())
 
     def buildSelection(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
-        dialog.setExpressionText(self.plugin.plan.selection)
+        dialog = QgsExpressionBuilderDialog(self.collection().layer('lines'))
+        dialog.setExpressionText(self.collection().selection)
         if (dialog.exec_()):
             self.applySelection(dialog.expressionText())
 
     def buildHighlight(self):
-        dialog = QgsExpressionBuilderDialog(self.plugin.plan.layer('lines'))
-        dialog.setExpressionText(self.plugin.plan.highlight)
+        dialog = QgsExpressionBuilderDialog(self.collection().layer('lines'))
+        dialog.setExpressionText(self.collection().highlight)
         if (dialog.exec_()):
             self.applyHighlight(dialog.expressionText())
 
     def _loadArkData(self):
-        self.plugin.data.loadData()
+        self._plugin.data().loadData()
 
     def _refreshArkData(self):
-        self.plugin.data.refreshData()
+        self._plugin.data().refreshData()
 
     def zoomFilter(self):
-        self.plugin.plan.zoomToExtent()
+        self.collection().zoomToExtent()
 
     # Filter Set methods
 
@@ -378,18 +381,18 @@ class FilterModule(QObject):
         groups = settings.childGroups()
         settings.endGroup()
         for group in groups:
-            filterSet = FilterSet.fromSettings(self.plugin, 'ARK.filterset', group)
+            filterSet = FilterSet.fromSettings(self._plugin, 'ARK.filterset', group)
             self._filterSets[filterSet.key] = filterSet
         if 'Default' not in self._filterSets:
-            filterSet = FilterSet.fromName(self.plugin, 'ARK.filterset', 'Default', 'Default')
+            filterSet = FilterSet.fromName(self._plugin, 'ARK.filterset', 'Default', 'Default')
             self._filterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _loadArkFilterSets(self):
         self._arkFilterSets = {}
-        filters = self.plugin.data.getFilters()
+        filters = self._plugin.data().getFilters()
         for key in filters:
-            filterSet = FilterSet.fromArk(self.plugin, key, filters[key])
+            filterSet = FilterSet.fromArk(self._plugin, key, filters[key])
             self._arkFilterSets[filterSet.key] = filterSet
         self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
@@ -417,7 +420,7 @@ class FilterModule(QObject):
             self._filterSets[key].setClauses(self.dock.filterClauses())
             self._filterSets[key].save()
         else:
-            filterSet = FilterSet.fromName(self.plugin, 'ARK.filterset', key, name)
+            filterSet = FilterSet.fromName(self._plugin, 'ARK.filterset', key, name)
             filterSet.setClauses(self.dock.filterClauses())
             filterSet.save()
             self._filterSets[key] = filterSet
@@ -456,8 +459,8 @@ class FilterModule(QObject):
     def _exportSchematic(self, key, name, schematicColor):
         if self._filterSetGroupIndex < 0:
             self._filterSetGroupIndex = layers.createLayerGroup(
-                self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
-        layer = self.plugin.plan.layer('polygons')
+                self._plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
+        layer = self.collection().layer('polygons')
         mem = layers.cloneAsMemoryLayer(layer, name, 'DefaultStyle')
         mem.rendererV2().symbols()[0].setColor(schematicColor)
         mem.startEditing()
@@ -466,16 +469,16 @@ class FilterModule(QObject):
             if feature.attribute('category') == 'sch':
                 mem.addFeature(feature)
         mem.commitChanges()
-        mem = layers.addLayerToLegend(self.plugin.iface, mem, self._filterSetGroupIndex)
+        mem = layers.addLayerToLegend(self._plugin.iface, mem, self._filterSetGroupIndex)
 
     def _exportLayers(self, key, name):
         if self._filterSetGroupIndex < 0:
             self._filterSetGroupIndex = layers.createLayerGroup(
-                self.plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
-        exportGroup = layers.createLayerGroup(self.plugin.iface, name, Config.filterSetGroupName)
-        pgMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('polygons'), key + '_pg')
-        plMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('lines'), key + '_pl')
-        ptMem = layers.duplicateAsMemoryLayer(self.plugin.plan.layer('points'), key + '_pt')
-        layers.addLayerToLegend(self.plugin.iface, pgMem, exportGroup)
-        layers.addLayerToLegend(self.plugin.iface, plMem, exportGroup)
-        layers.addLayerToLegend(self.plugin.iface, ptMem, exportGroup)
+                self._plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
+        exportGroup = layers.createLayerGroup(self._plugin.iface, name, Config.filterSetGroupName)
+        pgMem = layers.duplicateAsMemoryLayer(self.collection().layer('polygons'), key + '_pg')
+        plMem = layers.duplicateAsMemoryLayer(self.collection().layer('lines'), key + '_pl')
+        ptMem = layers.duplicateAsMemoryLayer(self.collection().layer('points'), key + '_pt')
+        layers.addLayerToLegend(self._plugin.iface, pgMem, exportGroup)
+        layers.addLayerToLegend(self._plugin.iface, plMem, exportGroup)
+        layers.addLayerToLegend(self._plugin.iface, ptMem, exportGroup)

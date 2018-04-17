@@ -26,7 +26,7 @@ import bisect
 import csv
 import webbrowser
 
-from PyQt4.QtCore import QFile, QObject, Qt, pyqtSignal
+from PyQt4.QtCore import QObject, Qt, pyqtSignal
 from PyQt4.QtGui import QApplication, QSortFilterProxyModel
 
 from ArkSpatial.ark.lib import utils
@@ -46,7 +46,7 @@ class DataModule(QObject):
     def __init__(self, plugin):
         super(DataModule, self).__init__(plugin)
 
-        self.plugin = plugin  # Plugin()
+        self._plugin = plugin  # Plugin()
         self.items = {}  # {classCode: [Item]}
 
         # Internal variables
@@ -66,10 +66,10 @@ class DataModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = DataDock(self.plugin.iface.mainWindow())
-        action = self.plugin.addDockAction(
+        self.dock = DataDock(self._plugin.iface.mainWindow())
+        action = self._plugin.project().addDockAction(
             ':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
-        self.dock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
+        self.dock.initGui(self._plugin.iface, Qt.LeftDockWidgetArea, action)
 
         self.dock.itemChanged.connect(self._itemChanged)
 
@@ -155,9 +155,9 @@ class DataModule(QObject):
             return False
         response = self._ark.getItems(classCode + '_cd')
         if response.error:
-            self.plugin.logMessage(response.url)
-            self.plugin.logMessage(response.message)
-            self.plugin.logMessage(response.raw)
+            self._plugin.logMessage(response.url)
+            self._plugin.logMessage(response.message)
+            self._plugin.logMessage(response.raw)
         else:
             lst = response.data[classCode]
             items = set()
@@ -166,7 +166,7 @@ class DataModule(QObject):
                 if item.isValid():
                     items.add(item)
             self.items[classCode] = sorted(items)
-            self.plugin.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.items[classCode])))
+            self._plugin.logMessage('ARK Items ' + classCode + ' = ' + str(len(self.items[classCode])))
             if (len(self.items[classCode]) > 0):
                 self._indexLoaded = True
                 return True
@@ -174,7 +174,7 @@ class DataModule(QObject):
 
     def haveItem(self, item):
         try:
-            return item in self.plugin.data.items[item.classCode()]
+            return item in self._plugin.data().items[item.classCode()]
         except KeyError:
             return False
 
@@ -211,9 +211,9 @@ class DataModule(QObject):
 
     def openItem(self, item):
         if not Settings.siteServerUrl():
-            self.plugin.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
+            self._plugin.showWarningMessage('ARK link not configured, please set the ARK URL in Settings.')
         elif not self.haveItem(item):
-            self.plugin.showWarningMessage('Item not in ARK.')
+            self._plugin.showWarningMessage('Item not in ARK.')
         else:
             mod_cd = item.classCode() + '_cd'
             item_cd = item.siteCode() + '_' + item.itemId()
@@ -222,7 +222,7 @@ class DataModule(QObject):
                 webbrowser.get().open_new_tab(url)
             except Exception:
                 QApplication.clipboard().setText(url)
-                self.plugin.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
+                self._plugin.showWarningMessage('Unable to open browser, ARK link has been copied to the clipboard')
 
     def _getOnlineLinks(self, item, linkClassCode):
         if not Settings.siteServerUrl():
@@ -338,14 +338,14 @@ class DataModule(QObject):
                      ):
         self.dock.setItem(item)
         self._showItem(item)
-        self.plugin.drawingModule.applyItemActions(item, mapAction, filterAction, drawingAction)
+        self._plugin.project().applyItemActions(item, mapAction, filterAction, drawingAction)
 
     def _itemChanged(self):
         item = self.dock.item()
         if self._prevItem == item:
             return
         self._showItem(item)
-        self.plugin.drawingModule.applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
+        self._plugin.project().applyItemActions(item, self._mapAction, self._filterAction, self._drawingAction)
 
     def _showItem(self, item):
         if not Settings.siteServerUrl():
@@ -378,7 +378,7 @@ class DataModule(QObject):
         self._itemChanged()
 
     def _openItemData(self):
-        self.plugin.drawingModule.openItemInArk(self.dock.item())
+        self._plugin.project().openItemInArk(self.dock.item())
 
     def _nextItemSelected(self):
         self.dock.setItem(self.nextItem(self.dock.item()))
@@ -389,19 +389,19 @@ class DataModule(QObject):
         self._itemChanged()
 
     def _showItemSelected(self):
-        self.plugin.drawingModule.showItem(self.dock.item())
+        self._plugin.project().showItem(self.dock.item())
 
     def _zoomItemSelected(self):
-        self.plugin.drawingModule.zoomToItem(self.dock.item())
+        self._plugin.project().zoomToItem(self.dock.item())
 
     def _filterItemSelected(self):
-        self.plugin.drawingModule.filterItem(self.dock.item())
+        self._plugin.project().filterItem(self.dock.item())
 
     def _editItemSelected(self):
-        self.plugin.drawingModule.editInBuffers(self.dock.item())
+        self._plugin.project().editInBuffers(self.dock.item())
 
     def _loadDrawingsSelected(self):
-        self.plugin.drawingModule.loadSourceDrawings(self.dock.item())
+        self._plugin.project().loadSourceDrawings(self.dock.item())
 
     def _itemLinkClicked(self, url):
         item_key = ''

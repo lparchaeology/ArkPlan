@@ -32,7 +32,7 @@ class TrenchModule(QObject):
     def __init__(self, plugin):
         super(TrenchModule, self).__init__(plugin)
 
-        self.plugin = plugin  # Plugin()
+        self._plugin = plugin  # Plugin()
 
         # Internal variables
         self.dock = None  # FilterDock()
@@ -42,14 +42,14 @@ class TrenchModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = TrenchDock(self.plugin.iface.mainWindow())
-        action = self.plugin.addDockAction(
+        self.dock = TrenchDock(self._plugin.iface.mainWindow())
+        action = self._plugin.project().addDockAction(
             ':/plugins/ark/filter/filter.png',
             self.tr(u'Trench Tools'),
             callback=self.run,
             checkable=True
         )
-        self.dock.initGui(self.plugin.iface, Qt.RightDockWidgetArea, action)
+        self.dock.initGui(self._plugin.iface, Qt.RightDockWidgetArea, action)
 
     # Load the project settings when project is loaded
     def loadProject(self):

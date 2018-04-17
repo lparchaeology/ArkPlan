@@ -46,11 +46,12 @@ class GridWizard(QWizard, Ui_GridWizard):
         self._mapTool = None  # MapToolEmitPoint
 
         self.setupUi(self)
-        self.gridFolderEdit.setText(plugin.grid.settings.collectionPath)
-        self.gridGroupNameEdit.setText(plugin.grid.settings.collectionGroupName)
-        self.gridPointsNameEdit.setText(plugin.grid.layer('points').id())
-        self.gridLinesNameEdit.setText(plugin.grid.layer('lines').id())
-        self.gridPolygonsNameEdit.setText(plugin.grid.layer('polygons').id())
+        collection = plugin.project().collection('grid')
+        self.gridFolderEdit.setText(collection.settings.collectionPath)
+        self.gridGroupNameEdit.setText(collection.settings.collectionGroupName)
+        self.gridPointsNameEdit.setText(collection.layer('points').id())
+        self.gridLinesNameEdit.setText(collection.layer('lines').id())
+        self.gridPolygonsNameEdit.setText(collection.layer('polygons').id())
         self.siteCodeEdit.setText(Settings.siteCode())
         self.mapPoint1FromMapButton.clicked.connect(self.getPoint1FromMap)
         self.mapPoint2FromMapButton.clicked.connect(self.getPoint2FromMap)

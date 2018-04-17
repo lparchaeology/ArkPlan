@@ -35,5 +35,10 @@ class ProjectDock(ToolDockWidget):
         self.setWindowTitle(u'ARK Project Browser')
         self.setObjectName(u'ProjectDock')
 
-    def initGui(self, iface, location, menuAction):
-        super(ProjectDock, self).initGui(iface, location, menuAction)
+    # Load the project settings when project is loaded
+    def loadProject(self, plugin):
+        self.widget.loadProject(plugin)
+
+    # Close the project
+    def closeProject(self):
+        self.widget.closeProject()

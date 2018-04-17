@@ -106,7 +106,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
                 action.setChecked(False)
 
     def loadProject(self, plugin, collection):
-        self._collection = plugin.collection(collection)
+        self._collection = plugin.project().collection(collection)
         for category in self._mapTools:
             mapTool = self._mapTools[category]
             layer = None

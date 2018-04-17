@@ -180,8 +180,6 @@ class ArkSpatialPlugin(Plugin):
             self._filterModule.unloadGui()
             self._gridModule.unloadGui()
             self._trenchModule.unloadGui()
-            # Always do project last
-            self._projectModule.unloadGui()
 
             self._initialised = False
 

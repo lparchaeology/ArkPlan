@@ -35,3 +35,12 @@ class ItemCollection(Collection):
 
     def _newLayer(self, settings):
         return ItemCollectionLayer(self._iface, self.projectPath, settings)
+
+    def moveItemToBuffers(self, item, logMessage='Move Item to Buffers', timestamp=None):
+        return self.moveFeatureRequestToBuffers(item.featureRequest(), logMessage, timestamp or utils.timestamp())
+
+    def copyItemToBuffers(self, item, logMessage='Copy Item to Buffers', timestamp=None):
+        return self.copyFeatureRequestToBuffers(item.featureRequest(), logMessage, timestamp or utils.timestamp())
+
+    def deleteItem(self, item, logMessage='Delete Item', timestamp=None):
+        return self.deleteFeatureRequest(item.featureRequest(), logMessage, timestamp or utils.timestamp())

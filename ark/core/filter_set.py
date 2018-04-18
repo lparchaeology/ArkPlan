@@ -169,19 +169,19 @@ class FilterSet():
                     firstSelect = False
                 else:
                     selectString += ' or '
-                selectString += filterItem.filterClause()
+                selectString += filterItem.filterExpression()
             elif clause.action == FilterType.Exclude:
                 if firstExclude:
                     firstExclude = False
                 else:
                     excludeString += ' or '
-                excludeString += filterItem.filterClause()
+                excludeString += filterItem.filterExpression()
             elif clause.action == FilterType.Include:
                 if firstInclude:
                     firstInclude = False
                 else:
                     includeString += ' or '
-                includeString += filterItem.filterClause()
+                includeString += filterItem.filterExpression()
         if includeString and excludeString:
             self.expression = '(' + includeString + ') and NOT (' + excludeString + ')'
         elif excludeString:

@@ -207,3 +207,11 @@ class ItemFeature(QObject):
         self._audit.setAttributes(attributes)
         self.blockSignals(False)
         self.changed.emit()
+
+    def filterExpression(self):
+        if isinstance(self._item, Item) and self._item.isValid() and self._category:
+            return self._item.filterExpression() + ' and ' + utils.eqClause('category', self._category)
+        return ''
+
+    def featureRequest(self):
+        return utils.featureRequest(self.filterExpression())

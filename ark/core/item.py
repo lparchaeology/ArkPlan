@@ -195,7 +195,7 @@ class Item():
     def itemIdList(self):
         return utils.rangeToList(self._itemId)
 
-    def filterClause(self):
+    def filterExpression(self):
         if self.isInvalid():
             return ''
         clause = '("site" = \'' + self._siteCode + '\'' + ' and "class" = \'' + self._classCode + '\''
@@ -219,6 +219,4 @@ class Item():
         return clause
 
     def featureRequest(self):
-        request = QgsFeatureRequest()
-        request.setFilterExpression(self.filterClause())
-        return request
+        return utils.featureRequest(self.filterExpression())

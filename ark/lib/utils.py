@@ -166,3 +166,13 @@ def debug(msg, group='Debug'):
 
 def dump(msg, group='Debug'):
     debug(msg, group)
+
+
+def isEmpty(value):
+    return value is None or value == NULL or (isinstance(value, str) and (value.strip() == ''))
+
+
+def featureRequest(expr):
+    request = QgsFeatureRequest()
+    request.setFilterExpression(expr)
+    return request

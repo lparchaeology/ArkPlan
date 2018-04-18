@@ -567,60 +567,53 @@ class ProjectModule(QObject):
                     error.message = err.what()
                     errors.append(copy.deepcopy(error))
             # Key attributes that must always be populated
-            if self._isEmpty(feature.attribute('site')):
+            if utils.isEmpty(feature.attribute('site')):
                 error.field = 'site'
                 error.message = 'Site Code is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute('class')):
+            if utils.isEmpty(feature.attribute('class')):
                 error.field = 'class'
                 error.message = 'Class Code is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute('id')):
+            if utils.isEmpty(feature.attribute('id')):
                 error.field = 'id'
                 error.message = 'ID is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute('category')):
+            if utils.isEmpty(feature.attribute('category')):
                 error.field = 'category'
                 error.message = 'Category is required'
                 errors.append(copy.deepcopy(error))
-            if self._isEmpty(feature.attribute('source_cd')):
+            if utils.isEmpty(feature.attribute('source_cd')):
                 error.field = 'source_cd'
                 error.message = 'Source Code is required'
                 error.ignore = True
                 # errors.append(copy.deepcopy(error))
             # Source attributes required depend on the source type
             if feature.attribute('source_cd') == 'creator' or feature.attribute('source_cd') == 'other':
-                if self._isEmpty(feature.attribute('comment')):
+                if utils.isEmpty(feature.attribute('comment')):
                     error.field = 'source_cd'
                     error.message = 'Comment is required for Source type of Creator or Other'
                     error.ignore = True
                     # errors.append(copy.deepcopy(error))
             elif feature.attribute('source_cd') == 'survey':
-                if self._isEmpty(feature.attribute('file')):
+                if utils.isEmpty(feature.attribute('file')):
                     error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Survey'
                     error.ignore = True
                     # errors.append(copy.deepcopy(error))
             else:  # 'drw', 'unc', 'skt', 'cln', 'mod', 'inf'
                 if ((feature.attribute('source_cd') == 'drawing' or feature.attribute('source_cd') == 'unchecked')
-                        and self._isEmpty(feature.attribute('file'))):
+                        and utils.isEmpty(feature.attribute('file'))):
                     error.field = 'source_cd'
                     error.message = 'Filename is required for Source type of Drawing'
                     error.ignore = True
                     # errors.append(copy.deepcopy(error))
-                if (self._isEmpty(feature.attribute('source_cl')) or self._isEmpty(feature.attribute('source_id'))):
+                if (utils.isEmpty(feature.attribute('source_cl')) or utils.isEmpty(feature.attribute('source_id'))):
                     error.field = 'source_cd'
                     error.message = 'Source Class and ID is required'
                     error.ignore = True
                     # errors.append(copy.deepcopy(error))
         return errors
-
-    def _isEmpty(self, val):
-        if val is None or val == NULL:
-            return True
-        if isinstance(val, str) and (val == '' or val.strip() == ''):
-            return True
-        return False
 
     def _preMergeBufferUpdate(self, layer, timestamp, user):
         createdIdx = layer.fieldNameIndex('created')
@@ -628,7 +621,7 @@ class ProjectModule(QObject):
         modifiedIdx = layer.fieldNameIndex('modified')
         modifierIdx = layer.fieldNameIndex('modifier')
         for feature in layer.getFeatures():
-            if self._isEmpty(feature.attribute('created')):
+            if utils.isEmpty(feature.attribute('created')):
                 layer.changeAttributeValue(feature.id(), createdIdx, timestamp)
                 layer.changeAttributeValue(feature.id(), creatorIdx, user)
             else:
@@ -660,21 +653,16 @@ class ProjectModule(QObject):
             fd.close()
 
     def editInBuffers(self, item):
-        # if self._confirmDelete(item.itemId(), 'Confirm Move Item'):
-        request = item.featureRequest()
         timestamp = utils.timestamp()
-        action = 'Edit Item'
-        if self.collection('plan').moveFeatureRequestToBuffers(request, action, timestamp):
-            self._logItemAction(item, action, timestamp)
+        if self.collection('plan').moveItemToBuffers(item, 'Edit Item', timestamp):
+            self._logItemAction(item, 'Edit Item', timestamp)
             self._metadataFromBuffers(item)
 
     def deleteItem(self, item):
         if self._confirmDelete(item.itemId(), 'Confirm Delete Item'):
-            request = item.featureRequest()
             timestamp = utils.timestamp()
-            action = 'Delete Item'
-            if self.collection('plan').deleteFeatureRequest(request, action, timestamp):
-                self._logItemAction(item, action, timestamp)
+            if self.collection('plan').deleteItem(item, 'Delete Item', timestamp):
+                self._logItemAction(item, 'Delete Item', timestamp)
 
     def applyItemActions(self,
                          item,
@@ -800,7 +788,7 @@ class ProjectModule(QObject):
 
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()
-        request = self._classItemsRequest(siteCode, 'sec')
+        request = utils.featureRequest(utils.eqClause('site', siteCode) + ' and ' + utils.eqClause('class', 'sec'))
         features = layers.getAllFeaturesRequest(request, self.collection('plan').layer('lines'))
         lst = []
         for feature in features:
@@ -810,7 +798,8 @@ class ProjectModule(QObject):
 
     def _sectionLineGeometry(self, item):
         if item and item.isValid():
-            request = self._categoryRequest(item, 'sln')
+            sln = ItemFeature(item, 'sln')
+            request = sln.featureRequest()
             features = layers.getAllFeaturesRequest(request, self.collection('plan').layer('lines'))
             for feature in features:
                 return QgsGeometry(feature.geometry())
@@ -840,42 +829,12 @@ class ProjectModule(QObject):
     def _getFeature(self, layer, item, category=''):
         req = None
         if category:
-            req = self._categoryRequest(item, 'sch')
+            sch = ItemFeature(item, 'sch')
+            req = sch.featureRequest()
         else:
-            req = self._itemRequest(item)
+            req = item.featureRequest()
         try:
             return layer.getFeatures(req).next()
         except StopIteration:
             return None
         return None
-
-    # Feature Request Methods
-
-    def _eqClause(self, field, value):
-        return utils.eqClause(field, value)
-
-    def _neClause(self, field, value):
-        return utils.neClause(field, value)
-
-    def _categoryClause(self, category):
-        return self._eqClause('category', category)
-
-    def _notCategoryClause(self, category):
-        return self._neClause('category', category)
-
-    def _featureRequest(self, expr):
-        request = QgsFeatureRequest()
-        request.setFilterExpression(expr)
-        return request
-
-    def _itemRequest(self, item):
-        return self._featureRequest(item.filterClause())
-
-    def _categoryRequest(self, item, category):
-        return self._featureRequest(item.filterClause() + ' and ' + self._categoryClause(category))
-
-    def _notCategoryRequest(self, item, category):
-        return self._featureRequest(item.filterClause() + ' and ' + self._notCategoryClause(category))
-
-    def _classItemsRequest(self, siteCode, classCode):
-        return self._featureRequest(self._eqClause('site', siteCode) + ' and ' + self._eqClause('class', classCode))

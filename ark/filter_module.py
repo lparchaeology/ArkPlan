@@ -302,7 +302,7 @@ class FilterModule(QObject):
         for clause in clauses:
             if clause.action == FilterType.Highlight:
                 filterItem = self._plugin.data().nodesItem(clause.item)
-                self.addHighlight(filterItem.filterClause(), clause.lineColor(), clause.color)
+                self.addHighlight(filterItem.filterExpression(), clause.lineColor(), clause.color)
 
     def clearFilters(self):
         self._filterSets['Default'].clearClauses()

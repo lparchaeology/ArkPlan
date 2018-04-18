@@ -30,18 +30,18 @@ from qgis.core import QGis
 from ArkSpatial.ark.lib.core import FeatureType, geometry
 from ArkSpatial.ark.lib.map import MapToolAddFeature
 
-from ArkSpatial.ark.core import Audit, Config, Feature, Item, Source
+from ArkSpatial.ark.core import Audit, Config, Item, ItemFeature, Source
 
-from .ui.feature_widget_base import Ui_FeatureWidget
+from .ui.item_feature_widget_base import Ui_ItemFeatureWidget
 
 
-class FeatureWidget(QWidget, Ui_FeatureWidget):
+class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
 
     featureChanged = pyqtSignal()
     autoToolSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(FeatureWidget, self).__init__(parent)
+        super(ItemFeatureWidget, self).__init__(parent)
         self.setupUi(self)
 
         self._item = Item()
@@ -133,7 +133,7 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         pass
 
     def feature(self):
-        return Feature(self.source())
+        return ItemFeature(self.source())
 
     def setItem(self, item):
         self._item = item

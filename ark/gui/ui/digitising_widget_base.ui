@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>DigitisingWidget</class>
  <widget class="QWidget" name="DigitisingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>372</width>
+    <height>401</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>DigitisingWidget</string>
   </property>
@@ -21,7 +29,15 @@
       <bool>true</bool>
      </property>
      <widget class="QWidget" name="digitisingScrollAreaContents">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>372</width>
+        <height>358</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="digitisingScrollAreaLayout">
        <property name="sizeConstraint">
         <enum>QLayout::SetMinAndMaxSize</enum>
        </property>
@@ -33,7 +49,7 @@
          <property name="title">
           <string>Source Metadata</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="sourceLayout">
           <item>
            <widget class="SourceWidget" name="sourceWidget" native="true"/>
           </item>
@@ -41,7 +57,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTabWidget" name="tabWidget">
+        <widget class="QTabWidget" name="digitisingTabWidget">
          <property name="currentIndex">
           <number>0</number>
          </property>
@@ -49,24 +65,18 @@
           <attribute name="title">
            <string>Plan</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <layout class="QVBoxLayout" name="planDigitisingLayout">
            <property name="sizeConstraint">
             <enum>QLayout::SetMinAndMaxSize</enum>
            </property>
-           <property name="leftMargin">
-            <number>12</number>
-           </property>
-           <property name="rightMargin">
-            <number>12</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>12</number>
            </property>
            <item>
-            <widget class="FeatureWidget" name="planFeatureWidget" native="true"/>
+            <widget class="ItemFeatureWidget" name="planFeatureWidget" native="true"/>
            </item>
            <item>
-            <spacer name="verticalSpacer_2">
+            <spacer name="planDigitisingSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -84,7 +94,7 @@
           <attribute name="title">
            <string>Section</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
+          <layout class="QVBoxLayout" name="sectionDigitisingLayout">
            <property name="sizeConstraint">
             <enum>QLayout::SetMinAndMaxSize</enum>
            </property>
@@ -92,10 +102,10 @@
             <number>12</number>
            </property>
            <item>
-            <widget class="FeatureWidget" name="sectionFeatureWidget" native="true"/>
+            <widget class="ItemFeatureWidget" name="sectionFeatureWidget" native="true"/>
            </item>
            <item>
-            <spacer name="verticalSpacer_3">
+            <spacer name="sectionDigitisingSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -113,27 +123,18 @@
           <attribute name="title">
            <string>Site</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <layout class="QVBoxLayout" name="siteDigitisingLayout">
            <property name="sizeConstraint">
             <enum>QLayout::SetMinAndMaxSize</enum>
            </property>
-           <property name="leftMargin">
+           <property name="margin">
             <number>12</number>
-           </property>
-           <property name="topMargin">
-            <number>12</number>
-           </property>
-           <property name="rightMargin">
-            <number>12</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
            </property>
            <item>
-            <widget class="FeatureWidget" name="siteFeatureWidget" native="true"/>
+            <widget class="ItemFeatureWidget" name="siteFeatureWidget" native="true"/>
            </item>
            <item>
-            <spacer name="verticalSpacer_4">
+            <spacer name="siteDigitisingSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -154,7 +155,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="digitisingButtonLayout">
      <item>
       <widget class="QPushButton" name="resetButton">
        <property name="toolTip">
@@ -187,9 +188,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FeatureWidget</class>
+   <class>ItemFeatureWidget</class>
    <extends>QWidget</extends>
-   <header>..feature_widget.h</header>
+   <header>..item_feature_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

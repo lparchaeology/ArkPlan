@@ -32,7 +32,7 @@ from .item import Item
 from .source import Source
 
 
-class Feature():
+class ItemFeature():
 
     def __init__(self, item=None, category=None, label=None, source=None, comment=None, audit=None):
 
@@ -49,7 +49,7 @@ class Feature():
             self.setFeature(item, category, label, source, comment, audit)
 
     def __eq__(self, other):
-        return (isinstance(other, Feature)
+        return (isinstance(other, ItemFeature)
                 and self._category == other._category
                 and self._label == other._label
                 and self._comment == other._comment
@@ -66,14 +66,14 @@ class Feature():
         return hash((self._category, self._label, self._comment, self._item, self._source, self._audit))
 
     def __str__(self):
-        return ('Feature('
+        return ('ItemFeature('
                 + str(self._item) + ', '
                 + str(self._category) + ', '
                 + str(self._label) + ', '
                 + str(self._comment) + ')')
 
     def debug(self):
-        return ('Feature('
+        return ('ItemFeature('
                 + self._item.debug() + ', '
                 + utils.printable(self._category) + ', '
                 + utils.printable(self._label) + ', '

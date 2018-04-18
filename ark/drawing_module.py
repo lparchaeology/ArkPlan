@@ -30,7 +30,7 @@ from qgis.core import QgsGeometry
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import layers
 
-from ArkSpatial.ark.core import Config, Drawing, Feature, Item, Settings, Source
+from ArkSpatial.ark.core import Config, Drawing, Item, ItemFeature, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.georef import GeorefDialog
 from ArkSpatial.ark.gui import DrawingDock, SelectDrawingDialog, SnappingDock
@@ -232,7 +232,7 @@ class DrawingModule(QObject):
         features = layers.getAllFeaturesRequest(request, self.collection().layer('lines'))
         lst = []
         for feature in features:
-            lst.append(Feature(feature))
+            lst.append(ItemFeature(feature))
         lst.sort()
         return lst
 

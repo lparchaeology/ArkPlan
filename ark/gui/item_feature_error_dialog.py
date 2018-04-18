@@ -26,43 +26,47 @@ from PyQt4.QtGui import QApplication, QDialog
 
 from ArkSpatial.ark.lib.core import TableModel
 
-from .ui.feature_error_dialog_base import Ui_FeatureErrorDialog
+from .ui.item_feature_error_dialog_base import Ui_ItemFeatureErrorDialog
 
 
-class FeatureErrorDialog(QDialog, Ui_FeatureErrorDialog):
+class ItemFeatureErrorDialog(QDialog, Ui_ItemFeatureErrorDialog):
 
     def __init__(self, parent=None):
-        super(FeatureErrorDialog, self).__init__(parent)
+        super(ItemFeatureErrorDialog, self).__init__(parent)
         self.setupUi(self)
 
         self._errors = []
         self._model = None  # TableModel()
         self._ignore = False
+        self._canIgnore = True
 
         fields = ['layer', 'row', 'field', 'message']
         nullRecord = {'layer': '', 'row': 0, 'field': '', 'message': ''}
         self._model = TableModel(fields, nullRecord)
 
         self.okButton.clicked.connect(self.accept)
-        self.ignoreButton.clicked.connect(self._ignoreError)
+        self.ignoreButton.clicked.connect(self._ignoreErrors)
         self.copyButton.clicked.connect(self._toText)
         self.csvButton.clicked.connect(self._toCsv)
 
     def loadErrors(self, errors):
         self._ignore = False
+        self._canIgnore = True
         self._errors = errors
         self._model.clear()
         for error in errors:
             self._model.appendRecord(error.toDict())
-            if not error.ignore:
-                self.ignoreButton.setEnabled(False)
+            if error.ignore == False:
+                self._canIgnore = False
+        # TODO Temp disable for testing
+        # self.ignoreButton.setEnabled(self._canIgnore)
         self.errorTable.setModel(self._model)
         self.errorTable.resizeColumnsToContents()
 
     def ignoreErrors(self):
         return self._ignore
 
-    def _ignoreError(self):
+    def _ignoreErrors(self):
         self._ignore = True
         self.accept()
 

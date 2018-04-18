@@ -24,16 +24,16 @@
 
 from ArkSpatial.ark.lib import utils
 
-from ArkSpatial.ark.core import Feature
+from ArkSpatial.ark.core import ItemFeature
 
 
-class FeatureError:
+class ItemFeatureError:
 
     def __init__(self, fileInfo=None):
         self.layer = ''
         self.row = -1
         self.fid = -1
-        self.feature = Feature()
+        self.feature = ItemFeature()
         self.field = ''
         self.message = ''
         self.ignore = False

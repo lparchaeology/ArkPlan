@@ -32,7 +32,7 @@ from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import layers
 from ArkSpatial.ark.lib.gui import TableDialog
 
-from ArkSpatial.ark.core import Drawing, Feature, FeatureError, Item, Settings, Source
+from ArkSpatial.ark.core import Drawing, Item, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction, SearchStatus
 from ArkSpatial.ark.gui import CheckingDock
 

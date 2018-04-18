@@ -36,9 +36,9 @@ from ArkSpatial.ark.lib import Plugin, Project, utils
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction
 
-from ArkSpatial.ark.core import Config, Drawing, Feature, FeatureError, Item, Settings, Source
+from ArkSpatial.ark.core import Config, Drawing, Item, ItemFeature, ItemFeatureError, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
-from ArkSpatial.ark.gui import (FeatureErrorDialog, LayerTreeMenu, ProjectDialog, ProjectDock, ProjectWizard,
+from ArkSpatial.ark.gui import (ItemFeatureErrorDialog, LayerTreeMenu, ProjectDialog, ProjectDock, ProjectWizard,
                                 SelectDrawingDialog, SelectItemDialog)
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
@@ -505,7 +505,7 @@ class ProjectModule(QObject):
         errors.extend(self._preMergeBufferCheck(collection.buffer('lines')))
         errors.extend(self._preMergeBufferCheck(collection.buffer('polygons')))
         if len(errors) > 0:
-            dialog = FeatureErrorDialog()
+            dialog = ItemFeatureErrorDialog()
             dialog.loadErrors(errors)
             dialog.exec_()
             if not dialog.ignoreErrors():
@@ -536,7 +536,7 @@ class ProjectModule(QObject):
         row = 0
         for feature in layer.getFeatures():
             # Set up the error template
-            error = FeatureError()
+            error = ItemFeatureError()
             error.layer = layer.name()
             error.row = row
             row = row + 1
@@ -800,7 +800,7 @@ class ProjectModule(QObject):
         features = layers.getAllFeaturesRequest(request, self.collection('plan').layer('lines'))
         lst = []
         for feature in features:
-            lst.append(Feature(feature))
+            lst.append(ItemFeature(feature))
         lst.sort()
         return lst
 

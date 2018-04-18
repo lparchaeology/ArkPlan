@@ -25,7 +25,7 @@
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QInputDialog
 
-from ArkSpatial.ark.core import Feature
+from ArkSpatial.ark.core import ItemFeature
 
 
 class Metadata(QObject):
@@ -169,7 +169,7 @@ class Metadata(QObject):
         self.feature.setCreated(created)
 
     def fromFeature(self, feature):
-        self.fromItemFeature(Feature(feature))
+        self.fromItemFeature(ItemFeature(feature))
 
     def fromItemFeature(self, feature):
         self.setSiteCode(feature.item().siteCode())

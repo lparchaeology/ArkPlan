@@ -62,7 +62,6 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):
-        utils.debug('Schematic widget loadProject')
         plan = plugin.project().collection('plan')
         site = plugin.project().collection('site')
         grid = plugin.project().collection('grid')

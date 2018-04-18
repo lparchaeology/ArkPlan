@@ -321,7 +321,7 @@ class ProjectModule(QObject):
         return False
 
     def _pluginStylesPath(self):
-        return os.path.join(self._plugin.pluginPath, '/ark/styles')
+        return os.path.join(self._plugin.pluginPath, 'ark', 'styles')
 
     def _styleFile(self, layerPath, layerName):
         # First see if the layer itself has a default style saved

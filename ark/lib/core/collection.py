@@ -30,7 +30,7 @@ from .. import utils
 from collection_layer import CollectionLayer
 
 
-class Collection:
+class Collection(object):
 
     def __init__(self, iface, projectPath, settings):
         self.projectPath = projectPath
@@ -84,7 +84,7 @@ class Collection:
             return True
 
         for settings in self.settings.layers:
-            layer = CollectionLayer(self._iface, self.projectPath, settings)
+            layer = self._newLayer(settings)
             if layer != None and layer.initialise():
                 self._layers[settings.layer] = layer
 
@@ -104,6 +104,9 @@ class Collection:
                 self._layers[layer.layer].moveBufferLayer(self._bufferGroupIndex)
 
         return len(self._layers) == len(self.settings.layers)
+
+    def _newLayer(self, settings):
+        return CollectionLayer(self._iface, self.projectPath, settings)
 
     def hasLayer(self, name):
         return name in self._layers and self._layers[name].layer != None

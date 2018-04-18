@@ -36,7 +36,7 @@ from ArkSpatial.ark.lib import Plugin, Project, utils
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction
 
-from ArkSpatial.ark.core import Config, Drawing, Item, ItemFeature, ItemFeatureError, Settings, Source
+from ArkSpatial.ark.core import Config, Drawing, Item, ItemCollection, ItemFeature, ItemFeatureError, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.gui import (ItemFeatureErrorDialog, LayerTreeMenu, ProjectDialog, ProjectDock, ProjectWizard,
                                 SelectDrawingDialog, SelectItemDialog)
@@ -376,7 +376,10 @@ class ProjectModule(QObject):
                 layer['logPath'] = ''
 
         settings = CollectionSettings.fromArray(config)
-        self._collections[collection] = Collection(self._plugin.iface, self.projectFolder(), settings)
+        if config['item']:
+            self._collections[collection] = ItemCollection(self._plugin.iface, self.projectFolder(), settings)
+        else:
+            self._collections[collection] = Collection(self._plugin.iface, self.projectFolder(), settings)
 
     def addDockSeparator(self):
         self.dock.toolbar.addSeparator()

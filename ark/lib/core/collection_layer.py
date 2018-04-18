@@ -33,7 +33,7 @@ from . import layers
 from .. import utils
 
 
-class CollectionLayer:
+class CollectionLayer(object):
 
     def __init__(self, iface, projectPath, settings):
         self.name = ''

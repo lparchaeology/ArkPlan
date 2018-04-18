@@ -5,6 +5,8 @@ from .filter_clause import FilterClause
 from .filter_set import FilterSet
 from .filter_type import FilterType
 from .item import Item
+from .item_collection import ItemCollection
+from .item_collection_layer import ItemCollectionLayer
 from .item_feature import ItemFeature
 from .item_feature_error import ItemFeatureError
 from .item_model import ItemModel

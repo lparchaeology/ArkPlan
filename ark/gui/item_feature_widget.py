@@ -254,7 +254,6 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         mapTool.setPanningEnabled(True)
         mapTool.setZoomingEnabled(True)
         mapTool.setSnappingEnabled(True)
-        mapTool.setShowSnappableVertices(True)
         mapTool.activated.connect(self._mapToolActivated)
         if query is not None:
             field = Config.fields[query]

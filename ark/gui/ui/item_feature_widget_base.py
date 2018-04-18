@@ -104,10 +104,13 @@ class Ui_ItemFeatureWidget(object):
         self.gridLayout.addWidget(self.line_3, 8, 0, 1, 3)
         self.commentLabel.setBuddy(self.commentEdit)
         self.featureLabel.setBuddy(self.classCombo)
+        self.labelLabel.setBuddy(self.labelEdit)
 
         self.retranslateUi(ItemFeatureWidget)
         QtCore.QMetaObject.connectSlotsByName(ItemFeatureWidget)
-        ItemFeatureWidget.setTabOrder(self.classCombo, self.commentEdit)
+        ItemFeatureWidget.setTabOrder(self.classCombo, self.idEdit)
+        ItemFeatureWidget.setTabOrder(self.idEdit, self.labelEdit)
+        ItemFeatureWidget.setTabOrder(self.labelEdit, self.commentEdit)
 
     def retranslateUi(self, ItemFeatureWidget):
         ItemFeatureWidget.setWindowTitle(_translate("ItemFeatureWidget", "ItemFeatureWidget", None))

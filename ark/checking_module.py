@@ -223,7 +223,7 @@ class CheckingModule(QObject):
             request = self._categoryRequest(item, 'scs')
             timestamp = utils.timestamp()
             action = 'Delete Section Schematic'
-            if self.collection().deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
+            if self.collection().deleteFeatureRequest(request, action, timestamp):
                 self._logItemAction(item, action, timestamp)
             self._findContext(item)
 

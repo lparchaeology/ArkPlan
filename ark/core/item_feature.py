@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from PyQt4.QtCore import QObject, pyqtSignal
+
 from qgis.core import QgsFeature
 
 from ArkSpatial.ark.lib import utils
@@ -32,9 +34,12 @@ from .item import Item
 from .source import Source
 
 
-class ItemFeature():
+class ItemFeature(QObject):
 
-    def __init__(self, item=None, category=None, label=None, source=None, comment=None, audit=None):
+    changed = pyqtSignal()
+
+    def __init__(self, item=None, category=None, label=None, source=None, comment=None, audit=None, parent=None):
+        super(ItemFeature, self).__init__(parent)
 
         self._category = ''
         self._label = ''
@@ -102,12 +107,15 @@ class ItemFeature():
                 and self._audit == '')
 
     def setFeature(self, item, category, label, source, comment, audit):
+        self.blockSignals(True)
         self.setItem(item)
         self.setCategory(category)
-        self.selLabel(label)
+        self.setLabel(label)
         self.setSource(source)
         self.setComment(comment)
         self.setAudit(audit)
+        self.blockSignals(False)
+        self.changed.emit()
 
     def item(self):
         return self._item
@@ -117,24 +125,28 @@ class ItemFeature():
             self._item = item
         else:
             self._item = Item()
+        self.changed.emit()
 
     def category(self):
         return self._category
 
     def setCategory(self, category):
         self._category = utils.string(category)
+        self.changed.emit()
 
     def label(self):
         return self._label
 
-    def selLabel(self, label):
+    def setLabel(self, label):
         self._label = utils.string(label)
+        self.changed.emit()
 
     def comment(self):
         return self._comment
 
     def setComment(self, comment):
         self._comment = utils.string(comment)
+        self.changed.emit()
 
     def source(self):
         return self._source
@@ -144,6 +156,7 @@ class ItemFeature():
             self._source = source
         else:
             self._source = Source()
+        self.changed.emit()
 
     def audit(self):
         return self._audit
@@ -182,6 +195,7 @@ class ItemFeature():
         return attrs
 
     def setAttributes(self, attributes):
+        self.blockSignals(True)
         if 'category' in attributes:
             self.setCategory(attributes['category'])
         if 'label' in attributes:
@@ -191,3 +205,5 @@ class ItemFeature():
         self._item.setAttributes(attributes)
         self._source.setAttributes(attributes)
         self._audit.setAttributes(attributes)
+        self.blockSignals(False)
+        self.changed.emit()

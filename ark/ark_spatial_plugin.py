@@ -155,6 +155,7 @@ class ArkSpatialPlugin(Plugin):
     def closeProject(self):
         if self.isLoaded():
             self.writeProject()
+            self.iface.actionPan().trigger()
             self._checkingModule.closeProject()
             self._dataModule.closeProject()
             self._drawingModule.closeProject()
@@ -167,11 +168,12 @@ class ArkSpatialPlugin(Plugin):
 
     # Unload the plugin
     def unload(self):
+        self.iface.actionPan().trigger()
         if self.isInitialised():
             self.closeProject()
 
             # Restore the original QGIS gui
-            self.project().dock.menuAction().setChecked(False)
+            self.pluginAction.setChecked(False)
 
             # Unload the modules in dependence order
             self._checkingModule.unloadGui()
@@ -180,6 +182,7 @@ class ArkSpatialPlugin(Plugin):
             self._filterModule.unloadGui()
             self._gridModule.unloadGui()
             self._trenchModule.unloadGui()
+            self._projectModule.unloadGui()
 
             self._initialised = False
 
@@ -194,7 +197,6 @@ class ArkSpatialPlugin(Plugin):
         del self._topoAction
 
         # Removes the plugin menu item and icon from QGIS GUI.
-        self._projectModule.unloadGui()
         super(ArkSpatialPlugin, self).unload()
 
     def run(self, checked):
@@ -203,6 +205,7 @@ class ArkSpatialPlugin(Plugin):
                 self.loadProject()
         else:
             if self._initialised:
+                self.iface.actionPan().trigger()
                 self._dataModule.dock.setVisible(False)
                 self._drawingModule.dock.setVisible(False)
                 self._checkingModule.dock.setVisible(False)

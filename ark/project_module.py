@@ -513,15 +513,16 @@ class ProjectModule(QObject):
 
         # Update the audit attributes
         timestamp = utils.timestamp()
-        user = self.metadata.editor()
+        user = Settings.userFullName()
         self._preMergeBufferUpdate(collection.buffer('points'), timestamp, user)
         self._preMergeBufferUpdate(collection.buffer('lines'), timestamp, user)
         self._preMergeBufferUpdate(collection.buffer('polygons'), timestamp, user)
 
         # Finally actually merge the data
-        if collection.mergeBuffers('Merge data', Settings.logUpdates(), timestamp):
+        if collection.mergeBuffers('Merge data', timestamp):
             self._plugin.showInfoMessage(name + ' data successfully merged.')
-            self._logItemAction(self.metadata.feature().item(), 'Merge Buffers', timestamp)
+            # TODO pass current Item...
+            self._logItemAction(Item(), 'Merge Buffers', timestamp)
             # TODO Signal out layers merged for schematic dock to catch
             # if self._editSchematic:
             #     self._editSchematic = False
@@ -660,7 +661,7 @@ class ProjectModule(QObject):
         request = item.featureRequest()
         timestamp = utils.timestamp()
         action = 'Edit Item'
-        if self.collection('plan').moveFeatureRequestToBuffers(request, action, Settings.logUpdates(), timestamp):
+        if self.collection('plan').moveFeatureRequestToBuffers(request, action, timestamp):
             self._logItemAction(item, action, timestamp)
             self._metadataFromBuffers(item)
 
@@ -669,7 +670,7 @@ class ProjectModule(QObject):
             request = item.featureRequest()
             timestamp = utils.timestamp()
             action = 'Delete Item'
-            if self.collection('plan').deleteFeatureRequest(request, action, Settings.logUpdates(), timestamp):
+            if self.collection('plan').deleteFeatureRequest(request, action, timestamp):
                 self._logItemAction(item, action, timestamp)
 
     def applyItemActions(self,

@@ -217,7 +217,7 @@ class CollectionLayer:
                                   self._settings.logLayer,
                                   self.logLayer,
                                   timestamp):
-            self._clearBuffer(self.buffer, undoMessage + ' - delete ' + self._settings.layer)
+            self.clearBuffer(undoMessage + ' - clear')
         else:
             merge = False
         return merge

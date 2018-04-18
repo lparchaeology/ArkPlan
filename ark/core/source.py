@@ -109,7 +109,7 @@ class Source():
 
     def attributes(self):
         attrs = {}
-        attrs = self._item.toAttributes()
+        attrs = self._item.attributes()
         attrs['source_cd'] = utils.strip(self.sourceCode())
         attrs['source_cl'] = utils.strip(self.item().classCode())
         attrs['source_id'] = utils.strip(self.item().itemId())

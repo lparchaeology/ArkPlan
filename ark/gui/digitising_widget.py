@@ -24,9 +24,9 @@
 
 from PyQt4.QtGui import QWidget
 
-from .ui.digitising_widget_base import Ui_DigitisingWidget
-
 from ArkSpatial.ark.lib import utils
+
+from .ui.digitising_widget_base import Ui_DigitisingWidget
 
 
 class DigitisingWidget(QWidget, Ui_DigitisingWidget):
@@ -68,6 +68,6 @@ class DigitisingWidget(QWidget, Ui_DigitisingWidget):
 
     def _updateSource(self):
         source = self.sourceWidget.source()
-        self.planFeatureWidget.setSource(source)
-        self.sectionFeatureWidget.setSource(source)
-        self.siteFeatureWidget.setSource(source)
+        self.planFeatureWidget.itemFeature().setSource(source)
+        self.sectionFeatureWidget.itemFeature().setSource(source)
+        self.siteFeatureWidget.itemFeature().setSource(source)

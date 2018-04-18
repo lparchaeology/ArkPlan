@@ -27,6 +27,7 @@ from PyQt4.QtGui import QAction, QIcon, QLabel, QToolButton, QWidget
 
 from qgis.core import QGis
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import FeatureType, geometry
 from ArkSpatial.ark.lib.map import MapToolAddFeature
 
@@ -44,9 +45,7 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         super(ItemFeatureWidget, self).__init__(parent)
         self.setupUi(self)
 
-        self._item = Item()
-        self._source = Source()
-        self._audit = Audit()
+        self._itemFeature = ItemFeature()
         self._actions = {}
         self._mapTools = {}
         self._currentMapTool = None
@@ -62,32 +61,54 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         self._iface = iface
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]
-            if classCode['source']:
+            if classCode['collection']:
                 self.classCombo.addItem(classCode['label'], classCode['class'])
 
         self._addStandardTool(
-            FeatureType.Point, ':/plugins/ark/plan/editPoints.svg', u'Points Node Tool', self._editPointsLayer)
+            FeatureType.Point,
+            ':/plugins/ark/plan/editPoints.svg',
+            u'Points Node Tool',
+            self._editPointsLayer
+        )
         self._addStandardTool(
-            FeatureType.Point, ':/plugins/ark/plan/selectPoints.svg', u'Points Select Tool', self._selectPointsLayer
+            FeatureType.Point,
+            ':/plugins/ark/plan/selectPoints.svg',
+            u'Points Select Tool',
+            self._selectPointsLayer
         )
 
         self._addStandardTool(
-            FeatureType.Line, ':/plugins/ark/plan/editLines.svg', u'Lines Node Tool', self._editLinesLayer
+            FeatureType.Line,
+            ':/plugins/ark/plan/editLines.svg',
+            u'Lines Node Tool',
+            self._editLinesLayer
         )
         self._addStandardTool(
-            FeatureType.Line, ':/plugins/ark/plan/selectLines.svg', u'Lines Select Tool', self._selectLinesLayer
+            FeatureType.Line,
+            ':/plugins/ark/plan/selectLines.svg',
+            u'Lines Select Tool',
+            self._selectLinesLayer
         )
 
         self._addStandardTool(
-            FeatureType.Polygon, ':/plugins/ark/plan/editPolygons.svg', u'Polygons Node Tool', self._editPolygonsLayer
+            FeatureType.Polygon,
+            ':/plugins/ark/plan/editPolygons.svg',
+            u'Polygons Node Tool',
+            self._editPolygonsLayer
         )
         self._addStandardTool(
-            FeatureType.Polygon, ':/plugins/ark/plan/selectPolygons.svg', u'Polygons Select Tool', self._selectPolygonsLayer
+            FeatureType.Polygon,
+            ':/plugins/ark/plan/selectPolygons.svg',
+            u'Polygons Select Tool',
+            self._selectPolygonsLayer
         )
         # TODO Make generic somehow
         if collection == 'plan':
             self._addStandardTool(
-                FeatureType.Polygon, ':/plugins/ark/plan/addPolygons.svg', u'Auto-Schematic Tool', self._autoSchematicSelected
+                FeatureType.Polygon,
+                ':/plugins/ark/plan/addPolygons.svg',
+                u'Auto-Schematic Tool',
+                self._autoSchematicSelected
             )
 
         self._addToolSpacer(self.pointToolLayout)
@@ -108,7 +129,13 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
                 self._definitiveCategories.add(feature['category'])
 
         self.idEdit.editingFinished.connect(self.featureChanged)
+        self.idEdit.editingFinished.connect(self._itemIdChanged)
+        self.labelEdit.editingFinished.connect(self.featureChanged)
+        self.labelEdit.editingFinished.connect(self._labelChanged)
         self.commentEdit.editingFinished.connect(self.featureChanged)
+        self.commentEdit.editingFinished.connect(self._commentChanged)
+
+        self._itemFeature.changed.connect(self._updateMapToolAttributes)
 
     def unloadGui(self):
         for action in self._actions.values():
@@ -126,51 +153,67 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
                 layer = self._collection.buffer('polygons')
             elif geometryType == QGis.Line:
                 layer = self._collection.buffer('lines')
-            if layer:
-                self._mapTools[category].setLayer(layer)
+            self._mapTools[category].setLayer(layer)
 
     def closeProject(self):
         pass
 
-    def feature(self):
-        return ItemFeature(self.source())
+    def itemFeature(self):
+        return self._itemFeature
 
-    def setItem(self, item):
-        self._item = item
-
-    def setSource(self, source):
-        self._source = source
-
-    def setFeature(self, feature):
+    def setItemFeature(self, feature):
         self.blockSignals(True)
-        self.setItem(feature.item())
-        self.setSource(feature.source())
-
-        self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(self._source.sourceCode()))
-        self.commentEdit.setText(feature.comment())
-
-        idx = self.siteCodeCombo.findData(self._source.item().siteCode())
-        if idx >= 0:
-            self.siteCodeCombo.setCurrentIndex(idx)
-        self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(self._source.item.classCode()))
-        self.sourceIdEdit.setText(self._source.item().itemId())
-
+        self._itemFeature = feature
         self.blockSignals(False)
 
-    def _item(self):
-        return Item(self._source.siteCode(), self._sourceClass(), self._sourceId())
-
     def _classCode(self):
-        return self.classCodeCombo.itemData(self.sourceClassCombo.currentIndex())
+        return self.classCombo.itemData(self.classCombo.currentIndex())
+
+    def _setClassCode(self, classCode):
+        idx = self.classCombo.findData(classCode)
+        if idx >= 0:
+            self.classCombo.setCurrentIndex(idx)
+            self._itemFeature.item().setClassCode(classCode)
 
     def _itemId(self):
         return self.idEdit.text().strip()
 
+    def _setItemId(self, itemId):
+        self.idEdit.setText(itemId)
+        self._itemFeature.item().setItemId(itemId)
+
+    def _itemIdChanged(self):
+        self._itemFeature.item().setItemId(self._itemId())
+
+    def _category(self):
+        for category in self._mapTools:
+            if self._mapTools[category].action().isChecked():
+                return category
+        return ''
+
+    def _setCategory(self, category):
+        # self._mapTools[category].action().setChecked(True)
+        self._itemFeature.setCategory(category)
+
     def _label(self):
-        return self.commentEdit.text().strip()
+        return self.labelEdit.text().strip()
+
+    def _setLabel(self, label):
+        self.labelEdit.setText(label)
+        self._labelChanged()
+
+    def _labelChanged(self):
+        self._itemFeature.setLabel(self._label())
 
     def _comment(self):
         return self.commentEdit.text().strip()
+
+    def _setComment(self, comment):
+        self.commentEdit.setText(comment)
+        self._commentChanged()
+
+    def _commentChanged(self):
+        self._itemFeature.setComment(self._comment())
 
     # Drawing Tools
 
@@ -243,15 +286,16 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
                 self._setMapToolAttributes(mapTool)
 
     def _setMapToolAttributes(self, mapTool):
-        return
         if mapTool is None:
             return
         toolData = mapTool.action().data()
-        if toolData['class'] != self.metadata.classCode():
-            self.metadata.setItemId('')
-        self.metadata.setClassCode(toolData['class'])
-        self.metadata.setCategory(toolData['category'])
-        mapTool.setDefaultAttributes(self.metadata.feature.toAttributes())
+        self._itemFeature.blockSignals(True)
+        if toolData['class'] != self._classCode():
+            self._setItemId('')
+        self._setClassCode(toolData['class'])
+        self._setCategory(toolData['category'])
+        self._itemFeature.blockSignals(False)
+        mapTool.setDefaultAttributes(self.itemFeature().attributes())
 
     def clearDrawingTools(self):
         self._clearDrawingTools(self.pointToolLayout)

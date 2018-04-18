@@ -167,6 +167,14 @@ class Settings:
         Project.setEntry("ARK", "Project/easting", easting)
         Project.setEntry("ARK", "Project/northing", northing)
 
+    @staticmethod
+    def logUpdates():
+        return Project.readBoolEntry("ARK", "logUpdates", False)
+
+    @staticmethod
+    def setLogUpdates(logUpdates):
+        Project.writeEntry('logUpdates', logUpdates)
+
     # Projects Server settings
     # TODO Move to Auth Storage
 
@@ -228,12 +236,6 @@ class Settings:
 
     def setDrawingTransparency(self, transparency):
         Project.writeEntry('drawingTransparency', transparency)
-
-    def logUpdates(self):
-        return self.readBoolEntry('logUpdates', True)
-
-    def setLogUpdates(self, logUpdates):
-        Project.writeEntry('logUpdates', logUpdates)
 
     def useCustomStyles(self):
         return self.readBoolEntry('useCustomStyles', False)

@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from qgis.core import QGis
+
 
 class FeatureType:
 
@@ -31,3 +33,13 @@ class FeatureType:
     Segment = 3
     Line = 4
     Polygon = 5
+
+    @staticmethod
+    def toGeometryType(featureType):
+        if featureType == FeatureType.Point or featureType == FeatureType.Elevation:
+            return QGis.Point
+        elif (featureType == FeatureType.Line or featureType == FeatureType.Segment):
+            return QGis.Line
+        elif featureType == FeatureType.Polygon:
+            return QGis.Polygon
+        return QGis.UnknownGeometry

@@ -25,6 +25,8 @@
 from PyQt4.QtCore import Qt, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QLabel, QToolButton, QWidget
 
+from qgis.core import QGis
+
 from ArkSpatial.ark.lib.core import FeatureType, geometry
 from ArkSpatial.ark.lib.map import MapToolAddFeature
 
@@ -116,15 +118,16 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
     def loadProject(self, plugin, collection):
         self._collection = plugin.project().collection(collection)
         for category in self._mapTools:
-            mapTool = self._mapTools[category]
+            geometryType = self._mapTools[category].geometryType()
             layer = None
-            if mapTool.featureType() == FeatureType.Point:
+            if geometryType == QGis.Point:
                 layer = self._collection.buffer('points')
-            elif mapTool.featureType() == FeatureType.Polygon:
+            elif geometryType == QGis.Polygon:
                 layer = self._collection.buffer('polygons')
-            elif mapTool.featureType() == FeatureType.Line or mapTool.featureType() == FeatureType.Segment:
+            elif geometryType == QGis.Line:
                 layer = self._collection.buffer('lines')
-            self._mapTools[category].setLayer(layer)
+            if layer:
+                self._mapTools[category].setLayer(layer)
 
     def closeProject(self):
         pass
@@ -176,13 +179,14 @@ class FeatureWidget(QWidget, Ui_FeatureWidget):
         toolButton.setFixedWidth(30)
         toolButton.setFixedHeight(30)
         toolButton.setDefaultAction(action)
-        if featureType == FeatureType.Point:
+        geometryType = FeatureType.toGeometryType(featureType)
+        if geometryType == QGis.Point:
             self._addToolWidget(self.pointToolLayout, toolButton, self._pointTool)
             self._pointTool += 1
-        elif featureType == FeatureType.Line or featureType == FeatureType.Segment:
+        elif geometryType == QGis.Line:
             self._addToolWidget(self.lineToolLayout, toolButton, self._lineTool)
             self._lineTool += 1
-        elif featureType == FeatureType.Polygon:
+        elif geometryType == QGis.Polygon:
             self._addToolWidget(self.polygonToolLayout, toolButton, self._polygonTool)
             self._polygonTool += 1
 

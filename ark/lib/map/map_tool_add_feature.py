@@ -42,16 +42,7 @@ class MapToolAddFeature(MapToolCapture):
 
     def __init__(self, iface, featureType, toolName=''):
 
-        if (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            self._geometryType = QGis.Line
-        elif featureType == FeatureType.Polygon:
-            self._geometryType = QGis.Polygon
-        elif FeatureType.Point:
-            self._geometryType = QGis.Point
-        else:
-            self._geometryType = QGis.UnknownGeometry
-
-        super(MapToolAddFeature, self).__init__(iface, self._geometryType)
+        super(MapToolAddFeature, self).__init__(iface, FeatureType.toGeometryType(featureType))
 
         self._layer = None  # QgsVectorLayer()
         self._featureType = featureType
@@ -106,13 +97,13 @@ class MapToolAddFeature(MapToolCapture):
         super(MapToolAddFeature, self).canvasReleaseEvent(e)
         if (e.isAccepted()):
             return
-        if (self._featureType == FeatureType.Point or self._featureType == FeatureType.Elevation):
+        if (self.geometryType() == QGis.Point):
             if (e.button() == Qt.LeftButton):
                 self.addFeature()
                 e.accept()
         else:
             if (e.button() == Qt.LeftButton):
-                if (self._featureType == FeatureType.Segment and len(self._mapPointList) == 2):
+                if (self.featureType() == FeatureType.Segment and len(self._mapPointList) == 2):
                     self.addFeature()
             elif (e.button() == Qt.RightButton):
                 self.addFeature()
@@ -124,8 +115,10 @@ class MapToolAddFeature(MapToolCapture):
         self.resetCapturing()
 
     def addAnyFeature(self, featureType, mapPointList, attributes, layer):
+        geometryType = FeatureType.toGeometryType(featureType)
+
         # points: bail out if there is not exactly one vertex
-        if ((featureType == FeatureType.Point or featureType == FeatureType.Elevation) and len(mapPointList) != 1):
+        if (geometryType == QGis.Point and len(mapPointList) != 1):
             return False
 
         # segments: bail out if there are not exactly two vertices
@@ -137,7 +130,12 @@ class MapToolAddFeature(MapToolCapture):
             return False
 
         # polygons: bail out if there are not at least three vertices
-        if (featureType == FeatureType.Polygon and len(mapPointList) < 3):
+        if (geometryType == QGis.Polygon and len(mapPointList) < 3):
+            return False
+
+        if (geometryType != layer.geometryType()):
+            self.messageEmitted.emit(
+                self.tr('Cannot add feature: Layer and Feature geometry type mismatch'), QgsMessageBar.CRITICAL)
             return False
 
         if (layer.type() != QgsMapLayer.VectorLayer):
@@ -156,10 +154,7 @@ class MapToolAddFeature(MapToolCapture):
                 QgsMessageBar.CRITICAL)
             return False
 
-        geometryType = layer.geometryType()
         multiType = QGis.isMultiType(layer.wkbType())
-        utils.debug(geometryType)
-        utils.debug(multiType)
         layerPoints = self._layerPoints(mapPointList, layer)
         feature = QgsFeature(layer.pendingFields(), 0)
         geometry = None
@@ -188,7 +183,7 @@ class MapToolAddFeature(MapToolCapture):
             return False
         feature.setGeometry(geometry)
 
-        if (featureType == FeatureType.Polygon):
+        if (geometryType == QGis.Polygon):
 
             avoidIntersectionsReturn = feature.geometry().avoidIntersections()
             if (avoidIntersectionsReturn == 1):
@@ -210,7 +205,7 @@ class MapToolAddFeature(MapToolCapture):
 
         featureSaved = self._addFeatureAction(feature, attributes, layer, False)
 
-        if (featureSaved and featureType != FeatureType.Point and featureType != FeatureType.Elevation):
+        if (featureSaved and geometryType != QGis.Point):
             # add points to other features to keep topology up-to-date
             topologicalEditing = Snapping.topologicalEditing()
 

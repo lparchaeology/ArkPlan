@@ -24,6 +24,8 @@
 
 from PyQt4.QtGui import QWidget
 
+from ArkSpatial.ark.core import Settings
+
 from .ui.project_browser_widget_base import Ui_ProjectBrowserWidget
 
 
@@ -34,7 +36,9 @@ class ProjectBrowserWidget(QWidget, Ui_ProjectBrowserWidget):
         self.setupUi(self)
 
     def loadProject(self, plugin):
-        pass
+        self.projectCodeEdit.setText(Settings.projectCode())
+        self.siteCodeEdit.setText(Settings.siteCode())
+        self.projectNameEdit.setText(Settings.projectName())
 
     def closeProject(self):
         pass

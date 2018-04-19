@@ -29,7 +29,7 @@ from qgis.core import QgsPointV2
 
 from ArkSpatial.ark.lib.core import ProcessStatus, Scale
 
-from ArkSpatial.ark.core import Drawing
+from ArkSpatial.ark.core import Drawing, Item
 
 from .georeferencer import Georeferencer
 from .transform import Transform
@@ -108,7 +108,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         if drawing.isValid():
             self.siteEdit.setText(drawing.item().siteCode())
             self.typeCombo.setCurrentIndex(self.typeCombo.findData(drawing.item().classCode()))
-            self.numberSpin.setValue(drawing.item().itemId() or 0)
+            self.numberSpin.setValue(int(drawing.item().itemId()) or 0)
             self.eastSpin.setValue(drawing.easting() or 0)
             self.northSpin.setValue(drawing.northing() or 0)
             self.suffixEdit.setText(drawing.suffix())
@@ -225,6 +225,12 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
 
     def drawingScale(self):
         return self.scaleCombo.itemData(self.scaleCombo.currentIndex())
+
+    def easting(self):
+        return self.eastSpin.value()
+
+    def northing(self):
+        return self.northSpin.value()
 
     def suffix(self):
         return self.suffixEdit.text().strip()

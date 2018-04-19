@@ -118,11 +118,11 @@ class Settings:
 
     @staticmethod
     def isProjectConfigured():
-        return Project.readBoolEntry("ARK", "configured", False)
+        return Project.readBoolEntry("ARK", "Project/configured", False)
 
     @staticmethod
     def setProjectConfigured():
-        Project.setEntry("ARK", "configured", True)
+        Project.setEntry("ARK", "Project/configured", True)
 
     @staticmethod
     def projectCode():
@@ -169,101 +169,87 @@ class Settings:
 
     @staticmethod
     def logUpdates():
-        return Project.readBoolEntry("ARK", "logUpdates", False)
+        return Project.readBoolEntry("ARK", "Project/logUpdates", False)
 
     @staticmethod
     def setLogUpdates(logUpdates):
-        Project.writeEntry('logUpdates', logUpdates)
+        Project.writeEntry('Project/logUpdates', logUpdates)
 
     # Projects Server settings
     # TODO Move to Auth Storage
 
     @staticmethod
     def siteServerUrl():
-        return Project.readEntry("ARK", "Server/url")
+        return Project.readEntry("ARK", "Project/Server/url")
 
     @staticmethod
     def setSiteServerUrl(url):
-        Project.setEntry("ARK", "Server/url", url)
+        Project.setEntry("ARK", "Project/Server/url", url)
 
     @staticmethod
     def siteServerUser():
-        return Project.readEntry("ARK", "Server/user")
+        return Project.readEntry("ARK", "Project/Server/user")
 
     @staticmethod
     def siteServerPassword():
-        return Project.readEntry("ARK", "Server/password")
+        return Project.readEntry("ARK", "Project/Server/password")
 
     @staticmethod
     def setSiteServerCredentials(user, password):
-        Project.setEntry("ARK", "Server/user", user)
-        Project.setEntry("ARK", "Server/password", password)
+        Project.setEntry("ARK", "Project/Server/user", user)
+        Project.setEntry("ARK", "Project/Server/password", password)
 
     # Raster Drawings settings
 
-    def drawingDir(cls, group):
-        path = os.path.join(Project.homePath(), Config.drawings[group]['path'])
-        if cls.useCustomPath(group):
-            path = Project.readEntry("ARK", group + '/path', Config.drawings[group]['path'])
-        return QDir(path)
+    @staticmethod
+    def useCustomDrawingPath(drawing):
+        return Project.readBoolEntry("ARK", 'Project/Drawings/' + drawing + '/useCustomPath', False)
 
-    def setDrawingPath(cls, group, useCustomPath, absolutePath):
-        cls._setDrawingEntry(group, 'useCustomPath', useCustomPath, False)
-        if useCustomPath:
-            cls._setDrawingEntry(group, 'path', absolutePath)
-        else:
-            cls._setDrawingEntry(group, 'path', '')
+    @staticmethod
+    def drawingDir(drawing):
+        return QDir(Settings.drawingPath(drawing))
 
-    def useCustomPath(cls, group):
-        return cls._drawingBoolEntry(group, 'useCustomPath', False)
-
-    def rawDrawingDir(cls, group):
-        return QDir(cls.rawDrawingPath(group))
-
-    def rawDrawingPath(cls, group):
-        return cls.drawingPath(group)
-
-    def georefDrawingDir(cls, group):
-        return QDir(cls.georefDrawingPath(group))
-
-    def georefDrawingPath(cls, group):
-        if cls.useGeorefFolder():
-            return cls.rawDrawingPath(group) + '/georef'
-        return cls.rawDrawingPath(group)
-
-    def drawingTransparency(self):
-        return Project.readNumEntry('drawingTransparency', 50)
-
-    def setDrawingTransparency(self, transparency):
-        Project.writeEntry('drawingTransparency', transparency)
-
-    def useCustomStyles(self):
-        return self.readBoolEntry('useCustomStyles', False)
-
-    def styleDir(self):
-        return QDir(self.stylePath())
-
-    def stylePath(self):
-        path = Project.readEntry('stylePath', '')
-        if (not path):
-            return self.pluginPath + '/styles'
+    @staticmethod
+    def drawingPath(drawing):
+        path = os.path.join(Project.homePath(), Config.drawings[drawing]['path'])
+        if Settings.useCustomDrawingPath(drawing):
+            path = Project.readEntry("ARK", 'Project/Drawings/' + drawing + '/customPath', path)
         return path
 
-    def setStylePath(self, useCustomStyles, absolutePath):
-        Project.writeEntry('useCustomStyles', useCustomStyles)
-        if useCustomStyles:
-            Project.writeEntry('stylePath', absolutePath)
-        else:
-            Project.writeEntry('stylePath', '')
+    @staticmethod
+    def setDrawingPath(drawing, useCustomPath, absolutePath):
+        Project.setEntry("ARK", 'Project/Drawings/' + drawing + '/useCustomPath', useCustomPath)
+        Project.setEntry("ARK", 'Project/Drawings/' + drawing + '/customPath', absolutePath)
 
-    # Group settings
+    @staticmethod
+    def georefDrawingDir(drawing):
+        return QDir(Settings.georefDrawingPath(drawing))
 
-    def _drawingBoolEntry(self, group, key, default=None):
-        if default is None:
-            default = Config.drawings[group][key]
-        return self.readBoolEntry(group + '/' + key, default)
+    @staticmethod
+    def georefDrawingPath(drawing):
+        return os.path.join(Settings.drawingPath(drawing), 'georef')
 
-    def _setdrawingEntry(self, group, key, value, default=None):
-        if default is None:
-            default = Config.drawings[group][key]
-        self.setEntry(group + '/' + key, value, default)
+    @staticmethod
+    def drawingTransparency():
+        return Project.readNumEntry("ARK", 'Project/Drawings/transparency', 50)
+
+    @staticmethod
+    def setDrawingTransparency(transparency):
+        Project.writeEntry("ARK", 'Project/Drawings/transparency', transparency)
+
+    @staticmethod
+    def useCustomStyles():
+        return Project.readBoolEntry("ARK", 'Project/Styles/useCustomStyles', False)
+
+    @staticmethod
+    def customStylesDir():
+        return QDir(Settings.customStylesPath())
+
+    @staticmethod
+    def customStylesPath():
+        return Project.readEntry("ARK", 'Project/Styles/customPath', '')
+
+    @staticmethod
+    def setCustomStylesPath(useCustomStyles, absolutePath):
+        Project.setEntry("ARK", 'Project/Styles/useCustomStyles', useCustomStyles)
+        Project.setEntry("ARK", 'Project/Styles/customPath', absolutePath)

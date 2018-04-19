@@ -36,6 +36,7 @@ from .item import Item
 class Source(QObject):
 
     def __init__(self, sourceCode=None, item=None, filename=None):
+        super(Source, self).__init__()
 
         self._sourceCode = ''
         self._item = Item()

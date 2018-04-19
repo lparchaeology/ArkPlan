@@ -60,9 +60,9 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         self.buttonBox.button(QDialogButtonBox.Open).setDefault(True)
 
         if georef:
-            self._dir = QDir(Settings.georefDrawingPath(drawingType))
+            self._dir = Settings.georefDrawingDir(drawingType)
         else:
-            self._dir = QDir(Settings.rawDrawingPath(drawingType))
+            self._dir = Settings.drawingDir(drawingType)
         self._dir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
         self.siteCodeEdit.setText(siteCode)
         self.findButton.clicked.connect(self._findFiles)
@@ -83,7 +83,7 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         if self._georef:
             self._dir.setPath(Settings.georefDrawingPath(drawingType))
         else:
-            self._dir.setPath(Settings.rawDrawingPath(drawingType))
+            self._dir.setPath(Settings.drawingPath(drawingType))
         name = drawingType + '_' + self._str(self.siteCodeEdit.text()) + '_' + self._str(self.idSpin.value())
         if self.eastingSpin.value() > 0 or self.northingSpin.value() > 0:
             name = name + '_' + self._str(self.eastingSpin.value()) + 'e' + self._str(self.northingSpin.value()) + 'n'

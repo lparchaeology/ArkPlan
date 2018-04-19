@@ -16,11 +16,13 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
 
 class Ui_GeorefDialogBase(object):
     def setupUi(self, GeorefDialogBase):
@@ -51,11 +53,11 @@ class Ui_GeorefDialogBase(object):
         self.planView.setMaximumSize(QtCore.QSize(300, 320))
         self.planView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.planView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.planView.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.planView.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.planView.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         self.planView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
         self.planView.setObjectName(_fromUtf8("planView"))
-        self.verticalLayout_4.addWidget(self.planView, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.verticalLayout_4.addWidget(self.planView, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
         self.formLayout.setObjectName(_fromUtf8("formLayout"))
@@ -144,18 +146,18 @@ class Ui_GeorefDialogBase(object):
         self.geoFileLabel = QtGui.QLabel(self.layoutWidget)
         self.geoFileLabel.setObjectName(_fromUtf8("geoFileLabel"))
         self.formLayout.setWidget(9, QtGui.QFormLayout.LabelRole, self.geoFileLabel)
-        self.inputFileName = QtGui.QLabel(self.layoutWidget)
+        self.inputFileNameLabel = QtGui.QLabel(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.inputFileName.sizePolicy().hasHeightForWidth())
-        self.inputFileName.setSizePolicy(sizePolicy)
-        self.inputFileName.setMinimumSize(QtCore.QSize(0, 21))
-        self.inputFileName.setFrameShape(QtGui.QFrame.Panel)
-        self.inputFileName.setFrameShadow(QtGui.QFrame.Sunken)
-        self.inputFileName.setText(_fromUtf8(""))
-        self.inputFileName.setObjectName(_fromUtf8("inputFileName"))
-        self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.inputFileName)
+        sizePolicy.setHeightForWidth(self.inputFileNameLabel.sizePolicy().hasHeightForWidth())
+        self.inputFileNameLabel.setSizePolicy(sizePolicy)
+        self.inputFileNameLabel.setMinimumSize(QtCore.QSize(0, 21))
+        self.inputFileNameLabel.setFrameShape(QtGui.QFrame.Panel)
+        self.inputFileNameLabel.setFrameShadow(QtGui.QFrame.Sunken)
+        self.inputFileNameLabel.setText(_fromUtf8(""))
+        self.inputFileNameLabel.setObjectName(_fromUtf8("inputFileNameLabel"))
+        self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.inputFileNameLabel)
         self.rawFileNameLabel = QtGui.QLabel(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -281,10 +283,10 @@ class Ui_GeorefDialogBase(object):
         self.headerView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.headerView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.headerView.setInteractive(False)
-        self.headerView.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.headerView.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.headerView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
         self.headerView.setObjectName(_fromUtf8("headerView"))
-        self.gridLayout.addWidget(self.headerView, 0, 0, 1, 2, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.gridLayout.addWidget(self.headerView, 0, 0, 1, 2, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.gcpWidget1 = GcpWidget(self.layoutWidget1)
         self.gcpWidget1.setObjectName(_fromUtf8("gcpWidget1"))
         self.gridLayout.addWidget(self.gcpWidget1, 1, 0, 1, 1)
@@ -303,10 +305,10 @@ class Ui_GeorefDialogBase(object):
         self.footerView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.footerView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.footerView.setInteractive(False)
-        self.footerView.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
+        self.footerView.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.footerView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
         self.footerView.setObjectName(_fromUtf8("footerView"))
-        self.gridLayout.addWidget(self.footerView, 3, 0, 1, 2, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignBottom)
+        self.gridLayout.addWidget(self.footerView, 3, 0, 1, 2, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
         self.verticalLayout.addWidget(self.splitter)
         self.siteLabel.setBuddy(self.siteEdit)
         self.typeLabel.setBuddy(self.typeCombo)
@@ -357,7 +359,8 @@ class Ui_GeorefDialogBase(object):
         self.label_3.setText(_translate("GeorefDialogBase", "Load Raw Image", None))
         self.label_6.setText(_translate("GeorefDialogBase", "Generate Image Overviews", None))
 
+
 from ..gcp_widget import GcpWidget
 from ArkSpatial.ark.lib.gui.fixed_graphics_view import FixedGraphicsView
 from ArkSpatial.ark.lib.gui.overview_graphics_view import OverviewGraphicsView
-import resources_rc
+import resources

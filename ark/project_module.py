@@ -213,9 +213,10 @@ class ProjectModule(Module):
                     return False
                 projectFilePath = os.path.join(projectFolderPath, wizard.projectFilename() + '.qgs')
                 Project.setFileName(projectFilePath)
-                Project.setTitle(wizard.project().projectName())
+                Project.setTitle(wizard.project().projectCode() + ' - ' + wizard.project().projectName())
 
             Settings.setProjectCode(wizard.project().projectCode())
+            Settings.setProjectName(wizard.project().projectName())
             Settings.setSiteCode(wizard.project().siteCode())
 
             self._initialised = Project.write()
@@ -247,9 +248,9 @@ class ProjectModule(Module):
         else:
             self.configure()
 
-    def _configureDrawing(self, grp):
-        self.rawDrawingDir(grp).mkpath('.')
-        self.georefDrawingDir(grp).mkpath('.')
+    def _configureDrawing(self, drawing):
+        Settings.drawingDir(drawing).mkpath('.')
+        Settings.georefDrawingDir(drawing).mkpath('.')
 
     def _setDrawing(self, pmd):
         self.metadata.setSiteCode(pmd.siteCode)
@@ -440,7 +441,7 @@ class ProjectModule(Module):
             if source.item().isValid():
                 sourceKeys.add(source.item())
         if clearDrawings and len(sourceKeys) > 0:
-            self._plugin.clearDrawings()
+            self.clearDrawings()
         for sourceKey in sorted(sourceKeys):
             self.loadDrawing(sourceKey)
 

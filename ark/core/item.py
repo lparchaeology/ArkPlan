@@ -28,7 +28,7 @@ from qgis.core import QgsFeatureRequest
 
 from ArkSpatial.ark.lib import utils
 
-from ArkSpatial.ark.core import Config
+from config import Config
 
 
 def _setAttribute(feature, attribute, value):

@@ -50,18 +50,18 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         # Drawings tab settings
         self.drawingTransparencySpin.setValue(Settings.drawingTransparency())
         self.georefFolderCheck.setChecked(Settings.useGeorefFolder())
-        self.contextDrawingFolderCheck.setChecked(Settings.useCustomPath('context'))
-        if Settings.useCustomPath('context'):
+        self.contextDrawingFolderCheck.setChecked(Settings.useCustomDrawingPath('context'))
+        if Settings.useCustomDrawingPath('context'):
             self.contextDrawingFolderEdit.setEnabled(True)
             self.contextDrawingFolderButton.setEnabled(True)
         self.contextDrawingFolderEdit.setText(Settings.drawingPath('context'))
         self.contextDrawingFolderButton.clicked.connect(self._selectContextDrawingFolder)
-        if Settings.useCustomPath('plan'):
+        if Settings.useCustomDrawingPath('plan'):
             self.planDrawingFolderEdit.setEnabled(True)
             self.planDrawingFolderButton.setEnabled(True)
         self.planDrawingFolderEdit.setText(Settings.drawingPath('plan'))
         self.planDrawingFolderButton.clicked.connect(self._selectPlanDrawingFolder)
-        if Settings.useCustomPath('section'):
+        if Settings.useCustomDrawingPath('section'):
             self.sectionDrawingFolderEdit.setEnabled(True)
             self.sectionDrawingFolderButton.setEnabled(True)
         self.sectionDrawingFolderEdit.setText(Settings.drawingPath('section'))

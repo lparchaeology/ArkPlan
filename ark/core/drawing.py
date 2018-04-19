@@ -26,6 +26,8 @@ import string
 
 from PyQt4.QtCore import QFileInfo
 
+from config import Config
+from item import Item
 from source import Source
 
 
@@ -37,9 +39,9 @@ class Drawing(Source):
         self._northing = northing
         self._suffix = suffix
 
-        if isinstance(sourceCode, QFileInfo):
+        if isinstance(item, QFileInfo):
             super(Drawing, self).__init__()
-            self.setFile(fileInfo)
+            self.fromFileInfo(item)
         else:
             super(Drawing, self).__init__('drawing', item, filename)
 
@@ -99,7 +101,7 @@ class Drawing(Source):
             suffixPos = 3
             drawingCode = elements[0].lower()
             siteCode = elements[1]
-            sourceId = int(elements[2])
+            itemId = int(elements[2])
             classCode = ''
             easting = ''
             northing = ''
@@ -143,7 +145,7 @@ class Drawing(Source):
         if self._easting is not None and self._northing is not None:
             e = 'e' if self._easting >= 0 else 'w'
             n = 'n' if self._northing >= 0 else 's'
-            name = name + '_' + str(abs(self.easting)).zfill(3) + e + str(abs(self._northing)).zfill(3) + n
+            name = name + '_' + str(abs(self._easting)).zfill(3) + e + str(abs(self._northing)).zfill(3) + n
         if self._suffix:
             name = name + '_' + self._suffix
         return name

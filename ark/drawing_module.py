@@ -150,11 +150,11 @@ class DrawingModule(Module):
     def georeferencePlan(self, sourceFile, mode='name'):
         drawings = Config.drawings
         for drawing in drawings:
-            drawings[drawing]['raw'] = Settings.rawDrawingDir(drawing)
+            drawings[drawing]['raw'] = Settings.drawingDir(drawing)
             drawings[drawing]['geo'] = Settings.georefDrawingDir(drawing)
             drawings[drawing]['suffix'] = '_r'
             drawings[drawing]['crs'] = self._plugin.project().crs().authid()
-            drawings[drawing]['grid'] = self._plugin.project().grid.layer('points')
+            drawings[drawing]['grid'] = self._plugin.project().collection('grid').layer('points')
             drawings[drawing]['local_x'] = 'local_x'
             drawings[drawing]['local_y'] = 'local_y'
         georefDialog = GeorefDialog(drawings)

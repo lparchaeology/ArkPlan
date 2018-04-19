@@ -116,6 +116,18 @@ class FilterDock(ToolDockWidget):
 
         self._createNewFilterClauseWidget()
 
+    # Load the project settings when project is loaded
+    def loadProject(self, plugin):
+        pass
+
+    # Save the project
+    def writeProject(self):
+        pass
+
+    # Close the project
+    def closeProject(self):
+        pass
+
     def _saveFilterSetSelected(self):
         self.saveFilterSetSelected.emit(self.widget.currentFilterSetKey())
 

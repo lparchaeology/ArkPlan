@@ -54,6 +54,10 @@ class SnappingDock(ToolDockWidget):
     def loadProject(self, plugin):
         self.widget.loadProject(plugin)
 
+    # Save the project
+    def writeProject(self):
+        pass
+
     # Close the project
     def closeProject(self):
         self.widget.closeProject()

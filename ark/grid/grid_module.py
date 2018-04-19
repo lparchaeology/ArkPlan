@@ -32,22 +32,22 @@ from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import LinearTransformer, layers
 from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
+# Move to lib???
+from ArkSpatial.ark.core import Module
+
 from .grid_dock import GridDock
 from .grid_wizard import GridWizard
 from .translate_features_dialog import TranslateFeaturesDialog
 from .update_layer_dialog import UpdateLayerDialog
 
 
-class GridModule(QObject):
+class GridModule(Module):
 
     def __init__(self, plugin):
         super(GridModule, self).__init__(plugin)
 
-        self.plugin = plugin  # Plugin()
-
         # Internal variables
         self.mapTool = None  # MapToolEmitPoint()
-        self.initialised = False
         self.gridWizard = None  # QWizard
         self._vertexMarker = None  # QgsVertexMarker
         self.mapTransformer = None  # LinearTransformer()
@@ -57,41 +57,41 @@ class GridModule(QObject):
 
     # Load the module when plugin is loaded
     def initGui(self):
-        self.dock = GridDock()
-        action = self.plugin.project().addDockAction(
+        dock = GridDock(self._plugin.iface.mainWindow())
+        action = self._plugin.project().addDockAction(
             ':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
-        self.dock.initGui(self.plugin.iface, Qt.LeftDockWidgetArea, action)
+        self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
-        self._createGridAction = self.dock.toolbar.addAction(
+        self._createGridAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)
-        self._identifyGridAction = self.dock.toolbar.addAction(
+        self._identifyGridAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr(u'Identify Grid Coordinates'), self._triggerMapTool)
         self._identifyGridAction.setCheckable(True)
-        self._panToAction = self.dock.toolbar.addAction(
+        self._panToAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr(u'Pan to map point'), self.panMapToPoint)
-        self._pasteMapPointAction = self.dock.toolbar.addAction(
+        self._pasteMapPointAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr(u'Paste Map Point'), self.pasteMapPointFromClipboard)
-        self._addMapPointAction = self.dock.toolbar.addAction(
+        self._addMapPointAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/addPoint.png'), self.tr(u'Add point to current layer'), self.addMapPointToLayer)
-        self._updateLayerAction = self.dock.toolbar.addAction(
+        self._updateLayerAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr(u'Update Layer Coordinates'), self.showUpdateLayerDialog)
-        self._translateFeaturesAction = self.dock.toolbar.addAction(
+        self._translateFeaturesAction = self._dock.toolbar.addAction(
             QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr(u'Translate features'), self.showTranslateFeaturesDialog)
 
-        self.dock.widget.gridSelectionChanged.connect(self.changeGrid)
-        self.dock.widget.mapPointChanged.connect(self.convertMapPoint)
-        self.dock.widget.copyMapPointSelected.connect(self.copyMapPointToClipboard)
-        self.dock.widget.localPointChanged.connect(self.convertLocalPoint)
-        self.dock.widget.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
+        self._dock.widget.gridSelectionChanged.connect(self.changeGrid)
+        self._dock.widget.mapPointChanged.connect(self.convertMapPoint)
+        self._dock.widget.copyMapPointSelected.connect(self.copyMapPointToClipboard)
+        self._dock.widget.localPointChanged.connect(self.convertLocalPoint)
+        self._dock.widget.copyLocalPointSelected.connect(self.copyLocalPointToClipboard)
 
         self._setReadOnly(True)
         self._createGridAction.setEnabled(False)
 
-        self.mapTool = MapToolEmitPoint(self.plugin.mapCanvas())
+        self.mapTool = MapToolEmitPoint(self._plugin.mapCanvas())
         self.mapTool.setAction(self._identifyGridAction)
         self.mapTool.canvasClicked.connect(self.pointSelected)
 
-        self._vertexMarker = QgsVertexMarker(self.plugin.mapCanvas())
+        self._vertexMarker = QgsVertexMarker(self._plugin.mapCanvas())
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_CROSS)
 
     def loadProject(self):
@@ -105,27 +105,23 @@ class GridModule(QObject):
 
         if self.loadGridNames():
             self._setReadOnly(False)
-            self.initialised = True
+            self._initialised = True
             return True
         return False
-
-    # Save the project
-    def writeProject(self):
-        pass
 
     # Close the project
     def closeProject(self):
         self._vertexMarker.setCenter(QgsPoint())
         self.collection().clearFilter()
-        self.initialised = False
+        self._initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Reset the initialisation
         del self._vertexMarker
         self._vertexMarker = None
-        self.initialised = False
-        self.dock.unloadGui()
+        self._initialised = False
+        self._dock.unloadGui()
 
     def _setReadOnly(self, readOnly):
         enabled = not readOnly
@@ -135,18 +131,18 @@ class GridModule(QObject):
         self._panToAction.setEnabled(enabled)
         self._pasteMapPointAction.setEnabled(enabled)
         self._addMapPointAction.setEnabled(enabled)
-        self.dock.widget.setEnabled(enabled)
+        self._dock.widget.setEnabled(enabled)
 
     def run(self, checked):
         if checked:
-            if not self.initialised:
+            if not self._initialised:
                 self.loadProject()
             self._vertexMarker.setCenter(QgsPoint(self.mapPoint().x(), self.mapPoint().y()))
         else:
             self._vertexMarker.setCenter(QgsPoint())
 
     def collection(self):
-        return self.plugin.project().collection('grid')
+        return self._plugin.project().collection('grid')
 
     def loadGridNames(self):
         self.collection().clearFilter()
@@ -196,35 +192,35 @@ class GridModule(QObject):
     # Widget settings methods
 
     def siteCode(self):
-        return self.dock.widget.siteCode()
+        return self._dock.widget.siteCode()
 
     def gridName(self):
-        return self.dock.widget.gridName()
+        return self._dock.widget.gridName()
 
     def setGrid(self, siteCode, gridName):
-        self.dock.widget.setGrid(siteCode, gridName)
+        self._dock.widget.setGrid(siteCode, gridName)
 
     def setGridNames(self, names):
-        self.dock.widget.setGridNames(names)
+        self._dock.widget.setGridNames(names)
 
     def mapPoint(self):
-        return self.dock.widget.mapPoint()
+        return self._dock.widget.mapPoint()
 
     def setMapPoint(self, point):
-        self.dock.widget.setMapPoint(point)
+        self._dock.widget.setMapPoint(point)
         self._vertexMarker.setCenter(self.mapPoint())
 
     def localPoint(self):
-        return self.dock.widget.localPoint()
+        return self._dock.widget.localPoint()
 
     def setLocalPoint(self, point):
-        self.dock.widget.setLocalPoint(point)
+        self._dock.widget.setLocalPoint(point)
 
     # Grid methods
 
     def showGridWizard(self):
         if self.gridWizard is None:
-            self.gridWizard = GridWizard(self.plugin.iface, self.plugin, self.plugin.iface.mainWindow())
+            self.gridWizard = GridWizard(self._plugin.iface, self._plugin, self._plugin.iface.mainWindow())
             self.gridWizard.accepted.connect(self.createGridDialogAccepted)
         else:
             self.gridWizard.restart()
@@ -242,14 +238,14 @@ class GridModule(QObject):
             axisGeometry = QgsGeometry.fromPolyline([mp1, mp2])
             if self.gridWizard.methodType() == GridWizard.PointOnYAxis:
                 if axisGeometry.length() < yInterval:
-                    self.plugin.showCriticalMessage(
+                    self._plugin.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
                 mp2 = axisGeometry.interpolate(yInterval).geometry()
                 lp2 = QgsPointV2(lp1.x(), lp1.y() + yInterval)
             else:
                 if axisGeometry.length() < xInterval:
-                    self.plugin.showCriticalMessage(
+                    self._plugin.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
                 mp2 = axisGeometry.interpolate(xInterval).geometry()
@@ -258,11 +254,11 @@ class GridModule(QObject):
                            mp1, lp1, mp2, lp2,
                            self.gridWizard.localOriginPoint(), self.gridWizard.localTerminusPoint(),
                            xInterval, yInterval):
-            self.plugin.mapCanvas().refresh()
+            self._plugin.mapCanvas().refresh()
             self.loadGridNames()
             self.setGrid(self.gridWizard.siteCode(), self.gridWizard.gridName())
             self._setReadOnly(False)
-            self.plugin.showInfoMessage('Grid successfully created', 10)
+            self._plugin.showInfoMessage('Grid successfully created', 10)
 
     def createGrid(self, siteCode, gridName, mapPoint1, localPoint1, mapPoint2, localPoint2, localOrigin, localTerminus, xInterval, yInterval):
         localTransformer = LinearTransformer(localPoint1, mapPoint1, localPoint2, mapPoint2)
@@ -273,7 +269,7 @@ class GridModule(QObject):
 
         points = self.collection().layer('points')
         if (points is None or not points.isValid()):
-            self.plugin.showCriticalMessage('Invalid grid points file, cannot create grid!')
+            self._plugin.showCriticalMessage('Invalid grid points file, cannot create grid!')
             return False
         self._addGridPointsToLayer(points, localTransformer,
                                    localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
@@ -283,7 +279,7 @@ class GridModule(QObject):
         if self.collection().hasLayer('lines'):
             lines = self.collection().layer('lines')
             if lines is None or not lines.isValid():
-                self.plugin.showCriticalMessage('Invalid grid lines file!')
+                self._plugin.showCriticalMessage('Invalid grid lines file!')
             else:
                 self._addGridLinesToLayer(lines, localTransformer,
                                           localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) / xInterval,
@@ -293,7 +289,7 @@ class GridModule(QObject):
         if self.collection().hasLayer('polygons'):
             polygons = self.collection().layer('polygons')
             if lines is None or not lines.isValid():
-                self.plugin.showCriticalMessage('Invalid grid polygons file!')
+                self._plugin.showCriticalMessage('Invalid grid polygons file!')
             else:
                 self._addGridPolygonsToLayer(polygons, localTransformer,
                                              localOrigin.x(), xInterval, (localTerminus.x() - localOrigin.x()) /
@@ -387,47 +383,47 @@ class GridModule(QObject):
         layers.addFeatures(features, layer)
 
     def _triggerMapTool(self):
-        if not self.initialised:
+        if not self._initialised:
             self.initialise()
-        if self.initialised:
+        if self._initialised:
             if self._identifyGridAction.isChecked():
-                self.plugin.mapCanvas().setMapTool(self.mapTool)
+                self._plugin.mapCanvas().setMapTool(self.mapTool)
             else:
-                self.plugin.mapCanvas().unsetMapTool(self.mapTool)
+                self._plugin.mapCanvas().unsetMapTool(self.mapTool)
         elif self._identifyGridAction.isChecked():
             self._identifyGridAction.setChecked(False)
 
     def pointSelected(self, point, button):
-        if not self.initialised:
+        if not self._initialised:
             return
         if (button == Qt.LeftButton):
-            if not self.dock.menuAction().isChecked():
-                self.dock.menuAction().toggle()
+            if not self._dock.menuAction().isChecked():
+                self._dock.menuAction().toggle()
             self.setMapPoint(point)
             self.convertMapPoint()
 
     def convertMapPoint(self):
-        if not self.initialised:
+        if not self._initialised:
             return
         localPoint = self.mapTransformer.map(self.mapPoint())
         self.setLocalPoint(localPoint)
 
     def convertLocalPoint(self):
-        if not self.initialised:
+        if not self._initialised:
             return
         mapPoint = self.localTransformer.map(self.localPoint())
         self.setMapPoint(mapPoint)
 
     def showUpdateLayerDialog(self):
-        if not self.initialised:
+        if not self._initialised:
             self.initialise()
-        if self.initialised:
-            dialog = UpdateLayerDialog(self.plugin.iface)
+        if self._initialised:
+            dialog = UpdateLayerDialog(self._plugin.iface)
             if dialog.exec_():
                 self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.createMapFields())
 
     def updateLayerCoordinates(self, layer, updateGeometry, createMapFields):
-        if (not self.initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
+        if (not self._initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
             return False
         local_x = 'local_x'
         local_y = 'local_y'
@@ -435,13 +431,13 @@ class GridModule(QObject):
         map_y = 'map_y'
         if layer.startEditing():
             if layer.fieldNameIndex(local_x) < 0:
-                layer.dataProvider().addAttributes([self.plugin.field('local_x')])
+                layer.dataProvider().addAttributes([self._plugin.field('local_x')])
             if layer.fieldNameIndex(local_y) < 0:
-                layer.dataProvider().addAttributes([self.plugin.field('local_y')])
+                layer.dataProvider().addAttributes([self._plugin.field('local_y')])
             if (createMapFields and layer.fieldNameIndex(map_x) < 0):
-                layer.dataProvider().addAttributes([self.plugin.field('map_x')])
+                layer.dataProvider().addAttributes([self._plugin.field('map_x')])
             if (createMapFields and layer.fieldNameIndex(map_y) < 0):
-                layer.dataProvider().addAttributes([self.plugin.field('map_y')])
+                layer.dataProvider().addAttributes([self._plugin.field('map_y')])
             local_x_idx = layer.fieldNameIndex(local_x)
             local_y_idx = layer.fieldNameIndex(local_y)
             map_x_idx = layer.fieldNameIndex(map_x)
@@ -462,10 +458,10 @@ class GridModule(QObject):
         return False
 
     def showTranslateFeaturesDialog(self):
-        if not self.initialised:
+        if not self._initialised:
             self.initialise()
-        if self.initialised:
-            dialog = TranslateFeaturesDialog(self.plugin.iface)
+        if self._initialised:
+            dialog = TranslateFeaturesDialog(self._plugin.iface)
             if dialog.exec_():
                 self.translateFeatures(
                     dialog.layer(), dialog.translateEast(), dialog.translateNorth(), dialog.allFeatures())
@@ -490,7 +486,7 @@ class GridModule(QObject):
         return False
 
     def panMapToPoint(self):
-        self.plugin.mapCanvas().zoomByFactor(1.0, self.mapPoint())
+        self._plugin.mapCanvas().zoomByFactor(1.0, self.mapPoint())
 
     def copyMapPointToClipboard(self):
         # TODO Use QgsClipboard when it becomes public
@@ -514,10 +510,10 @@ class GridModule(QObject):
             self.setMapPoint(point)
 
     def addMapPointToLayer(self):
-        layer = self.plugin.mapCanvas().currentLayer()
+        layer = self._plugin.mapCanvas().currentLayer()
         if (layer.geometryType() == QGis.Point and layer.isEditable()):
             layer.addFeature(self.mapPointAsFeature(layer.pendingFields()))
-        self.plugin.mapCanvas().refresh()
+        self._plugin.mapCanvas().refresh()
 
     def setMapPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
@@ -535,7 +531,7 @@ class GridModule(QObject):
         return feature
 
     def mapPointAsLayer(self):
-        mem = QgsVectorLayer("point?crs=" + self.plugin.projectCrs().authid() + "&index=yes", 'point', 'memory')
+        mem = QgsVectorLayer("point?crs=" + self._plugin.projectCrs().authid() + "&index=yes", 'point', 'memory')
         if (mem is not None and mem.isValid()):
             mem.dataProvider().addAttributes([QgsField('id', QVariant.String, '', 10, 0, 'ID')])
             feature = self.mapPointAsFeature(mem.dataProvider().fields())
@@ -544,7 +540,7 @@ class GridModule(QObject):
 
     def mapPointAsWkt(self):
         # Return the text so we don't have insignificant double values
-        return 'POINT(' + self.dock.widget.mapEastingSpin.text() + ' ' + self.dock.widget.mapNorthingSpin.text() + ')'
+        return 'POINT(' + self._dock.widget.mapEastingSpin.text() + ' ' + self._dock.widget.mapNorthingSpin.text() + ')'
 
     def setLocalPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
@@ -558,4 +554,4 @@ class GridModule(QObject):
 
     def localPointAsWkt(self):
         # Return the text so we don't have insignificant double values
-        return 'POINT(' + self.dock.widget.localEastingSpin.text() + ' ' + self.dock.widget.localNorthingSpin.text() + ')'
+        return 'POINT(' + self._dock.widget.localEastingSpin.text() + ' ' + self._dock.widget.localNorthingSpin.text() + ')'

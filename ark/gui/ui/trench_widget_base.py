@@ -91,9 +91,19 @@ class Ui_TrenchWidget(object):
         self.gridLayout.addWidget(self.widthSpin, 2, 2, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 5, 1, 1, 4)
+        self.areaLabel.setBuddy(self.areaCombo)
+        self.resultLabel.setBuddy(self.sampleCountSpin)
+        self.trenchLabel.setBuddy(self.widthSpin)
 
         self.retranslateUi(TrenchWidget)
         QtCore.QMetaObject.connectSlotsByName(TrenchWidget)
+        TrenchWidget.setTabOrder(self.areaCombo, self.areaSpin)
+        TrenchWidget.setTabOrder(self.areaSpin, self.widthSpin)
+        TrenchWidget.setTabOrder(self.widthSpin, self.lengthSpin)
+        TrenchWidget.setTabOrder(self.lengthSpin, self.samplePercentSpin)
+        TrenchWidget.setTabOrder(self.samplePercentSpin, self.sampleCountSpin)
+        TrenchWidget.setTabOrder(self.sampleCountSpin, self.sampleLengthSpin)
+        TrenchWidget.setTabOrder(self.sampleLengthSpin, self.sampleAreaSpin)
 
     def retranslateUi(self, TrenchWidget):
         TrenchWidget.setWindowTitle(_translate("TrenchWidget", "Form", None))

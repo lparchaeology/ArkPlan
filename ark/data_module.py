@@ -33,24 +33,22 @@ from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ParentChildModel
 from ArkSpatial.ark.lib.gui import CredentialsDialog
 
-from ArkSpatial.ark.core import Config, Item, ItemModel, Settings
+from ArkSpatial.ark.core import Config, Item, ItemModel, Module, Settings
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.gui import DataDock
 from ArkSpatial.ark.pyARK import Ark
 
 
-class DataModule(QObject):
+class DataModule(Module):
 
     dataLoaded = pyqtSignal()
 
     def __init__(self, plugin):
         super(DataModule, self).__init__(plugin)
 
-        self._plugin = plugin  # Plugin()
         self.items = {}  # {classCode: [Item]}
 
         # Internal variables
-        self.dock = None  # DataDock()
         self._classDataModels = {}  # {classCode: ItemModel()}
         self._classDataProxyModels = {}  # {classCode: QSortFilterProxyModel()}
         self._linkModel = ParentChildModel()
@@ -66,55 +64,37 @@ class DataModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = DataDock(self._plugin.iface.mainWindow())
+        dock = DataDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
-        self.dock.initGui(self._plugin.iface, Qt.LeftDockWidgetArea, action)
+        self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
-        self.dock.itemChanged.connect(self._itemChanged)
+        self._dock.itemChanged.connect(self._itemChanged)
 
-        self.dock.loadDataSelected.connect(self.loadData)
-        self.dock.refreshDataSelected.connect(self.refreshData)
-        self.dock.firstItemSelected.connect(self._firstItemSelected)
-        self.dock.prevItemSelected.connect(self._prevItemSelected)
-        self.dock.openItemData.connect(self._openItemData)
-        self.dock.nextItemSelected.connect(self._nextItemSelected)
-        self.dock.lastItemSelected.connect(self._lastItemSelected)
+        self._dock.loadDataSelected.connect(self.loadData)
+        self._dock.refreshDataSelected.connect(self.refreshData)
+        self._dock.firstItemSelected.connect(self._firstItemSelected)
+        self._dock.prevItemSelected.connect(self._prevItemSelected)
+        self._dock.openItemData.connect(self._openItemData)
+        self._dock.nextItemSelected.connect(self._nextItemSelected)
+        self._dock.lastItemSelected.connect(self._lastItemSelected)
 
-        self.dock.showItemSelected.connect(self._showItemSelected)
-        self.dock.zoomItemSelected.connect(self._zoomItemSelected)
-        self.dock.filterItemSelected.connect(self._filterItemSelected)
-        self.dock.editItemSelected.connect(self._editItemSelected)
-        self.dock.loadDrawingsSelected.connect(self._loadDrawingsSelected)
-        self.dock.itemLinkClicked.connect(self._itemLinkClicked)
+        self._dock.showItemSelected.connect(self._showItemSelected)
+        self._dock.zoomItemSelected.connect(self._zoomItemSelected)
+        self._dock.filterItemSelected.connect(self._filterItemSelected)
+        self._dock.editItemSelected.connect(self._editItemSelected)
+        self._dock.loadDrawingsSelected.connect(self._loadDrawingsSelected)
+        self._dock.itemLinkClicked.connect(self._itemLinkClicked)
 
-        self.dock.mapActionChanged.connect(self._mapActionChanged)
-        self.dock.filterActionChanged.connect(self._filterActionChanged)
-        self.dock.drawingActionChanged.connect(self._drawingActionChanged)
+        self._dock.mapActionChanged.connect(self._mapActionChanged)
+        self._dock.filterActionChanged.connect(self._filterActionChanged)
+        self._dock.drawingActionChanged.connect(self._drawingActionChanged)
 
     # Load the project settings when project is loaded
     def loadProject(self):
         # Load the Site Codes
-        self.dock.initSiteCodes([Settings.siteCode()])
+        self._dock.initSiteCodes([Settings.siteCode()])
         return True
-
-    # Save the project
-    def writeProject(self):
-        pass
-
-    # Close the project
-    def closeProject(self):
-        pass
-
-    # Unload the gui when the plugin is unloaded
-    def unloadGui(self):
-        self.dock.unloadGui()
-
-    def run(self, checked):
-        pass
-
-    def showDock(self, show=True):
-        self.dock.menuAction().setChecked(show)
 
     # Data methods
 
@@ -144,7 +124,7 @@ class DataModule(QObject):
         for classCode in Config.classCodes.keys():
             self.items[classCode] = []
             self._loadOnlineClassIndex(classCode)
-        self.dock.setItemNavEnabled(self._indexLoaded)
+        self._dock.setItemNavEnabled(self._indexLoaded)
 
     def _loadOnlineClassIndex(self, classCode):
         if not Settings.siteServerUrl():
@@ -336,12 +316,12 @@ class DataModule(QObject):
                      filterAction=FilterAction.NoFilterAction,
                      drawingAction=DrawingAction.NoDrawingAction
                      ):
-        self.dock.setItem(item)
+        self._dock.setItem(item)
         self._showItem(item)
         self._plugin.project().applyItemActions(item, mapAction, filterAction, drawingAction)
 
     def _itemChanged(self):
-        item = self.dock.item()
+        item = self._dock.item()
         if self._prevItem == item:
             return
         self._showItem(item)
@@ -355,7 +335,7 @@ class DataModule(QObject):
         if item.isValid() and self.haveItem(item):
             url = self._ark.transcludeSubformUrl(
                 item.classCode() + '_cd', item.itemValue(), item.classCode() + '_apisum')
-        self.dock.setItemUrl(url)
+        self._dock.setItemUrl(url)
 
     def _value(self, value):
         if value is False:
@@ -370,38 +350,38 @@ class DataModule(QObject):
         return value
 
     def _firstItemSelected(self):
-        self.dock.setItem(self.firstItem(self.dock.classCode()))
+        self._dock.setItem(self.firstItem(self._dock.classCode()))
         self._itemChanged()
 
     def _prevItemSelected(self):
-        self.dock.setItem(self.prevItem(self.dock.item()))
+        self._dock.setItem(self.prevItem(self._dock.item()))
         self._itemChanged()
 
     def _openItemData(self):
-        self._plugin.project().openItemInArk(self.dock.item())
+        self._plugin.project().openItemInArk(self._dock.item())
 
     def _nextItemSelected(self):
-        self.dock.setItem(self.nextItem(self.dock.item()))
+        self._dock.setItem(self.nextItem(self._dock.item()))
         self._itemChanged()
 
     def _lastItemSelected(self):
-        self.dock.setItem(self.lastItem(self.dock.classCode()))
+        self._dock.setItem(self.lastItem(self._dock.classCode()))
         self._itemChanged()
 
     def _showItemSelected(self):
-        self._plugin.project().showItem(self.dock.item())
+        self._plugin.project().showItem(self._dock.item())
 
     def _zoomItemSelected(self):
-        self._plugin.project().zoomToItem(self.dock.item())
+        self._plugin.project().zoomToItem(self._dock.item())
 
     def _filterItemSelected(self):
-        self._plugin.project().filterItem(self.dock.item())
+        self._plugin.project().filterItem(self._dock.item())
 
     def _editItemSelected(self):
-        self._plugin.project().editInBuffers(self.dock.item())
+        self._plugin.project().editInBuffers(self._dock.item())
 
     def _loadDrawingsSelected(self):
-        self._plugin.project().loadSourceDrawings(self.dock.item())
+        self._plugin.project().loadSourceDrawings(self._dock.item())
 
     def _itemLinkClicked(self, url):
         item_key = ''
@@ -409,7 +389,7 @@ class DataModule(QObject):
         if 'download.php' in url.toString():
             # web = QWebView()
             # web.load(url)
-            self.dock.widget.itemDataView.load(url)
+            self._dock.widget.itemDataView.load(url)
             return
         if url.hasQueryItem('item_key'):
             item_key = url.queryItemValue('item_key')
@@ -425,7 +405,7 @@ class DataModule(QObject):
         if item_key and len(item_value) == 2:
             item = Item(item_value[0], item_key[:3], item_value[1])
             if self.haveItem(item):
-                self.dock.setItem(item)
+                self._dock.setItem(item)
                 self._itemChanged()
 
     def _mapActionChanged(self, mapAction):

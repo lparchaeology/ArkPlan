@@ -10,6 +10,7 @@ from .item_collection_layer import ItemCollectionLayer
 from .item_feature import ItemFeature
 from .item_feature_error import ItemFeatureError
 from .item_model import ItemModel
+from .module import Module
 from .project_model import ProjectModel
 from .settings import Settings
 from .source import Source

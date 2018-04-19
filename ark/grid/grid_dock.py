@@ -38,3 +38,15 @@ class GridDock(ToolDockWidget):
     def initGui(self, iface, location, menuAction):
         super(GridDock, self).initGui(iface, location, menuAction)
         self.widget.initGui()
+
+    # Load the project settings when project is loaded
+    def loadProject(self, plugin):
+        self.widget.loadProject(plugin)
+
+    # Save the project
+    def writeProject(self):
+        pass
+
+    # Close the project
+    def closeProject(self):
+        self.widget.closeProject()

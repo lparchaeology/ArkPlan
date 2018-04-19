@@ -81,17 +81,21 @@ class TrenchDock(ToolDockWidget):
         pass
 
     def loadProject(self, plugin):
-        self.areaCombo.clear()
+        self.widget.areaCombo.clear()
         for area in []:
-            self.areaCombo.addItem(area, area)
+            self.widget.areaCombo.addItem(area, area)
+
+    # Save the project
+    def writeProject(self):
+        pass
 
     def closeProject(self):
         pass
 
     def setArea(self, id, size):
-        idx = self.areaCombo.findData(id)
+        idx = self.widget.areaCombo.findData(id)
         if idx >= 0:
-            self.areaCombo.setCurrentIndex(idx)
+            self.widget.areaCombo.setCurrentIndex(idx)
         self.widget.areaSpin.setValue(size)
 
     def samplePercent(self):

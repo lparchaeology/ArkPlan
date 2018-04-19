@@ -30,21 +30,18 @@ from qgis.core import QgsGeometry
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import layers
 
-from ArkSpatial.ark.core import Config, Drawing, Item, ItemFeature, Settings, Source
+from ArkSpatial.ark.core import Config, Drawing, Item, ItemFeature, Module, Settings, Source
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.georef import GeorefDialog
 from ArkSpatial.ark.gui import DrawingDock, SelectDrawingDialog, SnappingDock
 
 
-class DrawingModule(QObject):
+class DrawingModule(Module):
 
     def __init__(self, plugin):
         super(DrawingModule, self).__init__(plugin)
 
         # Project settings
-        self._plugin = plugin  # Plugin()
-        self.dock = None  # DrawingDock()
-        self.initialised = False
         self.metadata = None  # Metadata()
 
         # Internal variables
@@ -55,25 +52,25 @@ class DrawingModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = DrawingDock(self._plugin.iface.mainWindow())
+        dock = DrawingDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/plan/drawPlans.png',
             self.tr(u'Drawing Tools'),
             callback=self.run,
             checkable=True
         )
-        self.dock.initGui(self._plugin.iface, Qt.RightDockWidgetArea, action)
+        self._initDockGui(dock, Qt.RightDockWidgetArea, action)
 
-        self.dock.loadAnyFileSelected.connect(self._loadAnyPlan)
-        self.dock.loadRawFileSelected.connect(self._loadRawPlan)
-        self.dock.loadGeoFileSelected.connect(self._loadGeoPlan)
+        self._dock.loadAnyFileSelected.connect(self._loadAnyPlan)
+        self._dock.loadRawFileSelected.connect(self._loadRawPlan)
+        self._dock.loadGeoFileSelected.connect(self._loadGeoPlan)
 
-        self.dock.resetSelected.connect(self._plugin.project().resetBuffers)
-        self.dock.mergeSelected.connect(self._plugin.project().mergeBuffers)
+        self._dock.resetSelected.connect(self._plugin.project().resetBuffers)
+        self._dock.mergeSelected.connect(self._plugin.project().mergeBuffers)
 
         self.snapDock = SnappingDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
-            ':/plugins/ark/snapIntersections.png',
+            ':/plugins/ark/topologicalEditing.png',
             self.tr(u'Snapping Tools'),
             callback=self.runSnapping,
             checkable=True
@@ -83,45 +80,41 @@ class DrawingModule(QObject):
     # Load the project settings when project is loaded
     def loadProject(self):
         # Assume layers are loaded and filters cleared
-        self.dock.loadProject(self._plugin)
+        self._dock.loadProject(self._plugin)
         self.snapDock.loadProject(self._plugin)
 
         # TODO Think of a better way...
-        # self.metadata = Metadata(self.dock.widget.sourceWidget)
+        # self.metadata = Metadata(self._dock.widget.sourceWidget)
         # self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
 
-        self.initialised = True
-
-    # Save the project
-    def writeProject(self):
-        pass
+        self._initialised = True
 
     # Close the project
     def closeProject(self):
         # TODO Unload the drawing tools!
         self.snapDock.closeProject()
-        self.dock.closeProject()
+        self._dock.closeProject()
         # self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
-        self.initialised = False
+        self._initialised = False
 
     # Unload the module when plugin is unloaded
     def unloadGui(self):
         # Unload the dock
         self.snapDock.unloadGui()
         del self.snapDock
-        self.dock.unloadGui()
-        del self.dock
+        self._dock.unloadGui()
+        del self._dock
         # Reset the initialisation
-        self.initialised = False
+        self._initialised = False
 
     def run(self, checked):
-        if checked and self.initialised:
-            self._plugin.filter().showDock()
+        if checked and self._initialised:
+            self._plugin.checking().showDock(False)
         else:
-            self.dock.menuAction().setChecked(False)
+            self.showDock(False)
 
     def runSnapping(self, checked):
-        if checked and self.initialised:
+        if checked and self._initialised:
             pass
         else:
             self.snapDock.menuAction().setChecked(False)
@@ -142,7 +135,7 @@ class DrawingModule(QObject):
 
     def _loadAnyPlan(self):
         filePaths = QFileDialog.getOpenFileNames(
-            self.dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
+            self._dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
         for filePath in filePaths:
             self.georeferencePlan(QFileInfo(filePath), 'free')
 

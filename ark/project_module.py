@@ -36,23 +36,21 @@ from ArkSpatial.ark.lib import Plugin, Project, utils
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction
 
-from ArkSpatial.ark.core import Config, Drawing, Item, ItemCollection, ItemFeature, ItemFeatureError, Settings, Source
+from ArkSpatial.ark.core import (Config, Drawing, Item, ItemCollection, ItemFeature, ItemFeatureError, Module, Settings,
+                                 Source)
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.gui import (ItemFeatureErrorDialog, LayerTreeMenu, ProjectDialog, ProjectDock, ProjectWizard,
                                 SelectDrawingDialog, SelectItemDialog)
 from ArkSpatial.ark.map import MapToolIndentifyItems
 
 
-class ProjectModule(QObject):
+class ProjectModule(Module):
 
     def __init__(self, plugin):
         super(ProjectModule, self).__init__(plugin)
 
         # Project settings
-        self._plugin = plugin  # Plugin()
         # self.projectLayerView = None  # QgsLayerTreeView()
-        self.dock = None  # ProjectDock()
-        self.initialised = False
         self.metadata = None  # Metadata()
 
         self.projectGroupIndex = -1
@@ -78,8 +76,8 @@ class ProjectModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = ProjectDock(self._plugin.iface.mainWindow())
-        self.dock.initGui(self._plugin.iface, Qt.LeftDockWidgetArea, self._plugin.pluginAction)
+        dock = ProjectDock(self._plugin.iface.mainWindow())
+        self._initDockGui(dock, Qt.LeftDockWidgetArea, self._plugin.pluginAction)
         # self.projectLayerView = QgsLayerTreeView()
         # self._layerSnappingAction = LayerSnappingAction(self._plugin.iface, self.projectLayerView)
         # self._plugin.iface.legendInterface().addLegendLayerAction(
@@ -153,7 +151,7 @@ class ProjectModule(QObject):
                     and self.collection('section').loadCollection()
                     and self.collection('site').loadCollection()):
 
-                self.dock.loadProject(self._plugin)
+                self._dock.loadProject(self._plugin)
 
                 if self.collection('plan').isLogged():
                     self._itemLogPath = os.path.join(self.collection('plan').projectPath,
@@ -165,22 +163,18 @@ class ProjectModule(QObject):
                         fd.close()
 
                     # TODO Think of a better way...
-                    # self.metadata = Metadata(self.dock.widget.sourceWidget)
+                    # self.metadata = Metadata(self._dock.widget.sourceWidget)
                     # self.metadata.metadataChanged.connect(self.updateMapToolAttributes)
-            self.initialised = True
+            self._initialised = True
             return True
         return False
-
-    # Save the project
-    def writeProject(self):
-        pass
 
     # Close the project
     def closeProject(self):
         if self.identifyMapTool.action() and self.identifyMapTool.action().isChecked():
             self._plugin.iface.actionPan().trigger()
         # TODO Unload the drawing tools!
-        self.dock.closeProject()
+        self._dock.closeProject()
         # self.metadata.metadataChanged.disconnect(self.updateMapToolAttributes)
         # Unload the layers
         for collection in self._collections:
@@ -188,21 +182,7 @@ class ProjectModule(QObject):
         del self._collections
         self._collections = {}
         self._plugin.iface.legendInterface().removeLegendLayerAction(self._layerSnappingAction)
-        self.initialised = False
-
-    # Unload the module when plugin is unloaded
-    def unloadGui(self):
-        # Unload the dock
-        self.dock.unloadGui()
-        del self.dock
-        # Reset the initialisation
-        self.initialised = False
-
-    def run(self, checked):
-        if checked and self.initialised:
-            pass
-        else:
-            self.dock.menuAction().setChecked(False)
+        self._initialised = False
 
     # Project
 
@@ -382,10 +362,10 @@ class ProjectModule(QObject):
             self._collections[collection] = Collection(self._plugin.iface, self.projectFolder(), settings)
 
     def addDockSeparator(self):
-        self.dock.toolbar.addSeparator()
+        self._dock.toolbar.addSeparator()
 
     def addDockAction(self, iconPath, text, callback=None, enabled=True, checkable=False, tip=None, whatsThis=None):
-        action = QAction(QIcon(iconPath), text, self.dock)
+        action = QAction(QIcon(iconPath), text, self._dock)
         if callback is not None:
             action.triggered.connect(callback)
         action.setEnabled(enabled)
@@ -394,7 +374,7 @@ class ProjectModule(QObject):
             action.setStatusTip(tip)
         if whatsThis is not None:
             action.setWhatsThis(whatsThis)
-        self.dock.toolbar.addAction(action)
+        self._dock.toolbar.addAction(action)
         # self.actions.append(action)
         return action
 
@@ -424,7 +404,7 @@ class ProjectModule(QObject):
 
     def _loadAnyPlan(self):
         filePaths = QFileDialog.getOpenFileNames(
-            self.dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
+            self._dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
         for filePath in filePaths:
             self.georeferencePlan(QFileInfo(filePath), 'free')
 
@@ -529,7 +509,7 @@ class ProjectModule(QObject):
             # TODO Signal out layers merged for schematic dock to catch
             # if self._editSchematic:
             #     self._editSchematic = False
-            #     self.dock.activateSchematicCheck()
+            #     self._dock.activateSchematicCheck()
             #     self._findContext()
         else:
             self._plugin.showCriticalMessage(
@@ -635,7 +615,7 @@ class ProjectModule(QObject):
         # TODO Signal out layers reset for schematic dock to catch
         # if self._editSchematic:
         #     self._editSchematic = False
-        #     self.dock.activateSchematicCheck()
+        #     self._dock.activateSchematicCheck()
 
     def _confirmDelete(self, itemId, title='Confirm Delete Item', label=None):
         if not label:

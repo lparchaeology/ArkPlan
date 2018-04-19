@@ -206,13 +206,13 @@ class ArkSpatialPlugin(Plugin):
         else:
             if self._initialised:
                 self.iface.actionPan().trigger()
-                self._dataModule.dock.setVisible(False)
-                self._drawingModule.dock.setVisible(False)
-                self._checkingModule.dock.setVisible(False)
-                self._gridModule.dock.setVisible(False)
-                self._filterModule.dock.setVisible(False)
-                self._trenchModule.dock.setVisible(False)
-                self._projectModule.dock.setVisible(False)
+                self._dataModule.showDock(False)
+                self._drawingModule.showDock(False)
+                self._checkingModule.showDock(False)
+                self._gridModule.showDock(False)
+                self._filterModule.showDock(False)
+                self._trenchModule.showDock(False)
+                self._projectModule.showDock(False)
 
     def project(self):
         return self._projectModule
@@ -225,6 +225,12 @@ class ArkSpatialPlugin(Plugin):
 
     def grid(self):
         return self._gridModule
+
+    def checking(self):
+        return self._checkingModule
+
+    def drawing(self):
+        return self._drawingModule
 
     def configurePlugin(self):
         if Settings.isPluginConfigured():
@@ -261,5 +267,5 @@ class ArkSpatialPlugin(Plugin):
             return True
 
         self.showCriticalMessage('ARK Spatial not configured, unable to continue!')
-        self.project().dock.menuAction().setChecked(False)
+        self.project().showDock(False)
         return False

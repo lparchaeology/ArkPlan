@@ -31,23 +31,19 @@ from qgis.gui import QgsExpressionBuilderDialog
 
 from ArkSpatial.ark.lib.core import layers
 
-from ArkSpatial.ark.core import Config, FilterClause, FilterSet, FilterType, Settings
+from ArkSpatial.ark.core import Config, FilterClause, FilterSet, FilterType, Module, Settings
 from ArkSpatial.ark.core.enum import FilterAction
 from ArkSpatial.ark.gui import FilterDock, FilterExportDialog
 
 
-class FilterModule(QObject):
+class FilterModule(Module):
 
     filterSetCleared = pyqtSignal()
 
     def __init__(self, plugin):
         super(FilterModule, self).__init__(plugin)
 
-        self._plugin = plugin  # Plugin()
-
         # Internal variables
-        self.dock = None  # FilterDock()
-        self._initialised = False
         self._useGroups = False
         self._filterSetGroupIndex = -1
         self._filterSets = {}  # {str: FilterSet()}
@@ -58,33 +54,33 @@ class FilterModule(QObject):
 
     # Create the gui when the plugin is first created
     def initGui(self):
-        self.dock = FilterDock(self._plugin.iface.mainWindow())
+        dock = FilterDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/filter/filter.png', self.tr(u'Filter Tools'), callback=self.run, checkable=True)
-        self.dock.initGui(self._plugin.iface, Qt.LeftDockWidgetArea, action)
+        self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
-        self.dock.filterChanged.connect(self._filterChanged)
-        self.dock.filterClauseAdded.connect(self._filterChanged)
+        self._dock.filterChanged.connect(self._filterChanged)
+        self._dock.filterClauseAdded.connect(self._filterChanged)
 
-        self.dock.buildFilterSelected.connect(self.buildFilter)
-        self.dock.buildSelectionSelected.connect(self.buildSelection)
-        self.dock.buildHighlightSelected.connect(self.buildHighlight)
-        self.dock.clearFilterSelected.connect(self.clearFilters)
-        self.dock.clearFilterSelected.connect(self.filterSetCleared)
-        self.dock.loadDataSelected.connect(self._loadArkData)
-        self.dock.refreshDataSelected.connect(self._refreshArkData)
-        self.dock.zoomFilterSelected.connect(self.zoomFilter)
+        self._dock.buildFilterSelected.connect(self.buildFilter)
+        self._dock.buildSelectionSelected.connect(self.buildSelection)
+        self._dock.buildHighlightSelected.connect(self.buildHighlight)
+        self._dock.clearFilterSelected.connect(self.clearFilters)
+        self._dock.clearFilterSelected.connect(self.filterSetCleared)
+        self._dock.loadDataSelected.connect(self._loadArkData)
+        self._dock.refreshDataSelected.connect(self._refreshArkData)
+        self._dock.zoomFilterSelected.connect(self.zoomFilter)
 
-        self.dock.filterSetChanged.connect(self.setFilterSet)
-        self.dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
-        self.dock.reloadFilterSetSelected.connect(self._reloadFilterSetSelected)
-        self.dock.deleteFilterSetSelected.connect(self._deleteFilterSetSelected)
-        self.dock.exportFilterSetSelected.connect(self._exportFilterSetSelected)
+        self._dock.filterSetChanged.connect(self.setFilterSet)
+        self._dock.saveFilterSetSelected.connect(self._saveFilterSetSelected)
+        self._dock.reloadFilterSetSelected.connect(self._reloadFilterSetSelected)
+        self._dock.deleteFilterSetSelected.connect(self._deleteFilterSetSelected)
+        self._dock.exportFilterSetSelected.connect(self._exportFilterSetSelected)
 
     # Load the project settings when project is loaded
     def loadProject(self):
         # Load the Site Codes
-        self.dock.initSiteCodes([Settings.siteCode()])
+        self._dock.initSiteCodes([Settings.siteCode()])
 
         # Load the Class Codes
         self._loadClassCodes()
@@ -116,17 +112,6 @@ class FilterModule(QObject):
         # Reset the initialisation
         self._initialised = False
 
-    # Unload the gui when the plugin is unloaded
-    def unloadGui(self):
-        self.dock.unloadGui()
-
-    def run(self, checked):
-        if checked and not self._initialised:
-            self.dock.menuAction().setChecked(False)
-
-    def showDock(self, show=True):
-        self.dock.menuAction().setChecked(show)
-
     def collection(self):
         return self._plugin.project().collection('plan')
 
@@ -142,16 +127,16 @@ class FilterModule(QObject):
         codes = {}
         for code in sorted(codeList):
             codes[code] = code
-        self.dock.initClassCodes(codes)
+        self._dock.initClassCodes(codes)
 
     def _enableArkData(self, enable=True):
         if Settings.siteServerUrl():
-            self.dock.enableArkData(enable)
+            self._dock.enableArkData(enable)
 
     def _activateArkData(self):
         self._loadClassCodes()
         self._loadArkFilterSets()
-        self.dock.activateArkData()
+        self._dock.activateArkData()
 
     # Filter methods
 
@@ -173,7 +158,7 @@ class FilterModule(QObject):
         if (filterAction == FilterAction.ExclusiveFilter
                 or filterAction == FilterAction.ExclusiveSelectFilter
                 or filterAction == FilterAction.ExclusiveHighlightFilter):
-            self.dock.removeFilters()
+            self._dock.removeFilters()
 
         filterType = self._typeForAction(filterAction)
 
@@ -184,7 +169,7 @@ class FilterModule(QObject):
     def filterItem(self, item):
         if not self._initialised:
             return
-        self.dock.removeFilters()
+        self._dock.removeFilters()
         ret = self.addFilterClause(FilterType.Include, item)
         self.zoomFilter()
         return ret
@@ -197,7 +182,7 @@ class FilterModule(QObject):
     def highlightItem(self, item):
         if not self._initialised:
             return
-        self.dock.removeHighlightFilters()
+        self._dock.removeHighlightFilters()
         return self.addFilterClause(FilterType.Highlight, item)
 
     def addHighlightItem(self, item):
@@ -218,13 +203,13 @@ class FilterModule(QObject):
             self._schematicFilterSet.addClause(cl)
         cl.action = self._typeForAction(filterAction)
         self._schematicFilterSet.addClause(cl)
-        self.dock.setSchematicFilterSet(self._schematicFilterSet)
+        self._dock.setSchematicFilterSet(self._schematicFilterSet)
         self._applyFilters()
 
     def clearSchematicFilter(self):
         if len(self._schematicFilterSet.clauses()) > 0:
             self._schematicFilterSet.clearClauses()
-            self.dock.removeSchematicFilters()
+            self._dock.removeSchematicFilters()
             self._applyFilters()
 
     def addFilterClause(self, filterType, item):
@@ -233,36 +218,36 @@ class FilterModule(QObject):
         clause = FilterClause()
         clause.item = item
         clause.action = filterType
-        idx = self.dock.addFilterClause(clause)
+        idx = self._dock.addFilterClause(clause)
         self._applyFilters()
         return idx
 
     def removeFilters(self):
         if not self._initialised:
             return
-        if self.dock.removeFilters():
+        if self._dock.removeFilters():
             self._applyFilters()
 
     def removeSelectFilters(self):
         if not self._initialised:
             return
-        if self.dock.removeSelectFilters():
+        if self._dock.removeSelectFilters():
             self._applyFilters()
 
     def removeHighlightFilters(self):
         if not self._initialised:
             return
-        if self.dock.removeHighlightFilters():
+        if self._dock.removeHighlightFilters():
             self._applyFilters()
 
     def hasFilterType(self, filterType):
         if not self._initialised:
             return False
-        return self.dock.hasFilterType(filterType)
+        return self._dock.hasFilterType(filterType)
 
     def _filterChanged(self):
-        self.currentFilterSet().setClauses(self.dock.filterClauses())
-        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self.currentFilterSet().setClauses(self._dock.filterClauses())
+        self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
         self._applyFilters()
 
     def _applyFilters(self):
@@ -365,7 +350,7 @@ class FilterModule(QObject):
         return self._filterSets[key]
 
     def currentFilterSetKey(self):
-        return self.dock.currentFilterSet()
+        return self._dock.currentFilterSet()
 
     def _filterSetGroup(self, key):
         return 'ARK.filterset/' + key
@@ -386,7 +371,7 @@ class FilterModule(QObject):
         if 'Default' not in self._filterSets:
             filterSet = FilterSet.fromName(self._plugin, 'ARK.filterset', 'Default', 'Default')
             self._filterSets[filterSet.key] = filterSet
-        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _loadArkFilterSets(self):
         self._arkFilterSets = {}
@@ -394,7 +379,7 @@ class FilterModule(QObject):
         for key in filters:
             filterSet = FilterSet.fromArk(self._plugin, key, filters[key])
             self._arkFilterSets[filterSet.key] = filterSet
-        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
 
     def _exportFilterSet(self, key):
         pass
@@ -406,7 +391,7 @@ class FilterModule(QObject):
             self._setFilterSet(self._arkFilterSets[key])
 
     def _setFilterSet(self, filterSet):
-        self.dock.setFilterSet(filterSet)
+        self._dock.setFilterSet(filterSet)
         self._applyFilters()
 
     def _saveFilterSetSelected(self, name):
@@ -417,16 +402,16 @@ class FilterModule(QObject):
     def _saveFilterSet(self, name):
         key = self._makeKey(name)
         if key in self._filterSets:
-            self._filterSets[key].setClauses(self.dock.filterClauses())
+            self._filterSets[key].setClauses(self._dock.filterClauses())
             self._filterSets[key].save()
         else:
             filterSet = FilterSet.fromName(self._plugin, 'ARK.filterset', key, name)
-            filterSet.setClauses(self.dock.filterClauses())
+            filterSet.setClauses(self._dock.filterClauses())
             filterSet.save()
             self._filterSets[key] = filterSet
         if key != self.currentFilterSetKey():
             self.currentFilterSet().reloadClauses()
-        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
         self.setFilterSet(key)
 
     def _reloadFilterSetSelected(self, key):
@@ -434,14 +419,14 @@ class FilterModule(QObject):
             self._filterSets[key].reloadClauses()
         if key in self._arkFilterSets:
             self._arkFilterSets[key].reloadClauses()
-        self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+        self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
         self.setFilterSet(key)
 
     def _deleteFilterSetSelected(self, key):
         if key in self._filterSets:
             self._filterSets[key].delete()
             del self._filterSets[key]
-            self.dock.initFilterSets(self._filterSets, self._arkFilterSets)
+            self._dock.initFilterSets(self._filterSets, self._arkFilterSets)
             self.setFilterSet('Default')
 
     def _exportFilterSetSelected(self, key, name):

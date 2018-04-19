@@ -24,17 +24,19 @@
 
 from PyQt4.QtCore import QUrl, pyqtSignal
 from PyQt4.QtGui import QAction, QIcon, QWidget
-try:
-    from PyQt4.QtWebKit import QWebPage
-    QWK_AVAILABLE = True
-except ImportError:
-    QWK_AVAILABLE = False
 
 from ArkSpatial.ark.lib import Application
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 
 from ArkSpatial.ark.core import Config, Item
 from ArkSpatial.ark.gui import ActionSettingsTool
+
+try:
+    from PyQt4.QtWebKit import QWebPage
+    QWK_AVAILABLE = True
+except ImportError:
+    QWK_AVAILABLE = False
+
 
 if QWK_AVAILABLE:
     from .data_widget import DataWidget
@@ -144,6 +146,18 @@ class DataDock(ToolDockWidget):
         if QWK_AVAILABLE:
             self.widget.itemDataView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
             self.widget.itemDataView.linkClicked.connect(self._linkClicked)
+
+    # Load the project settings when project is loaded
+    def loadProject(self, plugin):
+        pass
+
+    # Save the project
+    def writeProject(self):
+        pass
+
+    # Close the project
+    def closeProject(self):
+        pass
 
     def initSiteCodes(self, siteCodes):
         self.widget.siteCodeCombo.clear()

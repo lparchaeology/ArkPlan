@@ -103,33 +103,25 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         self.gcpWidget3.setScene(self._scene, 3200, 3050, 2)
         self.gcpWidget4.setScene(self._scene, 3200, 100, 2)
 
-        md = Drawing()
-        md.setFile(self._inputFile)
-        self.inputFileName.setText(self._inputFile.baseName())
-        self.siteEdit.setText(md.siteCode)
-        self.typeCombo.setCurrentIndex(self.typeCombo.findData(md.sourceClass))
-        if md.sourceId is not None:
-            self.numberSpin.setValue(md.sourceId)
-        else:
-            self.numberSpin.setValue(0)
-        if md.easting is not None:
-            self.eastSpin.setValue(md.easting)
-        else:
-            self.eastSpin.setValue(0)
-        if md.northing is not None:
-            self.northSpin.setValue(md.northing)
-        else:
-            self.northSpin.setValue(0)
-        self.suffixEdit.setText(md.suffix)
-        self._updateFileNames(md)
-        self._updateGeoPoints()
-        pointFile = self.pointFile()
-        if pointFile.exists():
-            self._loadGcp(pointFile.absoluteFilePath())
+        self.inputFileNameLabel.setText(self._inputFile.baseName())
+        drawing = Drawing(self._inputFile)
+        if drawing.isValid():
+            self.siteEdit.setText(drawing.item().siteCode())
+            self.typeCombo.setCurrentIndex(self.typeCombo.findData(drawing.item().classCode()))
+            self.numberSpin.setValue(drawing.item().itemId() or 0)
+            self.eastSpin.setValue(drawing.easting() or 0)
+            self.northSpin.setValue(drawing.northing() or 0)
+            self.suffixEdit.setText(drawing.suffix())
+            self._updateFileNames(drawing)
+            self._updateGeoPoints()
+            pointFile = self.pointFileInfo()
+            if pointFile.exists():
+                self._loadGcp(pointFile.absoluteFilePath())
+            self._setStatusLabel('load', ProcessStatus.Success)
+            QCoreApplication.processEvents()
+            return True
 
-        self._setStatusLabel('load', ProcessStatus.Success)
-        QCoreApplication.processEvents()
-        return True
+        return False
 
     def _loadGcp(self, path):
         gc = Georeferencer.loadGcpFile(path)
@@ -182,26 +174,13 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
             elif local == local4:
                 self.gcpWidget4.setGeo(local, map)
 
-    def metadata(self):
-        md = Drawing()
-        md.setMetadata(
-            self.siteEdit.text(),
-            self.drawingType(),
-            self.numberSpin.value(),
-            self.eastSpin.value(),
-            self.northSpin.value(),
-            self.suffixEdit.text()
-        )
-        return md
-
     def _updateGeoreference(self):
-        md = self.metadata()
-        self._updateFileNames(md)
+        self._updateFileNames(self.drawing())
         self._updateGeoPoints()
 
-    def _updateFileNames(self, md):
-        self.rawFileName.setText(md.baseName())
-        self.geoFileName.setText(md.baseName() + self._type()['suffix'])
+    def _updateFileNames(self, drawing):
+        self.rawFileNameLabel.setText(drawing.baseName())
+        self.geoFileNameLabel.setText(drawing.baseName() + self._type()['suffix'])
 
     def _toggleUi(self, status):
         self.processButton.setEnabled(status)
@@ -226,21 +205,47 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         else:
             self.progressBar.setRange(0, 0)
 
+    def drawing(self):
+        return Drawing(self.item(), self.easting(), self.northing(), self.suffix(), self.rawFileName())
+
+    def item(self):
+        return Item(self.siteCode(), self.classCode(), self.itemId())
+
+    def siteCode(self):
+        return self.siteEdit.text().strip()
+
+    def classCode(self):
+        return self.drawingType()
+
+    def itemId(self):
+        return unicode(self.numberSpin.value())
+
     def drawingType(self):
         return self.typeCombo.itemData(self.typeCombo.currentIndex())
 
     def drawingScale(self):
         return self.scaleCombo.itemData(self.scaleCombo.currentIndex())
 
-    def rawFile(self):
-        return QFileInfo(self._type()['raw'], self.rawFileName.text() + '.' + self._inputFile.suffix())
+    def suffix(self):
+        return self.suffixEdit.text().strip()
 
-    def pointFile(self):
-        return QFileInfo(self._type()['raw'], self.rawFileName.text() + '.' + self._inputFile.suffix() + '.points')
+    def inputFileName(self):
+        return self.inputFileNameLabel.text().strip()
 
-    def geoFile(self):
-        return QFileInfo(self._type()['geo'], self.geoFileName.text() + '.tif')
-        return self.geoFileEdit.text() + '.tif'
+    def rawFileName(self):
+        return self.rawFileNameLabel.text().strip()
+
+    def rawFileInfo(self):
+        return QFileInfo(self._type()['raw'], self.rawFileName() + '.' + self._inputFile.suffix())
+
+    def pointFileInfo(self):
+        return QFileInfo(self._type()['raw'], self.rawFileName() + '.' + self._inputFile.suffix() + '.points')
+
+    def geoFileName(self):
+        return self.geoFileNameLabel.text().strip()
+
+    def geoFileInfo(self):
+        return QFileInfo(self._type()['geo'], self.geoFileName() + '.tif')
 
     def _type(self):
         return self._types[self.drawingType()]
@@ -268,13 +273,13 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         self._close()
 
     def _copyInputFile(self):
-        if self.inputFileName.text() != self.rawFileName.text() or self._inputFile.dir() != self._type()['raw']:
-            QFile.copy(self._inputFile.absoluteFilePath(), self.rawFile().absoluteFilePath())
+        if self.inputFileName() != self.rawFileName() or self._inputFile.dir() != self._type()['raw']:
+            QFile.copy(self._inputFile.absoluteFilePath(), self.rawFileInfo().absoluteFilePath())
 
     def _saveGcp(self):
         gc = self._gc()
         if (gc.isValid()):
-            Georeferencer.writeGcpFile(gc, self.pointFile().absoluteFilePath())
+            Georeferencer.writeGcpFile(gc, self.pointFileInfo().absoluteFilePath())
 
     def _run(self):
         self._runGeoreference(False)
@@ -306,7 +311,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         self._toggleUi(False)
         self._copyInputFile()
         QCoreApplication.processEvents()
-        self._georeferencer.run(gc, self.rawFile(), self.pointFile(), self.geoFile())
+        self._georeferencer.run(gc, self.rawFileInfo(), self.pointFileInfo(), self.geoFileInfo())
 
     def _finished(self, step, status):
         if step == Georeferencer.Stop and status == ProcessStatus.Success and self._closeOnDone:

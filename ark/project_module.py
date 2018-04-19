@@ -402,26 +402,6 @@ class ProjectModule(Module):
 
     # Plan Tools
 
-    def _loadAnyPlan(self):
-        filePaths = QFileDialog.getOpenFileNames(
-            self._dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
-        for filePath in filePaths:
-            self.georeferencePlan(QFileInfo(filePath), 'free')
-
-    def _loadRawPlan(self):
-        dialog = SelectDrawingDialog('context', Settings.siteCode())
-        if (dialog.exec_()):
-            for filePath in dialog.selectedFiles():
-                self.georeferencePlan(QFileInfo(filePath))
-
-    def _loadGeoPlan(self):
-        dialog = SelectDrawingDialog('context', Settings.siteCode(), True)
-        if (dialog.exec_()):
-            for filePath in dialog.selectedFiles():
-                geoFile = QFileInfo(filePath)
-                self._setDrawing(Drawing(geoFile))
-                self._plugin.loadGeoLayer(geoFile)
-
     def loadDrawing(self, item, zoomToDrawing=True):
         if not Config.classCodes[item.classCode()]['drawing']:
             return
@@ -463,10 +443,6 @@ class ProjectModule(Module):
             self._plugin.clearDrawings()
         for sourceKey in sorted(sourceKeys):
             self.loadDrawing(sourceKey)
-
-    def _featureNameChanged(self, featureName):
-        self.metadata.setName(featureName)
-        self.updateMapToolAttributes()
 
     # Layer Methods
 

@@ -24,95 +24,126 @@
 
 import string
 
+from PyQt4.QtCore import QFileInfo
 
-class Drawing:
+from source import Source
 
-    def __init__(self, fileInfo=None):
 
-        self.siteCode = ''
-        self.sourceClass = ''
-        self.name = ''
-        self.sourceId = None
-        self.easting = None
-        self.northing = None
-        self.suffix = ''
-        self.filename = ''
+class Drawing(Source):
 
-        if fileInfo is not None:
+    def __init__(self, item=None, easting=None, northing=None, suffix=None, filename=None):
+
+        self._easting = easting
+        self._northing = northing
+        self._suffix = suffix
+
+        if isinstance(sourceCode, QFileInfo):
+            super(Drawing, self).__init__()
             self.setFile(fileInfo)
-
-    def setMetadata(self, siteCode, sourceClass, sourceId=None, easting=None, northing=None, suffix=''):
-        self.siteCode = siteCode.strip()
-        self.sourceClass = sourceClass.strip()
-        if sourceId is not None and sourceId > 0:
-            self.sourceId = sourceId
         else:
-            self.sourceId = None
-        if sourceClass == 'cxt' or sourceClass == 'pln' or sourceClass == 'top':
-            self.easting = easting
-            self.northing = northing
-        else:
-            self.easting = None
-            self.northing = None
-        self.suffix = suffix.strip()
-        self.filename = ''
+            super(Drawing, self).__init__('drawing', item, filename)
 
-    def setFile(self, fileInfo):
-        self.siteCode = ''
-        self.sourceClass = ''
-        self.name = ''
-        self.sourceId = None
-        self.easting = None
-        self.northing = None
-        self.suffix = ''
-        self.filename = fileInfo.fileName()
+    def __eq__(self, other):
+        return (isinstance(other, Drawing)
+                and self._sourceCode == other._sourceCode
+                and self._item == other._item
+                and self._filename == other.filename
+                and self._easting == other._easting
+                and self._northing == other._northing
+                and self._suffix == other._suffix)
+
+    def __hash__(self):
+        return hash((self._sourceCode, self._item, self._filename, self._easting, self._northing, self._suffix))
+
+    def __str__(self):
+        return ('Drawing('
+                + str(self._sourceCode) + ', '
+                + str(self._item) + ', '
+                + str(self._easting) + ', '
+                + str(self._northing) + ', '
+                + str(self._suffix) + ', '
+                + str(self._filename) + ')')
+
+    def debug(self):
+        return ('Source('
+                + utils.printable(self._sourceCode) + ', '
+                + self._item.debug() + ', '
+                + utils.printable(self._easting) + ', '
+                + utils.printable(self._northing) + ', '
+                + utils.printable(self._suffix) + ', '
+                + utils.printable(self._filename) + ')')
+
+    def easting(self):
+        return self._easting
+
+    def northing(self):
+        return self._northing
+
+    def setGridReference(self, easting, northing):
+        self._easting = easting
+        self._northing = northing
+
+    def suffix(self):
+        return self._suffix
+
+    def setSuffix(self, suffix):
+        self._suffix = suffix
+
+    def fromFileInfo(self, fileInfo):
+        self.setSource('', None, fileInfo.fileName())
+        self._easting = None
+        self._northing = None
+        self._suffix = ''
         elements = string.split(fileInfo.completeBaseName(), '_')
-        if (self.filename and len(elements) >= 2):
+        if (self._filename and len(elements) > 2):
             suffixPos = 3
-            self.sourceClass = elements[0].lower()
-            self.siteCode = elements[1]
-            if (self.sourceClass == 'pln'):
-                self.name = 'Plan'
-                self.sourceId = int(elements[2])
-            elif (self.sourceClass == 'cxt'):
-                self.name = 'Context'
-                self.sourceId = int(elements[2])
-            elif (self.sourceClass == 'sec'):
-                self.name = 'Section'
-                self.sourceId = int(elements[2])
-            elif (self.sourceClass == 'tim'):
-                self.name = 'Timber'
-                self.sourceId = int(elements[2])
-            elif (self.sourceClass == 'top'):
-                self.name = 'Top Plan'
-                self.sourceId = None
-                suffixPos = 2
-            elif (self.sourceClass == 'mtx'):
-                self.name = 'Matrix'
-                self.sourceId = None
-                suffixPos = 2
-            else:
-                self.name = 'Unknown'
-                return
+            drawingCode = elements[0].lower()
+            siteCode = elements[1]
+            sourceId = int(elements[2])
+            classCode = ''
+            easting = ''
+            northing = ''
+            suffix = ''
+            for drawing in Config.drawings.values():
+                if drawing['code'] == drawingCode:
+                    classCode = drawing['class']
             if (len(elements) >= suffixPos + 1):
                 location = elements[suffixPos]
                 # FIXME Make generic able to handle any length grid references
                 # TODO Add support for Baseline names
-                if len(location) == 8 and location[3].lower() == 'e' and location[7].lower() == 'n':
-                    self.easting = int(location[0:3])
-                    self.northing = int(location[4:7])
-                    suffixPos += 1
+                if len(location) == 8:
+                    e = location[3].lower()
+                    n = location[7].lower()
+                    if (e == 'e' or e == 'w') and (n == 'n' or n == 's'):
+                        easting = int(location[0:3])
+                        if (e == 'w'):
+                            easting = easting * -1
+                        northing = int(location[4:7])
+                        if (n == 's'):
+                            northing = northing * -1
+                        suffixPos += 1
             if (len(elements) >= suffixPos + 1):
-                self.suffix = elements[suffixPos]
-                if (self.suffix.lower() == 'r'):
-                    self.suffix = ''
+                suffix = elements[suffixPos]
+                if (suffix.lower() == 'r'):
+                    suffix = ''
+            if classCode and siteCode and itemId:
+                self.setSource('drawing', Item(siteCode, classCode, itemId), fileInfo.fileName())
+                self._easting = easting
+                self._northing = northing
+                self._suffix = suffix
 
     def baseName(self):
-        name = self.sourceClass + '_' + self.siteCode
-        if (self.sourceId > 0):
-            name = name + '_' + str(self.sourceId)
-        if self.easting is not None and self.northing is not None:
-            name = name + '_' + str(self.easting).zfill(3) + 'e' + str(self.northing).zfill(3) + 'n'
-        if self.suffix:
-            name = name + '_' + self.suffix
+        drawingCode = ''
+        for drawing in Config.drawings.values():
+            if drawing['class'] == self._item.classCode():
+                drawingCode = drawing['code']
+        if not drawingCode:
+            return ''
+        name = drawingCode + '_' + self._item.siteCode() + '_' + self._item.itemId()
+        if self._easting is not None and self._northing is not None:
+            e = 'e' if self._easting >= 0 else 'w'
+            n = 'n' if self._northing >= 0 else 's'
+            name = name + '_' + str(abs(self.easting)).zfill(3) + e + str(abs(self._northing)).zfill(3) + n
+        if self._suffix:
+            name = name + '_' + self._suffix
         return name

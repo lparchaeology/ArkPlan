@@ -122,20 +122,12 @@ class DrawingModule(Module):
     def collection(self):
         return self._plugin.project().collection('plan')
 
-    def _setDrawing(self, pmd):
-        self.metadata.setSiteCode(pmd.siteCode)
-        self.metadata.setClassCode(pmd.sourceClass)
-        if pmd.sourceId > 0:
-            self.metadata.setItemId(pmd.sourceId)
-            self.metadata.setSourceId(pmd.sourceId)
-        self.metadata.setSourceCode('drawing')
-        self.metadata.setSourceClass(pmd.sourceClass)
-        self.metadata.setSourceFile(pmd.filename)
-        self.metadata.setEditor(Settings.userFullName())
+    def _setDrawing(self, drawing):
+        self._dock.setSource(drawing)
 
     def _loadAnyPlan(self):
         filePaths = QFileDialog.getOpenFileNames(
-            self._dock, caption='Georeference Any File', filter='Images (*.png *.xpm *.jpg)')
+            self._dock, caption='Georeference Any File', filter='Images (*.png *.tif *.jpg)')
         for filePath in filePaths:
             self.georeferencePlan(QFileInfo(filePath), 'free')
 
@@ -153,48 +145,6 @@ class DrawingModule(Module):
                 self._setDrawing(Drawing(geoFile))
                 self._plugin.project().loadGeoLayer(geoFile)
 
-    def loadDrawing(self, item, zoomToDrawing=True):
-        if not Config.classCodes[item.classCode()]['drawing']:
-            return
-        drawingDir = Settings.georefDrawingDir(item.classCode())
-        drawingDir.setFilter(QDir.Files | QDir.NoDotAndDotDot)
-        name = item.name()
-        nameList = []
-        nameList.append(name + '.png')
-        nameList.append(name + '.tif')
-        nameList.append(name + '.tiff')
-        nameList.append(name + '_*.png')
-        nameList.append(name + '_*.tif')
-        nameList.append(name + '_*.tiff')
-        drawingDir.setNameFilters(nameList)
-        drawings = drawingDir.entryInfoList()
-        for drawing in drawings:
-            self._setDrawing(Drawing(drawing))
-            self._plugin.project().loadGeoLayer(drawing, zoomToDrawing)
-
-    def loadSourceDrawings(self, item, clearDrawings=False):
-        if item.isInvalid():
-            return
-        sourceKeys = set()
-        sourceKeys.add(item)
-        itemRequest = item.featureRequest()
-        for feature in self.collection().layer('polygons').getFeatures(itemRequest):
-            source = Source(feature)
-            if source.item().isValid():
-                sourceKeys.add(source.item())
-        for feature in self.collection().layer('lines').getFeatures(itemRequest):
-            source = Source(feature)
-            if source.item.isValid():
-                sourceKeys.add(source.item())
-        for feature in self.collection().layer('points').getFeatures(itemRequest):
-            source = Source(feature)
-            if source.item().isValid():
-                sourceKeys.add(source.item())
-        if clearDrawings and len(sourceKeys) > 0:
-            self._plugin.project().clearDrawings()
-        for sourceKey in sorted(sourceKeys):
-            self.loadDrawing(sourceKey)
-
     # Georeference Tools
 
     def georeferencePlan(self, sourceFile, mode='name'):
@@ -209,15 +159,8 @@ class DrawingModule(Module):
             drawings[drawing]['local_y'] = 'local_y'
         georefDialog = GeorefDialog(drawings)
         if georefDialog.loadImage(sourceFile) and georefDialog.exec_():
-            geoFile = georefDialog.geoFile()
-            md = georefDialog.metadata()
-            md.filename = geoFile.fileName()
-            self._setDrawing(md)
-            self._plugin.project().loadGeoLayer(geoFile)
-
-    def _featureNameChanged(self, featureName):
-        self.metadata.setName(featureName)
-        self.updateMapToolAttributes()
+            self._setDrawing(georefDialog.drawing())
+            self._plugin.project().loadGeoLayer(georefDialog.geoFileInfo())
 
     def _sectionItemList(self, siteCode):
         # TODO in 2.14 use addOrderBy()

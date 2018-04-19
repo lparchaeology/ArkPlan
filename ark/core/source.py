@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from PyQt4.QtCore import QObject
+
 from qgis.core import QgsFeature
 
 from ArkSpatial.ark.lib import utils
@@ -31,7 +33,7 @@ from ArkSpatial.ark.core import Config
 from .item import Item
 
 
-class Source():
+class Source(QObject):
 
     def __init__(self, sourceCode=None, item=None, filename=None):
 
@@ -46,9 +48,9 @@ class Source():
 
     def __eq__(self, other):
         return (isinstance(other, Source)
-                and self._code == other.sourceCode
-                and self._item == other.item
-                and self._filename == other.filename)
+                and self._sourceCode == other._sourceCode
+                and self._item == other._item
+                and self._filename == other._filename)
 
     def __hash__(self):
         return hash((self._code, self._item, self._filename))

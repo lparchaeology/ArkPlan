@@ -414,18 +414,24 @@ class Config():
 
     drawings = {
         'context': {
+            'class': 'context',
+            'code': 'cxt',
             'name': 'Context',
             'groupName': 'Contexts',
             'path': 'drawings/contexts',
             'layersGroupName': 'Drawings',
         },
         'plan': {
+            'class': 'plan',
+            'code': 'pln',
             'name': 'Plan',
             'groupName': 'Plans',
             'path': 'drawings/plans',
             'layersGroupName': 'Drawings',
         },
         'section': {
+            'class': 'section',
+            'code': 'sec',
             'name': 'Section',
             'groupName': 'Sections',
             'path': 'drawings/sections',
@@ -481,17 +487,17 @@ class Config():
         },
         'creator': {
             'code': 'creator',
-            'label': 'Creator',
+            'label': 'Surmised by Creator',
             'sourceItem': False,
         },
         'client': {
             'code': 'client',
-            'label': 'Client',
+            'label': 'Obtained from Client',
             'sourceItem': False,
         },
         'other': {
             'code': 'other',
-            'label': 'Other',
+            'label': 'Other (see comment)',
             'sourceItem': False,
         },
     }

@@ -3,7 +3,7 @@
 # Mandatory items:
 
 [general]
-name=ArkSpatialBETA
+name=ArkSpatial
 qgisMinimumVersion=2.18
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
 version=1.0.0

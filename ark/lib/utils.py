@@ -24,7 +24,47 @@
 
 from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import NULL, QGis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPointV2
+from qgis.core import NULL, QGis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointV2
+
+safeChars = [
+    " ",
+    ".",
+    ",",
+    "_",
+    "-",
+    "(",
+    ")"
+]
+
+replaceChars = {
+    "&": "and",
+    "[": "(",
+    "]": ")",
+    "{": "(",
+    "}": ")",
+    ":": "-",
+    "/": "-",
+    "\\": "-"
+}
+
+escapedChars = {
+    "&amp;": "&"
+}
+
+
+def safeFilename(name):
+    if name is None or name == "":
+        return ""
+    safe = []
+    for escape, char in escapedChars.iteritems():
+        name = name.replace(escape, char)
+    for char in name:
+        if char.isalpha() or char.isdigit() or char in safeChars:
+            safe.append(char)
+        elif char in replaceChars:
+            safe.append(replaceChars[char])
+    safe = "".join(safe).strip()
+    return safe
 
 
 def bound(minVal, val, maxVal):
@@ -46,8 +86,10 @@ def printable(val):
         return 'u' + doublequote(val)
     if type(val) == QRectF:
         return 'QRectF(' + str(val.x()) + ', ' + str(val.y()) + ', ' + str(val.width()) + ', ' + str(val.height()) + ')'
+    if type(val) == QgsPoint:
+        return 'QgsPoint(' + str(val.x()) + ', ' + str(val.y()) + ')'
     if type(val) == QgsPointV2:
-        return 'QgsPointV2(' + val.toString(3) + ')'
+        return 'QgsPointV2(' + str(val.x()) + ', ' + str(val.y()) + ')'
     if type(val) == QgsGeometry:
         return 'QgsGeometry(' + val.exportToGeoJSON() + ')'
     if type(val) == QgsFeature:

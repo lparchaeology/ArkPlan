@@ -102,9 +102,9 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="featureLabel">
+    <widget class="QLabel" name="itemLabel">
      <property name="text">
-      <string>Feature:</string>
+      <string>Item:</string>
      </property>
      <property name="buddy">
       <cstring>classCombo</cstring>

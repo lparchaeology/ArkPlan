@@ -22,9 +22,10 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWidget, QComboBox
+from PyQt4.QtGui import QComboBox, QWidget
 
 from ArkSpatial.ark.lib import utils
+
 from ArkSpatial.ark.core import Settings
 from ArkSpatial.ark.pyARK import Ark
 
@@ -98,6 +99,6 @@ class ProjectWidget(QWidget, Ui_ProjectWidget):
     def _selectProject(self, index):
         project = self.projectCodeCombo.itemData(index)
         data = self._ark.getProjectDetails(project)
-        self.setProjectName(data['projectName'])
+        self.setProjectName(utils.safeFilename(data['projectName']))
         self.setSiteCode(data['siteCode'])
         self.setLocation(data['locationEasting'], data['locationNorthing'])

@@ -25,11 +25,12 @@
 from PyQt4.QtCore import QObject, Qt, QVariant
 from PyQt4.QtGui import QApplication, QIcon
 
-from qgis.core import QGis, QgsFeature, QgsField, QgsGeometry, QgsPoint, QgsPointV2, QgsVectorLayer
+from qgis.core import (QGis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
+                       QgsVectorLayer)
 from qgis.gui import QgsVertexMarker
 
 from ArkSpatial.ark.lib import utils
-from ArkSpatial.ark.lib.core import LinearTransformer, layers
+from ArkSpatial.ark.lib.core import LinearTransformer, geometry, layers
 from ArkSpatial.ark.lib.map import MapToolEmitPoint
 
 # Move to lib???
@@ -137,7 +138,7 @@ class GridModule(Module):
         if checked:
             if not self._initialised:
                 self.loadProject()
-            self._vertexMarker.setCenter(QgsPoint(self.mapPoint().x(), self.mapPoint().y()))
+            self._vertexMarker.setCenter(geometry.toPoint(self.mapPoint()))
         else:
             self._vertexMarker.setCenter(QgsPoint())
 
@@ -150,7 +151,7 @@ class GridModule(Module):
         default = None
         for feature in self.collection().layer('points').getFeatures():
             name = (feature.attribute('site'),
-                    feature.attribute('name'))
+                    feature.attribute('id'))
             names.add(name)
             if not default:
                 default = name
@@ -162,7 +163,7 @@ class GridModule(Module):
 
     def initialiseGrid(self, siteCode, gridName):
         prevFilter = self.collection().filter
-        expr = utils.eqClause('site', siteCode) + ' and ' + utils.eqClause('name', gridName)
+        expr = utils.eqClause('site', siteCode) + ' and ' + utils.eqClause('id', gridName)
         self.collection().applyFilter(expr)
         if self.collection().layer('points').featureCount() < 2:
             self.collection().applyFilter(prevFilter)
@@ -302,13 +303,14 @@ class GridModule(Module):
     def _attributes(self, layer, site, name):
         attributes = {}
         attributes[layer.fieldNameIndex('site')] = site
-        attributes[layer.fieldNameIndex('name')] = name
-        attributes[layer.fieldNameIndex('created_on')] = utils.timestamp()
-        attributes[layer.fieldNameIndex('created_by')] = 'Grid Tool'
+        attributes[layer.fieldNameIndex('id')] = name
+        attributes[layer.fieldNameIndex('created')] = utils.timestamp()
+        attributes[layer.fieldNameIndex('creator')] = 'ARK Grid Tool'
         return attributes
 
     def _setAttributes(self, feature, attributes):
-        for key in attributes.keys():
+        utils.debug(attributes)
+        for key in attributes:
             feature.setAttribute(key, attributes[key])
 
     def _addGridPointsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
@@ -341,7 +343,9 @@ class GridModule(Module):
             mapStartPoint = transformer.map(localStartPoint)
             mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
-            feature.setGeometry(QgsGeometry.fromPolyline([mapStartPoint, mapEndPoint]))
+            lineGeometry = QgsLineStringV2()
+            lineGeometry.setPoints([mapStartPoint, mapEndPoint])
+            feature.setGeometry(QgsGeometry(lineGeometry))
             self._setAttributes(feature, attributes)
             feature.setAttribute(localFieldX, localX)
             feature.setAttribute(mapFieldX, mapStartPoint.x())
@@ -352,7 +356,9 @@ class GridModule(Module):
             mapStartPoint = transformer.map(localStartPoint)
             mapEndPoint = transformer.map(localEndPoint)
             feature = QgsFeature(layer.dataProvider().fields())
-            feature.setGeometry(QgsGeometry.fromPolyline([mapStartPoint, mapEndPoint]))
+            lineGeometry = QgsLineStringV2()
+            lineGeometry.setPoints([mapStartPoint, mapEndPoint])
+            feature.setGeometry(QgsGeometry(lineGeometry))
             self._setAttributes(feature, attributes)
             feature.setAttribute(localFieldY, localY)
             feature.setAttribute(mapFieldY, mapStartPoint.y())
@@ -373,7 +379,11 @@ class GridModule(Module):
                 points.append(transformer.map(QgsPointV2(localX + intervalX, localY + intervalY)))
                 points.append(transformer.map(QgsPointV2(localX + intervalX, localY)))
                 feature = QgsFeature(layer.dataProvider().fields())
-                feature.setGeometry(QgsGeometry.fromPolygon([points]))
+                lineGeometry = QgsLineStringV2()
+                lineGeometry.setPoints(points)
+                polygonGeometry = QgsPolygonV2()
+                polygonGeometry.setExteriorRing(lineGeometry)
+                feature.setGeometry(QgsGeometry(polygonGeometry))
                 self._setAttributes(feature, attributes)
                 feature.setAttribute(localFieldX, localX)
                 feature.setAttribute(localFieldY, localY)

@@ -54,9 +54,9 @@ class MapToolEmitPoint(MapToolInteractive):
         if e.isAccepted():
             return
         # Emit mode
-        mapPoint, snapped = self._snapCursorPoint(e.pos())
+        mapPoint, mapPointV2, snapped = self._snapCursorPoint(e.pos())
         self._vertexMarker.setCenter(mapPoint)
-        self.canvasClicked.emit(QgsPointV2(mapPoint), e.button())
+        self.canvasClicked.emit(mapPointV2, e.button())
         e.accept()
 
     def setVertexIcon(self, iconType, iconSize=None, penWidth=None, color=None):

@@ -45,7 +45,7 @@ class Config():
         'site': {
             'attribute': 'site',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -56,7 +56,7 @@ class Config():
         'class': {
             'attribute': 'class',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -67,7 +67,7 @@ class Config():
         'id': {
             'attribute': 'id',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -78,7 +78,7 @@ class Config():
         'label': {
             'attribute': 'label',
             'type': QVariant.String,
-            'len': 20,
+            'len': 256,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -89,7 +89,7 @@ class Config():
         'category': {
             'attribute': 'category',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -111,7 +111,7 @@ class Config():
         'source_cd': {
             'attribute': 'source_cd',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -122,7 +122,7 @@ class Config():
         'source_cl': {
             'attribute': 'source_cl',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -133,7 +133,7 @@ class Config():
         'source_id': {
             'attribute': 'source_id',
             'type': QVariant.String,
-            'len': 10,
+            'len': 30,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -144,7 +144,7 @@ class Config():
         'file': {
             'attribute': 'file',
             'type': QVariant.String,
-            'len': 10,
+            'len': 256,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -221,7 +221,7 @@ class Config():
         'creator': {
             'attribute': 'creator',
             'type': QVariant.String,
-            'len': 20,
+            'len': 50,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -243,7 +243,7 @@ class Config():
         'modifier': {
             'attribute': 'modifier',
             'type': QVariant.String,
-            'len': 20,
+            'len': 50,
             'decimals': 0,
             'min': None,
             'max': None,
@@ -272,6 +272,7 @@ class Config():
 
     gridFields = [
         fields['site'],
+        fields['id'],
         fields['label'],
         fields['local_x'],
         fields['local_y'],
@@ -283,7 +284,7 @@ class Config():
 
     collections = {
         'plan': {
-            'path': 'plan',
+            'path': 'collections/plan',
             'groupName': 'Plan Data',
             'edit': True,
             'item': True,
@@ -315,7 +316,7 @@ class Config():
             ],
         },
         'section': {
-            'path': 'section',
+            'path': 'collections/section',
             'groupName': 'Section Data',
             'edit': True,
             'item': True,
@@ -347,7 +348,7 @@ class Config():
             ],
         },
         'site': {
-            'path': 'site',
+            'path': 'collections/site',
             'groupName': 'Site Data',
             'edit': True,
             'item': True,
@@ -379,7 +380,7 @@ class Config():
             ],
         },
         'grid': {
-            'path': 'grid',
+            'path': 'collections/grid',
             'groupName': 'Grid Data',
             'edit': False,
             'item': False,
@@ -647,6 +648,30 @@ class Config():
             'child': '',
             'ark1': 'ste',
         },
+        'area': {
+            'module': 'area',
+            'class': 'area',
+            'label': 'Trench',
+            'collection': True,
+            'drawing': False,
+            'source': False,
+            'group': False,
+            'parent': '',
+            'child': '',
+            'ark1': 'tch',
+        },
+        'testpit': {
+            'module': 'area',
+            'class': 'testpit',
+            'label': 'Trench',
+            'collection': True,
+            'drawing': False,
+            'source': False,
+            'group': False,
+            'parent': '',
+            'child': '',
+            'ark1': 'tch',
+        },
         'trench': {
             'module': 'area',
             'class': 'trench',
@@ -689,7 +714,7 @@ class Config():
         'lvl': {'category': 'lvl', 'type': FeatureType.Point,   'definitive': False, 'name': 'Level', 'query': 'elevation'},
         'lvu': {'category': 'lvu', 'type': FeatureType.Point,   'definitive': False, 'name': 'Underside Level', 'query': 'elevation'},
         'mtr': {'category': 'mtr', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Mortar'},
-        'pnl': {'category': 'pnl', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Panel'},
+        # 'pnl': {'category': 'pnl', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Panel'},
         'pot': {'category': 'pot', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Pot'},
         'ren': {'category': 'ren', 'type': FeatureType.Polygon, 'definitive': False, 'name': 'Render'},
         'rgf': {'category': 'rgf', 'type': FeatureType.Point,   'definitive': False, 'name': 'Registered Find', 'query': 'id'},
@@ -765,11 +790,11 @@ class Config():
 
             {'collection': 'section', 'class': 'section', 'category': 'sln'},
             {'collection': 'section', 'class': 'section', 'category': 'int'},
-            {'collection': 'section', 'class': 'context', 'category': 'cut'},
             {'collection': 'section', 'class': 'section', 'category': 'ueg'},
             {'collection': 'section', 'class': 'section', 'category': 'tip'},
             {'collection': 'section', 'class': 'section', 'category': 'loe'},
             {'collection': 'section', 'class': 'section', 'category': 'trn'},
+            {'collection': 'section', 'class': 'context', 'category': 'cut'},
 
             {'collection': 'section', 'class': 'context', 'category': 'fil'},
             {'collection': 'section', 'class': 'context', 'category': 'dep'},
@@ -788,9 +813,9 @@ class Config():
             {'collection': 'site', 'class': 'section', 'category': 'sln'},
 
             {'collection': 'site', 'class': 'site',    'category': 'ste'},
-            {'collection': 'site', 'class': 'site',    'category': 'ara'},
-            {'collection': 'site', 'class': 'site',    'category': 'pnl'},
-            {'collection': 'site', 'class': 'site',    'category': 'tpt'},
+            {'collection': 'site', 'class': 'area',    'category': 'ara'},
+            # {'collection': 'site', 'class': 'site',    'category': 'pnl'},
+            {'collection': 'site', 'class': 'testpit', 'category': 'tpt'},
             {'collection': 'site', 'class': 'trench',  'category': 'tcp'},
             {'collection': 'site', 'class': 'trench',  'category': 'tch'},
         ]

@@ -25,7 +25,7 @@
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QWidget
 
-from ArkSpatial.ark.core import Config, Item, Source, Settings
+from ArkSpatial.ark.core import Config, Item, Settings, Source
 
 from .ui.source_widget_base import Ui_SourceWidget
 
@@ -78,7 +78,7 @@ class SourceWidget(QWidget, Ui_SourceWidget):
         self.blockSignals(True)
 
         self.sourceCodeCombo.setCurrentIndex(self.sourceCodeCombo.findData(source.sourceCode()))
-        self.sourceFileEdit.setText(source.sourceFile())
+        self.sourceFileEdit.setText(source.filename())
 
         self._setSiteCode(source.item().siteCode())
         self.sourceClassCombo.setCurrentIndex(self.sourceClassCombo.findData(source.item().classCode()))

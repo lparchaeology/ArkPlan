@@ -117,6 +117,16 @@ class Settings:
     # Project settings
 
     @staticmethod
+    def projectDir():
+        proj = Project.dir()
+        proj.cdUp()
+        return proj
+
+    @staticmethod
+    def projectPath():
+        return Settings.projectDir().absolutePath()
+
+    @staticmethod
     def isProjectConfigured():
         return Project.readBoolEntry("ARK", "Project/configured", False)
 
@@ -211,7 +221,7 @@ class Settings:
 
     @staticmethod
     def drawingPath(drawing):
-        path = os.path.join(Project.homePath(), Config.drawings[drawing]['path'])
+        path = os.path.join(Settings.projectPath(), Config.drawings[drawing]['path'])
         if Settings.useCustomDrawingPath(drawing):
             path = Project.readEntry("ARK", 'Project/Drawings/' + drawing + '/customPath', path)
         return path

@@ -26,8 +26,9 @@ from PyQt4.QtCore import (QCoreApplication, QDir, QFile, QFileInfo, QIODevice, Q
                           QTextStream, pyqtSignal)
 from PyQt4.QtGui import QPixmap
 
-from qgis.core import QgsPointV2
+from qgis.core import QgsPoint
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ProcessStatus
 from ArkSpatial.ark.lib.utils import debug
 
@@ -73,8 +74,9 @@ class Georeferencer(QObject):
         self._translateFile = QFileInfo()
         self._geoFile = QFileInfo()
 
-        self._cropFile.setFile(QDir.tempPath() + '.ark_georef_crop.png')
-        self._translateFile = QFileInfo(QDir.tempPath() + '.ark_georef_translate.tiff')
+        tempDir = QDir.temp()
+        self._cropFile.setFile(tempDir.absoluteFilePath('.ark_georef_crop.png'))
+        self._translateFile = QFileInfo(tempDir.absoluteFilePath('.ark_georef_translate.tiff'))
 
         self._gdalDir = QDir(self.gdalPath())
         if self._debug:
@@ -112,10 +114,14 @@ class Georeferencer(QObject):
 
         self._pointFile = pointFile
         self._geoFile = geoFile
+        if not self._geoFile.absoluteDir().exists():
+            self._geoFile.absoluteDir().mkpath('.')
 
         if (self._debug):
             debug('Raw File: \'' + self._rawFile.absoluteFilePath() + '\'')
             debug('GCP File: \'' + self._pointFile.absoluteFilePath() + '\'')
+            debug('Crop File: \'' + self._cropFile.absoluteFilePath() + '\'')
+            debug('Translate File: \'' + self._translateFile.absoluteFilePath() + '\'')
             debug('Geo File: \'' + self._geoFile.absoluteFilePath() + '\'')
 
         QCoreApplication.processEvents()
@@ -142,11 +148,19 @@ class Georeferencer(QObject):
         self._signalStatus()
         self._runTranslateStep()
 
+    def _formatGcp(self, point):
+        point = self._gc.point(point)
+        return "{0:f} {1:f} {2:f} {3:f}".format(point.raw().x(), point.raw().y(), point.map().x(), point.map().y())
+
     def _runTranslateStep(self):
         self._step = Georeferencer.Translate
         self._args = []
         self._args.extend(['-of', 'GTiff'])
         self._args.extend(['-a_srs', self._gc.crs])
+        # self._args.extend(['-gcp', self._formatGcp(1)])
+        # self._args.extend(['-gcp', self._formatGcp(2)])
+        # self._args.extend(['-gcp', self._formatGcp(3)])
+        # self._args.extend(['-gcp', self._formatGcp(4)])
         self._args.extend(['-gcp', str(self._gc.point(1).raw().x()), str(self._gc.point(1).raw().y()),
                            str(self._gc.point(1).map().x()), str(self._gc.point(1).map().y())])
         self._args.extend(['-gcp', str(self._gc.point(2).raw().x()), str(self._gc.point(2).raw().y()),
@@ -240,7 +254,7 @@ class Georeferencer(QObject):
             vals = line.split(',')
             if (len(vals) != 5):
                 return None
-            map = QgsPointV2(float(vals[0]), float(vals[1]))
+            map = QgsPoint(float(vals[0]), float(vals[1]))
             raw = QPointF(float(vals[2]), float(vals[3]))
             enabled = bool(vals[4])
             point = GroundControlPoint(raw, map, enabled)

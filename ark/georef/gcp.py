@@ -24,7 +24,7 @@
 
 from PyQt4.QtCore import QPointF
 
-from qgis.core import QgsPointV2
+from qgis.core import QgsPoint
 
 from ArkSpatial.ark.lib import utils
 
@@ -34,7 +34,7 @@ class GroundControlPoint():
     def __init__(self, raw=None, map=None, enabled=True):
 
         self._raw = QPointF()
-        self._map = QgsPointV2()
+        self._map = QgsPoint()
         self._local = QPointF()
         self._enabled = True
 
@@ -75,7 +75,7 @@ class GroundControlPoint():
 
     def map(self):
         if self._map is None:
-            return QgsPointV2()
+            return QgsPoint()
         else:
             return self._map
 

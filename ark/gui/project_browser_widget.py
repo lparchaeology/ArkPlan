@@ -41,4 +41,6 @@ class ProjectBrowserWidget(QWidget, Ui_ProjectBrowserWidget):
         self.projectNameEdit.setText(Settings.projectName())
 
     def closeProject(self):
-        pass
+        self.projectCodeEdit.setText('')
+        self.siteCodeEdit.setText('')
+        self.projectNameEdit.setText('')

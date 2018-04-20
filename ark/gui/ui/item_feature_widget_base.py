@@ -70,9 +70,9 @@ class Ui_ItemFeatureWidget(object):
         self.commentLabel = QtGui.QLabel(ItemFeatureWidget)
         self.commentLabel.setObjectName(_fromUtf8("commentLabel"))
         self.gridLayout.addWidget(self.commentLabel, 3, 0, 1, 1)
-        self.featureLabel = QtGui.QLabel(ItemFeatureWidget)
-        self.featureLabel.setObjectName(_fromUtf8("featureLabel"))
-        self.gridLayout.addWidget(self.featureLabel, 1, 0, 1, 1)
+        self.itemLabel = QtGui.QLabel(ItemFeatureWidget)
+        self.itemLabel.setObjectName(_fromUtf8("itemLabel"))
+        self.gridLayout.addWidget(self.itemLabel, 1, 0, 1, 1)
         self.line = QtGui.QFrame(ItemFeatureWidget)
         self.line.setFrameShape(QtGui.QFrame.HLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
@@ -103,7 +103,7 @@ class Ui_ItemFeatureWidget(object):
         self.line_3.setObjectName(_fromUtf8("line_3"))
         self.gridLayout.addWidget(self.line_3, 8, 0, 1, 3)
         self.commentLabel.setBuddy(self.commentEdit)
-        self.featureLabel.setBuddy(self.classCombo)
+        self.itemLabel.setBuddy(self.classCombo)
         self.labelLabel.setBuddy(self.labelEdit)
 
         self.retranslateUi(ItemFeatureWidget)
@@ -115,6 +115,6 @@ class Ui_ItemFeatureWidget(object):
     def retranslateUi(self, ItemFeatureWidget):
         ItemFeatureWidget.setWindowTitle(_translate("ItemFeatureWidget", "ItemFeatureWidget", None))
         self.commentLabel.setText(_translate("ItemFeatureWidget", "Comment:", None))
-        self.featureLabel.setText(_translate("ItemFeatureWidget", "Feature:", None))
+        self.itemLabel.setText(_translate("ItemFeatureWidget", "Item:", None))
         self.labelLabel.setText(_translate("ItemFeatureWidget", "Label:", None))
 

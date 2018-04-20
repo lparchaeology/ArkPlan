@@ -102,7 +102,7 @@ class ProjectModule(Module):
         self.projectLayerView.setMenuProvider(menuProvider)
         self.projectLayerView.setCurrentLayer(self._plugin.iface.activeLayer())
         self.projectLayerView.doubleClicked.connect(self._plugin.iface.actionOpenTable().trigger)
-        self.projectLayerView.currentLayerChanged.connect(self.mapCanvas().setCurrentLayer)
+        self.projectLayerView.currentLayerChanged.connect(self._plugin.mapCanvas().setCurrentLayer)
         self.projectLayerView.currentLayerChanged.connect(self._plugin.iface.setActiveLayer)
         self._plugin.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
         self.layerViewAction = self.addDockAction(
@@ -213,11 +213,12 @@ class ProjectModule(Module):
                     return False
                 projectFilePath = os.path.join(projectFolderPath, wizard.projectFilename() + '.qgs')
                 Project.setFileName(projectFilePath)
-                Project.setTitle(wizard.project().projectCode() + ' - ' + wizard.project().projectName())
 
             Settings.setProjectCode(wizard.project().projectCode())
             Settings.setProjectName(wizard.project().projectName())
             Settings.setSiteCode(wizard.project().siteCode())
+            if not Project.title():
+                Project.setTitle(wizard.project().projectCode() + ' - ' + wizard.project().projectName())
 
             self._initialised = Project.write()
             if self._initialised:
@@ -270,14 +271,14 @@ class ProjectModule(Module):
     def loadGeoLayer(self, geoFile, zoomToLayer=True):
         # TODO Check if already loaded, remove old one?
         self.geoLayer = QgsRasterLayer(geoFile.absoluteFilePath(), geoFile.completeBaseName())
-        self.geoLayer.renderer().setOpacity(self.drawingTransparency() / 100.0)
+        self.geoLayer.renderer().setOpacity(Settings.drawingTransparency() / 100.0)
         QgsMapLayerRegistry.instance().addMapLayer(self.geoLayer)
         if (self.drawingsGroupIndex < 0):
             self.drawingsGroupIndex = layers.createLayerGroup(
                 self._plugin.iface, self.drawingsGroupName, Config.projectGroupName)
         self._plugin.legendInterface().moveLayer(self.geoLayer, self.drawingsGroupIndex)
         if zoomToLayer:
-            self.mapCanvas().setExtent(self.geoLayer.extent())
+            self._plugin.mapCanvas().setExtent(self.geoLayer.extent())
 
     def clearDrawings(self):
         if (self.drawingsGroupIndex >= 0):
@@ -388,9 +389,9 @@ class ProjectModule(Module):
 
     def triggerIdentifyAction(self, checked):
         if checked:
-            self.mapCanvas().setMapTool(self.identifyMapTool)
+            self._plugin.mapCanvas().setMapTool(self.identifyMapTool)
         else:
-            self.mapCanvas().unsetMapTool(self.identifyMapTool)
+            self._plugin.mapCanvas().unsetMapTool(self.identifyMapTool)
 
     # Show Items Tool
 

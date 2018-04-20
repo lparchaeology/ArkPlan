@@ -25,9 +25,10 @@
 from PyQt4.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
 from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
 
-from qgis.core import QgsPointV2
+from qgis.core import QgsPoint
 
-from ArkSpatial.ark.lib.core import ProcessStatus, Scale
+from ArkSpatial.ark.lib import utils
+from ArkSpatial.ark.lib.core import ProcessStatus, Scale, geometry
 
 from ArkSpatial.ark.core import Drawing, Item
 
@@ -129,13 +130,13 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         for index in gc.points():
             gcp = gc.point(index)
             if gcp.map() == self.gcpWidget1.gcp().map():
-                gcTo.setPoint(1, gcp.raw())
+                gcTo.setPoint(1, gcp)
             elif gcp.map() == self.gcpWidget2.gcp().map():
-                gcTo.setPoint(2, gcp.raw())
+                gcTo.setPoint(2, gcp)
             elif gcp.map() == self.gcpWidget3.gcp().map():
-                gcTo.setPoint(3, gcp.raw())
+                gcTo.setPoint(3, gcp)
             elif gcp.map() == self.gcpWidget4.gcp().map():
-                gcTo.setPoint(4, gcp.raw())
+                gcTo.setPoint(4, gcp)
 
         if gcTo.isValid() and len(gcTo.points()) == 4:
             self.gcpWidget1.setRaw(gcTo.point(1).raw())
@@ -151,10 +152,10 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         local4 = QPointF(self.eastSpin.value() + mapUnits, self.northSpin.value() + mapUnits)
 
         if self.drawingType() == 'sec':
-            self.gcpWidget1.setGeo(local1, QgsPointV2(local1))
-            self.gcpWidget2.setGeo(local2, QgsPointV2(local2))
-            self.gcpWidget3.setGeo(local3, QgsPointV2(local3))
-            self.gcpWidget4.setGeo(local4, QgsPointV2(local4))
+            self.gcpWidget1.setGeo(local1, QgsPoint(local1))
+            self.gcpWidget2.setGeo(local2, QgsPoint(local2))
+            self.gcpWidget3.setGeo(local3, QgsPoint(local3))
+            self.gcpWidget4.setGeo(local4, QgsPoint(local4))
             return
 
         typ = self._type()
@@ -164,7 +165,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         localY = gridLayer.fieldNameIndex(typ['local_y'])
         for feature in features:
             local = QPoint(feature.attributes()[localX], feature.attributes()[localY])
-            map = feature.geometry().geometry()
+            map = geometry.toPoint(feature.geometry().geometry())
             if local == local1:
                 self.gcpWidget1.setGeo(local, map)
             elif local == local2:

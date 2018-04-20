@@ -25,6 +25,7 @@
 from PyQt4.QtCore import QDir
 from PyQt4.QtGui import QAbstractItemView, QDialog, QDialogButtonBox
 
+from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ReturnPressedFilter
 
 from ArkSpatial.ark.core import Config, Settings
@@ -80,14 +81,14 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
 
     def _findFiles(self):
         drawingType = self.drawingTypeCombo.itemData(self.drawingTypeCombo.currentIndex())
+        drawingCode = Config.drawings[drawingType]['code']
         if self._georef:
             self._dir.setPath(Settings.georefDrawingPath(drawingType))
         else:
             self._dir.setPath(Settings.drawingPath(drawingType))
-        name = drawingType + '_' + self._str(self.siteCodeEdit.text()) + '_' + self._str(self.idSpin.value())
+        name = drawingCode + '_' + self._str(self.siteCodeEdit.text()) + '_' + self._str(self.idSpin.value())
         if self.eastingSpin.value() > 0 or self.northingSpin.value() > 0:
             name = name + '_' + self._str(self.eastingSpin.value()) + 'e' + self._str(self.northingSpin.value()) + 'n'
-
         nameList = []
         if self._georef:
             nameList.append(name + '_r.tif')
@@ -101,7 +102,6 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
             nameList.append(name + '_*.png')
             nameList.append(name + '_*.tif')
             nameList.append(name + '_*.tiff')
-
         self._dir.setNameFilters(nameList)
         files = self._dir.entryInfoList()
         self.fileList.clear()

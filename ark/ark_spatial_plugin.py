@@ -71,7 +71,7 @@ class ArkSpatialPlugin(Plugin):
         self._loaded = False
 
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&ARKspatial'))
+        self.setDisplayName(self.tr(u'&ARK Spatial BETA'))
 
         # Menu Actions
         # TODO Snapping Tools - Make own plugin!

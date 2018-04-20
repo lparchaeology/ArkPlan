@@ -3,10 +3,10 @@
 # Mandatory items:
 
 [general]
-name=ArkSpatial
-qgisMinimumVersion=2.14
+name=ArkSpatialBETA
+qgisMinimumVersion=2.18
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=0.3.0
+version=1.0.0
 author=John Layt / L - P : Heritage LLP
 email=ark@lparchaeology.com
 

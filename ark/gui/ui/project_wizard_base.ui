@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ARKspatial Project Wizard</string>
+   <string>ARK Spatial Project Wizard</string>
   </property>
   <property name="options">
    <set>QWizard::CancelButtonOnLeft|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
@@ -62,7 +62,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="ConfirmPage" name="confirmPage">
+  <widget class="ProjectConfirmPage" name="confirmPage">
    <property name="title">
     <string>Create Project</string>
    </property>
@@ -73,19 +73,6 @@
     <string notr="true">confirmPage</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="8" column="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="3" column="3">
      <widget class="QToolButton" name="projectFolderButton">
       <property name="icon">
@@ -117,7 +104,7 @@
     <item row="3" column="2">
      <widget class="QLineEdit" name="projectFolderEdit">
       <property name="placeholderText">
-       <string>/Disk/Data/Projects/TST01/GIS</string>
+       <string>/Disk/Data/Projects/TST01 - My Project/GIS</string>
       </property>
      </widget>
     </item>
@@ -131,19 +118,12 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QCheckBox" name="newProjectCheck">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0" colspan="4">
      <widget class="QLabel" name="confirmPageLabel">
       <property name="text">
        <string>You can choose to save the project details in the currently open project, or to create a new project file.
 
-The GIS Folder is usually something like &quot;Projects/TST01 - My Project/GIS&quot; where TST01 is the Project Code. The folder will be created if it does not already exist. ARK Spatial will automatically organise the data under this folder.
+The GIS Folder is usually something like &quot;Projects/TST01 - My Project/GIS&quot; where TST01 is the Project Code. The folder will be created if it does not already exist. ARK Spatial will automatically organise its data under this folder.
 </string>
       </property>
       <property name="alignment">
@@ -157,14 +137,34 @@ The GIS Folder is usually something like &quot;Projects/TST01 - My Project/GIS&q
     <item row="6" column="2" colspan="2">
      <widget class="QLineEdit" name="projectFilenameEdit"/>
     </item>
+    <item row="2" column="2" colspan="2">
+     <widget class="QCheckBox" name="newProjectCheck">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="4">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
    </layout>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ConfirmPage</class>
+   <class>ProjectConfirmPage</class>
    <extends>QWizardPage</extends>
-   <header>..wizard_page</header>
+   <header>..project_confirm_page</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -215,8 +215,8 @@ The GIS Folder is usually something like &quot;Projects/TST01 - My Project/GIS&q
      <y>195</y>
     </hint>
     <hint type="destinationlabel">
-     <x>716</x>
-     <y>229</y>
+     <x>751</x>
+     <y>236</y>
     </hint>
    </hints>
   </connection>

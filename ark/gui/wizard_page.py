@@ -24,13 +24,12 @@
 
 import os
 
-from PyQt4.QtGui import QComboBox, QFileDialog, QWizardPage
+from PyQt4.QtGui import QComboBox, QWizardPage
 
 from qgis.gui import QgsProjectionSelectionWidget
 
-from ArkSpatial.ark.lib import Application, Project, utils
+from ArkSpatial.ark.lib import Application, utils
 
-from ArkSpatial.ark.core import Settings
 from ArkSpatial.ark.pyARK import Ark
 
 
@@ -122,48 +121,3 @@ class ProjectPage(QWizardPage):
 
     def _crsChanged(self, crs):
         self.crs = crs
-
-
-class ConfirmPage(QWizardPage):
-
-    def initializePage(self):
-        self.registerField("newProject", self.wizard().newProjectCheck)
-        self.registerField("projectFolder", self.wizard().projectFolderEdit)
-        self.registerField("projectFilename", self.wizard().projectFilenameEdit)
-        if Project.exists():
-            self.wizard().newProjectCheck.setChecked(False)
-            self.wizard().projectFolderEdit.setEnabled(False)
-            self.wizard().projectFolderButton.setEnabled(False)
-            self.wizard().projectFilenameEdit.setEnabled(False)
-        else:
-            self.wizard().newProjectCheck.setChecked(True)
-            self.wizard().newProjectCheck.setEnabled(False)
-            self.wizard().projectFolderEdit.setEnabled(True)
-            self.wizard().projectFolderButton.setEnabled(True)
-            self.wizard().projectFilenameEdit.setEnabled(True)
-            projectFolderName = self.field("projectCode") + ' - ' + self.field("projectName")
-            projectFolder = os.path.join(Settings.projectsFolder(), projectFolderName, 'GIS')
-            self.setField('projectFolder', projectFolder)
-            filename = ''
-            if (self.field("siteCode") != ''):
-                filename = str(self.field("siteCode")) + '_' + str(Settings.userInitials())
-            else:
-                filename = str(self.field("projectCode")) + '_' + str(Settings.userInitials())
-            self.setField('projectFilename', filename)
-        self.wizard().projectFolderButton.clicked.connect(self._selectProjectFolder)
-
-    def validatePage(self):
-        if self.field("newProject"):
-            return self.field("projectFolder") != '' and self.field("projectFilename") != ''
-        return True
-
-    def _selectProjectFolder(self):
-        defaultPath = self.field("projectFolder")
-        if defaultPath == '':
-            defaultPath = Settings.projectsFolder()
-        folderName = unicode(
-            QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), defaultPath)
-        )
-        if folderName:
-            self.setField("projectFolder", folderName)
-            self._updateFilePath()

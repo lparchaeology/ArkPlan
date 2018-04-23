@@ -49,12 +49,10 @@ class Ui_ProjectWizard(object):
         self.projectWidget.setObjectName(_fromUtf8("projectWidget"))
         self.projectLayout.addWidget(self.projectWidget, 1, 0, 1, 2)
         ProjectWizard.addPage(self.projectPage)
-        self.confirmPage = ConfirmPage()
+        self.confirmPage = ProjectConfirmPage()
         self.confirmPage.setObjectName(_fromUtf8("confirmPage"))
         self.gridLayout = QtGui.QGridLayout(self.confirmPage)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 8, 2, 1, 1)
         self.projectFolderButton = QtGui.QToolButton(self.confirmPage)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/ark/folder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -73,10 +71,6 @@ class Ui_ProjectWizard(object):
         self.projectFolderLabel = QtGui.QLabel(self.confirmPage)
         self.projectFolderLabel.setObjectName(_fromUtf8("projectFolderLabel"))
         self.gridLayout.addWidget(self.projectFolderLabel, 3, 0, 1, 2)
-        self.newProjectCheck = QtGui.QCheckBox(self.confirmPage)
-        self.newProjectCheck.setText(_fromUtf8(""))
-        self.newProjectCheck.setObjectName(_fromUtf8("newProjectCheck"))
-        self.gridLayout.addWidget(self.newProjectCheck, 2, 2, 1, 1)
         self.confirmPageLabel = QtGui.QLabel(self.confirmPage)
         self.confirmPageLabel.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
         self.confirmPageLabel.setWordWrap(True)
@@ -85,6 +79,12 @@ class Ui_ProjectWizard(object):
         self.projectFilenameEdit = QtGui.QLineEdit(self.confirmPage)
         self.projectFilenameEdit.setObjectName(_fromUtf8("projectFilenameEdit"))
         self.gridLayout.addWidget(self.projectFilenameEdit, 6, 2, 1, 2)
+        self.newProjectCheck = QtGui.QCheckBox(self.confirmPage)
+        self.newProjectCheck.setText(_fromUtf8(""))
+        self.newProjectCheck.setObjectName(_fromUtf8("newProjectCheck"))
+        self.gridLayout.addWidget(self.newProjectCheck, 2, 2, 1, 2)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem, 8, 0, 1, 4)
         ProjectWizard.addPage(self.confirmPage)
         self.newProjectLabel.setBuddy(self.newProjectCheck)
         self.projectFilenameLabel.setBuddy(self.projectFilenameEdit)
@@ -100,7 +100,7 @@ class Ui_ProjectWizard(object):
         ProjectWizard.setTabOrder(self.projectFolderButton, self.projectFilenameEdit)
 
     def retranslateUi(self, ProjectWizard):
-        ProjectWizard.setWindowTitle(_translate("ProjectWizard", "ARKspatial Project Wizard", None))
+        ProjectWizard.setWindowTitle(_translate("ProjectWizard", "ARK Spatial Project Wizard", None))
         self.welcomePage.setTitle(_translate("ProjectWizard", "ARKspatial Project Wizard", None))
         self.welcomePage.setSubTitle(_translate("ProjectWizard", "This wizard will walk you through setting up a new or existing ARKspatial project.", None))
         self.projectPage.setTitle(_translate("ProjectWizard", "Project Details", None))
@@ -110,13 +110,13 @@ class Ui_ProjectWizard(object):
         self.confirmPage.setSubTitle(_translate("ProjectWizard", "Confirm your project file details.", None))
         self.newProjectLabel.setText(_translate("ProjectWizard", "Create New Project File:", None))
         self.projectFilenameLabel.setText(_translate("ProjectWizard", "QGIS Project Filename:", None))
-        self.projectFolderEdit.setPlaceholderText(_translate("ProjectWizard", "/Disk/Data/Projects/TST01/GIS", None))
+        self.projectFolderEdit.setPlaceholderText(_translate("ProjectWizard", "/Disk/Data/Projects/TST01 - My Project/GIS", None))
         self.projectFolderLabel.setText(_translate("ProjectWizard", "GIS Root Folder:", None))
         self.confirmPageLabel.setText(_translate("ProjectWizard", "You can choose to save the project details in the currently open project, or to create a new project file.\n"
 "\n"
-"The GIS Folder is usually something like \"Projects/TST01 - My Project/GIS\" where TST01 is the Project Code. The folder will be created if it does not already exist. ARK Spatial will automatically organise the data under this folder.\n"
+"The GIS Folder is usually something like \"Projects/TST01 - My Project/GIS\" where TST01 is the Project Code. The folder will be created if it does not already exist. ARK Spatial will automatically organise its data under this folder.\n"
 "", None))
 
+from ..project_confirm_page import ProjectConfirmPage
 from ..project_widget import ProjectWidget
 from ..project_wizard_page import ProjectWizardPage
-from ..wizard_page import ConfirmPage

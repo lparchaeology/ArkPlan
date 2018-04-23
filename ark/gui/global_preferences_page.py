@@ -44,11 +44,9 @@ class GlobalPreferencesPage(QWizardPage):
         self.registerField("snappingTolerance", self.wizard().snappingToleranceSpin)
         self.registerField("snappingUnit", self.wizard().snappingUnitCombo)
 
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.LayerCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.ProjectCrs, True)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.CurrentCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.DefaultCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.RecentCrs, True)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.ProjectCrs, False)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.DefaultCrs, True)
+        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.CurrentCrs, True)
         self.wizard().crsWidget.setCrs(Application.layerDefaultCrs())
 
         self.wizard().forceCrsCheck.setChecked(True)

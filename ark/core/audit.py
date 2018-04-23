@@ -98,3 +98,9 @@ class Audit():
             self.setSiteCode(attributes['modifier'])
         if 'modified' in attributes:
             self.setSiteCode(attributes['modified'])
+
+    def toFeature(self, feature):
+        feature.setAttribute('creator', utils.strip(self._creator))
+        feature.setAttribute('created', utils.strip(self._created))
+        feature.setAttribute('modifier', utils.strip(self._modifier))
+        feature.setAttribute('modified', utils.strip(self._modified))

@@ -28,16 +28,16 @@ import os
 from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
 from PyQt4.QtGui import QAction, QFileDialog, QIcon, QInputDialog
 
-from qgis.core import (NULL, QgsFeatureRequest, QgsGeometry, QgsLayerTreeModel, QgsMapLayer, QgsMapLayerRegistry,
-                       QgsProject, QgsRasterLayer)
+from qgis.core import (NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsLayerTreeModel, QgsMapLayer,
+                       QgsMapLayerRegistry, QgsProject, QgsRasterLayer)
 from qgis.gui import QgsLayerTreeView
 
 from ArkSpatial.ark.lib import Plugin, Project, utils
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, layers
 from ArkSpatial.ark.lib.snapping import LayerSnappingAction
 
-from ArkSpatial.ark.core import (Config, Drawing, Item, ItemCollection, ItemFeature, ItemFeatureError, Module, Settings,
-                                 Source)
+from ArkSpatial.ark.core import (Audit, Config, Drawing, Item, ItemCollection, ItemFeature, ItemFeatureError, Module,
+                                 Settings, Source)
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 from ArkSpatial.ark.gui import (ItemFeatureErrorDialog, LayerTreeMenu, ProjectDialog, ProjectDock, ProjectWizard,
                                 SelectDrawingDialog, SelectItemDialog)
@@ -226,6 +226,19 @@ class ProjectModule(Module):
                 # We always want the site collection
                 self._addCollection('site')
                 self.collection('site').loadCollection()
+                # Add the Site Location if entered
+                location = wizard.projectLocation()
+                if not location.isEmpty():
+                    siteCode = wizard.project().siteCode() if wizard.project().siteCode() else wizard.project().projectCode()
+                    item = Item(siteCode, 'site', siteCode)
+                    source = Source('other', item)
+                    audit = Audit(Settings.userFullName(), utils.timestamp())
+                    itemFeature = ItemFeature(item, 'loc', None, source, 'New Project Wizard', audit)
+                    layer = self.collection('site').layer('points')
+                    feature = QgsFeature(layer.pendingFields(), 0)
+                    feature.setGeometry(QgsGeometry(location))
+                    attributes = itemFeature.toFeature(feature)
+                    layers.addFeatures([feature], layer)
 
                 # Temp load of other collection, later do on demand
                 self._addCollection('plan')

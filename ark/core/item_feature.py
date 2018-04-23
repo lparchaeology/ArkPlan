@@ -178,19 +178,19 @@ class ItemFeature(QObject):
 
     def toFeature(self, feature):
         self._item.toFeature(feature)
-        feature.setAttribute('category', utils.strip(self._category))
         feature.setAttribute('label', utils.strip(self._label))
-        feature.setAttribute('comment', utils.strip(self._comment))
+        feature.setAttribute('category', utils.strip(self._category))
         self._source.toFeature(feature)
+        feature.setAttribute('comment', utils.strip(self._comment))
         self._audit.toFeature(feature)
 
     def attributes(self):
         attrs = {}
-        attrs['category'] = utils.strip(self._category)
-        attrs['label'] = utils.strip(self._label)
-        attrs['comment'] = utils.strip(self._comment)
         attrs.update(self.item().attributes())
+        attrs['label'] = utils.strip(self._label)
+        attrs['category'] = utils.strip(self._category)
         attrs.update(self.source().attributes())
+        attrs['comment'] = utils.strip(self._comment)
         attrs.update(self.audit().attributes())
         return attrs
 

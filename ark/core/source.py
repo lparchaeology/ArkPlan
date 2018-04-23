@@ -132,3 +132,9 @@ class Source(QObject):
         if 'source_id' in attributes:
             attr['id'] = attributes['source_id']
         self._item.setAttributes(attr)
+
+    def toFeature(self, feature):
+        feature.setAttribute('source_cd', utils.strip(self._code))
+        feature.setAttribute('source_cl', utils.strip(self.item().classCode()))
+        feature.setAttribute('source_id', utils.strip(self.item().itemId()))
+        feature.setAttribute('file', utils.strip(self._filename))

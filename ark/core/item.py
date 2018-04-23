@@ -170,6 +170,11 @@ class Item():
         if 'id' in attributes:
             self.setSiteCode(attributes['id'])
 
+    def toFeature(self, feature):
+        feature.setAttribute('site', utils.strip(self._siteCode))
+        feature.setAttribute('class', utils.strip(self._classCode))
+        feature.setAttribute('id', utils.strip(self._itemId))
+
     def toCsv(self):
         return (utils.doublequote(self._siteCode) + ','
                 + utils.doublequote(self._classCode) + ','

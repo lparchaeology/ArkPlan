@@ -68,7 +68,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="GlobalPage" name="globalPage">
+  <widget class="GlobalPreferencesPage" name="globalPage">
    <property name="title">
     <string>QGIS Preferences</string>
    </property>
@@ -79,38 +79,72 @@
     <string notr="true">GlobalPage</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="2" column="0">
-     <widget class="QLabel" name="snappingLabel">
+    <item row="0" column="1" colspan="2">
+     <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true"/>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="QFontComboBox" name="fontCombo"/>
+    </item>
+    <item row="4" column="2">
+     <widget class="QComboBox" name="snappingUnitCombo"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QDoubleSpinBox" name="snappingToleranceSpin"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="crsAuthidLabel">
       <property name="text">
-       <string>Snapping:</string>
+       <string>Default CRS:</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="1" column="1" colspan="2">
+     <widget class="QCheckBox" name="forceCrsCheck">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
      <widget class="QLabel" name="fontLabel">
       <property name="text">
        <string>Font:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QDoubleSpinBox" name="snappingToleranceSpin"/>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="crsAuthidLabel">
+    <item row="4" column="0">
+     <widget class="QLabel" name="snappingLabel">
       <property name="text">
-       <string>CRS:</string>
+       <string>Snapping:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QComboBox" name="snappingUnitCombo"/>
+    <item row="2" column="1" colspan="2">
+     <widget class="QCheckBox" name="forceOtfCheck">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QFontComboBox" name="fontCombo"/>
+    <item row="2" column="0">
+     <widget class="QLabel" name="forceOtfLabel">
+      <property name="text">
+       <string>Force OTF Reprojection:</string>
+      </property>
+     </widget>
     </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true"/>
+    <item row="1" column="0">
+     <widget class="QLabel" name="forceCrsLabel">
+      <property name="text">
+       <string>Force Default CRS:</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -129,9 +163,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GlobalPage</class>
+   <class>GlobalPreferencesPage</class>
    <extends>QWizardPage</extends>
-   <header>..wizard_page</header>
+   <header>..global_preferences_page</header>
    <container>1</container>
   </customwidget>
   <customwidget>

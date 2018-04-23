@@ -25,7 +25,9 @@
 from PyQt4.QtCore import QFile, QSettings
 from PyQt4.QtGui import QColor, QIcon
 
-from qgis.core import QGis, QgsApplication, QgsCoordinateReferenceSystem, NULL
+from qgis.core import NULL, QGis, QgsApplication, QgsCoordinateReferenceSystem, QgsCRSCache
+
+from . import utils
 
 
 class Application:
@@ -55,21 +57,38 @@ class Application:
             else:
                 return QIcon(':/icons/default' + iconName)
 
-    @classmethod
-    def projectDefaultCrs(cls):
-        return QgsCoordinateReferenceSystem(cls.projectDefaultCrsAuthid())
+    @staticmethod
+    def projectDefaultCrs():
+        return QgsCRSCache.instance().crsByOgcWmsCrs(Application.projectDefaultCrsAuthid())
 
     @staticmethod
     def projectDefaultCrsAuthid():
         return QSettings().value("/Projections/projectDefaultCrs", "EPSG:4326")
 
-    @classmethod
-    def layerDefaultCrs(cls):
-        return QgsCoordinateReferenceSystem(cls.layerDefaultCrsAuthid())
+    @staticmethod
+    def setProjectDefaultCrs(crs):
+        QSettings().setValue("/Projections/projectDefaultCrs", crs.authid())
+
+    @staticmethod
+    def layerDefaultCrs():
+        return QgsCRSCache.instance().crsByOgcWmsCrs(Application.layerDefaultCrsAuthid())
 
     @staticmethod
     def layerDefaultCrsAuthid():
         return QSettings().value("/Projections/layerDefaultCrs", "EPSG:4326")
+
+    @staticmethod
+    def setLayerDefaultCrs(crs):
+        QSettings().setValue("/Projections/layerDefaultCrs", crs.authid())
+
+    @staticmethod
+    def setForceDefaultCrs():
+        QSettings().setValue("/Projections/defaultBehaviour", "useGlobal")
+
+    @staticmethod
+    def setForceOftTransfom():
+        QSettings().setValue("/Projections/otfTransformAutoEnable", False)
+        QSettings().setValue("/Projections/otfTransformEnabled", True)
 
     @staticmethod
     def highlightColorName():
@@ -97,3 +116,7 @@ class Application:
     @staticmethod
     def highlightMinimumWidth():
         return QSettings().value('/Map/highlight/minWidth', QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
+
+    @staticmethod
+    def setComposerFont(font):
+        QSettings().setValue("/Composer/defaultFont", font.family())

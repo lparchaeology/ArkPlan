@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from ArkSpatial.ark.lib import Plugin, utils
-from ArkSpatial.ark.lib.snapping import IntersectionSnappingAction, ProjectSnappingAction, TopologicalEditingAction
+from ArkSpatial.ark.lib import Application, Plugin, utils
+from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, ProjectSnappingAction, Snapping,
+                                         TopologicalEditingAction)
 
 from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
@@ -248,6 +249,19 @@ class ArkSpatialPlugin(Plugin):
 
             Settings.setServerUrl(prefs.server().url())
             Settings.setServerCredentials(prefs.server().user(), prefs.server().password())
+
+            if prefs.globals().crs().authid():
+                Application.setLayerDefaultCrs(prefs.globals().crs())
+                Application.setProjectDefaultCrs(prefs.globals().crs())
+            if prefs.globals().forceDefaultCrs():
+                Application.setForceDefaultCrs()
+            if prefs.globals().forceOtfTransform():
+                Application.setForceOftTransfom()
+
+            Snapping.setDefaultSnappingTolerance(prefs.globals().snappingTolerance())
+            Snapping.setDefaultSnappingUnit(prefs.globals().snappingUnit())
+
+            Application.setComposerFont(prefs.globals().font())
 
             Settings.setPluginConfigured()
 

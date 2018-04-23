@@ -26,31 +26,9 @@ import os
 
 from PyQt4.QtGui import QComboBox, QWizardPage
 
-from qgis.gui import QgsProjectionSelectionWidget
-
 from ArkSpatial.ark.lib import Application, utils
 
 from ArkSpatial.ark.pyARK import Ark
-
-
-class GlobalPage(QWizardPage):
-
-    def __init__(self, parent=None):
-        super(GlobalPage, self).__init__(parent)
-        self.crs = None
-
-    def initializePage(self, parent=None):
-        self.crs = Application.projectDefaultCrs()
-        self.wizard().crsWidget.setCrs(self.crs)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.LayerCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.ProjectCrs, True)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.CurrentCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.DefaultCrs, False)
-        self.wizard().crsWidget.setOptionVisible(QgsProjectionSelectionWidget.RecentCrs, True)
-        self.wizard().crsWidget.crsChanged.connect(self._crsChanged)
-
-    def _crsChanged(self, crs):
-        self.crs = crs
 
 
 class ProjectPage(QWizardPage):

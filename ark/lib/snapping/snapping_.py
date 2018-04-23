@@ -83,7 +83,7 @@ class Snapping():
     @staticmethod
     def setDefaultSnappingType(snapType=Off):
         snapType = Snapping._toDefaultSnapType(snapType)
-        return QSettings().setValue('/qgis/digitizing/default_snap_mode', snapType, str)
+        return QSettings().setValue('/qgis/digitizing/default_snap_mode', snapType)
 
     @staticmethod
     def _toDefaultSnapType(val):
@@ -141,8 +141,9 @@ class Snapping():
             unit = defaultValue
         return unit
 
+    @staticmethod
     def setDefaultSnappingUnit(unit=ProjectUnits):
-        return QSettings().setValue('/qgis/digitizing/default_snapping_tolerance_unit', unit, int)
+        return QSettings().setValue('/qgis/digitizing/default_snapping_tolerance_unit', unit)
 
     @staticmethod
     def projectSnappingUnit(defaultValue=ProjectUnits):
@@ -165,7 +166,7 @@ class Snapping():
 
     @staticmethod
     def setDefaultSnappingTolerance(tolerance=0.0):
-        return QSettings().setValue('/qgis/digitizing/default_snapping_tolerance', tolerance, float)
+        QSettings().setValue('/qgis/digitizing/default_snapping_tolerance', tolerance)
 
     @staticmethod
     def projectSnappingTolerance(defaultValue=0.0):

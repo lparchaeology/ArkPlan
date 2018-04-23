@@ -38,3 +38,6 @@ class PreferencesWizard(QWizard, Ui_PreferencesWizard):
 
     def server(self):
         return self.serverWidget
+
+    def globals(self):
+        return self.globalPage

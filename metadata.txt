@@ -6,7 +6,7 @@
 name=ArkSpatial
 qgisMinimumVersion=2.18
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=1.0.0
+version=1.0.1
 author=John Layt / L - P : Heritage LLP
 email=ark@lparchaeology.com
 

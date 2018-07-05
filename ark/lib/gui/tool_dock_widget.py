@@ -41,11 +41,11 @@ class ToolDockWidget(DockWidget):
         self._contents = None  # QWidget()
 
         self.toolbar = QToolBar(self)
-        self.toolbar.setObjectName(u'toolbar')
+        self.toolbar.setObjectName('toolbar')
         self.toolbar.setIconSize(QSize(22, 22))
 
         self.toolbar2 = QToolBar(self)
-        self.toolbar2.setObjectName(u'toolbar')
+        self.toolbar2.setObjectName('toolbar')
         self.toolbar2.setIconSize(QSize(22, 22))
         self.toolbar2.setVisible(False)
 
@@ -54,14 +54,14 @@ class ToolDockWidget(DockWidget):
 
         self._layout = QVBoxLayout(self)
         self._layout.setAlignment(Qt.AlignTop)
-        self._layout.setObjectName(u'layout')
+        self._layout.setObjectName('layout')
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.addWidget(self.toolbar)
         self._layout.addWidget(self.toolbar2)
         self._layout.addWidget(self.widget)
 
         self._contents = QWidget(self)
-        self._contents.setObjectName(u'contents')
+        self._contents.setObjectName('contents')
         self._contents.setLayout(self._layout)
         self.setWidget(self._contents)
 

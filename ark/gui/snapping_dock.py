@@ -36,8 +36,8 @@ class SnappingDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(SnappingDock, self).__init__(SnappingWidget(), parent)
 
-        self.setWindowTitle(u'ARK Snapping')
-        self.setObjectName(u'SnappingDock')
+        self.setWindowTitle('ARK Snapping')
+        self.setObjectName('SnappingDock')
 
     def initGui(self, iface, location, menuAction):
         super(SnappingDock, self).initGui(iface, location, menuAction)

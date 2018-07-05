@@ -68,39 +68,39 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         self._addStandardTool(
             FeatureType.Point,
             ':/plugins/ark/plan/editPoints.svg',
-            u'Points Node Tool',
+            'Points Node Tool',
             self._editPointsLayer
         )
         self._addStandardTool(
             FeatureType.Point,
             ':/plugins/ark/plan/selectPoints.svg',
-            u'Points Select Tool',
+            'Points Select Tool',
             self._selectPointsLayer
         )
 
         self._addStandardTool(
             FeatureType.Line,
             ':/plugins/ark/plan/editLines.svg',
-            u'Lines Node Tool',
+            'Lines Node Tool',
             self._editLinesLayer
         )
         self._addStandardTool(
             FeatureType.Line,
             ':/plugins/ark/plan/selectLines.svg',
-            u'Lines Select Tool',
+            'Lines Select Tool',
             self._selectLinesLayer
         )
 
         self._addStandardTool(
             FeatureType.Polygon,
             ':/plugins/ark/plan/editPolygons.svg',
-            u'Polygons Node Tool',
+            'Polygons Node Tool',
             self._editPolygonsLayer
         )
         self._addStandardTool(
             FeatureType.Polygon,
             ':/plugins/ark/plan/selectPolygons.svg',
-            u'Polygons Select Tool',
+            'Polygons Select Tool',
             self._selectPolygonsLayer
         )
         # TODO Make generic somehow
@@ -108,7 +108,7 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
             self._addStandardTool(
                 FeatureType.Polygon,
                 ':/plugins/ark/plan/addPolygons.svg',
-                u'Auto-Schematic Tool',
+                'Auto-Schematic Tool',
                 self._autoSchematicSelected
             )
 

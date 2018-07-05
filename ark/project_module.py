@@ -107,19 +107,19 @@ class ProjectModule(Module):
         self.projectLayerView.currentLayerChanged.connect(self._plugin.iface.setActiveLayer)
         self._plugin.iface.currentLayerChanged.connect(self.projectLayerView.setCurrentLayer)
         self.layerViewAction = self.addDockAction(
-            ':/plugins/ark/tree.svg', self.tr(u'Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
+            ':/plugins/ark/tree.svg', self.tr('Toggle Layer View'), callback=self._toggleLayerView, checkable=True)
         self.layerViewAction.setChecked(True)
         """
 
         # Add Settings to the toolbar TODO move to end of dock?
         self.addDockSeparator()
         self.addDockAction(':/plugins/ark/settings.svg',
-                           self._plugin.tr(u'Project Settings'), self._triggerSettingsDialog)
+                           self._plugin.tr('Project Settings'), self._triggerSettingsDialog)
 
         # Init the identify tool and add to the toolbar
         self.identifyAction = self.addDockAction(
             ':/plugins/ark/filter/identify.png',
-            self._plugin.tr(u'Identify Items'),
+            self._plugin.tr('Identify Items'),
             callback=self.triggerIdentifyAction,
             checkable=True
         )
@@ -129,7 +129,7 @@ class ProjectModule(Module):
         # Init the Load Item tool and add to the toolbar
         self.showItemAction = self.addDockAction(
             ':/plugins/ark/filter/showContext.png',
-            self._plugin.tr(u'Show Item'),
+            self._plugin.tr('Show Item'),
             callback=self._showItem
         )
 

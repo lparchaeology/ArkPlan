@@ -39,7 +39,7 @@ class LayerSnappingWidget(QWidget):
         tool.setDefaultAction(action)
 
         layout = QHBoxLayout(self)
-        layout.setObjectName(u'layout')
+        layout.setObjectName('layout')
         layout.addWidget(label)
         layout.addWidget(spacer)
         layout.addWidget(tool)

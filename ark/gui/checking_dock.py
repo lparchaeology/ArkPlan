@@ -61,8 +61,8 @@ class CheckingDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(CheckingDock, self).__init__(SchematicWidget(), parent)
 
-        self.setWindowTitle(u'ARK Checking')
-        self.setObjectName(u'CheckingDock')
+        self.setWindowTitle('ARK Checking')
+        self.setObjectName('CheckingDock')
 
     def initGui(self, iface, location, menuAction):
         super(CheckingDock, self).initGui(iface, location, menuAction)

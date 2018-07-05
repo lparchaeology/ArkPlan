@@ -292,10 +292,10 @@ class MyPlugin(Plugin):
     """QGIS Plugin Implementation for dialog or single-shot process."""
 
     def __init__(self, iface):
-        super(MyPlugin, self).__init__(iface, u'MyPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
+        super(MyPlugin, self).__init__(iface, 'MyPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
                                        Plugin.PluginsGroup, Plugin.PluginsGroup)
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&MyPlugin'))
+        self.setDisplayName(self.tr('&MyPlugin'))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -318,10 +318,10 @@ class MyDockPlugin(Plugin):
     """QGIS Plugin Implementation for dock."""
 
     def __init__(self, iface):
-        super(MyPlugin, self).__init__(iface, u'MyDockPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
+        super(MyPlugin, self).__init__(iface, 'MyDockPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
                                        Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&MyPlugin'))
+        self.setDisplayName(self.tr('&MyPlugin'))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""

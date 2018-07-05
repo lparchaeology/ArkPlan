@@ -33,12 +33,12 @@ from ArkSpatial.ark.lib.core import Collection, CollectionSettings, FeatureType,
 
 class Config:
 
-    pluginName = u'ARKspatial'
-    pluginScope = u'ARK'
-    projectGroupName = u'ARK'
-    filterSetGroupName = u'Filter Export Data'
-    bufferSuffix = u'_buf'
-    logSuffix = u'_log'
+    pluginName = 'ARKspatial'
+    pluginScope = 'ARK'
+    projectGroupName = 'ARK'
+    filterSetGroupName = 'Filter Export Data'
+    bufferSuffix = '_buf'
+    logSuffix = '_log'
 
     # Field Name defaults
     fields = {

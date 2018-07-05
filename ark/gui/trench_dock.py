@@ -44,8 +44,8 @@ class TrenchDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(TrenchDock, self).__init__(TrenchWidget(), parent)
 
-        self.setWindowTitle(u'ARK Trench')
-        self.setObjectName(u'TrenchDock')
+        self.setWindowTitle('ARK Trench')
+        self.setObjectName('TrenchDock')
 
     def initGui(self, iface, location, menuAction):
         super(TrenchDock, self).initGui(iface, location, menuAction)

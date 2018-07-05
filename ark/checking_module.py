@@ -54,7 +54,7 @@ class CheckingModule(Module):
         dock = CheckingDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/plan/schematicReport.svg',
-            self.tr(u'Checking Tools'),
+            self.tr('Checking Tools'),
             callback=self.run,
             checkable=True
         )
@@ -226,10 +226,10 @@ class CheckingModule(Module):
             if item in self._plugin.data().items['context']:
                 haveArk = SearchStatus.Found
                 vals = self._plugin.data().getItemFields(item, ['conf_field_cxttype', 'conf_field_short_desc'])
-                if (u'conf_field_cxttype' in vals and vals[u'conf_field_cxttype']):
-                    contextType = str(vals[u'conf_field_cxttype'])
-                if u'conf_field_short_desc' in vals:
-                    contextDescription = str(vals[u'conf_field_short_desc'][0][u'current'])
+                if ('conf_field_cxttype' in vals and vals['conf_field_cxttype']):
+                    contextType = str(vals['conf_field_cxttype'])
+                if 'conf_field_short_desc' in vals:
+                    contextDescription = str(vals['conf_field_short_desc'][0]['current'])
             else:
                 contextDescription = 'Context not in ARK'
         except Exception:
@@ -384,7 +384,7 @@ class CheckingModule(Module):
                     row['Type'] = ''
                     try:
                         vals = self._plugin.data().getItemFields(context, ['conf_field_cxttype'])
-                        row['Type'] = vals[u'conf_field_cxttype']
+                        row['Type'] = vals['conf_field_cxttype']
                     except Exception:
                         row['Type'] = ''
                 if context in features:

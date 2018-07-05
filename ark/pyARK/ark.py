@@ -51,9 +51,9 @@ class Ark:
     FileClass = 6
 
     def __init__(self, url, handle=None, passwd=None):
-        self.url = u''
-        self.handle = u''
-        self.passwd = u''
+        self.url = ''
+        self.handle = ''
+        self.passwd = ''
         self.setUrl(url)
         self.setCredentials(handle, passwd)
 
@@ -246,7 +246,7 @@ class Ark:
         return ret
 
     def _buildUrl(self, req, args):
-        url = self.url + u'/api.php?req=' + str(req)
+        url = self.url + '/api.php?req=' + str(req)
         for key in list(args.keys()):
             url += self._arg(key, args[key])
         if self.handle and self.passwd:
@@ -259,7 +259,7 @@ class Ark:
         if (key is not None and value is not None):
             if isinstance(value, list):
                 for val in value:
-                    ret = ret + u'&' + str(key) + u'[]=' + str(val)
+                    ret = ret + '&' + str(key) + '[]=' + str(val)
             else:
-                ret = u'&' + str(key) + u'=' + str(value)
+                ret = '&' + str(key) + '=' + str(value)
         return ret

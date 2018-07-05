@@ -66,8 +66,8 @@ class FilterDock(ToolDockWidget):
         self._classCodes = {}
         self._history = []
 
-        self.setWindowTitle(u'ARK Filter')
-        self.setObjectName(u'FilterDock')
+        self.setWindowTitle('ARK Filter')
+        self.setObjectName('FilterDock')
 
     def initGui(self, iface, location, menuAction):
         super(FilterDock, self).initGui(iface, location, menuAction)

@@ -38,7 +38,7 @@ class TrenchModule(Module):
         dock = TrenchDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/trench/trench.svg',
-            self.tr(u'Trench Tools'),
+            self.tr('Trench Tools'),
             callback=self.run,
             checkable=True
         )

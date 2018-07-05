@@ -61,24 +61,24 @@ class GridModule(Module):
     def initGui(self):
         dock = GridDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
-            ':/plugins/ark/grid/grid.png', self.tr(u'Grid Tools'), callback=self.run, checkable=True)
+            ':/plugins/ark/grid/grid.png', self.tr('Grid Tools'), callback=self.run, checkable=True)
         self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
         self._createGridAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/newGrid.png'), self.tr(u'Create New Grid'), self.showGridWizard)
+            QIcon(':/plugins/ark/grid/newGrid.png'), self.tr('Create New Grid'), self.showGridWizard)
         self._identifyGridAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr(u'Identify Grid Coordinates'), self._triggerMapTool)
+            QIcon(':/plugins/ark/grid/identifyCoordinates.png'), self.tr('Identify Grid Coordinates'), self._triggerMapTool)
         self._identifyGridAction.setCheckable(True)
         self._panToAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr(u'Pan to map point'), self.panMapToPoint)
+            QIcon(':/plugins/ark/grid/panToSelected.svg'), self.tr('Pan to map point'), self.panMapToPoint)
         self._pasteMapPointAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr(u'Paste Map Point'), self.pasteMapPointFromClipboard)
+            QIcon(':/plugins/ark/grid/pastePoint.png'), self.tr('Paste Map Point'), self.pasteMapPointFromClipboard)
         self._addMapPointAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/addPoint.png'), self.tr(u'Add point to current layer'), self.addMapPointToLayer)
+            QIcon(':/plugins/ark/grid/addPoint.png'), self.tr('Add point to current layer'), self.addMapPointToLayer)
         self._updateLayerAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr(u'Update Layer Coordinates'), self.showUpdateLayerDialog)
+            QIcon(':/plugins/ark/grid/updateLayer.png'), self.tr('Update Layer Coordinates'), self.showUpdateLayerDialog)
         self._translateFeaturesAction = self._dock.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr(u'Translate features'), self.showTranslateFeaturesDialog)
+            QIcon(':/plugins/ark/grid/translateFeature.png'), self.tr('Translate features'), self.showTranslateFeaturesDialog)
 
         self._dock.widget.gridSelectionChanged.connect(self.changeGrid)
         self._dock.widget.mapPointChanged.connect(self.convertMapPoint)

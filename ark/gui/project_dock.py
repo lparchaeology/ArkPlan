@@ -32,8 +32,8 @@ class ProjectDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(ProjectDock, self).__init__(ProjectBrowserWidget(), parent)
 
-        self.setWindowTitle(u'ARK Project Browser')
-        self.setObjectName(u'ProjectDock')
+        self.setWindowTitle('ARK Project Browser')
+        self.setObjectName('ProjectDock')
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):

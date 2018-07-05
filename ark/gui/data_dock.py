@@ -71,8 +71,8 @@ class DataDock(ToolDockWidget):
         else:
             super(DataDock, self).__init__(DataItemWidget(), parent)
 
-        self.setWindowTitle(u'ARK Data')
-        self.setObjectName(u'DataDock')
+        self.setWindowTitle('ARK Data')
+        self.setObjectName('DataDock')
 
     def initGui(self, iface, location, menuAction):
         super(DataDock, self).initGui(iface, location, menuAction)
@@ -81,7 +81,7 @@ class DataDock(ToolDockWidget):
             classCode = Config.classCodes[key]
             self.widget.classCodeCombo.addItem(classCode['label'], classCode['class'])
 
-        self._showItemAction = QAction(QIcon(':/plugins/ark/filter/showContext.png'), self.tr(u'Show Item'), self)
+        self._showItemAction = QAction(QIcon(':/plugins/ark/filter/showContext.png'), self.tr('Show Item'), self)
         self._showItemAction.triggered.connect(self.showItemSelected)
         self.toolbar.addAction(self._showItemAction)
 

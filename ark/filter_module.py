@@ -56,7 +56,7 @@ class FilterModule(Module):
     def initGui(self):
         dock = FilterDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
-            ':/plugins/ark/filter/filter.png', self.tr(u'Filter Tools'), callback=self.run, checkable=True)
+            ':/plugins/ark/filter/filter.png', self.tr('Filter Tools'), callback=self.run, checkable=True)
         self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
         self._dock.filterChanged.connect(self._filterChanged)

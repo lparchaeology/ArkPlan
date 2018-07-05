@@ -142,12 +142,12 @@ class IdentifyItemAction(QAction):
             units = self._iface.mapCanvas().mapUnits()
             suffix = ''
             if units == QGis.Meters:
-                suffix = u' m²'
+                suffix = ' m²'
             elif units == QGis.Feet:
-                suffix = u' ft²'
+                suffix = ' ft²'
             elif units == QGis.NauticalMiles:
-                suffix = u' NM²'
-            menu.addAction(ClipboardAction(u'Area: ', u'%.3f' % tot + suffix, parent))
+                suffix = ' NM²'
+            menu.addAction(ClipboardAction('Area: ', '%.3f' % tot + suffix, parent))
         self.setMenu(menu)
 
     def _editItem(self):

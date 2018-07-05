@@ -218,14 +218,14 @@ class Snapping:
 
     @staticmethod
     def layerSnappingEnabled(layerId):
-        value = Snapping._layerSnappingValue(layerId, "/LayerSnappingEnabledList", u'disabled')
-        return (value == u'enabled')
+        value = Snapping._layerSnappingValue(layerId, "/LayerSnappingEnabledList", 'disabled')
+        return (value == 'enabled')
 
     @staticmethod
     def setLayerSnappingEnabled(layerId, enabled):
-        value = u'disabled'
+        value = 'disabled'
         if enabled:
-            value = u'enabled'
+            value = 'enabled'
         Snapping._setLayerSnappingValue(layerId, "/LayerSnappingEnabledList", value)
 
     @staticmethod
@@ -305,7 +305,7 @@ class Snapping:
         layerIdList = Project.readListEntry("Digitizing", "/LayerSnappingList")
         enabledList = Project.readListEntry("Digitizing", "/LayerSnappingEnabledList")
         for idx in range(0, len(layerIdList)):
-            if enabledList[idx] == u'enabled':
+            if enabledList[idx] == 'enabled':
                 enabledLayers.append(layerIdList[idx])
         return enabledLayers
 
@@ -315,7 +315,7 @@ class Snapping:
         layerIdList = Project.readListEntry("Digitizing", "/LayerSnappingList")
         for layerId in layerIdList:
             if layerId in enabledLayers:
-                enabledList.append(u'enabled')
+                enabledList.append('enabled')
             else:
-                enabledList.append(u'disabled')
+                enabledList.append('disabled')
         Project.writeEntry("Digitizing", "/LayerSnappingEnabledList", enabledList)

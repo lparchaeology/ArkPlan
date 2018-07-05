@@ -67,7 +67,7 @@ class DataModule(Module):
     def initGui(self):
         dock = DataDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
-            ':/plugins/ark/data/data.svg', self.tr(u'Query Item Data'), callback=self.run, checkable=True)
+            ':/plugins/ark/data/data.svg', self.tr('Query Item Data'), callback=self.run, checkable=True)
         self._initDockGui(dock, Qt.LeftDockWidgetArea, action)
 
         self._dock.itemChanged.connect(self._itemChanged)
@@ -213,8 +213,8 @@ class DataModule(Module):
         items = []
         try:
             for link in data[xmi]:
-                itemkey = link[u'xmi_itemkey']
-                itemvalue = link[u'xmi_itemvalue'].split(u'_')
+                itemkey = link['xmi_itemkey']
+                itemvalue = link['xmi_itemvalue'].split('_')
                 item = Item(itemvalue[0], itemkey[:3], itemvalue[1])
                 items.append(item)
         except Exception:
@@ -345,7 +345,7 @@ class DataModule(Module):
             return self._value(value[-1])
         if isinstance(value, dict):
             try:
-                return value[u'current']
+                return value['current']
             except Exception:
                 return ''
         return value

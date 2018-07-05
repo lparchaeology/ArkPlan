@@ -72,7 +72,7 @@ class ArkSpatialPlugin(Plugin):
         self._loaded = False
 
         # Set display / menu name now we have tr() set up
-        self.setDisplayName(self.tr(u'&ARK Spatial BETA'))
+        self.setDisplayName(self.tr('&ARK Spatial BETA'))
 
         # Menu Actions
         # TODO Snapping Tools - Make own plugin!
@@ -97,7 +97,7 @@ class ArkSpatialPlugin(Plugin):
         # Init the project dock so we have something to show on first run
         self._projectModule = ProjectModule(self)
         self._projectModule.initGui()
-        self.addNewAction(':/plugins/ark/settings.svg', self.tr(u'Preferences'),
+        self.addNewAction(':/plugins/ark/settings.svg', self.tr('Preferences'),
                           self.configurePlugin, addToToolbar=False)
 
     # Initialise plugin gui

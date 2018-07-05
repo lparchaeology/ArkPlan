@@ -45,8 +45,8 @@ class DrawingDock(ToolDockWidget):
     def __init__(self, parent=None):
         super(DrawingDock, self).__init__(DigitisingWidget(), parent)
 
-        self.setWindowTitle(u'ARK Drawing')
-        self.setObjectName(u'DrawingDock')
+        self.setWindowTitle('ARK Drawing')
+        self.setObjectName('DrawingDock')
 
     def initGui(self, iface, location, menuAction):
         super(DrawingDock, self).initGui(iface, location, menuAction)
@@ -61,11 +61,11 @@ class DrawingDock(ToolDockWidget):
         self.toolbar.addSeparator()
 
         self.toolbar.addAction(
-            QIcon(':/plugins/ark/plan/georef.png'), self.tr(u'Georeference Any Drawing'), self.loadAnyFileSelected)
+            QIcon(':/plugins/ark/plan/georef.png'), self.tr('Georeference Any Drawing'), self.loadAnyFileSelected)
         self.toolbar.addAction(
-            QIcon(':/plugins/ark/grid/grid.png'), self.tr(u'Georeference Raw Drawings'), self.loadRawFileSelected)
+            QIcon(':/plugins/ark/grid/grid.png'), self.tr('Georeference Raw Drawings'), self.loadRawFileSelected)
         self.toolbar.addAction(QIcon(':/plugins/ark/plan/loadDrawings.svg'),
-                               self.tr(u'Load Georeferenced Drawings'), self.loadGeoFileSelected)
+                               self.tr('Load Georeferenced Drawings'), self.loadGeoFileSelected)
 
         # Init the main widgets
         self.widget.initGui(iface)

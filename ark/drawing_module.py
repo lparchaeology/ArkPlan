@@ -55,7 +55,7 @@ class DrawingModule(Module):
         dock = DrawingDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/plan/drawPlans.png',
-            self.tr(u'Drawing Tools'),
+            self.tr('Drawing Tools'),
             callback=self.run,
             checkable=True
         )
@@ -71,7 +71,7 @@ class DrawingModule(Module):
         self.snapDock = SnappingDock(self._plugin.iface.mainWindow())
         action = self._plugin.project().addDockAction(
             ':/plugins/ark/topologicalEditing.png',
-            self.tr(u'Snapping Tools'),
+            self.tr('Snapping Tools'),
             callback=self.runSnapping,
             checkable=True
         )

@@ -37,19 +37,19 @@ class SnappingDock(DockWidget):
         super(SnappingDock, self).__init__(parent)
         self._iface = iface
 
-        self.setWindowTitle(u'Snapping Panel')
-        self.setObjectName(u'snappingDock')
+        self.setWindowTitle('Snapping Panel')
+        self.setObjectName('snappingDock')
 
         self._listWidget = QListWidget(self)
         self._listWidget.setSelectionMode(QAbstractItemView.NoSelection)
         self._listWidget.setDropIndicatorShown(False)
 
         self._dockLayout = QVBoxLayout(self)
-        self._dockLayout.setObjectName(u'dockLayout')
+        self._dockLayout.setObjectName('dockLayout')
         self._dockLayout.addWidget(self._listWidget)
 
         self._dockContents = QWidget(self)
-        self._dockContents.setObjectName(u'dockContents')
+        self._dockContents.setObjectName('dockContents')
         self._dockContents.setLayout(self._dockLayout)
         self.setWidget(self._dockContents)
 

@@ -24,7 +24,7 @@
 
 from qgis.PyQt.QtWidgets import QDialog
 
-from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
+from qgis.core import Qgis, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 
 from .ui.update_layer_dialog_base import Ui_UpdateLayerDialog
 
@@ -37,7 +37,7 @@ class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
         for layer in iface.legendInterface().layers():
             if (layer.type() == QgsMapLayer.VectorLayer
                     and (layer.dataProvider().capabilities() & QgsVectorDataProvider.ChangeAttributeValues)):
-                if (layer.geometryType() == QGis.Point or layer.geometryType() == QGis.NoGeometry):
+                if (layer.geometryType() == Qgis.Point or layer.geometryType() == Qgis.NoGeometry):
                     self.layerComboBox.addItem(layer.name(), layer.id())
 
     def layer(self):

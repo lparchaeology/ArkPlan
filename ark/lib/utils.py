@@ -24,7 +24,7 @@
 
 from qgis.PyQt.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import NULL, QGis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointV2
+from qgis.core import NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointV2
 
 safeChars = [
     " ",
@@ -131,11 +131,11 @@ def csvValue(value):
 
 
 def unitToSuffix(unit):
-    if unit == QGis.Meters:
+    if unit == Qgis.Meters:
         return ' m'
-    elif unit == QGis.Feet:
+    elif unit == Qgis.Feet:
         return ' ft'
-    elif unit == QGis.NauticalMiles:
+    elif unit == Qgis.NauticalMiles:
         return ' NM'
     else:
         return ' °'

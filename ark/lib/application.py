@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import QFile, QSettings
 from qgis.PyQt.QtGui import QColor, QIcon
 
-from qgis.core import NULL, QGis, QgsApplication, QgsCoordinateReferenceSystem, QgsCRSCache
+from qgis.core import NULL, Qgis, QgsApplication, QgsCoordinateReferenceSystem, QgsCRSCache
 
 from . import utils
 
@@ -92,11 +92,11 @@ class Application:
 
     @staticmethod
     def highlightColorName():
-        return QColor(QSettings().value('/Map/highlight/color', QGis.DEFAULT_HIGHLIGHT_COLOR.name(), str))
+        return QColor(QSettings().value('/Map/highlight/color', Qgis.DEFAULT_HIGHLIGHT_COLOR.name(), str))
 
     @staticmethod
     def highlightColorAlpha():
-        return QSettings().value('/Map/highlight/colorAlpha', QGis.DEFAULT_HIGHLIGHT_COLOR.alpha(), int)
+        return QSettings().value('/Map/highlight/colorAlpha', Qgis.DEFAULT_HIGHLIGHT_COLOR.alpha(), int)
 
     @classmethod
     def highlightLineColor(cls):
@@ -111,11 +111,11 @@ class Application:
 
     @staticmethod
     def highlightBuffer():
-        return QSettings().value('/Map/highlight/buffer', QGis.DEFAULT_HIGHLIGHT_BUFFER_MM, float)
+        return QSettings().value('/Map/highlight/buffer', Qgis.DEFAULT_HIGHLIGHT_BUFFER_MM, float)
 
     @staticmethod
     def highlightMinimumWidth():
-        return QSettings().value('/Map/highlight/minWidth', QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
+        return QSettings().value('/Map/highlight/minWidth', Qgis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
 
     @staticmethod
     def setComposerFont(font):

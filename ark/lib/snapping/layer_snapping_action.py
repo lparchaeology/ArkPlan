@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtWidgets import QActionGroup
 
-from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsVectorLayer
+from qgis.core import Qgis, QgsMapLayer, QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
 from ..gui import ControlMenu
@@ -75,7 +75,7 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
         menu.addAction(self._toleranceAction)
         menu.addActions(self._unitTypeActionGroup.actions())
         if (isinstance(snapLayer, QgisInterface)
-                or (isinstance(snapLayer, QgsVectorLayer) and snapLayer.geometryType() == QGis.Polygon)):
+                or (isinstance(snapLayer, QgsVectorLayer) and snapLayer.geometryType() == Qgis.Polygon)):
             self._avoidAction = LayerSnappingAvoidIntersectionsAction(snapLayer, self)
             menu.addSeparator()
             menu.addAction(self._avoidAction)
@@ -138,5 +138,5 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
         if self._iface and self._avoidAction:
             layer = QgsMapLayerRegistry.instance().mapLayer(self.layerId())
             isPolygon = (layer is not None and layer.type() ==
-                         QgsMapLayer.VectorLayer and layer.geometryType() == QGis.Polygon)
+                         QgsMapLayer.VectorLayer and layer.geometryType() == Qgis.Polygon)
             self._avoidAction.setEnabled(isPolygon)

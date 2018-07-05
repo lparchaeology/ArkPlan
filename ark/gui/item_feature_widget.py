@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.PyQt.QtWidgets import QAction, QLabel, QToolButton, QWidget
 from qgis.PyQt.QtGui import QIcon
 
-from qgis.core import QGis
+from qgis.core import Qgis
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import FeatureType, geometry
@@ -148,11 +148,11 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         for category in self._mapTools:
             geometryType = self._mapTools[category].geometryType()
             layer = None
-            if geometryType == QGis.Point:
+            if geometryType == Qgis.Point:
                 layer = self._collection.buffer('points')
-            elif geometryType == QGis.Polygon:
+            elif geometryType == Qgis.Polygon:
                 layer = self._collection.buffer('polygons')
-            elif geometryType == QGis.Line:
+            elif geometryType == Qgis.Line:
                 layer = self._collection.buffer('lines')
             self._mapTools[category].setLayer(layer)
 
@@ -224,13 +224,13 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         toolButton.setFixedHeight(30)
         toolButton.setDefaultAction(action)
         geometryType = FeatureType.toGeometryType(featureType)
-        if geometryType == QGis.Point:
+        if geometryType == Qgis.Point:
             self._addToolWidget(self.pointToolLayout, toolButton, self._pointTool)
             self._pointTool += 1
-        elif geometryType == QGis.Line:
+        elif geometryType == Qgis.Line:
             self._addToolWidget(self.lineToolLayout, toolButton, self._lineTool)
             self._lineTool += 1
-        elif geometryType == QGis.Polygon:
+        elif geometryType == Qgis.Polygon:
             self._addToolWidget(self.polygonToolLayout, toolButton, self._polygonTool)
             self._polygonTool += 1
 

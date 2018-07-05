@@ -28,7 +28,7 @@
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import QInputDialog
 
-from qgis.core import QGis, QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
+from qgis.core import Qgis, QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider
 from qgis.gui import QgsMessageBar
 
 from .. import utils
@@ -90,14 +90,14 @@ class MapToolAddFeature(MapToolCapture):
         if self._layer is not None:
             self.canvas().setCurrentLayer(self._layer)
             self._iface.legendInterface().setCurrentLayer(self._layer)
-            if self._layer.geometryType() == QGis.NoGeometry:
+            if self._layer.geometryType() == Qgis.NoGeometry:
                 self._addFeatureAction(QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
         super(MapToolAddFeature, self).canvasReleaseEvent(e)
         if (e.isAccepted()):
             return
-        if (self.geometryType() == QGis.Point):
+        if (self.geometryType() == Qgis.Point):
             if (e.button() == Qt.LeftButton):
                 self.addFeature()
                 e.accept()
@@ -118,7 +118,7 @@ class MapToolAddFeature(MapToolCapture):
         geometryType = FeatureType.toGeometryType(featureType)
 
         # points: bail out if there is not exactly one vertex
-        if (geometryType == QGis.Point and len(mapPointList) != 1):
+        if (geometryType == Qgis.Point and len(mapPointList) != 1):
             return False
 
         # segments: bail out if there are not exactly two vertices
@@ -130,7 +130,7 @@ class MapToolAddFeature(MapToolCapture):
             return False
 
         # polygons: bail out if there are not at least three vertices
-        if (geometryType == QGis.Polygon and len(mapPointList) < 3):
+        if (geometryType == Qgis.Polygon and len(mapPointList) < 3):
             return False
 
         if (geometryType != layer.geometryType()):
@@ -154,22 +154,22 @@ class MapToolAddFeature(MapToolCapture):
                 QgsMessageBar.CRITICAL)
             return False
 
-        multiType = QGis.isMultiType(layer.wkbType())
+        multiType = Qgis.isMultiType(layer.wkbType())
         layerPoints = self._layerPoints(mapPointList, layer)
         feature = QgsFeature(layer.pendingFields(), 0)
         geometry = None
 
-        if (geometryType == QGis.Point):
+        if (geometryType == Qgis.Point):
             if multiType:
                 geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
             else:
                 geometry = QgsGeometry(layerPoints[0])
-        elif (geometryType == QGis.Line):
+        elif (geometryType == Qgis.Line):
             if multiType:
                 geometry = QgsGeometry.fromMultiPolyline([layerPoints])
             else:
                 geometry = QgsGeometry.fromPolyline(layerPoints)
-        elif (geometryType == QGis.Polygon):
+        elif (geometryType == Qgis.Polygon):
             if multiType:
                 geometry = QgsGeometry.fromMultiPolygon([layerPoints])
             else:
@@ -183,7 +183,7 @@ class MapToolAddFeature(MapToolCapture):
             return False
         feature.setGeometry(geometry)
 
-        if (geometryType == QGis.Polygon):
+        if (geometryType == Qgis.Polygon):
 
             avoidIntersectionsReturn = feature.geometry().avoidIntersections()
             if (avoidIntersectionsReturn == 1):
@@ -205,7 +205,7 @@ class MapToolAddFeature(MapToolCapture):
 
         featureSaved = self._addFeatureAction(feature, attributes, layer, False)
 
-        if (featureSaved and geometryType != QGis.Point):
+        if (featureSaved and geometryType != Qgis.Point):
             # add points to other features to keep topology up-to-date
             topologicalEditing = Snapping.topologicalEditing()
 
@@ -217,7 +217,7 @@ class MapToolAddFeature(MapToolCapture):
                 for intersectionLayer in intersectionLayers:
                     vl = QgsMapLayerRegistry.instance().mapLayer(str(intersectionLayer))
                     # can only add topological points if background layer is editable...
-                    if (vl is not None and vl.geometryType() == QGis.Polygon and vl.isEditable()):
+                    if (vl is not None and vl.geometryType() == Qgis.Polygon and vl.isEditable()):
                         vl.addTopologicalPoints(feature.geometry())
             elif (topologicalEditing):
                 self._layer.addTopologicalPoints(feature.geometry())

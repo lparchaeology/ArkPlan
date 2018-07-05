@@ -29,7 +29,7 @@
 
 from qgis.PyQt.QtCore import Qt, QUrl, QModelIndex, QAbstractItemModel, QMimeData
 
-from qgis.core import QGis, QgsDirectoryItem, QgsDataItem, QgsMimeDataUtils, QgsProject
+from qgis.core import Qgis, QgsDirectoryItem, QgsDataItem, QgsMimeDataUtils, QgsProject
 
 
 class ProjectModel(QAbstractItemModel):

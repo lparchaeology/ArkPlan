@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from qgis.core import QGis
+from qgis.core import Qgis
 
 
 class FeatureType:
@@ -37,9 +37,9 @@ class FeatureType:
     @staticmethod
     def toGeometryType(featureType):
         if featureType == FeatureType.Point or featureType == FeatureType.Elevation:
-            return QGis.Point
+            return Qgis.Point
         elif (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            return QGis.Line
+            return Qgis.Line
         elif featureType == FeatureType.Polygon:
-            return QGis.Polygon
-        return QGis.UnknownGeometry
+            return Qgis.Polygon
+        return Qgis.UnknownGeometry

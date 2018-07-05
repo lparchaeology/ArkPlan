@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from qgis.core import QGis
+from qgis.core import Qgis
 
 from ..project import Project
 
@@ -34,7 +34,7 @@ class CollectionLayerSettings:
     def __init__(self):
         self.layer = ''
         self.crs = ''
-        self.geometry = QGis.NoGeometry
+        self.geometry = Qgis.NoGeometry
         self.multi = False
         self.label = ''
         self.name = ''

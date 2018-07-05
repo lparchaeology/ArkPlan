@@ -27,43 +27,43 @@ import os
 from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
 from qgis.PyQt.QtXml import QDomDocument
 
-from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
+from qgis.core import (NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
                        QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer)
 
 from .. import utils
 
 geometryType = {
-    QGis.Point: QGis.WKBPoint25D,
-    QGis.Line: QGis.WKBLineString25D,
-    QGis.Polygon: QGis.WKBPolygon25D
+    Qgis.Point: Qgis.WKBPoint25D,
+    Qgis.Line: Qgis.WKBLineString25D,
+    Qgis.Polygon: Qgis.WKBPolygon25D
 }
 
 geometryMultiType = {
-    QGis.Point: QGis.WKBMultiPoint25D,
-    QGis.Line: QGis.WKBMultiLineString25D,
-    QGis.Polygon: QGis.WKBMultiPolygon25D
+    Qgis.Point: Qgis.WKBMultiPoint25D,
+    Qgis.Line: Qgis.WKBMultiLineString25D,
+    Qgis.Polygon: Qgis.WKBMultiPolygon25D
 }
 
 wkbMemoryType = {
-    QGis.WKBPoint: 'point',
-    QGis.WKBLineString: 'linestring',
-    QGis.WKBPolygon: 'polygon',
-    QGis.WKBMultiPoint: 'multipoint',
-    QGis.WKBMultiLineString: 'multilinestring',
-    QGis.WKBMultiPolygon: 'multipolygon',
-    QGis.WKBPoint25D: 'point',
-    QGis.WKBLineString25D: 'linestring',
-    QGis.WKBPolygon25D: 'polygon',
-    QGis.WKBMultiPoint25D: 'multipoint',
-    QGis.WKBMultiLineString25D: 'multilinestring',
-    QGis.WKBMultiPolygon25D: 'multipolygon'
+    Qgis.WKBPoint: 'point',
+    Qgis.WKBLineString: 'linestring',
+    Qgis.WKBPolygon: 'polygon',
+    Qgis.WKBMultiPoint: 'multipoint',
+    Qgis.WKBMultiLineString: 'multilinestring',
+    Qgis.WKBMultiPolygon: 'multipolygon',
+    Qgis.WKBPoint25D: 'point',
+    Qgis.WKBLineString25D: 'linestring',
+    Qgis.WKBPolygon25D: 'polygon',
+    Qgis.WKBMultiPoint25D: 'multipoint',
+    Qgis.WKBMultiLineString25D: 'multilinestring',
+    Qgis.WKBMultiPolygon25D: 'multipolygon'
 }
 
 
 def geometryToWkbType(geometry, multi=True):
     if multi:
-        return geometryMultiType.get(geometry, QGis.UnknownGeometry)
-    return geometryType.get(geometry, QGis.UnknownGeometry)
+        return geometryMultiType.get(geometry, Qgis.UnknownGeometry)
+    return geometryType.get(geometry, Qgis.UnknownGeometry)
 
 
 def wkbToMemoryType(wkbType):
@@ -204,7 +204,7 @@ def getSymbology(source):
     documentType = di.createDocumentType('qgis', 'http://mrcc.com/qgis.dtd', 'SYSTEM')
     doc = QDomDocument(documentType)
     rootNode = doc.createElement('qgis')
-    rootNode.setAttribute('version', str(QGis.QGIS_VERSION))
+    rootNode.setAttribute('version', str(Qgis.QGIS_VERSION))
     doc.appendChild(rootNode)
     source.writeSymbology(rootNode, doc, '')
     return rootNode

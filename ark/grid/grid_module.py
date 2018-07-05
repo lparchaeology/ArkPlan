@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import QObject, Qt, QVariant
 from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtGui import QIcon
 
-from qgis.core import (QGis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
+from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
                        QgsVectorLayer)
 from qgis.gui import QgsVertexMarker
 
@@ -315,7 +315,7 @@ class GridModule(Module):
             feature.setAttribute(key, attributes[key])
 
     def _addGridPointsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
-        if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
+        if (layer is None or not layer.isValid() or layer.geometryType() != Qgis.Point):
             return
         features = []
         for localX in range(originX, originX + (intervalX * repeatX) + 1, intervalX):
@@ -333,7 +333,7 @@ class GridModule(Module):
         layers.addFeatures(features, layer)
 
     def _addGridLinesToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
-        if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Line):
+        if (layer is None or not layer.isValid() or layer.geometryType() != Qgis.Line):
             return
         features = []
         terminusX = originX + (intervalX * repeatX)
@@ -367,7 +367,7 @@ class GridModule(Module):
         layers.addFeatures(features, layer)
 
     def _addGridPolygonsToLayer(self, layer, transformer, originX, intervalX, repeatX, originY, intervalY, repeatY, attributes, localFieldX='local_x', localFieldY='local_x', mapFieldX='map_x', mapFieldY='map_y'):
-        if (layer is None or not layer.isValid() or layer.geometryType() != QGis.Polygon):
+        if (layer is None or not layer.isValid() or layer.geometryType() != Qgis.Polygon):
             return
         features = []
         for localX in range(originX, originX + intervalX * repeatX, intervalX):
@@ -434,7 +434,7 @@ class GridModule(Module):
                 self.updateLayerCoordinates(dialog.layer(), dialog.updateGeometry(), dialog.createMapFields())
 
     def updateLayerCoordinates(self, layer, updateGeometry, createMapFields):
-        if (not self._initialised or layer is None or not layer.isValid() or layer.geometryType() != QGis.Point):
+        if (not self._initialised or layer is None or not layer.isValid() or layer.geometryType() != Qgis.Point):
             return False
         local_x = 'local_x'
         local_y = 'local_y'
@@ -522,12 +522,12 @@ class GridModule(Module):
 
     def addMapPointToLayer(self):
         layer = self._plugin.mapCanvas().currentLayer()
-        if (layer.geometryType() == QGis.Point and layer.isEditable()):
+        if (layer.geometryType() == Qgis.Point and layer.isEditable()):
             layer.addFeature(self.mapPointAsFeature(layer.pendingFields()))
         self._plugin.mapCanvas().refresh()
 
     def setMapPointFromGeometry(self, geom):
-        if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
+        if (geom is not None and geom.type() == Qgis.Point and geom.isGeosValid()):
             self.setMapPoint(geom.geometry())
 
     def setMapPointFromWkt(self, wkt):
@@ -554,7 +554,7 @@ class GridModule(Module):
         return 'POINT(' + self._dock.widget.mapEastingSpin.text() + ' ' + self._dock.widget.mapNorthingSpin.text() + ')'
 
     def setLocalPointFromGeometry(self, geom):
-        if (geom is not None and geom.type() == QGis.Point and geom.isGeosValid()):
+        if (geom is not None and geom.type() == Qgis.Point and geom.isGeosValid()):
             self.setLocalPoint(geom.geometry())
 
     def setLocalPointFromWkt(self, wkt):

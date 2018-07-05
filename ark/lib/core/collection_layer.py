@@ -26,7 +26,7 @@ import os
 
 from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
 
-from qgis.core import (NULL, QGis, QgsEditFormConfig, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper,
+from qgis.core import (NULL, Qgis, QgsEditFormConfig, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper,
                        QgsTolerance, QgsVectorLayer)
 
 from . import layers

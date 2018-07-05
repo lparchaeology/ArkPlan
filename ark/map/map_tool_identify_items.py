@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import QPoint, QSettings, Qt
 from qgis.PyQt.QtWidgets import QAction, QMenu
 from qgis.PyQt.QtGui import QColor
 
-from qgis.core import QGis, QgsPointV2
+from qgis.core import Qgis, QgsPointV2
 from qgis.gui import QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
 
 from ArkSpatial.ark.lib.gui import ClipboardAction
@@ -142,10 +142,10 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
 
     def _addHighlight(self, canvas, geometry, layer):
         hl = QgsHighlight(canvas, geometry, layer)
-        color = QColor(QSettings().value('/Map/highlight/color', QGis.DEFAULT_HIGHLIGHT_COLOR.name(), str))
-        alpha = QSettings().value('/Map/highlight/colorAlpha', QGis.DEFAULT_HIGHLIGHT_COLOR.alpha(), int)
-        buff = QSettings().value('/Map/highlight/buffer', QGis.DEFAULT_HIGHLIGHT_BUFFER_MM, float)
-        minWidth = QSettings().value('/Map/highlight/minWidth', QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
+        color = QColor(QSettings().value('/Map/highlight/color', Qgis.DEFAULT_HIGHLIGHT_COLOR.name(), str))
+        alpha = QSettings().value('/Map/highlight/colorAlpha', Qgis.DEFAULT_HIGHLIGHT_COLOR.alpha(), int)
+        buff = QSettings().value('/Map/highlight/buffer', Qgis.DEFAULT_HIGHLIGHT_BUFFER_MM, float)
+        minWidth = QSettings().value('/Map/highlight/minWidth', Qgis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM, float)
         hl.setColor(color)
         color.setAlpha(alpha)
         hl.setFillColor(color)

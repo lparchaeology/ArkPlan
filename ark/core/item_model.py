@@ -23,6 +23,7 @@
 """
 
 import csv
+from io import open
 
 from qgis.PyQt.QtCore import QFile
 

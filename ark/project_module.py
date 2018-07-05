@@ -23,6 +23,7 @@
 """
 
 import copy
+from io import open
 import os
 
 from qgis.PyQt.QtCore import QDir, QFile, QFileInfo, QObject, Qt

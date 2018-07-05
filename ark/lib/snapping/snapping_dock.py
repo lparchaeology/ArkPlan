@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QAbstractItemView, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QAbstractItemView, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
 
 from qgis.core import QgsMapLayer, QgsMapLayerRegistry
 
@@ -60,7 +60,7 @@ class SnappingDock(DockWidget):
     def refresh(self):
         self._listWidget.clear()
         layers = QgsMapLayerRegistry.instance().mapLayers()
-        layerIds = layers.keys()
+        layerIds = list(layers.keys())
         sorted(layerIds)
         for layerId in layerIds:
             self.addLayer(layers[layerId])

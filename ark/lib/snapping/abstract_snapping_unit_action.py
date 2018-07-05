@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QAction
+from qgis.PyQt.QtWidgets import QAction
 
 from .snapping_ import Snapping
 

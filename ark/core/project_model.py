@@ -26,7 +26,8 @@
     Port of QgsBrowserModel to Python and simplified for Project Model requirements
 """
 
-from PyQt4.QtCore import Qt, QUrl, QModelIndex, QAbstractItemModel, QMimeData
+
+from qgis.PyQt.QtCore import Qt, QUrl, QModelIndex, QAbstractItemModel, QMimeData
 
 from qgis.core import QGis, QgsDirectoryItem, QgsDataItem, QgsMimeDataUtils, QgsProject
 

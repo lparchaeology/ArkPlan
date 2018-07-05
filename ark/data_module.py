@@ -26,8 +26,9 @@ import bisect
 import csv
 import webbrowser
 
-from PyQt4.QtCore import QObject, Qt, pyqtSignal
-from PyQt4.QtGui import QApplication, QSortFilterProxyModel
+from qgis.PyQt.QtCore import QObject, Qt, pyqtSignal
+from qgis.PyQt.QtWidgets import QApplication
+from qgis.PyQt.QtCore import QSortFilterProxyModel
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ParentChildModel
@@ -121,7 +122,7 @@ class DataModule(Module):
     def _loadIndex(self):
         self._indexLoaded = False
         self.items = {}
-        for classCode in Config.classCodes.keys():
+        for classCode in list(Config.classCodes.keys()):
             self.items[classCode] = []
             self._loadOnlineClassIndex(classCode)
         self._dock.setItemNavEnabled(self._indexLoaded)
@@ -207,7 +208,7 @@ class DataModule(Module):
     def _getOnlineLinks(self, item, linkClassCode):
         if not Settings.siteServerUrl():
             return []
-        xmi = unicode('conf_field_' + item.classCode() + linkClassCode + 'xmi')
+        xmi = str('conf_field_' + item.classCode() + linkClassCode + 'xmi')
         data = self.getItemFields(item, [xmi])
         items = []
         try:

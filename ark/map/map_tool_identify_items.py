@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QPoint, QSettings, Qt
-from PyQt4.QtGui import QAction, QColor, QMenu
+from qgis.PyQt.QtCore import QPoint, QSettings, Qt
+from qgis.PyQt.QtWidgets import QAction, QMenu
+from qgis.PyQt.QtGui import QColor
 
 from qgis.core import QGis, QgsPointV2
 from qgis.gui import QgsHighlight, QgsMapToolIdentify, QgsVertexMarker

@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QObject, Qt
+from qgis.PyQt.QtCore import QObject, Qt
 
 from ArkSpatial.ark.core import Module
 from ArkSpatial.ark.gui import TrenchDock

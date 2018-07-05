@@ -25,7 +25,7 @@
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import Collection
 
-from item_collection_layer import ItemCollectionLayer
+from .item_collection_layer import ItemCollectionLayer
 
 
 class ItemCollection(Collection):

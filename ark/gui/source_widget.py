@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QWidget
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QWidget
 
 from ArkSpatial.ark.core import Config, Item, Settings, Source
 

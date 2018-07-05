@@ -26,7 +26,7 @@ import bisect
 import copy
 import os
 
-from PyQt4.QtCore import QObject, Qt
+from qgis.PyQt.QtCore import QObject, Qt
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import layers
@@ -172,7 +172,7 @@ class CheckingModule(Module):
         if context.isValid():
             idx = bisect.bisect_left(self._plugin.data().items['context'], context)
         schematics = self._getAllSchematicItems()
-        for prv in reversed(range(idx)):
+        for prv in reversed(list(range(idx))):
             item = self._plugin.data().items['context'][prv]
             if item not in schematics:
                 self._findContext(item)
@@ -239,7 +239,7 @@ class CheckingModule(Module):
     def _featureStatus(self, item, copyMetadata=False):
         itemRequest = item.featureRequest()
         try:
-            feature = self.collection().layer('lines').getFeatures(itemRequest).next()
+            feature = next(self.collection().layer('lines').getFeatures(itemRequest))
             if copyMetadata:
                 self._copyFeatureMetadata(feature)
         except StopIteration:
@@ -249,7 +249,7 @@ class CheckingModule(Module):
     def _schematicStatus(self, item):
         schRequest = self._categoryRequest(item, 'sch')
         try:
-            self.collection().layer('polygons').getFeatures(schRequest).next()
+            next(self.collection().layer('polygons').getFeatures(schRequest))
         except StopIteration:
             return SearchStatus.NotFound
         return SearchStatus.Found
@@ -270,7 +270,7 @@ class CheckingModule(Module):
             polyRequest = self._notCategoryRequest(context, 'sch')
             haveFeature = SearchStatus.Found
             try:
-                self.collection().layer('polygons').getFeatures(polyRequest).next()
+                next(self.collection().layer('polygons').getFeatures(polyRequest))
             except StopIteration:
                 haveFeature = SearchStatus.NotFound
 
@@ -279,7 +279,7 @@ class CheckingModule(Module):
         scsRequest = self._categoryRequest(context, 'scs')
         haveSectionSchematic = SearchStatus.Found
         try:
-            self.collection().layer('polygons').getFeatures(scsRequest).next()
+            next(self.collection().layer('polygons').getFeatures(scsRequest))
         except StopIteration:
             haveSectionSchematic = SearchStatus.NotFound
 

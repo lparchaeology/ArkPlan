@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QObject, pyqtSignal
+from qgis.PyQt.QtCore import QObject, pyqtSignal
 
 from qgis.core import QgsFeature
 

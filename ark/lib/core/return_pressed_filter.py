@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QEvent, QObject, Qt, pyqtSignal
+from qgis.PyQt.QtCore import QEvent, QObject, Qt, pyqtSignal
 
 
 class ReturnPressedFilter(QObject):

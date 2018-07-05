@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFileInfo
-from PyQt4.QtGui import QWizard
+from qgis.PyQt.QtCore import QDir, QFileInfo
+from qgis.PyQt.QtWidgets import QWizard
 
 from qgis.core import QgsPointV2
 

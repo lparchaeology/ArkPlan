@@ -22,14 +22,14 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QPointF
+from qgis.PyQt.QtCore import QPointF
 
 from qgis.core import QgsPoint
 
 from ArkSpatial.ark.lib import utils
 
 
-class GroundControlPoint():
+class GroundControlPoint:
 
     def __init__(self, raw=None, map=None, enabled=True):
 

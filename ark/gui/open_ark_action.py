@@ -24,7 +24,7 @@
 
 import webbrowser
 
-from PyQt4.QtGui import QAction, QApplication
+from qgis.PyQt.QtWidgets import QAction, QApplication
 
 
 class OpenArkAction(QAction):

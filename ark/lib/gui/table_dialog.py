@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QApplication, QDialog
+from qgis.PyQt.QtWidgets import QApplication, QDialog
 
 from .. import utils
 from ..core import TableModel

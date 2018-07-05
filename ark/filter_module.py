@@ -24,8 +24,8 @@
 
 import re
 
-from PyQt4.QtCore import QObject, QSettings, Qt, pyqtSignal
-from PyQt4.QtGui import QInputDialog
+from qgis.PyQt.QtCore import QObject, QSettings, Qt, pyqtSignal
+from qgis.PyQt.QtWidgets import QInputDialog
 
 from qgis.gui import QgsExpressionBuilderDialog
 

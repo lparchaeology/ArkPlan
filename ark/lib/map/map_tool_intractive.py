@@ -25,8 +25,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QRect, Qt
-from PyQt4.QtGui import QColor, QCursor
+from qgis.PyQt.QtCore import QRect, Qt
+from qgis.PyQt.QtGui import QColor, QCursor
 
 from qgis.core import QGis, QgsGeometry, QgsPoint, QgsPointV2, QgsProject, QgsRectangle
 from qgis.gui import QgsMapCanvasSnapper, QgsMapTool, QgsRubberBand, QgsVertexMarker

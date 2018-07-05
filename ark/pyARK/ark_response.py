@@ -23,7 +23,7 @@
 """
 
 
-class ArkResponse():
+class ArkResponse:
 
     def __init__(self):
         self.response = None

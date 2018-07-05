@@ -24,7 +24,7 @@
 
 import os
 
-from PyQt4.QtGui import QFileDialog, QWizardPage
+from qgis.PyQt.QtWidgets import QFileDialog, QWizardPage
 
 from ArkSpatial.ark.lib import Project, utils
 
@@ -68,7 +68,7 @@ class ProjectConfirmPage(QWizardPage):
         defaultPath = self.field("projectFolder")
         if defaultPath == '':
             defaultPath = Settings.projectsFolder()
-        folderName = unicode(
+        folderName = str(
             QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), defaultPath)
         )
         if folderName:

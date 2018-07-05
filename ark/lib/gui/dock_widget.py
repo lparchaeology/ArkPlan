@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QDockWidget
+from qgis.PyQt.QtWidgets import QDockWidget
 
 
 class DockWidget(QDockWidget):

@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QComboBox, QWidget
+from qgis.PyQt.QtWidgets import QComboBox, QWidget
 
 from ArkSpatial.ark.lib import utils
 
@@ -52,7 +52,7 @@ class ProjectWidget(QWidget, Ui_ProjectWidget):
             self._ark = Ark(Settings.serverUrl(), Settings.serverUser(), Settings.serverPassword())
             projects = self._ark.getProjectList()
             self.projectCodeCombo.setMaxCount(len(projects))
-            for key in utils.natsorted(projects.keys()):
+            for key in utils.natsorted(list(projects.keys())):
                 self.projectCodeCombo.addItem(projects[key], key)
         self.setProjectCode(Settings.projectCode())
         self.setProjectName(Settings.projectName())

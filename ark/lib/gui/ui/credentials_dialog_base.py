@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -64,4 +64,3 @@ class Ui_CredentialsDialog(object):
         self.label.setText(_translate("CredentialsDialog", "Please enter your ARK username and password:", None))
         self.usernameLabel.setText(_translate("CredentialsDialog", "Username:", None))
         self.passwordLabel.setText(_translate("CredentialsDialog", "Password:", None))
-

@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QListWidgetItem
+from qgis.PyQt.QtCore import Qt, pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QListWidgetItem
+from qgis.PyQt.QtGui import QIcon
 
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 
@@ -31,7 +32,7 @@ from ArkSpatial.ark.core import FilterType
 from ArkSpatial.ark.core.enum import FilterWidgetAction
 from ArkSpatial.ark.gui import FilterClauseWidget
 
-from filter_set_widget import FilterSetWidget
+from .filter_set_widget import FilterSetWidget
 
 
 class FilterDock(ToolDockWidget):
@@ -188,7 +189,7 @@ class FilterDock(ToolDockWidget):
 
     def removeFilters(self):
         changed = False
-        for index in self._filterClauses.keys():
+        for index in list(self._filterClauses.keys()):
             self._removeFilterClause(index)
             changed = True
         return changed
@@ -202,7 +203,7 @@ class FilterDock(ToolDockWidget):
 
     def removeSelectFilters(self):
         changed = False
-        for index in self._filterClauses.keys():
+        for index in list(self._filterClauses.keys()):
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.SelectFilter:
                 self._removeFilterClause(index)
                 changed = True
@@ -210,7 +211,7 @@ class FilterDock(ToolDockWidget):
 
     def removeHighlightFilters(self):
         changed = False
-        for index in self._filterClauses.keys():
+        for index in list(self._filterClauses.keys()):
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == FilterType.HighlightFilter:
                 self._removeFilterClause(index)
                 changed = True
@@ -229,7 +230,7 @@ class FilterDock(ToolDockWidget):
         return True
 
     def _clearFilters(self):
-        for index in self._filterClauses.keys():
+        for index in list(self._filterClauses.keys()):
             self._removeFilterClause(index)
 
     def _createNewFilterClauseWidget(self):
@@ -245,7 +246,7 @@ class FilterDock(ToolDockWidget):
         return widget
 
     def hasFilterType(self, filterType):
-        for index in self._filterClauses.keys():
+        for index in list(self._filterClauses.keys()):
             if self._filterClauses[index] is not None and self._filterClauses[index].filterType() == filterType:
                 return True
         return False
@@ -307,7 +308,7 @@ class FilterDock(ToolDockWidget):
 
     def filterClauses(self):
         clauses = []
-        for idx in self._filterClauses.keys():
+        for idx in list(self._filterClauses.keys()):
             clauses.append(self._filterClauses[idx].clause())
         return clauses
 

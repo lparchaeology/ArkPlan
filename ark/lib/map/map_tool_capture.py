@@ -25,8 +25,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings, Qt, pyqtSignal
-from PyQt4.QtGui import QColor
+from qgis.PyQt.QtCore import QSettings, Qt, pyqtSignal
+from qgis.PyQt.QtGui import QColor
 
 from qgis.core import QGis, QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPointV2
 from qgis.gui import QgsRubberBand, QgsVertexMarker

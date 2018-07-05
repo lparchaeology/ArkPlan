@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QBrush, QPen
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QBrush, QPen
 
 from qgis.core import (QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolLayerV2Utils,
                        QgsSymbolV2)

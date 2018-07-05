@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QAction, QMenu
+from qgis.PyQt.QtWidgets import QAction, QMenu
 
 from qgis.core import QgsLayerTreeNode, QgsMapLayer, QgsProject
 from qgis.gui import QgsLayerTreeViewMenuProvider

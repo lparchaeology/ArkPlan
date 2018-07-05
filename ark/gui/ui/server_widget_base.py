@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -70,4 +70,3 @@ class Ui_ServerWidget(object):
         self.passwordEdit.setPlaceholderText(_translate("ServerWidget", "********", None))
         self.urlEdit.setPlaceholderText(_translate("ServerWidget", "http://www.arch.cam.ac.uk/shuqba", None))
         self.urlLabel.setText(_translate("ServerWidget", "URL:", None))
-

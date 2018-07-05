@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 
 from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
@@ -47,7 +47,7 @@ class LayerSnappingUnitAction(AbstractSnappingUnitAction):
             self._iface = snapLayer
         elif isinstance(snapLayer, QgsVectorLayer):
             self._layerId = snapLayer.id()
-        elif isinstance(snapLayer, str) or isinstance(snapLayer, unicode):
+        elif isinstance(snapLayer, str):
             self._layerId = snapLayer
 
         self._refresh()

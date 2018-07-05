@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QGroupBox
+from qgis.PyQt.QtWidgets import QGroupBox
 
 from qgis.core import QgsProject
 

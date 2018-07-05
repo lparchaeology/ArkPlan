@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -223,4 +223,3 @@ class Ui_SettingsDialogBase(object):
         self.projectCodeLabel.setText(_translate("SettingsDialogBase", "Project Code", None))
         self.styleFolderLabel.setText(_translate("SettingsDialogBase", "Styles Folder:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.projectTab), _translate("SettingsDialogBase", "Project", None))
-

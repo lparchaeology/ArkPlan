@@ -24,13 +24,13 @@
 
 from qgis.core import QgsFeatureRequest
 
-import layers
+from . import layers
 from .. import utils
 
-from collection_layer import CollectionLayer
+from .collection_layer import CollectionLayer
 
 
-class Collection(object):
+class Collection:
 
     def __init__(self, iface, projectPath, settings):
         self.projectPath = projectPath

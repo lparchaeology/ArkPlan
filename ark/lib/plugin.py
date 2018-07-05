@@ -24,13 +24,14 @@
 
 import os.path
 
-from PyQt4.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
-from PyQt4.QtGui import QAction, QIcon
+from qgis.PyQt.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
+from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import QgsMessageLog
 from qgis.gui import QgsMessageBar
 
-from project import Project
+from .project import Project
 
 
 class Plugin(QObject):

@@ -25,7 +25,7 @@
 from ArkSpatial.ark.lib import utils
 
 
-class Audit():
+class Audit:
 
     def __init__(self, creator=None, created=None, modifier=None, modified=None):
         self._creator = ''

@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -98,4 +98,3 @@ class Ui_TranslateFeaturesDialog(object):
         self.translateEastLabel.setText(_translate("TranslateFeaturesDialog", "Translate East", None))
         self.selectedFeaturesButton.setText(_translate("TranslateFeaturesDialog", "Selected Features Only", None))
         self.allFeaturesButton.setText(_translate("TranslateFeaturesDialog", "All Features", None))
-

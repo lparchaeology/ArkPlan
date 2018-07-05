@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QAction, QMenu
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QMenu
 
 from qgis.core import QGis
 
@@ -31,7 +31,7 @@ from ArkSpatial.ark.lib.gui import ClipboardAction
 
 from ArkSpatial.ark.core import Config, Item, Settings, Source
 
-from open_ark_action import OpenArkAction
+from .open_ark_action import OpenArkAction
 
 
 class IdentifyItemAction(QAction):
@@ -107,7 +107,7 @@ class IdentifyItemAction(QAction):
         menu.addAction(self.deleteAction)
         menu.addSeparator()
         if len(sourceDict) > 0:
-            for sourceCode in sourceDict.keys():
+            for sourceCode in list(sourceDict.keys()):
                 menu.addAction(Config.sourceCodes[sourceCode]['label'] + ':')
                 sources = sorted(sourceDict[sourceCode])
                 for item in sources:

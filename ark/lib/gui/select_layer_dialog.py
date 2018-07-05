@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLayout
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLayout
 
 from qgis.core import QgsMapLayerRegistry
 

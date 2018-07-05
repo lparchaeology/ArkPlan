@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -83,4 +83,3 @@ class Ui_ProjectWidget(object):
         self.projectNameLabel.setText(_translate("ProjectWidget", "Project Name:", None))
         self.projectCodeLabel.setText(_translate("ProjectWidget", "Project Code:", None))
         self.locationNorthingEdit.setPlaceholderText(_translate("ProjectWidget", "Northing", None))
-

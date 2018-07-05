@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -61,4 +61,3 @@ class Ui_SelectItemWidget(object):
         self.siteCodeLabel.setText(_translate("SelectItemWidget", "Site Code:", None))
         self.classCodeLabel.setText(_translate("SelectItemWidget", "Item Type:", None))
         self.itemIdLabel.setText(_translate("SelectItemWidget", "Item ID:", None))
-

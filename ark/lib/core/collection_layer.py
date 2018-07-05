@@ -24,7 +24,7 @@
 
 import os
 
-from PyQt4.QtCore import QFile, QFileInfo, QVariant
+from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
 
 from qgis.core import (NULL, QGis, QgsEditFormConfig, QgsField, QgsFields, QgsMapLayerRegistry, QgsProject, QgsSnapper,
                        QgsTolerance, QgsVectorLayer)
@@ -33,7 +33,7 @@ from . import layers
 from .. import utils
 
 
-class CollectionLayer(object):
+class CollectionLayer:
 
     def __init__(self, iface, projectPath, settings):
         self.name = ''

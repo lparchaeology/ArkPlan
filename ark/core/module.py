@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QObject
+from qgis.PyQt.QtCore import QObject
 
 
 class Module(QObject):

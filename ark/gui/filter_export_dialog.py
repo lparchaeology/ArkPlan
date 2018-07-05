@@ -22,7 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QColor, QDialog
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtWidgets import QDialog
 
 from .ui.filter_export_dialog_base import Ui_FilterExportDialog
 

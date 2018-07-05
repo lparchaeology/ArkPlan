@@ -22,8 +22,7 @@
  ***************************************************************************/
 """
 
-
-class ProcessStatus():
+class ProcessStatus:
 
     # ProcessStatus enum
     Unknown = 0

@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QActionGroup, QMenu, QWidget
+from qgis.PyQt.QtWidgets import QActionGroup, QMenu, QWidget
 
 from .ui.filter_set_widget_base import Ui_FilterSetWidget
 

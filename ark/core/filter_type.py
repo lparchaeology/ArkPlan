@@ -23,7 +23,7 @@
 """
 
 
-class FilterType():
+class FilterType:
     Include = 0
     Exclude = 1
     Select = 2

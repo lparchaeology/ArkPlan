@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWizardPage
+from qgis.PyQt.QtWidgets import QWizardPage
 
 from ArkSpatial.ark.core import Settings
 

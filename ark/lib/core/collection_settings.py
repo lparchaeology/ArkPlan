@@ -23,8 +23,8 @@
 """
 
 from ..project import Project
-from collection_field_settings import CollectionFieldSettings
-from collection_layer_settings import CollectionLayerSettings
+from .collection_field_settings import CollectionFieldSettings
+from .collection_layer_settings import CollectionLayerSettings
 
 
 class CollectionSettings:

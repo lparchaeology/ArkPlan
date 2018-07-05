@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QUrl, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QWidget
+from qgis.PyQt.QtCore import QUrl, pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QWidget
+from qgis.PyQt.QtGui import QIcon
 
 from ArkSpatial.ark.lib import Application
 from ArkSpatial.ark.lib.gui import ToolDockWidget
@@ -32,7 +33,7 @@ from ArkSpatial.ark.core import Config, Item
 from ArkSpatial.ark.gui import ActionSettingsTool
 
 try:
-    from PyQt4.QtWebKit import QWebPage
+    from qgis.PyQt.QtWebKitWidgets import QWebPage
     QWK_AVAILABLE = True
 except ImportError:
     QWK_AVAILABLE = False

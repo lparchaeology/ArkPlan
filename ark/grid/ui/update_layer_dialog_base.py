@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -78,4 +78,3 @@ class Ui_UpdateLayerDialog(object):
         self.createMapFieldsCheck.setText(_translate("UpdateLayerDialog", "Create Map fields if they don\'t exist", None))
         self.updateFieldsButton.setText(_translate("UpdateLayerDialog", "Update fields from geometry", None))
         self.updateGeometryButton.setText(_translate("UpdateLayerDialog", "Update geometry from local fields", None))
-

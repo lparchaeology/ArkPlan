@@ -25,8 +25,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings, Qt
-from PyQt4.QtGui import QAction
+from qgis.PyQt.QtCore import QSettings, Qt
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsDistanceArea, QgsFeature, QgsProject, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext

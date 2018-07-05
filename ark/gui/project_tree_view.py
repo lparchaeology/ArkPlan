@@ -26,8 +26,8 @@
     Port of QgsBrowserTreeView to python and modified for Project use
 """
 
-from PyQt4.QtCore import Qt, QSettings, QModelIndex, QRegExp
-from PyQt4.QtGui import QTreeView
+from qgis.PyQt.QtCore import Qt, QSettings, QModelIndex, QRegExp
+from qgis.PyQt.QtWidgets import QTreeView
 
 from qgis.core import QgsDataItem
 

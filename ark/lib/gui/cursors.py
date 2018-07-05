@@ -25,7 +25,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QCursor, QPixmap
+from qgis.PyQt.QtGui import QCursor, QPixmap
 
 _capture_point_cursor_xpm = [
     "16 16 3 1",

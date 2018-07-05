@@ -22,9 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import (QCoreApplication, QDir, QFile, QFileInfo, QIODevice, QObject, QPointF, QProcess, QSettings,
-                          QTextStream, pyqtSignal)
-from PyQt4.QtGui import QPixmap
+from qgis.PyQt.QtCore import QCoreApplication, QDir, QFile, QFileInfo, QIODevice, QObject, QPointF, QProcess, QSettings, QTextStream, pyqtSignal
+from qgis.PyQt.QtGui import QPixmap
 
 from qgis.core import QgsPoint
 

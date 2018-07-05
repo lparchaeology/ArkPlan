@@ -23,8 +23,8 @@
 """
 
 
-from PyQt4.QtCore import QPointF, Qt, pyqtSignal
-from PyQt4.QtGui import QGraphicsView
+from qgis.PyQt.QtCore import QPointF, Qt, pyqtSignal
+from qgis.PyQt.QtWidgets import QGraphicsView
 
 
 class GcpGraphicsView(QGraphicsView):

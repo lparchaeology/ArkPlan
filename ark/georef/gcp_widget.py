@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QPointF, Qt, pyqtSignal
-from PyQt4.QtGui import QPen, QWidget
+from qgis.PyQt.QtCore import QPointF, Qt, pyqtSignal
+from qgis.PyQt.QtGui import QPen
+from qgis.PyQt.QtWidgets import QWidget
 
 from .gcp import GroundControlPoint
 from .ui.gcp_widget_base import Ui_GcpWidget

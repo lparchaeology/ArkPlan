@@ -14,11 +14,11 @@ __copyright__ = 'Copyright 2014, John Layt'
 
 import unittest
 
-from PyQt4.QtGui import QDialogButtonBox, QDialog
+from qgis.PyQt.QtWidgets import QDialogButtonBox, QDialog
 
 from ark_plan_dialog import ArkPlanDialog
 
-from utilities import get_qgis_app
+from .utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
 
@@ -52,4 +52,3 @@ if __name__ == "__main__":
     suite = unittest.makeSuite(ArkPlanDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-

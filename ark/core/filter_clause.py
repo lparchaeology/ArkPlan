@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QColor
+from qgis.PyQt.QtGui import QColor
 
 from ArkSpatial.ark.lib import Application, utils
 
@@ -30,7 +30,7 @@ from .filter_type import FilterType
 from .item import Item
 
 
-class FilterClause():
+class FilterClause:
 
     def __init__(self):
         self.item = Item()

@@ -24,8 +24,8 @@
 
 import os
 
-from PyQt4.QtCore import QFile, QFileInfo, QVariant
-from PyQt4.QtXml import QDomDocument, QDomImplementation
+from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
+from qgis.PyQt.QtXml import QDomDocument
 
 from qgis.core import (NULL, QGis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
                        QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer)

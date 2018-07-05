@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 

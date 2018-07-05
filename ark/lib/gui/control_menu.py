@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QMenu
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QMenu
 
 
 class ControlMenu(QMenu):

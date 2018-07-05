@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWizard
+from qgis.PyQt.QtWidgets import QWizard
 
 from .ui.preferences_wizard_base import Ui_PreferencesWizard
 

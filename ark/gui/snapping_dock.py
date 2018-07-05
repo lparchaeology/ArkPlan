@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QIcon
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtGui import QIcon
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.gui import ToolDockWidget

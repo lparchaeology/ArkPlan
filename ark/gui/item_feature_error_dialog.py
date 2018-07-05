@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QApplication, QDialog
+from qgis.PyQt.QtWidgets import QApplication, QDialog
 
 from ArkSpatial.ark.lib.core import TableModel
 

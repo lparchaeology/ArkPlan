@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -118,4 +118,3 @@ class Ui_TrenchWidget(object):
         self.sampleCountSpin.setSuffix(_translate("TrenchWidget", " trenches", None))
         self.lengthSpin.setSuffix(_translate("TrenchWidget", " m", None))
         self.widthSpin.setSuffix(_translate("TrenchWidget", " m", None))
-

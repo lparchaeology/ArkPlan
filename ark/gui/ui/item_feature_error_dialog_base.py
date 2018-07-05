@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -69,4 +69,3 @@ class Ui_ItemFeatureErrorDialog(object):
         self.copyButton.setText(_translate("ItemFeatureErrorDialog", "Copy", None))
         self.ignoreButton.setText(_translate("ItemFeatureErrorDialog", "Ignore", None))
         self.okButton.setText(_translate("ItemFeatureErrorDialog", "OK", None))
-

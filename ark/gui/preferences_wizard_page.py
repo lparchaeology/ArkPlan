@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QWizardPage
+from qgis.PyQt.QtWidgets import QWizardPage
 
 
 class PreferencesWizardPage(QWizardPage):

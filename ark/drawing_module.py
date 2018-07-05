@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
-from PyQt4.QtGui import QFileDialog
+from qgis.PyQt.QtCore import QDir, QFile, QFileInfo, QObject, Qt
+from qgis.PyQt.QtWidgets import QFileDialog
 
 from qgis.core import QgsGeometry
 
@@ -126,7 +126,7 @@ class DrawingModule(Module):
         self._dock.setSource(drawing)
 
     def _loadAnyPlan(self):
-        filePaths = QFileDialog.getOpenFileNames(
+        filePaths, __ = QFileDialog.getOpenFileNames(
             self._dock, caption='Georeference Any File', filter='Images (*.png *.tif *.jpg)')
         for filePath in filePaths:
             self.georeferencePlan(QFileInfo(filePath), 'free')

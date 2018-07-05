@@ -26,7 +26,7 @@ from qgis.core import QGis
 
 from ..project import Project
 
-from collection_field_settings import CollectionFieldSettings
+from .collection_field_settings import CollectionFieldSettings
 
 
 class CollectionLayerSettings:

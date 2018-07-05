@@ -28,7 +28,7 @@ from qgis.core import QgsFeatureRequest
 
 from ArkSpatial.ark.lib import utils
 
-from config import Config
+from .config import Config
 
 
 def _setAttribute(feature, attribute, value):
@@ -46,7 +46,7 @@ def _attribute(feature, attribute):
 
 
 @total_ordering
-class Item():
+class Item:
 
     def __init__(self, siteCode=None, classCode=None, itemId=None):
         self._siteCode = ''

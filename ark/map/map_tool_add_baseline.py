@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt
+from qgis.PyQt.QtCore import Qt
 
 from ArkSpatial.ark.lib.core import FeatureType
 from ArkSpatial.ark.lib.map import MapToolAddFeature

@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDateTime, QRectF, QRegExp, Qt
+from qgis.PyQt.QtCore import QDateTime, QRectF, QRegExp, Qt
 
 from qgis.core import NULL, QGis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointV2
 
@@ -56,7 +56,7 @@ def safeFilename(name):
     if name is None or name == "":
         return ""
     safe = []
-    for escape, char in escapedChars.iteritems():
+    for escape, char in escapedChars.items():
         name = name.replace(escape, char)
     for char in name:
         if char.isalpha() or char.isdigit() or char in safeChars:
@@ -81,9 +81,7 @@ def printable(val):
     if val == '':
         return '<EMPTY>'
     if type(val) == str:
-        return 's' + doublequote(val)
-    if type(val) == unicode:
-        return 'u' + doublequote(val)
+        return doublequote(val)
     if type(val) == QRectF:
         return 'QRectF(' + str(val.x()) + ', ' + str(val.y()) + ', ' + str(val.width()) + ', ' + str(val.height()) + ')'
     if type(val) == QgsPoint:
@@ -126,7 +124,7 @@ def csv(values):
 
 
 def csvValue(value):
-    if isinstance(value, str) or isinstance(value, unicode):
+    if isinstance(value, str):
         return doublequote(value)
     else:
         return str(value)
@@ -200,7 +198,7 @@ def listToRegExp(lst):
 
 
 def debug(msg, group='Debug'):
-    if isinstance(msg, str) or isinstance(msg, unicode):
+    if isinstance(msg, str):
         QgsMessageLog.logMessage(msg, group, QgsMessageLog.INFO)
     else:
         QgsMessageLog.logMessage(printable(msg), group, QgsMessageLog.INFO)

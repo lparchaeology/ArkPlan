@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtGui import QDialog, QFileDialog
+from qgis.PyQt.QtWidgets import QDialog, QFileDialog
 
 from ArkSpatial.ark.core import Settings
 
@@ -92,25 +92,25 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         self.styleFolderButton.setEnabled(not useDefault)
 
     def _selectStyleFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(
+        folderName = str(QFileDialog.getExistingDirectory(
             self, self.tr('Style Folder'), self.styleFolderEdit.text()))
         if folderName:
             self.styleFolderEdit.setText(folderName)
 
     def _selectContextDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(
+        folderName = str(QFileDialog.getExistingDirectory(
             self, self.tr('Context Drawing Folder'), self.contextDrawingFolderEdit.text()))
         if folderName:
             self.contextDrawingFolderEdit.setText(folderName)
 
     def _selectPlanDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(
+        folderName = str(QFileDialog.getExistingDirectory(
             self, self.tr('Plan Drawing Folder'), self.planDrawingFolderEdit.text()))
         if folderName:
             self.planDrawingFolderEdit.setText(folderName)
 
     def _selectSectionDrawingFolder(self):
-        folderName = unicode(QFileDialog.getExistingDirectory(
+        folderName = str(QFileDialog.getExistingDirectory(
             self, self.tr('Section Drawing Folder'), self.sectionDrawingFolderEdit.text()))
         if folderName:
             self.sectionDrawingFolderEdit.setText(folderName)

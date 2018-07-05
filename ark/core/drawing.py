@@ -24,11 +24,11 @@
 
 import string
 
-from PyQt4.QtCore import QFileInfo
+from qgis.PyQt.QtCore import QFileInfo
 
-from config import Config
-from item import Item
-from source import Source
+from .config import Config
+from .item import Item
+from .source import Source
 
 
 class Drawing(Source):
@@ -106,7 +106,7 @@ class Drawing(Source):
             easting = ''
             northing = ''
             suffix = ''
-            for drawing in Config.drawings.values():
+            for drawing in list(Config.drawings.values()):
                 if drawing['code'] == drawingCode:
                     classCode = drawing['class']
             if (len(elements) >= suffixPos + 1):
@@ -136,7 +136,7 @@ class Drawing(Source):
 
     def baseName(self):
         drawingCode = ''
-        for drawing in Config.drawings.values():
+        for drawing in list(Config.drawings.values()):
             if drawing['class'] == self._item.classCode():
                 drawingCode = drawing['code']
         if not drawingCode:

@@ -1,5 +1,5 @@
 try:
-    from PyQt4.QtWebKit import QWebPage
+    from qgis.PyQt.QtWebKitWidgets import QWebPage
     QWK_AVAILABLE = True
 except ImportError:
     QWK_AVAILABLE = False

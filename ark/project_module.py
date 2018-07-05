@@ -25,8 +25,9 @@
 import copy
 import os
 
-from PyQt4.QtCore import QDir, QFile, QFileInfo, QObject, Qt
-from PyQt4.QtGui import QAction, QFileDialog, QIcon, QInputDialog
+from qgis.PyQt.QtCore import QDir, QFile, QFileInfo, QObject, Qt
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QInputDialog
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsLayerTreeModel, QgsMapLayer,
                        QgsMapLayerRegistry, QgsProject, QgsRasterLayer)
@@ -805,7 +806,7 @@ class ProjectModule(Module):
         else:
             req = item.featureRequest()
         try:
-            return layer.getFeatures(req).next()
+            return next(layer.getFeatures(req))
         except StopIteration:
             return None
         return None

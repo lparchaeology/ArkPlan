@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QDoubleSpinBox, QWidgetAction
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QDoubleSpinBox, QWidgetAction
 
 
 class AbstractSnappingToleranceAction(QWidgetAction):

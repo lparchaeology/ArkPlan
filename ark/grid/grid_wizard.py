@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QPoint, Qt
-from PyQt4.QtGui import QWizard
+from qgis.PyQt.QtCore import QPoint, Qt
+from qgis.PyQt.QtWidgets import QWizard
 
 from qgis.core import QgsPointV2
 

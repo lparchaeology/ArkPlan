@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir
-from PyQt4.QtGui import QWidget, QFileDialog
+from qgis.PyQt.QtCore import QDir
+from qgis.PyQt.QtWidgets import QWidget, QFileDialog
 
 from ArkSpatial.ark.core import Settings
 
@@ -75,7 +75,7 @@ class PreferencesWidget(QWidget, Ui_PreferencesWidget):
             self.projectsFolderEdit.setText(path)
 
     def _selectProjectsFolder(self):
-        path = unicode(
+        path = str(
             QFileDialog.getExistingDirectory(self, self.tr('Project Folder'), self.projectsFolder())
         )
         if path:

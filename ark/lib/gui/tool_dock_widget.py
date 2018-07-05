@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSize, Qt
-from PyQt4.QtGui import QAction, QIcon, QToolBar, QVBoxLayout, QWidget
+from qgis.PyQt.QtCore import QSize, Qt
+from qgis.PyQt.QtWidgets import QAction, QToolBar, QVBoxLayout, QWidget
+from qgis.PyQt.QtGui import QIcon
 
 from ..gui import DockWidget
 

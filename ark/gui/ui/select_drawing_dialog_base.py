@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -110,4 +110,3 @@ class Ui_SelectDrawingDialog(object):
         self.eastingLabel.setText(_translate("SelectDrawingDialog", "Grid Easting:", None))
         self.idLabel.setText(_translate("SelectDrawingDialog", "ID:", None))
         self.findButton.setText(_translate("SelectDrawingDialog", "Filter", None))
-

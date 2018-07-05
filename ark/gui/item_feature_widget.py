@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, pyqtSignal
-from PyQt4.QtGui import QAction, QIcon, QLabel, QToolButton, QWidget
+from qgis.PyQt.QtCore import Qt, pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QLabel, QToolButton, QWidget
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import QGis
 
@@ -138,7 +139,7 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         self._itemFeature.changed.connect(self._updateMapToolAttributes)
 
     def unloadGui(self):
-        for action in self._actions.values():
+        for action in list(self._actions.values()):
             if action.isChecked():
                 action.setChecked(False)
 
@@ -273,14 +274,14 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
         self._mapTools[category] = mapTool
 
     def _mapToolActivated(self):
-        for mapTool in self._mapTools.values():
+        for mapTool in list(self._mapTools.values()):
             if mapTool.action().isChecked():
                 if not mapTool.layer().isEditable():
                     mapTool.layer().startEditing()
                 self._setMapToolAttributes(mapTool)
 
     def _updateMapToolAttributes(self):
-        for mapTool in self._mapTools.values():
+        for mapTool in list(self._mapTools.values()):
             if mapTool.action().isChecked():
                 self._setMapToolAttributes(mapTool)
 
@@ -363,7 +364,7 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
             return
         schematic = geometry.dissolveFeatures(schematicFeatures, outLayer.pendingFields())
         attrs = md.feature.toAttributes()
-        for attr in attrs.keys():
+        for attr in list(attrs.keys()):
             schematic.setAttribute(attr, attrs[attr])
         outLayer.beginEditCommand("Add Auto Schematic")
         outLayer.addFeature(schematic)

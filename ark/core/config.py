@@ -24,14 +24,14 @@
 
 import os
 
-from PyQt4.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant
 
 from qgis.core import QGis
 
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, FeatureType, layers
 
 
-class Config():
+class Config:
 
     pluginName = u'ARKspatial'
     pluginScope = u'ARK'

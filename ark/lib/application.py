@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QFile, QSettings
-from PyQt4.QtGui import QColor, QIcon
+from qgis.PyQt.QtCore import QFile, QSettings
+from qgis.PyQt.QtGui import QColor, QIcon
 
 from qgis.core import NULL, QGis, QgsApplication, QgsCoordinateReferenceSystem, QgsCRSCache
 

@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QPixmap, QWidget, QWidgetAction
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QWidget, QWidgetAction
+from qgis.PyQt.QtGui import QIcon, QPixmap
 
 from qgis.gui import QgsColorButtonV2
 
@@ -169,7 +170,7 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
 
     def setClassCodes(self, codes):
         self.filterClassCombo.clear()
-        keys = codes.keys()
+        keys = list(codes.keys())
         keys.sort()
         for key in keys:
             self.filterClassCombo.addItem(codes[key], key)

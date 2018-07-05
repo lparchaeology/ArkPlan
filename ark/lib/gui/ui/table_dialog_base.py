@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -58,4 +58,3 @@ class Ui_TableDialog(object):
         self.label.setText(_translate("TableDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Table:</span></p><p>Description.<br/></p></body></html>", None))
         self.csvButton.setText(_translate("TableDialog", "CSV", None))
         self.okButton.setText(_translate("TableDialog", "OK", None))
-

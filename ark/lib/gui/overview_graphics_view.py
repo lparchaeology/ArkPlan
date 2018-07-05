@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QRectF, Qt
-from PyQt4.QtGui import QGraphicsView
+from qgis.PyQt.QtCore import QRectF, Qt
+from qgis.PyQt.QtWidgets import QGraphicsView
 
 
 class OverviewGraphicsView(QGraphicsView):

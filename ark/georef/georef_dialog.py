@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
-from PyQt4.QtGui import QDialog, QGraphicsScene, QPixmap
+from qgis.PyQt.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
+from qgis.PyQt.QtWidgets import QDialog, QGraphicsScene
+from qgis.PyQt.QtGui import QPixmap
 
 from qgis.core import QgsPoint
 
@@ -219,7 +220,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         return self.drawingType()
 
     def itemId(self):
-        return unicode(self.numberSpin.value())
+        return str(self.numberSpin.value())
 
     def drawingType(self):
         return self.typeCombo.itemData(self.typeCombo.currentIndex())

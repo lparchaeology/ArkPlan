@@ -24,14 +24,14 @@
 
 import base64
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from ArkSpatial.ark.lib import utils
 
 from .ark_response import ArkResponse
 
 
-class Ark():
+class Ark:
 
     # ViewType
     TableView = 0
@@ -58,11 +58,11 @@ class Ark():
         self.setCredentials(handle, passwd)
 
     def setUrl(self, url):
-        self.url = unicode(url)
+        self.url = str(url)
 
     def setCredentials(self, handle, passwd):
-        self.handle = unicode(handle)
-        self.passwd = unicode(passwd)
+        self.handle = str(handle)
+        self.passwd = str(passwd)
 
     def describeARK(self):
         return self._getJson('describeARK', {})
@@ -203,16 +203,16 @@ class Ark():
         ret = ArkResponse()
         ret.url = self._buildUrl(req, args)
         ret.data = json.loads('{}')
-        request = urllib2.Request(ret.url)
+        request = urllib.request.Request(ret.url)
         base64string = base64.encodestring('%s:%s' % (self.handle, self.passwd))[:-1]
         request.add_header("Authorization", "Basic %s" % base64string)
         try:
-            ret.response = urllib2.urlopen(request)
-        except urllib2.HTTPError as e:
+            ret.response = urllib.request.urlopen(request)
+        except urllib.error.HTTPError as e:
             ret.message = 'ARK server could not complete the request: ' + str(e.code)
             ret.code = e.code
             ret.reason = e.reason
-        except urllib2.URLError as e:
+        except urllib.error.URLError as e:
             ret.message = 'Could not reach the ARK server: ' + str(e.reason)
             ret.reason = e.reason
         else:
@@ -230,12 +230,12 @@ class Ark():
         ret = ArkResponse()
         ret.url = self._buildUrl(req, args)
         try:
-            ret.response = urllib2.urlopen(ret.url)
-        except urllib2.HTTPError as e:
+            ret.response = urllib.request.urlopen(ret.url)
+        except urllib.error.HTTPError as e:
             ret.message = 'ARK server could not complete the request: ' + str(e.code)
             ret.code = e.code
             ret.reason = e.reason
-        except urllib2.URLError as e:
+        except urllib.error.URLError as e:
             ret.message = 'Could not reach the ARK server: ' + str(e.reason)
             ret.reason = e.reason
         else:
@@ -246,8 +246,8 @@ class Ark():
         return ret
 
     def _buildUrl(self, req, args):
-        url = self.url + u'/api.php?req=' + unicode(req)
-        for key in args.keys():
+        url = self.url + u'/api.php?req=' + str(req)
+        for key in list(args.keys()):
             url += self._arg(key, args[key])
         if self.handle and self.passwd:
             url += self._arg('handle', self.handle)
@@ -259,7 +259,7 @@ class Ark():
         if (key is not None and value is not None):
             if isinstance(value, list):
                 for val in value:
-                    ret = ret + u'&' + unicode(key) + u'[]=' + unicode(val)
+                    ret = ret + u'&' + str(key) + u'[]=' + str(val)
             else:
-                ret = u'&' + unicode(key) + u'=' + unicode(value)
+                ret = u'&' + str(key) + u'=' + str(value)
         return ret

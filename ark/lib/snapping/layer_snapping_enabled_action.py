@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QAction, QIcon
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
@@ -47,7 +48,7 @@ class LayerSnappingEnabledAction(QAction):
             self._iface = snapLayer
         elif isinstance(snapLayer, QgsVectorLayer):
             self._layerId = snapLayer.id()
-        elif isinstance(snapLayer, str) or isinstance(snapLayer, unicode):
+        elif isinstance(snapLayer, str):
             self._layerId = snapLayer
 
         self.setCheckable(True)

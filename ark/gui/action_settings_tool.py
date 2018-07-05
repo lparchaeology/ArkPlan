@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QAction, QActionGroup, QIcon, QMenu, QToolButton
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QToolButton
+from qgis.PyQt.QtGui import QIcon
 
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 

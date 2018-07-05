@@ -23,7 +23,7 @@
 """
 
 
-class Scale():
+class Scale:
 
     # Scale enum
     OneToTen = 0

@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -106,4 +106,3 @@ class Ui_FigureWidget(object):
         self.label_3.setText(_translate("FigureWidget", "Licence", None))
         self.label_6.setText(_translate("FigureWidget", "Template", None))
         self.pushButton.setText(_translate("FigureWidget", "Build", None))
-

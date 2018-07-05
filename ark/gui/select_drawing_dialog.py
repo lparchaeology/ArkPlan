@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QDir
-from PyQt4.QtGui import QAbstractItemView, QDialog, QDialogButtonBox
+from qgis.PyQt.QtCore import QDir
+from qgis.PyQt.QtWidgets import QAbstractItemView, QDialog, QDialogButtonBox
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ReturnPressedFilter

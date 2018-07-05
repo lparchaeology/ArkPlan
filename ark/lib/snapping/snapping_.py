@@ -22,14 +22,14 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings
 
 from qgis.core import QgsProject
 
 from ..project import Project
 
 
-class Snapping():
+class Snapping:
 
     """Project snapping settings utilities."""
 

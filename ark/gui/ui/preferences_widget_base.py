@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -81,4 +81,3 @@ class Ui_PreferencesWidget(object):
         self.userInitialsLabel.setText(_translate("PreferencesWidget", "Initials:", None))
         self.userInitialsEdit.setPlaceholderText(_translate("PreferencesWidget", "DG", None))
         self.organisationLabel.setText(_translate("PreferencesWidget", "Organisation:", None))
-

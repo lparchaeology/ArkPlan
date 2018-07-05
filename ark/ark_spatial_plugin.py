@@ -36,10 +36,10 @@ from .drawing_module import DrawingModule
 from .filter_module import FilterModule
 from .project_module import ProjectModule
 from .trench_module import TrenchModule
-import georef.ui.resources
-import grid.ui.resources
-import gui.ui.resources
-import lib.snapping.resources
+from . import georef.ui.resources
+from . import grid.ui.resources
+from . import gui.ui.resources
+from . import lib.snapping.resources
 
 
 class ArkSpatialPlugin(Plugin):

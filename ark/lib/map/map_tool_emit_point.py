@@ -25,7 +25,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import Qt, pyqtSignal
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 
 from qgis.core import QgsPoint, QgsPointV2
 from qgis.gui import QgsVertexMarker

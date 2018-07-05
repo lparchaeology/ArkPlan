@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -63,4 +63,3 @@ class Ui_FilterClauseWidget(object):
         FilterClauseWidget.setWindowTitle(_translate("FilterClauseWidget", "Form", None))
         self.filterTypeTool.setText(_translate("FilterClauseWidget", "...", None))
         self.filterActionTool.setText(_translate("FilterClauseWidget", "...", None))
-

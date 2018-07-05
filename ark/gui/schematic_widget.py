@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QPixmap, QWidget
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtGui import QPixmap
+from qgis.PyQt.QtWidgets import QWidget
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ReturnPressedFilter

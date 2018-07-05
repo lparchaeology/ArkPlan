@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -98,4 +98,3 @@ class Ui_FilterSetWidget(object):
         self.deleteFilterSetAction.setText(_translate("FilterSetWidget", "Delete Filter Set", None))
         self.exportFilterSetAction.setText(_translate("FilterSetWidget", "Export Filter Set", None))
         self.reloadFilterSetAction.setText(_translate("FilterSetWidget", "Reload Filter Set", None))
-

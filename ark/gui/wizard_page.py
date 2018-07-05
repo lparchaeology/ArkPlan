@@ -24,7 +24,7 @@
 
 import os
 
-from PyQt4.QtGui import QComboBox, QWizardPage
+from qgis.PyQt.QtWidgets import QComboBox, QWizardPage
 
 from ArkSpatial.ark.lib import Application, utils
 
@@ -73,7 +73,7 @@ class ProjectPage(QWizardPage):
         self.ark = Ark(url, user, password)
         projects = self.ark.getProjectList()
         self.wizard().projectCodeCombo.setMaxCount(len(projects))
-        for key in utils.natsorted(projects.keys()):
+        for key in utils.natsorted(list(projects.keys())):
             self.wizard().projectCodeCombo.addItem(projects[key], key)
 
     def validatePage(self):

@@ -24,7 +24,7 @@
 
 import os
 
-from PyQt4.QtGui import QWizardPage
+from qgis.PyQt.QtWidgets import QWizardPage
 
 from qgis.gui import QgsProjectionSelectionWidget
 

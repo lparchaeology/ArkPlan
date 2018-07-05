@@ -22,8 +22,8 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QObject, pyqtSignal
-from PyQt4.QtGui import QInputDialog
+from qgis.PyQt.QtCore import QObject, pyqtSignal
+from qgis.PyQt.QtWidgets import QInputDialog
 
 from ArkSpatial.ark.core import ItemFeature
 

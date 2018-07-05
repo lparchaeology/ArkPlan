@@ -24,14 +24,14 @@
 
 import copy
 
-from PyQt4.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings
 
 from ArkSpatial.ark.core import Config, FilterClause
 
 from .filter_type import FilterType
 
 
-class FilterSet():
+class FilterSet:
 
     def __init__(self):
         self.key = ''

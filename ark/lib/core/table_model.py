@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt
+from qgis.PyQt.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
 class TableModel(QAbstractTableModel):

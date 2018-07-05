@@ -27,7 +27,7 @@ import math
 from qgis.core import QgsPointV2
 
 
-class LinearTransformer():
+class LinearTransformer:
     # Based on LinearTransformer code from VectorBender plugin
     # (C) 2014 by Olivier Dalang
 

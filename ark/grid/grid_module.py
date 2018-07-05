@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QObject, Qt, QVariant
-from PyQt4.QtGui import QApplication, QIcon
+from qgis.PyQt.QtCore import QObject, Qt, QVariant
+from qgis.PyQt.QtWidgets import QApplication
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (QGis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
                        QgsVectorLayer)

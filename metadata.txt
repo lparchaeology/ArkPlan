@@ -4,9 +4,9 @@
 
 [general]
 name=ArkSpatial
-qgisMinimumVersion=2.18
+qgisMinimumVersion=3.0
 description=QGIS Plugin for ARK, the Archaeological Recording Kit
-version=1.0.1
+version=1.0.2
 author=John Layt / L - P : Heritage LLP
 email=ark@lparchaeology.com
 
@@ -16,9 +16,9 @@ changelog=New features and bug fixes.
 
 tags=vector
 
-homepage=https://github.com/lparchaeology/ArkSpatial
-tracker=https://github.com/lparchaeology/ArkSpatial
-repository=https://github.com/lparchaeology/ArkSpatial
+homepage=https://gitlab.com/arklab/ArkSpatial
+tracker=https://gitlab.com/arklab/ArkSpatial
+repository=https://gitlab.com/arklab/ArkSpatial
 icon=icon.png
 
 experimental=True

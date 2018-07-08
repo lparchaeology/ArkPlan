@@ -32,7 +32,7 @@ from .project_snapping_enabled_action import ProjectSnappingEnabledAction
 from .project_snapping_tolerance_action import ProjectSnappingToleranceAction
 from .project_snapping_type_action import ProjectSnappingTypeAction
 from .project_snapping_unit_action import ProjectSnappingUnitAction
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingType, SnappingUnit
 from .snapping_mode_action import SnappingModeAction
 
 
@@ -46,27 +46,27 @@ class ProjectSnappingAction(ProjectSnappingEnabledAction):
         super(ProjectSnappingAction, self).__init__(parent)
         self.setCheckable(True)
 
-        self._currentAction = SnappingModeAction(Snapping.CurrentLayer, self)
-        self._allAction = SnappingModeAction(Snapping.AllLayers, self)
-        self._selectedAction = SnappingModeAction(Snapping.SelectedLayers, self)
+        self._currentAction = SnappingModeAction(SnappingMode.CurrentLayer, self)
+        self._allAction = SnappingModeAction(SnappingMode.AllLayers, self)
+        self._selectedAction = SnappingModeAction(SnappingMode.SelectedLayers, self)
 
         self._snappingModeActionGroup = QActionGroup(self)
         self._snappingModeActionGroup.addAction(self._currentAction)
         self._snappingModeActionGroup.addAction(self._allAction)
         self._snappingModeActionGroup.addAction(self._selectedAction)
 
-        self._vertexAction = ProjectSnappingTypeAction(Snapping.Vertex, self)
-        self._segmentAction = ProjectSnappingTypeAction(Snapping.Segment, self)
-        self._vertexSegmentAction = ProjectSnappingTypeAction(Snapping.VertexAndSegment, self)
+        self._vertexAction = ProjectSnappingTypeAction(SnappingType.Vertex, self)
+        self._segmentAction = ProjectSnappingTypeAction(SnappingType.Segment, self)
+        self._vertexSegmentAction = ProjectSnappingTypeAction(SnappingType.VertexAndSegment, self)
 
         self._snappingTypeActionGroup = QActionGroup(self)
         self._snappingTypeActionGroup.addAction(self._vertexAction)
         self._snappingTypeActionGroup.addAction(self._segmentAction)
         self._snappingTypeActionGroup.addAction(self._vertexSegmentAction)
 
-        self._pixelUnitsAction = ProjectSnappingUnitAction(Snapping.Pixels, self)
-        self._layerUnitsAction = ProjectSnappingUnitAction(Snapping.LayerUnits, self)
-        self._projectUnitsAction = ProjectSnappingUnitAction(Snapping.ProjectUnits, self)
+        self._pixelUnitsAction = ProjectSnappingUnitAction(SnappingUnit.Pixels, self)
+        self._layerUnitsAction = ProjectSnappingUnitAction(SnappingUnit.LayerUnits, self)
+        self._projectUnitsAction = ProjectSnappingUnitAction(SnappingUnit.ProjectUnits, self)
 
         self._unitTypeActionGroup = QActionGroup(self)
         self._unitTypeActionGroup.addAction(self._pixelUnitsAction)
@@ -110,9 +110,9 @@ class ProjectSnappingAction(ProjectSnappingEnabledAction):
 
     def _refreshAction(self):
         snapMode = Snapping.snappingMode()
-        if snapMode == Snapping.SelectedLayers:
+        if snapMode == SnappingMode.SelectedLayers:
             self.setIcon(self._selectedAction.icon())
-        elif snapMode == Snapping.CurrentLayer:
+        elif snapMode == SnappingMode.CurrentLayer:
             self.setIcon(self._currentAction.icon())
-        elif snapMode == Snapping.AllLayers:
+        elif snapMode == SnappingMode.AllLayers:
             self.setIcon(self._allAction.icon())

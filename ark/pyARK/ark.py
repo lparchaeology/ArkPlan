@@ -23,24 +23,28 @@
 """
 
 import base64
+from enum import Enum
 import json
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from ArkSpatial.ark.lib import utils
 
 from .ark_response import ArkResponse
 
 
-class Ark:
+class ViewType(Enum):
 
-    # ViewType
     TableView = 0
     TextView = 1
     ThumbView = 2
     MapView = 3
     ChatView = 4
 
-    # DataClass
+
+class DataClass(Enum):
+
     AllClasses = -1
     ActionClass = 0
     AttributeClass = 1
@@ -49,6 +53,9 @@ class Ark:
     TextClass = 4
     NumberClass = 5
     FileClass = 6
+
+
+class Ark:
 
     def __init__(self, url, handle=None, passwd=None):
         self.url = ''
@@ -153,50 +160,50 @@ class Ark:
         return data
 
     def _viewTypeToToken(self, viewType):
-        if viewType == Ark.TableView:
+        if viewType == ViewType.TableView:
             return 'table'
-        elif viewType == Ark.TextView:
+        elif viewType == ViewType.TextView:
             return 'text'
-        elif viewType == Ark.ThumbView:
+        elif viewType == ViewType.ThumbView:
             return 'thumb'
-        elif viewType == Ark.MapView:
+        elif viewType == ViewType.MapView:
             return 'map'
-        elif viewType == Ark.ChatView:
+        elif viewType == ViewType.ChatView:
             return 'chat'
         return 'table'
 
     def _dataClassToToken(self, dataClass):
-        if dataClass == Ark.ActionClass:
+        if dataClass == DataClass.ActionClass:
             return 'action'
-        elif dataClass == Ark.AttributeClass:
+        elif dataClass == DataClass.AttributeClass:
             return 'attribute'
-        elif dataClass == Ark.DateClass:
+        elif dataClass == DataClass.DateClass:
             return 'date'
-        elif dataClass == Ark.SpanClass:
+        elif dataClass == DataClass.SpanClass:
             return 'span'
-        elif dataClass == Ark.TextClass:
+        elif dataClass == DataClass.TextClass:
             return 'txt'
-        elif dataClass == Ark.NumberClass:
+        elif dataClass == DataClass.NumberClass:
             return 'number'
-        elif dataClass == Ark.FileClass:
+        elif dataClass == DataClass.FileClass:
             return 'file'
         return 'all'
 
     def _tokenToDataClass(self, token):
         if token == 'action':
-            return Ark.ActionClass
+            return DataClass.ActionClass
         elif token == 'attribute':
-            return Ark.AttributeClass
+            return DataClass.AttributeClass
         elif token == 'date':
-            return Ark.DateClass
+            return DataClass.DateClass
         elif token == 'span':
-            return Ark.SpanClass
+            return DataClass.SpanClass
         elif token == 'txt':
-            return Ark.TextClass
+            return DataClass.TextClass
         elif token == 'number':
-            return Ark.NumberClass
+            return DataClass.NumberClass
         elif token == 'file':
-            return Ark.FileClass
+            return DataClass.FileClass
         return Ark.AllClasses
 
     def _getJson(self, req, args):

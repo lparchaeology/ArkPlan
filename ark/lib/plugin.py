@@ -22,11 +22,12 @@
  ***************************************************************************/
 """
 
+from enum import Enum
 import os.path
 
 from qgis.PyQt.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslator
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsMessageLog
 from qgis.gui import QgsMessageBar
@@ -34,11 +35,8 @@ from qgis.gui import QgsMessageBar
 from .project import Project
 
 
-class Plugin(QObject):
+class InterfaceGroup(Enum):
 
-    """QGIS Plugin Base Class."""
-
-    # InterfaceGroup enum
     NoGroup = 0
     OwnGroup = 1
     PluginsGroup = 2
@@ -47,6 +45,11 @@ class Plugin(QObject):
     VectorGroup = 5
     WebGroup = 6
 
+
+class Plugin(QObject):
+
+    """QGIS Plugin Base Class."""
+
     def __init__(
         self,
         iface,
@@ -54,8 +57,8 @@ class Plugin(QObject):
         pluginScope,
         pluginIconPath,
         pluginPath,
-        menuGroup=PluginsGroup,
-        toolbarGroup=PluginsGroup,
+        menuGroup=InterfaceGroup.PluginsGroup,
+        toolbarGroup=InterfaceGroup.PluginsGroup,
         checkable=False,
         parent=None
     ):
@@ -98,10 +101,10 @@ class Plugin(QObject):
         # Unload in case plugin crash durign reload left remnants behind
         Plugin.unload(self)
 
-        if self._menuGroup == Plugin.OwnGroup:
+        if self._menuGroup == InterfaceGroup.OwnGroup:
             self._menu = self.iface.mainWindow().menuBar().addMenu(self.pluginName)
             self._menu.setObjectName(self.pluginName)
-        if self._toolbarGroup == Plugin.OwnGroup:
+        if self._toolbarGroup == InterfaceGroup.OwnGroup:
             self._toolbar = self.iface.addToolBar(self.pluginName)
             self._toolbar.setObjectName(self.pluginName)
 
@@ -113,28 +116,28 @@ class Plugin(QObject):
         # Reimplement and call in inplementation
         for action in self._actions:
 
-            if self._menuGroup == Plugin.OwnGroup or self._menuGroup == Plugin.PluginsGroup:
+            if self._menuGroup == InterfaceGroup.OwnGroup or self._menuGroup == InterfaceGroup.PluginsGroup:
                 self.iface.removePluginMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.DatabaseGroup:
+            elif self._menuGroup == InterfaceGroup.DatabaseGroup:
                 self.iface.removePluginDatabaseMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.RasterGroup:
+            elif self._menuGroup == InterfaceGroup.RasterGroup:
                 self.iface.removePluginRasterMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.VectorGroup:
+            elif self._menuGroup == InterfaceGroup.VectorGroup:
                 self.iface.removePluginVectorMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.WebGroup:
+            elif self._menuGroup == InterfaceGroup.WebGroup:
                 self.iface.removePluginWebMenu(self.displayName, action)
 
-            if self._toolbarGroup == Plugin.OwnGroup:
+            if self._toolbarGroup == InterfaceGroup.OwnGroup:
                 self._toolbar.removeAction(action)
-            elif self._toolbarGroup == Plugin.PluginsGroup:
+            elif self._toolbarGroup == InterfaceGroup.PluginsGroup:
                 self.iface.removeToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.DatabaseGroup:
+            elif self._toolbarGroup == InterfaceGroup.DatabaseGroup:
                 self.iface.removeDatabaseToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.RasterGroup:
+            elif self._toolbarGroup == InterfaceGroup.RasterGroup:
                 self.iface.removeRasterToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.VectorGroup:
+            elif self._toolbarGroup == InterfaceGroup.VectorGroup:
                 self.iface.removeVectorToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.WebGroup:
+            elif self._toolbarGroup == InterfaceGroup.WebGroup:
                 self.iface.removeWebToolBarIcon(action)
 
         # remove the menu
@@ -183,31 +186,31 @@ class Plugin(QObject):
         """Add an action to the menu and/or toolbar."""
 
         if addToToolbar:
-            if self._toolbarGroup == Plugin.OwnGroup:
+            if self._toolbarGroup == InterfaceGroup.OwnGroup:
                 self._toolbar.addAction(action)
-            elif self._toolbarGroup == Plugin.PluginsGroup:
+            elif self._toolbarGroup == InterfaceGroup.PluginsGroup:
                 self.iface.addToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.DatabaseGroup:
+            elif self._toolbarGroup == InterfaceGroup.DatabaseGroup:
                 self.iface.addDatabaseToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.RasterGroup:
+            elif self._toolbarGroup == InterfaceGroup.RasterGroup:
                 self.iface.addRasterToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.VectorGroup:
+            elif self._toolbarGroup == InterfaceGroup.VectorGroup:
                 self.iface.addVectorToolBarIcon(action)
-            elif self._toolbarGroup == Plugin.WebGroup:
+            elif self._toolbarGroup == InterfaceGroup.WebGroup:
                 self.iface.addWebToolBarIcon(action)
 
         if addToMenu:
-            if self._menuGroup == Plugin.OwnGroup:
+            if self._menuGroup == InterfaceGroup.OwnGroup:
                 self._menu.addAction(action)
-            elif self._menuGroup == Plugin.PluginsGroup:
+            elif self._menuGroup == InterfaceGroup.PluginsGroup:
                 self.iface.addPluginToMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.DatabaseGroup:
+            elif self._menuGroup == InterfaceGroup.DatabaseGroup:
                 self.iface.addPluginToDatabaseMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.RasterGroup:
+            elif self._menuGroup == InterfaceGroup.RasterGroup:
                 self.iface.addPluginToRasterMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.VectorGroup:
+            elif self._menuGroup == InterfaceGroup.VectorGroup:
                 self.iface.addPluginToVectorMenu(self.displayName, action)
-            elif self._menuGroup == Plugin.WebGroup:
+            elif self._menuGroup == InterfaceGroup.WebGroup:
                 self.iface.addPluginToWebMenu(self.displayName, action)
 
         self._actions.append(action)
@@ -293,7 +296,7 @@ class MyPlugin(Plugin):
 
     def __init__(self, iface):
         super(MyPlugin, self).__init__(iface, 'MyPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
-                                       Plugin.PluginsGroup, Plugin.PluginsGroup)
+                                       InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr('&MyPlugin'))
 
@@ -319,7 +322,7 @@ class MyDockPlugin(Plugin):
 
     def __init__(self, iface):
         super(MyPlugin, self).__init__(iface, 'MyDockPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
-                                       Plugin.PluginsGroup, Plugin.PluginsGroup, checkable=True)
+                                       InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr('&MyPlugin'))
 

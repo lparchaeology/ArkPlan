@@ -24,7 +24,7 @@
 
 from qgis.PyQt.QtWidgets import QAction
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingUnit
 
 
 class AbstractSnappingUnitAction(QAction):
@@ -35,13 +35,13 @@ class AbstractSnappingUnitAction(QAction):
         super(AbstractSnappingUnitAction, self).__init__(parent)
 
         self._snapUnit = snapUnit
-        if snapUnit == Snapping.Pixels:
+        if snapUnit == SnappingUnit.Pixels:
             self.setText('Pixels')
             self.setStatusTip('Use pixels')
-        elif snapUnit == Snapping.LayerUnits:
+        elif snapUnit == SnappingUnit.LayerUnits:
             self.setText('Layer Units')
             self.setStatusTip('Use layer units')
-        elif snapUnit == Snapping.ProjectUnits:
+        elif snapUnit == SnappingUnit.ProjectUnits:
             self.setText('Project Units')
             self.setStatusTip('Use project units')
 

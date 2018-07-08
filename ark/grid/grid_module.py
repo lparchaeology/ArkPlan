@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import QObject, Qt, QVariant
-from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QApplication
 
 from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
                        QgsVectorLayer)
@@ -38,7 +38,7 @@ from ArkSpatial.ark.lib.map import MapToolEmitPoint
 from ArkSpatial.ark.core import Module
 
 from .grid_dock import GridDock
-from .grid_wizard import GridWizard
+from .grid_wizard import GridMethod, GridWizard
 from .translate_features_dialog import TranslateFeaturesDialog
 from .update_layer_dialog import UpdateLayerDialog
 
@@ -236,9 +236,9 @@ class GridModule(Module):
         lp2 = self.gridWizard.localPoint2()
         xInterval = self.gridWizard.localEastingInterval()
         yInterval = self.gridWizard.localNorthingInterval()
-        if self.gridWizard.methodType() != GridWizard.TwoKnownPoints:
+        if self.gridWizard.methodType() != GridMethod.TwoKnownPoints:
             axisGeometry = QgsGeometry.fromPolyline([mp1, mp2])
-            if self.gridWizard.methodType() == GridWizard.PointOnYAxis:
+            if self.gridWizard.methodType() == GridMethod.PointOnYAxis:
                 if axisGeometry.length() < yInterval:
                     self._plugin.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')

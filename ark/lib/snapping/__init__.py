@@ -11,7 +11,7 @@ from .project_snapping_enabled_action import ProjectSnappingEnabledAction
 from .project_snapping_tolerance_action import ProjectSnappingToleranceAction
 from .project_snapping_type_action import ProjectSnappingTypeAction
 from .project_snapping_unit_action import ProjectSnappingUnitAction
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingType, SnappingUnit
 from .snapping_dock import SnappingDock
 from .snapping_mode_action import SnappingModeAction
 from .snapping_mode_combo import SnappingModeCombo

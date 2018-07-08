@@ -34,7 +34,7 @@ from .layer_snapping_enabled_action import LayerSnappingEnabledAction
 from .layer_snapping_tolerance_action import LayerSnappingToleranceAction
 from .layer_snapping_type_action import LayerSnappingTypeAction
 from .layer_snapping_unit_action import LayerSnappingUnitAction
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingType, SnappingUnit
 
 
 class LayerSnappingAction(LayerSnappingEnabledAction):
@@ -49,9 +49,9 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
         self._toleranceAction = None  # LayerSnappingToleranceAction()
         self._avoidAction = None  # LayerSnappingAvoidIntersectionsAction()
 
-        self._vertexAction = LayerSnappingTypeAction(snapLayer, Snapping.Vertex, self)
-        self._segmentAction = LayerSnappingTypeAction(snapLayer, Snapping.Segment, self)
-        self._vertexSegmentAction = LayerSnappingTypeAction(snapLayer, Snapping.VertexAndSegment, self)
+        self._vertexAction = LayerSnappingTypeAction(snapLayer, SnappingType.Vertex, self)
+        self._segmentAction = LayerSnappingTypeAction(snapLayer, SnappingType.Segment, self)
+        self._vertexSegmentAction = LayerSnappingTypeAction(snapLayer, SnappingType.VertexAndSegment, self)
 
         self._snappingTypeActionGroup = QActionGroup(self)
         self._snappingTypeActionGroup.addAction(self._vertexAction)
@@ -60,9 +60,9 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
 
         self._toleranceAction = LayerSnappingToleranceAction(snapLayer, parent)
 
-        self._pixelUnitsAction = LayerSnappingUnitAction(snapLayer, Snapping.Pixels, self)
-        self._layerUnitsAction = LayerSnappingUnitAction(snapLayer, Snapping.LayerUnits, self)
-        self._projectUnitsAction = LayerSnappingUnitAction(snapLayer, Snapping.ProjectUnits, self)
+        self._pixelUnitsAction = LayerSnappingUnitAction(snapLayer, SnappingUnit.Pixels, self)
+        self._layerUnitsAction = LayerSnappingUnitAction(snapLayer, SnappingUnit.LayerUnits, self)
+        self._projectUnitsAction = LayerSnappingUnitAction(snapLayer, SnappingUnit.ProjectUnits, self)
 
         self._unitTypeActionGroup = QActionGroup(self)
         self._unitTypeActionGroup.addAction(self._pixelUnitsAction)
@@ -133,7 +133,7 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
             self.setIcon(self._segmentAction.icon())
         elif (self._vertexSegmentAction.isChecked()):
             self.setIcon(self._vertexSegmentAction.icon())
-        else:  # Snapping.Vertex or undefined
+        else:  # SnappingType.Vertex or undefined
             self.setIcon(self._vertexAction.icon())
         if self._iface and self._avoidAction:
             layer = QgsMapLayerRegistry.instance().mapLayer(self.layerId())

@@ -28,7 +28,7 @@ from qgis.PyQt.QtWidgets import QDoubleSpinBox
 from qgis.core import QgsProject
 
 from .. import utils
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingUnit
 
 
 class SnappingToleranceSpinBox(QDoubleSpinBox):
@@ -66,21 +66,21 @@ class SnappingToleranceSpinBox(QDoubleSpinBox):
     def _refresh(self):
         self.setValue(Snapping.projectSnappingTolerance())
         unit = Snapping.projectSnappingUnit()
-        if (unit == Snapping.Pixels):
+        if (unit == SnappingUnit.Pixels):
             self.setSuffix(' px')
         elif self._iface is None:
             self.setSuffix('')
-        elif unit == Snapping.LayerUnits:  # == MapUnits
+        elif unit == SnappingUnit.LayerUnits:  # == MapUnits
             layerUnits = None
             mode = Snapping.snappingMode()
-            if mode == Snapping.CurrentLayer:
+            if mode == SnappingMode.CurrentLayer:
                 layerUnits = self._iface.mapCanvas().currentLayer().crs().mapUnits()
             else:
                 # TODO Find out the correct option here for all_layers!
                 layerUnits = self._iface.mapCanvas().mapUnits()
             suffix = utils.unitToSuffix(layerUnits)
             self.setSuffix(suffix)
-        elif unit == Snapping.ProjectUnits:
+        elif unit == SnappingUnit.ProjectUnits:
             projectUnits = self._iface.mapCanvas().mapUnits()
             suffix = utils.unitToSuffix(projectUnits)
             self.setSuffix(suffix)

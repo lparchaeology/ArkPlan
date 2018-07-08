@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from enum import Enum
+
 from qgis.PyQt.QtCore import QPoint, Qt
 from qgis.PyQt.QtWidgets import QWizard
 
@@ -34,11 +36,14 @@ from ArkSpatial.ark.core import Settings
 from .ui.grid_wizard_base import Ui_GridWizard
 
 
-class GridWizard(QWizard, Ui_GridWizard):
+class GridMethod(Enum):
 
     TwoKnownPoints = 0
     PointOnXAxis = 1
     PointOnYAxis = 2
+
+
+class GridWizard(QWizard, Ui_GridWizard):
 
     def __init__(self, iface, plugin, parent=None):
         super(GridWizard, self).__init__(parent)
@@ -69,12 +74,12 @@ class GridWizard(QWizard, Ui_GridWizard):
         return QgsPointV2(self.mapPoint2EastingSpin.value(), self.mapPoint2NorthingSpin.value())
 
     def localPoint1(self):
-        if self.methodType() == GridWizard.TwoKnownPoints:
+        if self.methodType() == GridMethod.TwoKnownPoints:
             return QgsPointV2(self.localPoint1EastingSpin.value(), self.localPoint1NorthingSpin.value())
         return QgsPointV2(self.localOriginEastingSpin.value(), self.localOriginNorthingSpin.value())
 
     def localPoint2(self):
-        if self.methodType() == GridWizard.TwoKnownPoints:
+        if self.methodType() == GridMethod.TwoKnownPoints:
             return QgsPointV2(self.localPoint2EastingSpin.value(), self.localPoint2NorthingSpin.value())
         return QgsPointV2()
 
@@ -82,7 +87,7 @@ class GridWizard(QWizard, Ui_GridWizard):
         return self.methodCombo.currentIndex()
 
     def setMethodType(self, method):
-        if method == GridWizard.TwoKnownPoints:
+        if method == GridMethod.TwoKnownPoints:
             self.mapPoint1Label.setText('Map Point 1')
             self.localPoint1Label.setEnabled(True)
             self.localPoint1EastingSpin.setEnabled(True)

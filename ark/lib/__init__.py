@@ -1,3 +1,3 @@
 from .application import Application
-from .plugin import Plugin
+from .plugin import InterfaceGroup, Plugin
 from .project import Project

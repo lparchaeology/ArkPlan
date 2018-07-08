@@ -27,7 +27,7 @@ from qgis.PyQt.QtCore import pyqtSignal
 from qgis.core import QgsProject
 
 from .abstract_snapping_unit_action import AbstractSnappingUnitAction
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode
 
 
 class ProjectSnappingUnitAction(AbstractSnappingUnitAction):
@@ -61,5 +61,5 @@ class ProjectSnappingUnitAction(AbstractSnappingUnitAction):
     def _refresh(self):
         self.blockSignals(True)
         self.setChecked(Snapping.projectSnappingUnit() == self._snapUnit)
-        self.setEnabled(Snapping.snappingMode() != Snapping.SelectedLayers)
+        self.setEnabled(Snapping.snappingMode() != SnappingMode.SelectedLayers)
         self.blockSignals(False)

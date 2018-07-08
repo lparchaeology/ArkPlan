@@ -29,7 +29,7 @@ from qgis.PyQt.QtWidgets import QWizardPage
 from qgis.gui import QgsProjectionSelectionWidget
 
 from ArkSpatial.ark.lib import Application, utils
-from ArkSpatial.ark.lib.snapping import Snapping
+from ArkSpatial.ark.lib.snapping import Snapping, SnappingUnit
 
 
 class GlobalPreferencesPage(QWizardPage):
@@ -54,9 +54,9 @@ class GlobalPreferencesPage(QWizardPage):
 
         self.wizard().snappingToleranceSpin.setValue(10.0)
 
-        self.wizard().snappingUnitCombo.addItem('Pixels', Snapping.Pixels)
-        self.wizard().snappingUnitCombo.addItem('Layer Units', Snapping.LayerUnits)
-        self.wizard().snappingUnitCombo.addItem('Project Units', Snapping.ProjectUnits)
+        self.wizard().snappingUnitCombo.addItem('Pixels', SnappingUnit.Pixels)
+        self.wizard().snappingUnitCombo.addItem('Layer Units', SnappingUnit.LayerUnits)
+        self.wizard().snappingUnitCombo.addItem('Project Units', SnappingUnit.ProjectUnits)
         self.wizard().snappingUnitCombo.setCurrentIndex(0)
 
     def crs(self):

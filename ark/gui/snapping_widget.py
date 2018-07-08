@@ -27,7 +27,7 @@ from qgis.PyQt.QtWidgets import QGroupBox
 from qgis.core import QgsProject
 
 from ArkSpatial.ark.lib import utils
-from ArkSpatial.ark.lib.snapping import LayerSnappingAction, Snapping
+from ArkSpatial.ark.lib.snapping import LayerSnappingAction, Snapping, SnappingMode
 
 from .ui.snapping_widget_base import Ui_SnappingWidget
 
@@ -74,7 +74,7 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
         self._setLayer(plugin.iface, site.layer('points'), self.snapSitePointsTool)
         self._setLayer(plugin.iface, site.layer('lines'), self.snapSiteLinesTool)
         self._setLayer(plugin.iface, site.layer('polygons'), self.snapSitePolygonsTool)
-        Snapping.setSnappingMode(Snapping.SelectedLayers)
+        Snapping.setSnappingMode(SnappingMode.SelectedLayers)
         Snapping.setIntersectionSnapping(True)
         Snapping.setTopologicalEditing(True)
         Snapping.setLayerSnappingEnabled(plan.buffer('lines').id(), True)
@@ -105,4 +105,4 @@ class SnappingWidget(QGroupBox, Ui_SnappingWidget):
             tool.setDefaultAction(action)
 
     def _refresh(self):
-        self.setEnabled(Snapping.snappingMode() == Snapping.SelectedLayers)
+        self.setEnabled(Snapping.snappingMode() == SnappingMode.SelectedLayers)

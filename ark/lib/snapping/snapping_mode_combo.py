@@ -27,7 +27,7 @@ from qgis.PyQt.QtWidgets import QComboBox
 
 from qgis.core import QgsProject
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingType
 
 
 class SnappingModeCombo(QComboBox):
@@ -41,10 +41,10 @@ class SnappingModeCombo(QComboBox):
         self._snapMode = ''
         self._snapType = ''
 
-        self.addItem('Off', Snapping.Off)
-        self.addItem('Current Layer', Snapping.CurrentLayer)
-        self.addItem('All Layers', Snapping.AllLayers)
-        self.addItem('Selected Layers', Snapping.SelectedLayers)
+        self.addItem('Off', SnappingType.Off)
+        self.addItem('Current Layer', SnappingMode.CurrentLayer)
+        self.addItem('All Layers', SnappingMode.AllLayers)
+        self.addItem('Selected Layers', SnappingMode.SelectedLayers)
         self.setCurrentIndex(0)
 
         self._refresh()
@@ -63,11 +63,11 @@ class SnappingModeCombo(QComboBox):
 
     def _changed(self, idx):
         mode = self.currentMode()
-        if mode == Snapping.Off:
-            Snapping.setProjectSnappingType(Snapping.Off)
-            Snapping.setSnappingMode(Snapping.CurrentLayer)
+        if mode == SnappingType.Off:
+            Snapping.setProjectSnappingType(SnappingType.Off)
+            Snapping.setSnappingMode(SnappingMode.CurrentLayer)
         else:
-            if self._snapMode == Snapping.Off and mode != Snapping.Off:
+            if self._snapMode == SnappingType.Off and mode != SnappingType.Off:
                 Snapping.setProjectSnappingType(self._snapType)
             Snapping.setSnappingMode(mode)
         self._snapMode = mode
@@ -75,7 +75,7 @@ class SnappingModeCombo(QComboBox):
 
     def _refresh(self):
         mode = Snapping.snappingMode()
-        if self._snapMode == Snapping.Off and mode == Snapping.CurrentLayer:
+        if self._snapMode == SnappingType.Off and mode == SnappingMode.CurrentLayer:
             return
         self._snapType = Snapping.projectSnappingType()
         self._snapMode = mode

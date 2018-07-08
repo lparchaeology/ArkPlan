@@ -22,7 +22,10 @@
  ***************************************************************************/
 """
 
-from qgis.PyQt.QtCore import QCoreApplication, QDir, QFile, QFileInfo, QIODevice, QObject, QPointF, QProcess, QSettings, QTextStream, pyqtSignal
+from enum import Enum
+
+from qgis.PyQt.QtCore import (QCoreApplication, QDir, QFile, QFileInfo, QIODevice, QObject, QPointF, QProcess,
+                              QSettings, QTextStream, pyqtSignal)
 from qgis.PyQt.QtGui import QPixmap
 
 from qgis.core import QgsPoint
@@ -35,22 +38,28 @@ from .gcp import GroundControlPoint
 from .transform import Transform
 
 
+class GeoreferenceStep(Enum):
+
+    Start = (0, 'Start')
+    Crop = (1, 'Crop')
+    Translate = (2, 'Translate')
+    Warp = (3, 'Warp')
+    Overview = (4, 'Overview')
+    Stop = (5, 'Stop')
+
+    def __new__(cls, value, label):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+
 class Georeferencer(QObject):
 
-    # Step enum
-    Start = 0
-    Crop = 1
-    Translate = 2
-    Warp = 3
-    Overview = 4
-    Stop = 5
-    Step = [0, 1, 2, 3, 4, 5]
-    Label = ['Start', 'Crop', 'Translate', 'Warp', 'Overview', 'Stop']
-
-    # Georeferencer.Step, ProcessStatus
-    status = pyqtSignal(int, int)
-    # Georeferencer.Step, Message
-    error = pyqtSignal(int, str)
+    # GeoreferenceStep, ProcessStatus
+    status = pyqtSignal(GeoreferenceStep, ProcessStatus)
+    # GeoreferenceStep, Message
+    error = pyqtSignal(GeoreferenceStep, str)
 
     def __init__(self, parent=None):
         super(Georeferencer, self).__init__(parent)
@@ -58,8 +67,8 @@ class Georeferencer(QObject):
         # Internal variables
         self._debug = True
         self._gdalDir = QDir()
-        self._step = 0
-        self._status = 0
+        self._step = GeoreferenceStep.Start
+        self._status = ProcessStatus.Unknown
         self._translate = QFileInfo()
         self._warp = QFileInfo()
         self._overview = QFileInfo()
@@ -100,7 +109,7 @@ class Georeferencer(QObject):
         return self._status
 
     def run(self, gc, rawFile, pointFile, geoFile):
-        self._step = Georeferencer.Start
+        self._step = GeoreferenceStep.Start
         if (not gc.isValid()):
             self._signalError('Invalid ground control points.')
             return
@@ -129,7 +138,7 @@ class Georeferencer(QObject):
     def _runCropStep(self):
         if self._debug:
             debug('Crop')
-        self._step = Georeferencer.Crop
+        self._step = GeoreferenceStep.Crop
         self._args = []
         self._command = ''
         pixmap = QPixmap(self._rawFile.absoluteFilePath())
@@ -152,7 +161,7 @@ class Georeferencer(QObject):
         return "{0:f} {1:f} {2:f} {3:f}".format(point.raw().x(), point.raw().y(), point.map().x(), point.map().y())
 
     def _runTranslateStep(self):
-        self._step = Georeferencer.Translate
+        self._step = GeoreferenceStep.Translate
         self._args = []
         self._args.extend(['-of', 'GTiff'])
         self._args.extend(['-a_srs', self._gc.crs])
@@ -174,7 +183,7 @@ class Georeferencer(QObject):
         self._process.start(self._translate.absoluteFilePath(), self._args)
 
     def _runWarpStep(self):
-        self._step = Georeferencer.Warp
+        self._step = GeoreferenceStep.Warp
         self._args = []
         self._args.extend(['-order', '1'])
         self._args.extend(['-r', 'cubic'])
@@ -191,7 +200,7 @@ class Georeferencer(QObject):
         self._process.start(self._command)
 
     def _runOverviewStep(self):
-        self._step = Georeferencer.Overview
+        self._step = GeoreferenceStep.Overview
         self._args = []
         self._args.extend(['--config', 'COMPRESS_OVERVIEW JPEG'])
         self._args.extend(['--config', 'INTERLEAVE_OVERVIEW PIXEL'])
@@ -211,13 +220,13 @@ class Georeferencer(QObject):
     def _processFinished(self):
         self._status = ProcessStatus.Success
         self._signalStatus()
-        if (self._step == Georeferencer.Translate):
+        if (self._step == GeoreferenceStep.Translate):
             self._runWarpStep()
-        elif (self._step == Georeferencer.Warp):
+        elif (self._step == GeoreferenceStep.Warp):
             self._runOverviewStep()
-        elif (self._step == Georeferencer.Overview):
+        elif (self._step == GeoreferenceStep.Overview):
             self.writeGcpFile(self._gc, self._pointFile.absoluteFilePath())
-            self._step = Georeferencer.Stop
+            self._step = GeoreferenceStep.Stop
             self._signalStatus()
 
     def _processError(self):

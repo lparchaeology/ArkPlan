@@ -28,7 +28,7 @@ from qgis.core import QgsProject
 
 from .. import utils
 from .abstract_snapping_tolerance_action import AbstractSnappingToleranceAction
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingUnit
 
 
 class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
@@ -69,24 +69,24 @@ class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
         self._toleranceSpin.blockSignals(True)
         self._toleranceSpin.setValue(Snapping.projectSnappingTolerance())
         unit = Snapping.projectSnappingUnit()
-        if (unit == Snapping.Pixels):
+        if (unit == SnappingUnit.Pixels):
             self._toleranceSpin.setSuffix(' px')
         elif self._iface is None:
             self._toleranceSpin.setSuffix('')
-        elif unit == Snapping.LayerUnits:  # == MapUnits
+        elif unit == SnappingUnit.LayerUnits:  # == MapUnits
             layerUnits = None
             mode = Snapping.snappingMode()
-            if mode == Snapping.CurrentLayer:
+            if mode == SnappingMode.CurrentLayer:
                 layerUnits = self._iface.mapCanvas().currentLayer().crs().mapUnits()
             else:
                 # TODO Find out the correct option here for all_layers!
                 layerUnits = self._iface.mapCanvas().mapUnits()
             suffix = utils.unitToSuffix(layerUnits)
             self._toleranceSpin.setSuffix(suffix)
-        elif unit == Snapping.ProjectUnits:
+        elif unit == SnappingUnit.ProjectUnits:
             projectUnits = self._iface.mapCanvas().mapUnits()
             suffix = utils.unitToSuffix(projectUnits)
             self._toleranceSpin.setSuffix(suffix)
-        self.setEnabled(Snapping.snappingMode() != Snapping.SelectedLayers)
+        self.setEnabled(Snapping.snappingMode() != SnappingMode.SelectedLayers)
         self._toleranceSpin.blockSignals(False)
         self.blockSignals(False)

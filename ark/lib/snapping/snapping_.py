@@ -22,6 +22,8 @@
  ***************************************************************************/
 """
 
+from enum import Enum
+
 from qgis.PyQt.QtCore import QSettings
 
 from qgis.core import QgsProject
@@ -29,44 +31,56 @@ from qgis.core import QgsProject
 from ..project import Project
 
 
-class Snapping:
-
-    """Project snapping settings utilities."""
+class SnappingMode(Enum):
 
     """SnappingMode."""
+
     CurrentLayer = 0
     AllLayers = 1
     SelectedLayers = 2
 
+
+class SnappingType(Enum):
+
     """SnappingType == QgsSnapper.SnappingType, plus Off, keep values the same."""
+
     Vertex = 0
     Segment = 1
     VertexAndSegment = 2
     Off = 3
 
+
+class SnappingUnit(Enum):
+
     """SnappingUnit == QgsTolerance.UnitType, keep values the same."""
+
     LayerUnits = 0
     Pixels = 1
     ProjectUnits = 2
+
+
+class Snapping:
+
+    """Project snapping settings utilities."""
 
     @staticmethod
     def snappingMode():
         """Snapping Mode, i.e. what snapping mode currently applies."""
         mode = Project.readEntry("Digitizing", "/SnappingMode", "current_layer")
         if mode == 'advanced':
-            return Snapping.SelectedLayers
+            return SnappingMode.SelectedLayers
         elif mode == 'all_layers':
-            return Snapping.AllLayers
+            return SnappingMode.AllLayers
         else:
-            return Snapping.CurrentLayer
+            return SnappingMode.CurrentLayer
 
     @staticmethod
     def setSnappingMode(mode):
-        if mode == Snapping.SelectedLayers:
+        if mode == SnappingMode.SelectedLayers:
             Snapping._setSnappingMode('advanced')
-        elif mode == Snapping.AllLayers:
+        elif mode == SnappingMode.AllLayers:
             Snapping._setSnappingMode('all_layers')
-        elif mode == Snapping.CurrentLayer:
+        elif mode == SnappingMode.CurrentLayer:
             Snapping._setSnappingMode('current_layer')
 
     @staticmethod
@@ -87,13 +101,13 @@ class Snapping:
 
     @staticmethod
     def _toDefaultSnapType(val):
-        if val == Snapping.Off or val == 'off':
+        if val == SnappingType.Off or val == 'off':
             return 'off'
-        elif val == Snapping.Vertex or val == 'to_vertex':
+        elif val == SnappingType.Vertex or val == 'to_vertex':
             return 'to vertex'
-        elif val == Snapping.Segment or val == 'to_segment':
+        elif val == SnappingType.Segment or val == 'to_segment':
             return 'to segment'
-        elif val == Snapping.VertexAndSegment or val == 'to_vertex_and_segment':
+        elif val == SnappingType.VertexAndSegment or val == 'to_vertex_and_segment':
             return 'to vertex and segment'
         return 'off'
 
@@ -111,24 +125,24 @@ class Snapping:
     @staticmethod
     def _fromSnapType(value):
         if value == 'off':
-            return Snapping.Off
+            return SnappingType.Off
         elif value == 'to_vertex' or value == 'to vertex':
-            return Snapping.Vertex
+            return SnappingType.Vertex
         elif value == 'to_segment' or value == 'to segment':
-            return Snapping.Segment
+            return SnappingType.Segment
         elif value == 'to_vertex_and_segment' or value == 'to vertex and segment':
-            return Snapping.VertexAndSegment
-        return Snapping.Off
+            return SnappingType.VertexAndSegment
+        return SnappingType.Off
 
     @staticmethod
     def _toSnapType(val):
-        if val == Snapping.Off:
+        if val == SnappingType.Off:
             return 'off'
-        elif val == Snapping.Vertex:
+        elif val == SnappingType.Vertex:
             return 'to_vertex'
-        elif val == Snapping.Segment:
+        elif val == SnappingType.Segment:
             return 'to_segment'
-        elif val == Snapping.VertexAndSegment:
+        elif val == SnappingType.VertexAndSegment:
             return 'to_vertex_and_segment'
         return 'off'
 
@@ -230,7 +244,7 @@ class Snapping:
 
     @staticmethod
     def layerSnappingType(layerId):
-        value = Snapping._layerSnappingValue(layerId, "/LayerSnapToList", Snapping.Vertex)
+        value = Snapping._layerSnappingValue(layerId, "/LayerSnapToList", SnappingType.Vertex)
         return Snapping._fromSnapType(value)
 
     @staticmethod
@@ -239,7 +253,7 @@ class Snapping:
 
     @staticmethod
     def layerSnappingUnit(layerId):
-        return int(Snapping._layerSnappingValue(layerId, "/LayerSnappingToleranceUnitList", Snapping.Pixels))
+        return int(Snapping._layerSnappingValue(layerId, "/LayerSnappingToleranceUnitList", SnappingUnit.Pixels))
 
     @staticmethod
     def setLayerSnappingUnit(layerId, snapUnit):

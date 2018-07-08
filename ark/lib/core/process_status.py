@@ -22,12 +22,19 @@
  ***************************************************************************/
 """
 
-class ProcessStatus:
+from enum import Enum
+
+
+class ProcessStatus(Enum):
 
     # ProcessStatus enum
-    Unknown = 0
-    Running = 1
-    Success = 2
-    Failure = 3
-    Status = [0, 1, 2, 3]
-    Label = ['Unknown', 'Running', 'Success', 'Failure']
+    Unknown = (0, 'Unknown')
+    Running = (1, 'Running')
+    Success = (2, 'Success')
+    Failure = (3, 'Failure')
+
+    def __new__(cls, value, label):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        return obj

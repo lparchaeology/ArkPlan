@@ -26,10 +26,14 @@
 class Scale:
 
     # Scale enum
-    OneToTen = 0
-    OneToTwenty = 1
-    OneToFifty = 2
-    OneToOneHundred = 3
-    Scale = [0, 1, 2, 3]
-    Label = ['1:10 (2.5m)', '1:20 (5m)', '1:50 (12.5m)', '1:100 (25m)']
-    Factor = [2.5, 5, 12.5, 25]
+    OneToTen = (0, '1:10 (2.5m)', 2.5)
+    OneToTwenty = (1, '1:20 (5m)', 5)
+    OneToFifty = (2, '1:50 (12.5m)', 12.5)
+    OneToOneHundred = (3, '1:100 (25m)', 25)
+
+    def __new__(cls, value, label, factor):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        obj.factor = factor
+        return obj

@@ -23,12 +23,12 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsProject
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode
 
 
 class SnappingModeAction(QAction):
@@ -41,15 +41,15 @@ class SnappingModeAction(QAction):
         super(SnappingModeAction, self).__init__(parent)
 
         self._snapMode = snapMode
-        if snapMode == Snapping.CurrentLayer:
+        if snapMode == SnappingMode.CurrentLayer:
             self.setText('Current Layer')
             self.setStatusTip('Snap to current layer')
             self._icon = QIcon(':/plugins/ark/snapLayerCurrent.png')
-        elif snapMode == Snapping.AllLayers:
+        elif snapMode == SnappingMode.AllLayers:
             self.setText('All Layers')
             self.setStatusTip('Snap to all layers')
             self._icon = QIcon(':/plugins/ark/snapLayerAll.png')
-        elif snapMode == Snapping.SelectedLayers:
+        elif snapMode == SnappingMode.SelectedLayers:
             self.setText('Selected Layers')
             self.setStatusTip('Snap to selected layers')
             self._icon = QIcon(':/plugins/ark/snapLayerSelected.png')

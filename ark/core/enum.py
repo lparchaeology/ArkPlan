@@ -22,21 +22,23 @@
  ***************************************************************************/
 """
 
+from enum import Enum
 
-class DrawingAction:
+
+class DrawingAction(Enum):
     NoDrawingAction = 0
     LoadDrawings = 1
     AddDrawings = 2
 
 
-class MapAction:
+class MapAction(Enum):
     NoMapAction = 0
     ZoomMap = 1
     PanMap = 2
     MoveMap = 3
 
 
-class FilterAction:
+class FilterAction(Enum):
     NoFilterAction = 0
     ExcludeFilter = 1
     IncludeFilter = 2
@@ -47,13 +49,13 @@ class FilterAction:
     ExclusiveHighlightFilter = 7
 
 
-class FilterWidgetAction:
+class FilterWidgetAction(Enum):
     AddFilter = 0
     RemoveFilter = 1
     LockFilter = 2
 
 
-class SearchStatus:
+class SearchStatus(Enum):
     Unknown = 0
     Found = 1
     NotFound = 2

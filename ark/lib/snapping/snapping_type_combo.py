@@ -27,7 +27,7 @@ from qgis.PyQt.QtWidgets import QComboBox
 
 from qgis.core import QgsProject
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingType
 
 
 class SnappingTypeCombo(QComboBox):
@@ -38,10 +38,10 @@ class SnappingTypeCombo(QComboBox):
 
         super(SnappingTypeCombo, self).__init__(parent)
 
-        self.addItem('Off', Snapping.Off)
-        self.addItem('Vertex', Snapping.Vertex)
-        self.addItem('Segment', Snapping.Segment)
-        self.addItem('Vertex and Segment', Snapping.VertexAndSegment)
+        self.addItem('Off', SnappingType.Off)
+        self.addItem('Vertex', SnappingType.Vertex)
+        self.addItem('Segment', SnappingType.Segment)
+        self.addItem('Vertex and Segment', SnappingType.VertexAndSegment)
         self.setCurrentIndex(0)
 
         self._refresh()

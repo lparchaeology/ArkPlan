@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import QCoreApplication, QFile, QFileInfo, QPoint, QPointF, QRectF
-from qgis.PyQt.QtWidgets import QDialog, QGraphicsScene
 from qgis.PyQt.QtGui import QPixmap
+from qgis.PyQt.QtWidgets import QDialog, QGraphicsScene
 
 from qgis.core import QgsPoint
 
@@ -33,7 +33,7 @@ from ArkSpatial.ark.lib.core import ProcessStatus, Scale, geometry
 
 from ArkSpatial.ark.core import Drawing, Item
 
-from .georeferencer import Georeferencer
+from .georeferencer import Georeferencer, GeoreferenceStep
 from .transform import Transform
 from .ui.georef_dialog_base import Ui_GeorefDialogBase
 
@@ -60,8 +60,8 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
             self.typeCombo.addItem(self._types[group]['name'], group)
         self.typeCombo.setCurrentIndex(0)
 
-        for scale in Scale.Scale:
-            self.scaleCombo.addItem(Scale.Label[scale], scale)
+        for scale in Scale:
+            self.scaleCombo.addItem(scale.label, scale)
         self.scaleCombo.setCurrentIndex(Scale.OneToTwenty)
 
         self.processButton.clicked.connect(self._process)
@@ -146,7 +146,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
             self.gcpWidget4.setRaw(gcTo.point(4).raw())
 
     def _updateGeoPoints(self):
-        mapUnits = Scale.Factor[self.drawingScale()]
+        mapUnits = self.drawingScale().factor
         local1 = QPointF(self.eastSpin.value(), self.northSpin.value() + mapUnits)
         local2 = QPointF(self.eastSpin.value(), self.northSpin.value())
         local3 = QPointF(self.eastSpin.value() + mapUnits, self.northSpin.value())
@@ -260,8 +260,8 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
 
     def _updateStatus(self, step, status):
         self._setStatusLabel(step, status)
-        self._showStatus(Georeferencer.Label[step] + ': ' + ProcessStatus.Label[status])
-        if step == Georeferencer.Stop and status == ProcessStatus.Success:
+        self._showStatus(self.tr(step.label) + ': ' + self.tr(status.label))
+        if step == GeoreferenceStep.Stop and status == ProcessStatus.Success:
             if self._closeOnDone:
                 self._close()
             else:
@@ -296,7 +296,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         self._runGeoreference(True)
 
     def _close(self):
-        if (self._georeferencer.step() == Georeferencer.Stop):
+        if (self._georeferencer.step() == GeoreferenceStep.Stop):
             self.accept()
         else:
             self.reject()
@@ -322,7 +322,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         self._georeferencer.run(gc, self.rawFileInfo(), self.pointFileInfo(), self.geoFileInfo())
 
     def _finished(self, step, status):
-        if step == Georeferencer.Stop and status == ProcessStatus.Success and self._closeOnDone:
+        if step == GeoreferenceStep.Stop and status == ProcessStatus.Success and self._closeOnDone:
             self._close()
         else:
             self._toggleUi(True)
@@ -330,13 +330,13 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
     def _setStatusLabel(self, step, status):
         if step == 'load':
             label = self.loadStatusLabel
-        elif step == Georeferencer.Crop:
+        elif step == GeoreferenceStep.Crop:
             label = self.cropStatusLabel
-        elif step == Georeferencer.Translate:
+        elif step == GeoreferenceStep.Translate:
             label = self.translateStatusLabel
-        elif step == Georeferencer.Warp:
+        elif step == GeoreferenceStep.Warp:
             label = self.warpStatusLabel
-        elif step == Georeferencer.Overview:
+        elif step == GeoreferenceStep.Overview:
             label = self.overviewStatusLabel
         else:
             return

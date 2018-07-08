@@ -22,10 +22,10 @@
  ***************************************************************************/
 """
 
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode
 
 
 class AbstractSnappingTypeAction(QAction):
@@ -36,15 +36,15 @@ class AbstractSnappingTypeAction(QAction):
         super(AbstractSnappingTypeAction, self).__init__(parent)
 
         self._snapType = snapType
-        if snapType == Snapping.CurrentLayer:
+        if snapType == SnappingMode.CurrentLayer:
             self.setText('Vertex')
             self.setStatusTip('Snap to vertex')
             self._icon = QIcon(':/plugins/ark/snapVertex.png')
-        elif snapType == Snapping.AllLayers:
+        elif snapType == SnappingMode.AllLayers:
             self.setText('Segment')
             self.setStatusTip('Snap to segment')
             self._icon = QIcon(':/plugins/ark/snapSegment.png')
-        elif snapType == Snapping.SelectedLayers:
+        elif snapType == SnappingMode.SelectedLayers:
             self.setText('Vertex and Segment')
             self.setStatusTip('Snap to vertex and segment')
             self._icon = QIcon(':/plugins/ark/snapVertexSegment.png')

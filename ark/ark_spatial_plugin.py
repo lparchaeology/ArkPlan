@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from ArkSpatial.ark.lib import Application, Plugin, utils
+from ArkSpatial.ark.lib import Application, InterfaceGroup, Plugin, utils
 from ArkSpatial.ark.lib.snapping import (IntersectionSnappingAction, ProjectSnappingAction, Snapping,
                                          TopologicalEditingAction)
 
@@ -30,16 +30,13 @@ from ArkSpatial.ark.core import Config, Settings
 from ArkSpatial.ark.grid import GridModule
 from ArkSpatial.ark.gui import PreferencesDialog, PreferencesWizard
 
+from . import georef.ui.resources, grid.ui.resources, gui.ui.resources, lib.snapping.resources
 from .checking_module import CheckingModule
 from .data_module import DataModule
 from .drawing_module import DrawingModule
 from .filter_module import FilterModule
 from .project_module import ProjectModule
 from .trench_module import TrenchModule
-from . import georef.ui.resources
-from . import grid.ui.resources
-from . import gui.ui.resources
-from . import lib.snapping.resources
 
 
 class ArkSpatialPlugin(Plugin):
@@ -53,8 +50,8 @@ class ArkSpatialPlugin(Plugin):
             pluginScope=Config.pluginScope,
             pluginIconPath=':/plugins/ark/icon.png',
             pluginPath=pluginPath,
-            menuGroup=Plugin.PluginsGroup,
-            toolbarGroup=Plugin.PluginsGroup,
+            menuGroup=InterfaceGroup.PluginsGroup,
+            toolbarGroup=InterfaceGroup.PluginsGroup,
             checkable=True
         )
 

@@ -23,12 +23,12 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsProject
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode, SnappingType
 
 
 class ProjectSnappingEnabledAction(QAction):
@@ -41,7 +41,7 @@ class ProjectSnappingEnabledAction(QAction):
         super(ProjectSnappingEnabledAction, self).__init__(parent)
 
         self._selectedLayers = []
-        self._prevType = Snapping.Off
+        self._prevType = SnappingType.Off
 
         self.setText('Toggle Snapping')
         self.setStatusTip('Enbale/disable snapping')
@@ -68,30 +68,30 @@ class ProjectSnappingEnabledAction(QAction):
 
     def _triggered(self, checked):
         if checked:
-            if Snapping.snappingMode() == Snapping.SelectedLayers:
+            if Snapping.snappingMode() == SnappingMode.SelectedLayers:
                 Snapping.setLayerSnappingEnabledLayers(self._selectedLayers)
             else:
                 Snapping.setProjectSnappingType(self._prevType)
         else:
-            if Snapping.snappingMode() == Snapping.SelectedLayers:
+            if Snapping.snappingMode() == SnappingMode.SelectedLayers:
                 self._selectedLayers = Snapping.layerSnappingEnabledLayers()
                 Snapping.setLayerSnappingEnabledLayers([])
             else:
                 self._prevType = Snapping.projectSnappingType()
-                Snapping.setProjectSnappingType(Snapping.Off)
+                Snapping.setProjectSnappingType(SnappingType.Off)
         self.snappingEnabledChanged.emit()
 
     def _refresh(self):
         self.blockSignals(True)
         snapMode = Snapping.snappingMode()
         snapType = Snapping.projectSnappingType()
-        if snapType != Snapping.Off:
+        if snapType != SnappingType.Off:
             self._prevType = snapType
         selectedLayers = Snapping.layerSnappingEnabledLayers()
         if len(selectedLayers) > 0:
             self._selectedLayers = selectedLayers
-        if snapMode == Snapping.SelectedLayers:
+        if snapMode == SnappingMode.SelectedLayers:
             self.setChecked(len(selectedLayers) > 0)
         else:
-            self.setChecked(snapType != Snapping.Off)
+            self.setChecked(snapType != SnappingType.Off)
         self.blockSignals(False)

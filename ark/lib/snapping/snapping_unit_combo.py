@@ -27,7 +27,7 @@ from qgis.PyQt.QtWidgets import QComboBox
 
 from qgis.core import QgsProject
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingUnit
 
 
 class SnappingUnitCombo(QComboBox):
@@ -38,9 +38,9 @@ class SnappingUnitCombo(QComboBox):
 
         super(SnappingUnitCombo, self).__init__(parent)
 
-        self.addItem('Pixels', Snapping.Pixels)
-        self.addItem('Layer Units', Snapping.LayerUnits)
-        self.addItem('Project Units', Snapping.ProjectUnits)
+        self.addItem('Pixels', SnappingUnit.Pixels)
+        self.addItem('Layer Units', SnappingUnit.LayerUnits)
+        self.addItem('Project Units', SnappingUnit.ProjectUnits)
         self.setCurrentIndex(0)
 
         self._refresh()

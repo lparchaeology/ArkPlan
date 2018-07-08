@@ -22,10 +22,12 @@
  ***************************************************************************/
 """
 
+from enum import Enum
+
 from qgis.core import Qgis
 
 
-class FeatureType:
+class FeatureType(Enum):
 
     NoFeature = 0
     Point = 1

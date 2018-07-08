@@ -23,13 +23,13 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsMapLayerRegistry, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-from .snapping_ import Snapping
+from .snapping_ import Snapping, SnappingMode
 
 
 class LayerSnappingEnabledAction(QAction):
@@ -99,7 +99,7 @@ class LayerSnappingEnabledAction(QAction):
         self.blockSignals(True)
         if self._layerId or self._iface:
             self.setChecked(Snapping.layerSnappingEnabled(self.layerId()))
-            self.setEnabled(Snapping.snappingMode() == Snapping.SelectedLayers)
+            self.setEnabled(Snapping.snappingMode() == SnappingMode.SelectedLayers)
         else:
             self.setChecked(False)
             self.setEnabled(False)

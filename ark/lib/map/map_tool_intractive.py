@@ -39,7 +39,7 @@ class MapToolInteractive(QgsMapTool):
     """Tool to interact with map, including panning, zooming, and snapping"""
 
     def __init__(self, canvas, snappingEnabled=False):
-        super(MapToolInteractive, self).__init__(canvas)
+        super().__init__(canvas)
         self._active = False
         self._dragging = False
         self._panningEnabled = False
@@ -58,7 +58,7 @@ class MapToolInteractive(QgsMapTool):
         return self._active
 
     def activate(self):
-        super(MapToolInteractive, self).activate()
+        super().activate()
         self._active = True
         self._startSnapping()
 
@@ -69,10 +69,10 @@ class MapToolInteractive(QgsMapTool):
         if (self._zoomRubberBand is not None):
             self.canvas().scene().removeItem(self._zoomRubberBand)
             self._zoomRubberBand = None
-        super(MapToolInteractive, self).deactivate()
+        super().deactivate()
 
     def setAction(self, action):
-        super(MapToolInteractive, self).setAction(action)
+        super().setAction(action)
         self.action().triggered.connect(self._activate)
 
     def _activate(self):
@@ -113,7 +113,7 @@ class MapToolInteractive(QgsMapTool):
         self._snapper = None
 
     def canvasMoveEvent(self, e):
-        super(MapToolInteractive, self).canvasMoveEvent(e)
+        super().canvasMoveEvent(e)
         if not self._active:
             return
         e.ignore()
@@ -148,7 +148,7 @@ class MapToolInteractive(QgsMapTool):
                 self._deleteSnappingMarker()
 
     def canvasReleaseEvent(self, e):
-        super(MapToolInteractive, self).canvasReleaseEvent(e)
+        super().canvasReleaseEvent(e)
         e.ignore()
         if (e.button() == Qt.LeftButton):
             if self._dragging:
@@ -181,7 +181,7 @@ class MapToolInteractive(QgsMapTool):
                 e.accept()
 
     def keyPressEvent(self, e):
-        super(MapToolInteractive, self).keyPressEvent(e)
+        super().keyPressEvent(e)
         if (e.key() == Qt.Key_Escape):
             self.canvas().unsetMapTool(self)
             e.accept()

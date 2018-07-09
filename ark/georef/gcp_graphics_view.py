@@ -32,7 +32,7 @@ class GcpGraphicsView(QGraphicsView):
     pointSelected = pyqtSignal(QPointF)
 
     def __init__(self, parent=None):
-        super(GcpGraphicsView, self).__init__(parent)
+        super().__init__(parent)
 
         self.buttonDown = False
         self.panning = False

@@ -34,13 +34,13 @@ from .snapping_widget import SnappingWidget
 class SnappingDock(ToolDockWidget):
 
     def __init__(self, parent=None):
-        super(SnappingDock, self).__init__(SnappingWidget(), parent)
+        super().__init__(SnappingWidget(), parent)
 
         self.setWindowTitle('ARK Snapping')
         self.setObjectName('SnappingDock')
 
     def initGui(self, iface, location, menuAction):
-        super(SnappingDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         # Init the main widget
         self.widget.initGui()
@@ -48,7 +48,7 @@ class SnappingDock(ToolDockWidget):
     def unloadGui(self):
         self.widget.unloadGui()
         del self.widget
-        super(SnappingDock, self).unloadGui()
+        super().unloadGui()
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):

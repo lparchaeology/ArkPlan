@@ -38,7 +38,7 @@ class SnappingModeAction(QAction):
     snappingModeChanged = pyqtSignal(int)
 
     def __init__(self, snapMode, parent=None):
-        super(SnappingModeAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._snapMode = snapMode
         if snapMode == SnappingMode.CurrentLayer:

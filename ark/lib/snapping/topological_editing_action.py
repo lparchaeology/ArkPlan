@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsProject
 
@@ -38,7 +38,7 @@ class TopologicalEditingAction(QAction):
     topologicalEditingChanged = pyqtSignal(bool)
 
     def __init__(self, parent=None):
-        super(TopologicalEditingAction, self).__init__(parent)
+        super().__init__(parent)
 
         self.setCheckable(True)
         self._icon = QIcon(':/plugins/ark/topologicalEditing.png')

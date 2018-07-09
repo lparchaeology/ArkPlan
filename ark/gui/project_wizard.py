@@ -33,7 +33,7 @@ from .ui.project_wizard_base import Ui_ProjectWizard
 class ProjectWizard(QWizard, Ui_ProjectWizard):
 
     def __init__(self, parent=None):
-        super(ProjectWizard, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def project(self):

@@ -59,13 +59,13 @@ class CheckingDock(ToolDockWidget):
     schematicReportSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(CheckingDock, self).__init__(SchematicWidget(), parent)
+        super().__init__(SchematicWidget(), parent)
 
         self.setWindowTitle('ARK Checking')
         self.setObjectName('CheckingDock')
 
     def initGui(self, iface, location, menuAction):
-        super(CheckingDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         # Init the main widget
         self.widget.initGui()
@@ -96,7 +96,7 @@ class CheckingDock(ToolDockWidget):
 
     def unloadGui(self):
         self.widget.unloadGui()
-        super(CheckingDock, self).unloadGui()
+        super().unloadGui()
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):

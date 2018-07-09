@@ -27,9 +27,9 @@
 """
 
 
-from qgis.PyQt.QtCore import Qt, QUrl, QModelIndex, QAbstractItemModel, QMimeData
+from qgis.PyQt.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt, QUrl
 
-from qgis.core import Qgis, QgsDirectoryItem, QgsDataItem, QgsMimeDataUtils, QgsProject
+from qgis.core import Qgis, QgsDataItem, QgsDirectoryItem, QgsMimeDataUtils, QgsProject
 
 
 class ProjectModel(QAbstractItemModel):
@@ -38,7 +38,7 @@ class ProjectModel(QAbstractItemModel):
     CommentRole = Qt.UserRole + 1
 
     def __init__(self, initialize, parent=None):
-        super(ProjectModel, self).__init__(parent)
+        super().__init__(parent)
 
         self._initialized = False
         self._rootItems = []  # QVector<QgsDataItem*>

@@ -31,7 +31,7 @@ from .item_collection_layer import ItemCollectionLayer
 class ItemCollection(Collection):
 
     def __init__(self, iface, projectPath, settings):
-        super(ItemCollection, self).__init__(iface, projectPath, settings)
+        super().__init__(iface, projectPath, settings)
 
     def _newLayer(self, settings):
         return ItemCollectionLayer(self._iface, self.projectPath, settings)

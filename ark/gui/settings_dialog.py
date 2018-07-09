@@ -32,7 +32,7 @@ from .ui.settings_dialog_base import Ui_SettingsDialogBase
 class SettingsDialog(QDialog, Ui_SettingsDialogBase):
 
     def __init__(self, parent=None):
-        super(SettingsDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         # Settings tab settings
@@ -83,7 +83,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialogBase):
         Settings.setUseGeorefFolder(self.georefFolderCheck.isChecked())
         Settings.setDrawingTransparency(self.drawingTransparencySpin.value())
 
-        return super(SettingsDialog, self).accept()
+        return super().accept()
 
     def _toggleDefaultStyle(self, useDefault):
         if useDefault:

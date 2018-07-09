@@ -28,7 +28,7 @@ from qgis.PyQt.QtWidgets import QAction, QApplication
 class ClipboardAction(QAction):
 
     def __init__(self, label, text, parent=None):
-        super(ClipboardAction, self).__init__(label + text, parent)
+        super().__init__(label + text, parent)
         self.triggered.connect(self._copy)
         self._text = text
 

@@ -28,7 +28,7 @@ from .table_model import TableModel
 class ParentChildModel(TableModel):
 
     def __init__(self, parent=None):
-        super(TableModel, self).__init__(parent)
+        super().__init__(parent)
         self._fields = ['parent', 'child']
         self._nullRecord = {'parent': None, 'child': None}
 

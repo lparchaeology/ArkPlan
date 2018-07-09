@@ -32,7 +32,7 @@ class AbstractSnappingUnitAction(QAction):
     """Abstract action for Snapping Unit."""
 
     def __init__(self, snapUnit, parent=None):
-        super(AbstractSnappingUnitAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._snapUnit = snapUnit
         if snapUnit == SnappingUnit.Pixels:

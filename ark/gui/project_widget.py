@@ -35,7 +35,7 @@ from .ui.project_widget_base import Ui_ProjectWidget
 class ProjectWidget(QWidget, Ui_ProjectWidget):
 
     def __init__(self, parent=None):
-        super(ProjectWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self._ark = None
         if Settings.useProjectServer():

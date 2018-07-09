@@ -30,7 +30,7 @@ from ..snapping import LayerSnappingAction
 class LayerSnappingWidget(QWidget):
 
     def __init__(self, layer, parent=None):
-        super(LayerSnappingWidget, self).__init__(parent)
+        super().__init__(parent)
 
         label = QLabel(layer.name(), self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding, self)

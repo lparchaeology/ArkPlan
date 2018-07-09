@@ -32,7 +32,7 @@ from .ui.project_browser_widget_base import Ui_ProjectBrowserWidget
 class ProjectBrowserWidget(QWidget, Ui_ProjectBrowserWidget):
 
     def __init__(self, parent=None):
-        super(ProjectBrowserWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def loadProject(self, plugin):

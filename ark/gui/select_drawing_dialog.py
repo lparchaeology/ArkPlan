@@ -36,7 +36,7 @@ from .ui.select_drawing_dialog_base import Ui_SelectDrawingDialog
 class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
 
     def __init__(self, drawingType, siteCode='', georef=False, parent=None):
-        super(SelectDrawingDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self._dir = None  # QDir
@@ -74,7 +74,7 @@ class SelectDrawingDialog(QDialog, Ui_SelectDrawingDialog):
         selectedItems = self.fileList.selectedItems()
         for item in selectedItems:
             self._fileList.append(self._dir.absoluteFilePath(item.text()))
-        return super(SelectDrawingDialog, self).accept()
+        return super().accept()
 
     def selectedFiles(self):
         return self._fileList

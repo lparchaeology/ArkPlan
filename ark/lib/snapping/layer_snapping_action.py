@@ -44,7 +44,7 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
     snapSettingsChanged = pyqtSignal(str)
 
     def __init__(self, snapLayer, parent=None):
-        super(LayerSnappingAction, self).__init__(snapLayer, parent)
+        super().__init__(snapLayer, parent)
 
         self._toleranceAction = None  # LayerSnappingToleranceAction()
         self._avoidAction = None  # LayerSnappingAvoidIntersectionsAction()
@@ -106,7 +106,7 @@ class LayerSnappingAction(LayerSnappingEnabledAction):
     def unload(self):
         if not self._layerId:
             return
-        super(LayerSnappingAction, self).unload()
+        super().unload()
         QgsProject.instance().snapSettingsChanged.disconnect(self._refreshAction)
         self.snappingEnabledChanged.disconnect(self.snapSettingsChanged)
         self._vertexAction.snappingTypeChanged.disconnect(self.snapSettingsChanged)

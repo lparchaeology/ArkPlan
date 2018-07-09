@@ -30,5 +30,5 @@ from .ui.base_map_widget_base import Ui_BaseMapWidget
 class BaseMapWidget(QWidget, Ui_BaseMapWidget):
 
     def __init__(self, parent=None):
-        super(BaseMapWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)

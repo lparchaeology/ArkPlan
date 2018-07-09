@@ -40,10 +40,10 @@ class Drawing(Source):
         self._suffix = suffix
 
         if isinstance(item, QFileInfo):
-            super(Drawing, self).__init__()
+            super().__init__()
             self.fromFileInfo(item)
         else:
-            super(Drawing, self).__init__('drawing', item, filename)
+            super().__init__('drawing', item, filename)
 
     def __eq__(self, other):
         return (isinstance(other, Drawing)

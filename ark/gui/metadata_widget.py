@@ -44,7 +44,7 @@ class MetadataWidget(QGroupBox, Ui_MetadataWidget):
     validateMetadata = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(MetadataWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def initGui(self):

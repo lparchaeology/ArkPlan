@@ -29,7 +29,7 @@ from qgis.PyQt.QtWidgets import QGraphicsView
 class FixedGraphicsView(QGraphicsView):
 
     def __init__(self, parent=None):
-        super(FixedGraphicsView, self).__init__(parent)
+        super().__init__(parent)
         self.setCursor(Qt.ArrowCursor)
         self._rect = QRectF()
 

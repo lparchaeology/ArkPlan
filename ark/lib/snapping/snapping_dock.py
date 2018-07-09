@@ -34,7 +34,7 @@ from ..snapping import LayerSnappingWidget
 class SnappingDock(DockWidget):
 
     def __init__(self, iface, parent=None):
-        super(SnappingDock, self).__init__(parent)
+        super().__init__(parent)
         self._iface = iface
 
         self.setWindowTitle('Snapping Panel')

@@ -32,7 +32,7 @@ class MapToolSectionSchematic(MapToolAddFeature):
     # Tool to take a line segment and 'snap' it to a section line then save as a buffer polygon
 
     def __init__(self, iface, sectionGeometry,  polygonLayer, toolName=''):
-        super(MapToolSectionSchematic, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
+        super().__init__(iface, polygonLayer, FeatureType.Segment, toolName)
         self._sectionGeometry = sectionGeometry  # QgsGeometry
 
     def setSectionGeometry(self, sectionGeometry):
@@ -52,4 +52,4 @@ class MapToolSectionSchematic(MapToolAddFeature):
             else:
                 mapPointList = []
             featureType = FeatureType.Polygon
-        super(MapToolSectionSchematic, self).addAnyFeature(featureType, mapPointList, attributes, layer)
+        super().addAnyFeature(featureType, mapPointList, attributes, layer)

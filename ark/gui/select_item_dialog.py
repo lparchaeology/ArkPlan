@@ -32,7 +32,7 @@ from .ui.select_item_dialog_base import Ui_SelectItemDialog
 class SelectItemDialog(QDialog, Ui_SelectItemDialog):
 
     def __init__(self, siteCodes, defaultSiteCode=None, classCodes=None, parent=None):
-        super(SelectItemDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self.itemWidget.setSiteCodes(siteCodes, defaultSiteCode)
@@ -49,7 +49,7 @@ class SelectItemDialog(QDialog, Ui_SelectItemDialog):
         self.itemWidget.itemIdEntered.connect(self.accept)
 
     def accept(self):
-        return super(SelectItemDialog, self).accept()
+        return super().accept()
 
     def item(self):
         return self.itemWidget.item()

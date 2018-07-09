@@ -32,7 +32,7 @@ from .ui.item_feature_error_dialog_base import Ui_ItemFeatureErrorDialog
 class ItemFeatureErrorDialog(QDialog, Ui_ItemFeatureErrorDialog):
 
     def __init__(self, parent=None):
-        super(ItemFeatureErrorDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self._errors = []

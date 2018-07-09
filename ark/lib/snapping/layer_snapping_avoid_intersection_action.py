@@ -39,7 +39,7 @@ class LayerSnappingAvoidIntersectionsAction(QAction):
 
     def __init__(self, snapLayer, parent=None):
 
-        super(LayerSnappingAvoidIntersectionsAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._layerId = ''
         self._iface = None  # QgisInteface

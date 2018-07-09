@@ -30,5 +30,5 @@ from .ui.trench_widget_base import Ui_TrenchWidget
 class TrenchWidget(QWidget, Ui_TrenchWidget):
 
     def __init__(self, parent=None):
-        super(TrenchWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)

@@ -41,7 +41,7 @@ class FilterModule(Module):
     filterSetCleared = pyqtSignal()
 
     def __init__(self, plugin):
-        super(FilterModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Internal variables
         self._useGroups = False

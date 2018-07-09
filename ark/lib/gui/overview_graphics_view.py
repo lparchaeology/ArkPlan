@@ -29,7 +29,7 @@ from qgis.PyQt.QtWidgets import QGraphicsView
 class OverviewGraphicsView(QGraphicsView):
 
     def __init__(self, parent=None):
-        super(OverviewGraphicsView, self).__init__(parent)
+        super().__init__(parent)
 
         self.buttonDown = False
         self.panning = False

@@ -42,7 +42,7 @@ class MapToolCapture(MapToolInteractive):
     canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
 
     def __init__(self, iface, geometryType=Qgis.UnknownGeometry):
-        super(MapToolCapture, self).__init__(iface.mapCanvas())
+        super().__init__(iface.mapCanvas())
 
         self._iface = iface
         self._useCurrentLayerGeometry = False
@@ -61,10 +61,10 @@ class MapToolCapture(MapToolInteractive):
 
     def __del__(self):
         self.deactivate()
-        super(MapToolCapture, self).__del__()
+        super().__del__()
 
     def activate(self):
-        super(MapToolCapture, self).activate()
+        super().activate()
         geometryType = self.geometryType()
         self._rubberBand = self._createRubberBand(geometryType)
         self._moveRubberBand = self._createRubberBand(geometryType, True)
@@ -81,7 +81,7 @@ class MapToolCapture(MapToolInteractive):
             self._moveRubberBand = None
         if (self._useCurrentLayerGeometry is True):
             self._iface.currentLayerChanged.disconnect(self._currentLayerChanged)
-        super(MapToolCapture, self).deactivate()
+        super().deactivate()
 
     def geometryType(self):
         if (self._useCurrentLayerGeometry and self.canvas().currentLayer().type() == QgsMapLayer.VectorLayer):
@@ -102,7 +102,7 @@ class MapToolCapture(MapToolInteractive):
         self.canvas().refresh()
 
     def canvasMoveEvent(self, e):
-        super(MapToolCapture, self).canvasMoveEvent(e)
+        super().canvasMoveEvent(e)
         if e.isAccepted():
             return
         if (self._moveRubberBand is not None):
@@ -111,7 +111,7 @@ class MapToolCapture(MapToolInteractive):
             self._moveRubberBand.movePoint(mapPoint)
 
     def canvasReleaseEvent(self, e):
-        super(MapToolCapture, self).canvasReleaseEvent(e)
+        super().canvasReleaseEvent(e)
         if e.isAccepted():
             return
         mapPoint, mapPointV2, snapped = self._snapCursorPoint(e.pos())
@@ -129,7 +129,7 @@ class MapToolCapture(MapToolInteractive):
             self._undo()
             e.accept()
         else:
-            super(MapToolCapture, self).keyPressEvent(e)
+            super().keyPressEvent(e)
 
     def _createRubberBand(self, geometryType, moveBand=False):
         settings = QSettings()

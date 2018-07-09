@@ -63,7 +63,7 @@ class Plugin(QObject):
         parent=None
     ):
         """Constructor."""
-        super(Plugin, self).__init__(parent)
+        super().__init__(parent)
 
         # Public variables
         self.iface = iface  # QgsInteface()
@@ -295,21 +295,21 @@ class MyPlugin(Plugin):
     """QGIS Plugin Implementation for dialog or single-shot process."""
 
     def __init__(self, iface):
-        super(MyPlugin, self).__init__(iface, 'MyPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
-                                       InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup)
+        super().__init__(iface, 'MyPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
+                         InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr('&MyPlugin'))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        super(MyPlugin, self).initGui()
+        super().initGui()
 
         # Connect a simple button and menu item to your main action
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         # Destroy/disable any plugin objects here
-        super(MyPlugin, self).unload()
+        super().unload()
 
     def run(self):
         """Run method when plugin action triggered"""
@@ -321,14 +321,14 @@ class MyDockPlugin(Plugin):
     """QGIS Plugin Implementation for dock."""
 
     def __init__(self, iface):
-        super(MyPlugin, self).__init__(iface, 'MyDockPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
-                                       InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup, checkable=True)
+        super().__init__(iface, 'MyDockPlugin', ':/plugins/MyPlugin/icon.png', os.path.dirname(__file__),
+                         InterfaceGroup.PluginsGroup, InterfaceGroup.PluginsGroup, checkable=True)
         # Set display / menu name now we have tr() set up
         self.setDisplayName(self.tr('&MyPlugin'))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        super(MyPlugin, self).initGui()
+        super().initGui()
 
         self.dock = MyDock()  # noqa # Your dock implementation derived from ArkDockWidget
         self.dock.load(self.iface, Qt.LeftDockWidgetArea, self.pluginAction)
@@ -338,7 +338,7 @@ class MyDockPlugin(Plugin):
         """Removes the plugin menu item and icon from QGIS GUI."""
         # Destroy/disable any plugin objects here
         self.dock.unload()
-        super(MyPlugin, self).unload()
+        super().unload()
 
     def run(self, checked):
         """Run method when dock toggled"""

@@ -27,8 +27,8 @@ from io import open
 import os
 
 from qgis.PyQt.QtCore import QDir, QFile, QFileInfo, QObject, Qt
-from qgis.PyQt.QtWidgets import QAction, QFileDialog, QInputDialog
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QInputDialog
 
 from qgis.core import (NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsLayerTreeModel, QgsMapLayer,
                        QgsMapLayerRegistry, QgsProject, QgsRasterLayer)
@@ -49,7 +49,7 @@ from ArkSpatial.ark.map import MapToolIndentifyItems
 class ProjectModule(Module):
 
     def __init__(self, plugin):
-        super(ProjectModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Project settings
         # self.projectLayerView = None  # QgsLayerTreeView()

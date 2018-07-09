@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import QSize, Qt
-from qgis.PyQt.QtWidgets import QAction, QToolBar, QVBoxLayout, QWidget
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QToolBar, QVBoxLayout, QWidget
 
 from ..gui import DockWidget
 
@@ -32,7 +32,7 @@ from ..gui import DockWidget
 class ToolDockWidget(DockWidget):
 
     def __init__(self, widget, parent=None):
-        super(ToolDockWidget, self).__init__(parent)
+        super().__init__(parent)
 
         self.toolbar = None  # QToolBar()
         self.widget = None  # QWidget()
@@ -66,10 +66,10 @@ class ToolDockWidget(DockWidget):
         self.setWidget(self._contents)
 
     def initGui(self, iface, location, menuAction):
-        super(ToolDockWidget, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
     def unloadGui(self):
-        super(ToolDockWidget, self).unloadGui()
+        super().unloadGui()
 
     def addToolbarAction(
             self,

@@ -40,17 +40,17 @@ class MapToolEmitPoint(MapToolInteractive):
     canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
 
     def __init__(self, canvas):
-        super(MapToolEmitPoint, self).__init__(canvas)
+        super().__init__(canvas)
 
         self._vertexMarker = QgsVertexMarker(canvas)
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_NONE)
 
     def deactivate(self):
         self._vertexMarker.setCenter(QgsPoint())
-        super(MapToolEmitPoint, self).deactivate()
+        super().deactivate()
 
     def canvasReleaseEvent(self, e):
-        super(MapToolEmitPoint, self).canvasReleaseEvent(e)
+        super().canvasReleaseEvent(e)
         if e.isAccepted():
             return
         # Emit mode

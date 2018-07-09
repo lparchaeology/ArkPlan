@@ -36,7 +36,7 @@ class SnappingTypeCombo(QComboBox):
 
     def __init__(self, parent=None):
 
-        super(SnappingTypeCombo, self).__init__(parent)
+        super().__init__(parent)
 
         self.addItem('Off', SnappingType.Off)
         self.addItem('Vertex', SnappingType.Vertex)

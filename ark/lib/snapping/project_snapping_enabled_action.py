@@ -38,7 +38,7 @@ class ProjectSnappingEnabledAction(QAction):
     snappingEnabledChanged = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(ProjectSnappingEnabledAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._selectedLayers = []
         self._prevType = SnappingType.Off

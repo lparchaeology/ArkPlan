@@ -32,7 +32,7 @@ from .ui.translate_features_dialog_base import Ui_TranslateFeaturesDialog
 class TranslateFeaturesDialog(QDialog, Ui_TranslateFeaturesDialog):
 
     def __init__(self, iface, parent=None):
-        super(TranslateFeaturesDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         for layer in iface.legendInterface().layers():
             if (layer.type() == QgsMapLayer.VectorLayer

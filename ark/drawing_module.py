@@ -39,7 +39,7 @@ from ArkSpatial.ark.gui import DrawingDock, SelectDrawingDialog, SnappingDock
 class DrawingModule(Module):
 
     def __init__(self, plugin):
-        super(DrawingModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Project settings
         self.metadata = None  # Metadata()

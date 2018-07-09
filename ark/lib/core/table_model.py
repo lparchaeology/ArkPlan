@@ -28,7 +28,7 @@ from qgis.PyQt.QtCore import QAbstractTableModel, QModelIndex, Qt
 class TableModel(QAbstractTableModel):
 
     def __init__(self, fields=[], nullRecord={}, parent=None):
-        super(QAbstractTableModel, self).__init__(parent)
+        super().__init__(parent)
         self._fields = fields
         self._nullRecord = nullRecord
         self._table = []
@@ -83,7 +83,7 @@ class TableModel(QAbstractTableModel):
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled
-        return super(QAbstractTableModel, self).flags(index) | Qt.ItemIsEditable
+        return super().flags(index) | Qt.ItemIsEditable
 
     def getList(self):
         return self._table

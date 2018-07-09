@@ -26,9 +26,8 @@ import bisect
 import csv
 import webbrowser
 
-from qgis.PyQt.QtCore import QObject, Qt, pyqtSignal
+from qgis.PyQt.QtCore import QObject, QSortFilterProxyModel, Qt, pyqtSignal
 from qgis.PyQt.QtWidgets import QApplication
-from qgis.PyQt.QtCore import QSortFilterProxyModel
 
 from ArkSpatial.ark.lib import utils
 from ArkSpatial.ark.lib.core import ParentChildModel
@@ -45,7 +44,7 @@ class DataModule(Module):
     dataLoaded = pyqtSignal()
 
     def __init__(self, plugin):
-        super(DataModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         self.items = {}  # {classCode: [Item]}
 

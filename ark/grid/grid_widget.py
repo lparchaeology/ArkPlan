@@ -39,7 +39,7 @@ class GridWidget(QWidget, Ui_GridWidget):
     copyLocalPointSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(GridWidget, self).__init__(parent)
+        super().__init__(parent)
 
     def initGui(self):
         self.setupUi(self)

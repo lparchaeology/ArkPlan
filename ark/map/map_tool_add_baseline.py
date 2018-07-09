@@ -31,7 +31,7 @@ from ArkSpatial.ark.lib.map import MapToolAddFeature
 class MapToolAddBaseline(MapToolAddFeature):
 
     def __init__(self, iface, lineLayer, pointLayer, pointIdFieldName, toolName=''):
-        super(MapToolAddBaseline, self).__init__(iface, lineLayer, toolName)
+        super().__init__(iface, lineLayer, toolName)
 
         self._pointLayer = pointLayer  # QgsVectorLayer()
         self._pointAttributes = {}  # QMap<int, QList<QVariant> >
@@ -62,7 +62,7 @@ class MapToolAddBaseline(MapToolAddFeature):
     def canvasReleaseEvent(self, e):
         wasDragging = self._dragging
         mapPointList = self._mapPointList
-        super(MapToolAddBaseline, self).canvasReleaseEvent(e)
+        super().canvasReleaseEvent(e)
         if (wasDragging):
             pass
         elif (e.button() == Qt.LeftButton):

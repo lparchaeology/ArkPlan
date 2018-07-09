@@ -30,12 +30,12 @@ from .ui.preferences_dialog_base import Ui_PreferencesDialogBase
 class PreferencesDialog(QDialog, Ui_PreferencesDialogBase):
 
     def __init__(self, parent=None):
-        super(PreferencesDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.load()
 
     def accept(self):
-        return super(PreferencesDialog, self).accept()
+        return super().accept()
 
     def load(self):
         self.preferences().load()

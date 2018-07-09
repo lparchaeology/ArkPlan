@@ -61,7 +61,7 @@ class SchematicWidget(QWidget, Ui_SchematicWidget):
     schematicReportSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(SchematicWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self._contextSearchStatus = SearchStatus.Unknown

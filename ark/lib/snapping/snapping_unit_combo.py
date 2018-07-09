@@ -36,7 +36,7 @@ class SnappingUnitCombo(QComboBox):
 
     def __init__(self, parent=None):
 
-        super(SnappingUnitCombo, self).__init__(parent)
+        super().__init__(parent)
 
         self.addItem('Pixels', SnappingUnit.Pixels)
         self.addItem('Layer Units', SnappingUnit.LayerUnits)

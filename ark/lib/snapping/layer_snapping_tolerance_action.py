@@ -42,7 +42,7 @@ class LayerSnappingToleranceAction(AbstractSnappingToleranceAction):
         self._layerId = ''
         self._iface = None  # QgisInteface
 
-        super(LayerSnappingToleranceAction, self).__init__(parent)
+        super().__init__(parent)
 
         if isinstance(snapLayer, QgisInterface):
             self._iface = snapLayer

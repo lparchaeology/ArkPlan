@@ -32,7 +32,7 @@ from .ui.server_widget_base import Ui_ServerWidget
 class ServerWidget(QWidget, Ui_ServerWidget):
 
     def __init__(self, parent=None):
-        super(ServerWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def load(self):

@@ -33,7 +33,7 @@ class MapToolAddBufferSegment(MapToolAddFeature):
     """Tool to take a line segment and then save as a buffer polygon."""
 
     def __init__(self, iface, distance,  polygonLayer, toolName=''):
-        super(MapToolAddBufferSegment, self).__init__(iface, polygonLayer, FeatureType.Segment, toolName)
+        super().__init__(iface, polygonLayer, FeatureType.Segment, toolName)
         self._bufferDistance = 0.1  # Map Units
         self.setBuffer(distance)
 
@@ -51,4 +51,4 @@ class MapToolAddBufferSegment(MapToolAddFeature):
             else:
                 mapPointList = []
             featureType = FeatureType.Polygon
-        super(MapToolAddBufferSegment, self).addAnyFeature(featureType, mapPointList, attributes, layer)
+        super().addAnyFeature(featureType, mapPointList, attributes, layer)

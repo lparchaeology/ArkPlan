@@ -41,7 +41,7 @@ class LayerSnappingUnitAction(AbstractSnappingUnitAction):
         self._layerId = ''
         self._iface = None  # QgisInteface
 
-        super(LayerSnappingUnitAction, self).__init__(snapUnit, parent)
+        super().__init__(snapUnit, parent)
 
         if isinstance(snapLayer, QgisInterface):
             self._iface = snapLayer

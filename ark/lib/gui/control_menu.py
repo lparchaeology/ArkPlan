@@ -31,7 +31,7 @@ class ControlMenu(QMenu):
     """Menu that triggers action when Ctrl-Enter or Ctrl-Left-Mouse pressed."""
 
     def __init__(self, parent=None):
-        super(ControlMenu, self).__init__(parent)
+        super().__init__(parent)
 
     def keyPressEvent(self, e):
         action = self.activeAction()
@@ -39,11 +39,11 @@ class ControlMenu(QMenu):
                 and e.modifiers() == Qt.ControlModifier and action is not None and action.isEnabled()):
             action.trigger()
         else:
-            super(ControlMenu, self).keyPressEvent(e)
+            super().keyPressEvent(e)
 
     def mouseReleaseEvent(self, e):
         action = self.activeAction()
         if e.modifiers() == Qt.ControlModifier and action is not None and action.isEnabled():
             action.trigger()
         else:
-            super(ControlMenu, self).mouseReleaseEvent(e)
+            super().mouseReleaseEvent(e)

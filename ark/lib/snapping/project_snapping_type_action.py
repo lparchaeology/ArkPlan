@@ -37,7 +37,7 @@ class ProjectSnappingTypeAction(AbstractSnappingTypeAction):
     snappingTypeChanged = pyqtSignal(int)
 
     def __init__(self, snapType, parent=None):
-        super(ProjectSnappingTypeAction, self).__init__(snapType, parent)
+        super().__init__(snapType, parent)
 
         # Make sure we catch changes in the main snapping dialog
         QgsProject.instance().snapSettingsChanged.connect(self._refresh)

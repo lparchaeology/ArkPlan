@@ -26,7 +26,7 @@
     Port of QgsBrowserTreeView to python and modified for Project use
 """
 
-from qgis.PyQt.QtCore import Qt, QSettings, QModelIndex, QRegExp
+from qgis.PyQt.QtCore import QModelIndex, QRegExp, QSettings, Qt
 from qgis.PyQt.QtWidgets import QTreeView
 
 from qgis.core import QgsDataItem
@@ -37,7 +37,7 @@ from ArkSpatial.ark.core import ProjectModel
 class ProjectTreeView(QTreeView):
 
     def __init__(self, parent):
-        super(ProjectTreeView, self).__init__(parent)
+        super().__init__(parent)
         self.mSettingsSection = 'browser'
         self.mExpandPaths = []
         self._projectModel = None  # ProjectModel
@@ -46,18 +46,18 @@ class ProjectTreeView(QTreeView):
         self._projectModel = model
 
     def setModel(self, model):
-        super(ProjectTreeView, self).setModel(model)
+        super().setModel(model)
         self.restoreState()
 
     def showEvent(self, event):
         if self.model() is not None:
             self.restoreState()
-        super(ProjectTreeView, self).showEvent(event)
+        super().showEvent(event)
 
     def hideEvent(self, event):
         if self.model() is not None:
             self.saveState()
-        super(ProjectTreeView, self).hideEvent(event)
+        super().hideEvent(event)
 
     def saveState(self):
         expandedPaths = self.expandedPathsList(QModelIndex())
@@ -117,7 +117,7 @@ class ProjectTreeView(QTreeView):
         return False
 
     def rowsInserted(self, parentIndex, start, end):
-        super(ProjectTreeView, self).rowsInserted(parentIndex, start, end)
+        super().rowsInserted(parentIndex, start, end)
         if self.model() is None:
             return
         if not self.mExpandPaths:

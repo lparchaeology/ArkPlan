@@ -28,7 +28,7 @@ from qgis.PyQt.QtWidgets import QDockWidget
 class DockWidget(QDockWidget):
 
     def __init__(self, parent=None):
-        super(DockWidget, self).__init__(parent)
+        super().__init__(parent)
         # HACK Work around a crash when dragging!
         self.setFeatures(QDockWidget.DockWidgetClosable)
         self._iface = None  # QgisInterface

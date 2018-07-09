@@ -62,7 +62,7 @@ class Georeferencer(QObject):
     error = pyqtSignal(GeoreferenceStep, str)
 
     def __init__(self, parent=None):
-        super(Georeferencer, self).__init__(parent)
+        super().__init__(parent)
 
         # Internal variables
         self._debug = True

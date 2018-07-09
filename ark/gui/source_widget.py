@@ -35,7 +35,7 @@ class SourceWidget(QWidget, Ui_SourceWidget):
     sourceChanged = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(SourceWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def initGui(self):

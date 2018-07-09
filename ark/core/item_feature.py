@@ -39,7 +39,7 @@ class ItemFeature(QObject):
     changed = pyqtSignal()
 
     def __init__(self, item=None, category=None, label=None, source=None, comment=None, audit=None, parent=None):
-        super(ItemFeature, self).__init__(parent)
+        super().__init__(parent)
 
         self._category = ''
         self._label = ''

@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QWidget, QWidgetAction
 from qgis.PyQt.QtGui import QIcon, QPixmap
+from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QWidget, QWidgetAction
 
 from qgis.gui import QgsColorButtonV2
 
@@ -43,7 +43,7 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
     clauseChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(FilterClauseWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self._filterIndex = -1

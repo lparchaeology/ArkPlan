@@ -34,7 +34,7 @@ from ArkSpatial.ark.pyARK import Ark
 class ProjectPage(QWizardPage):
 
     def __init__(self, parent=None):
-        super(ProjectPage, self).__init__(parent)
+        super().__init__(parent)
         self.ark = None
         self.crs = None
 

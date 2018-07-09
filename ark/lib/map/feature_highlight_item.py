@@ -36,7 +36,7 @@ class FeatureHighlightItem(QgsMapCanvasItem):
     # Code ported from QGIS QgsHighlight
 
     def __init__(self, mapCanvas, feature, layer):
-        super(FeatureHighlightItem, self).__init__(mapCanvas)
+        super().__init__(mapCanvas)
 
         self._mapCanvas = None  # QgsMapCanvas
         self._brush = QBrush()

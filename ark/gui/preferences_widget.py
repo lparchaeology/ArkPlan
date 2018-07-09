@@ -23,7 +23,7 @@
 """
 
 from qgis.PyQt.QtCore import QDir
-from qgis.PyQt.QtWidgets import QWidget, QFileDialog
+from qgis.PyQt.QtWidgets import QFileDialog, QWidget
 
 from ArkSpatial.ark.core import Settings
 
@@ -33,7 +33,7 @@ from .ui.preferences_widget_base import Ui_PreferencesWidget
 class PreferencesWidget(QWidget, Ui_PreferencesWidget):
 
     def __init__(self, parent=None):
-        super(PreferencesWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.projectsFolderButton.clicked.connect(self._selectProjectsFolder)
 

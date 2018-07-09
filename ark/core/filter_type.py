@@ -22,11 +22,18 @@
  ***************************************************************************/
 """
 
+from enum import Enum
 
-class FilterType:
-    Include = 0
-    Exclude = 1
-    Select = 2
-    Highlight = 3
-    Type = [0, 1, 2, 3, 4]
-    Label = ['Include', 'Exclude', 'Select', 'Highlight', 'Invalid']
+
+class FilterType(Enum):
+
+    Include = (0, 'Include')
+    Exclude = (1, 'Exclude')
+    Select = (2, 'Select')
+    Highlight = (3, 'Highlight')
+
+    def __new__(cls, value, label):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        return obj

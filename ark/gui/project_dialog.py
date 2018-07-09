@@ -30,9 +30,9 @@ from .ui.project_dialog_base import Ui_ProjectDialog
 class ProjectDialog(QDialog, Ui_ProjectDialog):
 
     def __init__(self, parent=None):
-        super(ProjectDialog, self).__init__(parent)
+        super().__init__(parent)
 
         self.setupUi(self)
 
     def accept(self):
-        return super(ProjectDialog, self).accept()
+        return super().accept()

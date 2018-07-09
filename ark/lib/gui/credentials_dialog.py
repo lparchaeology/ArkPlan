@@ -30,7 +30,7 @@ from .ui.credentials_dialog_base import Ui_CredentialsDialog
 class CredentialsDialog(QDialog, Ui_CredentialsDialog):
 
     def __init__(self, parent=None):
-        super(CredentialsDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.passwordEdit.setText('anon')
         self.passwordEdit.selectAll()

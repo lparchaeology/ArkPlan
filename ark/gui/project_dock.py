@@ -30,7 +30,7 @@ from .project_browser_widget import ProjectBrowserWidget
 class ProjectDock(ToolDockWidget):
 
     def __init__(self, parent=None):
-        super(ProjectDock, self).__init__(ProjectBrowserWidget(), parent)
+        super().__init__(ProjectBrowserWidget(), parent)
 
         self.setWindowTitle('ARK Project Browser')
         self.setObjectName('ProjectDock')

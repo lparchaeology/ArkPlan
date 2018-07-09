@@ -30,7 +30,7 @@ from .ui.preferences_wizard_base import Ui_PreferencesWizard
 class PreferencesWizard(QWizard, Ui_PreferencesWizard):
 
     def __init__(self, parent=None):
-        super(PreferencesWizard, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def preferences(self):

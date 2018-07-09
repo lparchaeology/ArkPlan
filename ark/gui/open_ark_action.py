@@ -30,7 +30,7 @@ from qgis.PyQt.QtWidgets import QAction, QApplication
 class OpenArkAction(QAction):
 
     def __init__(self, arkUrl, item, label, parent=None):
-        super(OpenArkAction, self).__init__(label, parent)
+        super().__init__(label, parent)
         mod_cd = item.classCode() + '_cd'
         item = item.siteCode() + '_' + item.itemId()
         self._url = arkUrl + '/micro_view.php?item_key=' + mod_cd + '&' + mod_cd + '=' + item

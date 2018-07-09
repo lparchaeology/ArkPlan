@@ -39,7 +39,7 @@ class LayerSnappingEnabledAction(QAction):
     snappingEnabledChanged = pyqtSignal(str, bool)
 
     def __init__(self, snapLayer, parent=None):
-        super(LayerSnappingEnabledAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._layerId = ''
         self._iface = None  # QgisInteface

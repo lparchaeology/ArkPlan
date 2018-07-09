@@ -38,7 +38,7 @@ class ProjectSnappingToleranceAction(AbstractSnappingToleranceAction):
     snappingToleranceChanged = pyqtSignal(float)
 
     def __init__(self, parent=None):
-        super(ProjectSnappingToleranceAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._iface = None
 

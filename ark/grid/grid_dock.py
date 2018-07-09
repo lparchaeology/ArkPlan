@@ -30,13 +30,13 @@ from .grid_widget import GridWidget
 class GridDock(ToolDockWidget):
 
     def __init__(self, parent=None):
-        super(GridDock, self).__init__(GridWidget(), parent)
+        super().__init__(GridWidget(), parent)
 
         self.setWindowTitle(self.tr('ARK Grid'))
         self.setObjectName('GridDock')
 
     def initGui(self, iface, location, menuAction):
-        super(GridDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
         self.widget.initGui()
 
     # Load the project settings when project is loaded

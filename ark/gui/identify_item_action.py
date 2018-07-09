@@ -48,7 +48,7 @@ class IdentifyItemAction(QAction):
     openDrawingsSelected = pyqtSignal(object)
 
     def __init__(self, item, plugin, parent=None):
-        super(IdentifyItemAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._iface = plugin.iface
         self.item = item

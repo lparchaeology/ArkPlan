@@ -33,7 +33,7 @@ class AbstractSnappingTypeAction(QAction):
     """Abstract action for Snapping Type."""
 
     def __init__(self, snapType, parent=None):
-        super(AbstractSnappingTypeAction, self).__init__(parent)
+        super().__init__(parent)
 
         self._snapType = snapType
         if snapType == SnappingMode.CurrentLayer:

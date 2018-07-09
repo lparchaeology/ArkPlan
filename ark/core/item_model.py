@@ -35,7 +35,7 @@ from ArkSpatial.ark.core import Item
 class ItemModel(TableModel):
 
     def __init__(self, filePath, keyFields, parent=None):
-        super(ItemModel, self).__init__(parent)
+        super().__init__(parent)
 
         if QFile.exists(filePath):
             with open(filePath) as csvFile:

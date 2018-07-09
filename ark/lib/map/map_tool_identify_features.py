@@ -36,7 +36,7 @@ class MapToolIndentifyFeatures(QgsMapToolIdentify):
     featureIdentified = pyqtSignal(QgsFeature)
 
     def __init__(self, canvas):
-        super(MapToolIndentifyFeatures, self).__init__(canvas)
+        super().__init__(canvas)
         mToolName = self.tr('Identify feature')
 
     def canvasReleaseEvent(self, e):

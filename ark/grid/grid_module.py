@@ -46,7 +46,7 @@ from .update_layer_dialog import UpdateLayerDialog
 class GridModule(Module):
 
     def __init__(self, plugin):
-        super(GridModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Internal variables
         self.mapTool = None  # MapToolEmitPoint()

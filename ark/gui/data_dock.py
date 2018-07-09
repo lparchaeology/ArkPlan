@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import QUrl, pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QWidget
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QWidget
 
 from ArkSpatial.ark.lib import Application
 from ArkSpatial.ark.lib.gui import ToolDockWidget
@@ -67,15 +67,15 @@ class DataDock(ToolDockWidget):
 
     def __init__(self, parent=None):
         if QWK_AVAILABLE:
-            super(DataDock, self).__init__(DataWidget(), parent)
+            super().__init__(DataWidget(), parent)
         else:
-            super(DataDock, self).__init__(DataItemWidget(), parent)
+            super().__init__(DataItemWidget(), parent)
 
         self.setWindowTitle('ARK Data')
         self.setObjectName('DataDock')
 
     def initGui(self, iface, location, menuAction):
-        super(DataDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         for key in sorted(Config.classCodes.keys()):
             classCode = Config.classCodes[key]

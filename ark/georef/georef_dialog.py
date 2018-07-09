@@ -41,7 +41,7 @@ from .ui.georef_dialog_base import Ui_GeorefDialogBase
 class GeorefDialog(QDialog, Ui_GeorefDialogBase):
 
     def __init__(self, types, parent=None):
-        super(GeorefDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         # Internal variables

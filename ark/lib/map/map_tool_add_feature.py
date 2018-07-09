@@ -42,7 +42,7 @@ class MapToolAddFeature(MapToolCapture):
 
     def __init__(self, iface, featureType, toolName=''):
 
-        super(MapToolAddFeature, self).__init__(iface, FeatureType.toGeometryType(featureType))
+        super().__init__(iface, FeatureType.toGeometryType(featureType))
 
         self._layer = None  # QgsVectorLayer()
         self._featureType = featureType
@@ -86,7 +86,7 @@ class MapToolAddFeature(MapToolCapture):
         self._queryDecimals = decimals
 
     def activate(self):
-        super(MapToolAddFeature, self).activate()
+        super().activate()
         if self._layer is not None:
             self.canvas().setCurrentLayer(self._layer)
             self._iface.legendInterface().setCurrentLayer(self._layer)
@@ -94,7 +94,7 @@ class MapToolAddFeature(MapToolCapture):
                 self._addFeatureAction(QgsFeature(), False)
 
     def canvasReleaseEvent(self, e):
-        super(MapToolAddFeature, self).canvasReleaseEvent(e)
+        super().canvasReleaseEvent(e)
         if (e.isAccepted()):
             return
         if (self.geometryType() == Qgis.Point):

@@ -27,7 +27,7 @@ class GeometryHighlightItem(QgsMapCanvasItem):
     # Code ported from QGIS QgsHighlight
 
     def __init__(self, mapCanvas, geometry, layer):
-        super(GeometryHighlightItem, self).__init__(mapCanvas)
+        super().__init__(mapCanvas)
 
         self._mapCanvas = None  # QgsMapCanvas
         self._geometry = None  # QgsGeometry()

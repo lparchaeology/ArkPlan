@@ -28,7 +28,7 @@ from qgis.PyQt.QtCore import QObject
 class Module(QObject):
 
     def __init__(self, plugin):
-        super(Module, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Internal variables
         self._plugin = plugin  # Plugin()

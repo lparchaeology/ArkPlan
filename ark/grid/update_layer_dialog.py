@@ -32,7 +32,7 @@ from .ui.update_layer_dialog_base import Ui_UpdateLayerDialog
 class UpdateLayerDialog(QDialog, Ui_UpdateLayerDialog):
 
     def __init__(self, iface, parent=None):
-        super(UpdateLayerDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         for layer in iface.legendInterface().layers():
             if (layer.type() == QgsMapLayer.VectorLayer

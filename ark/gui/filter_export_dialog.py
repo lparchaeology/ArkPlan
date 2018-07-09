@@ -31,7 +31,7 @@ from .ui.filter_export_dialog_base import Ui_FilterExportDialog
 class FilterExportDialog(QDialog, Ui_FilterExportDialog):
 
     def __init__(self, parent=None):
-        super(FilterExportDialog, self).__init__(parent)
+        super().__init__(parent)
 
         self.setupUi(self)
         self.schematicColorTool.setAllowAlpha(True)
@@ -41,7 +41,7 @@ class FilterExportDialog(QDialog, Ui_FilterExportDialog):
         self.schematicColorTool.setShowNoColor(True)
 
     def accept(self):
-        return super(FilterExportDialog, self).accept()
+        return super().accept()
 
     def setFilterSetName(self, name):
         self.filterSetNameEdit.setText(name)

@@ -30,5 +30,5 @@ from .ui.data_item_widget_base import Ui_DataItemWidget
 class DataItemWidget(QWidget, Ui_DataItemWidget):
 
     def __init__(self, parent=None):
-        super(DataItemWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)

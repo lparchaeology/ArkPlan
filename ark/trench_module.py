@@ -31,7 +31,7 @@ from ArkSpatial.ark.gui import TrenchDock
 class TrenchModule(Module):
 
     def __init__(self, plugin):
-        super(TrenchModule, self).__init__(plugin)
+        super().__init__(plugin)
 
     # Create the gui when the plugin is first created
     def initGui(self):

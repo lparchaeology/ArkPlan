@@ -46,7 +46,7 @@ class GridMethod(Enum):
 class GridWizard(QWizard, Ui_GridWizard):
 
     def __init__(self, iface, plugin, parent=None):
-        super(GridWizard, self).__init__(parent)
+        super().__init__(parent)
         self._iface = iface  # QgisInterface()
         self._mapTool = None  # MapToolEmitPoint
 

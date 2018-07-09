@@ -29,4 +29,4 @@ from ArkSpatial.ark.lib.core import CollectionLayer
 class ItemCollectionLayer(CollectionLayer):
 
     def __init__(self, iface, projectPath, settings):
-        super(ItemCollectionLayer, self).__init__(iface, projectPath, settings)
+        super().__init__(iface, projectPath, settings)

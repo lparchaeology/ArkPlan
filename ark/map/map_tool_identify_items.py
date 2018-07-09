@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import QPoint, QSettings, Qt
-from qgis.PyQt.QtWidgets import QAction, QMenu
 from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtWidgets import QAction, QMenu
 
 from qgis.core import Qgis, QgsPointV2
 from qgis.gui import QgsHighlight, QgsMapToolIdentify, QgsVertexMarker
@@ -38,7 +38,7 @@ from ArkSpatial.ark.gui import IdentifyItemAction
 class MapToolIndentifyItems(QgsMapToolIdentify):
 
     def __init__(self, plugin):
-        super(MapToolIndentifyItems, self).__init__(plugin.mapCanvas())
+        super().__init__(plugin.mapCanvas())
         mToolName = self.tr('Identify feature')
 
         self._menu = QMenu(plugin.mapCanvas())
@@ -54,7 +54,7 @@ class MapToolIndentifyItems(QgsMapToolIdentify):
 
     def deactivate(self):
         self._reset()
-        super(MapToolIndentifyItems, self).deactivate()
+        super().deactivate()
 
     def canvasPressEvent(self, e):
         self._reset()

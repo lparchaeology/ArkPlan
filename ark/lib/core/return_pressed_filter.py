@@ -30,7 +30,7 @@ class ReturnPressedFilter(QObject):
     returnPressed = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(ReturnPressedFilter, self).__init__(parent)
+        super().__init__(parent)
 
     def eventFilter(self, obj, event):
         # FIXME WTF Sledgehammer to fix reload error nut
@@ -39,4 +39,4 @@ class ReturnPressedFilter(QObject):
         if (event.type() == QEvent.KeyPress and (event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter)):
             self.returnPressed.emit()
             return True
-        return super(ReturnPressedFilter, self).eventFilter(obj, event)
+        return super().eventFilter(obj, event)

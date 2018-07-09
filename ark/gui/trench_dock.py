@@ -42,13 +42,13 @@ class TrenchDock(ToolDockWidget):
     trenchLengthChanged = pyqtSignal(float)
 
     def __init__(self, parent=None):
-        super(TrenchDock, self).__init__(TrenchWidget(), parent)
+        super().__init__(TrenchWidget(), parent)
 
         self.setWindowTitle('ARK Trench')
         self.setObjectName('TrenchDock')
 
     def initGui(self, iface, location, menuAction):
-        super(TrenchDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         self._drawTrenchAction = self.addToolbarAction(
             ':/plugins/ark/trench/draw.svg',

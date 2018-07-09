@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import Qt, pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QLabel, QToolButton, QWidget
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QLabel, QToolButton, QWidget
 
 from qgis.core import Qgis
 
@@ -43,7 +43,7 @@ class ItemFeatureWidget(QWidget, Ui_ItemFeatureWidget):
     autoToolSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(ItemFeatureWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
         self._itemFeature = ItemFeature()

@@ -30,7 +30,7 @@ from .ui.filter_set_widget_base import Ui_FilterSetWidget
 class FilterSetWidget(QWidget, Ui_FilterSetWidget):
 
     def __init__(self, parent=None):
-        super(FilterSetWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self._filterSetActionGroup = QActionGroup(self)
         self._filterSetActionGroup.addAction(self.saveFilterSetAction)

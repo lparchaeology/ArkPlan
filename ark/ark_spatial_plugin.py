@@ -44,7 +44,7 @@ class ArkSpatialPlugin(Plugin):
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface, pluginPath):
-        super(ArkSpatialPlugin, self).__init__(
+        super().__init__(
             iface=iface,
             pluginName=Config.pluginName,
             pluginScope=Config.pluginScope,
@@ -89,7 +89,7 @@ class ArkSpatialPlugin(Plugin):
 
     # Load the plugin gui
     def initGui(self):
-        super(ArkSpatialPlugin, self).initGui()
+        super().initGui()
 
         # Init the project dock so we have something to show on first run
         self._projectModule = ProjectModule(self)
@@ -195,7 +195,7 @@ class ArkSpatialPlugin(Plugin):
         del self._topoAction
 
         # Removes the plugin menu item and icon from QGIS GUI.
-        super(ArkSpatialPlugin, self).unload()
+        super().unload()
 
     def run(self, checked):
         if checked and self.initialise() and self.configure():

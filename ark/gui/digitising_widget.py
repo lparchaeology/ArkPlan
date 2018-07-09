@@ -32,7 +32,7 @@ from .ui.digitising_widget_base import Ui_DigitisingWidget
 class DigitisingWidget(QWidget, Ui_DigitisingWidget):
 
     def __init__(self, parent=None):
-        super(DigitisingWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def initGui(self, iface):

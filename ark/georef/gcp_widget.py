@@ -35,7 +35,7 @@ class GcpWidget(QWidget, Ui_GcpWidget):
     rawPointChanged = pyqtSignal(QPointF)
 
     def __init__(self, parent=None):
-        super(GcpWidget, self).__init__(parent)
+        super().__init__(parent)
 
         # Internal variables
         self._gcp = None

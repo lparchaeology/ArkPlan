@@ -43,7 +43,7 @@ class ProjectSnappingAction(ProjectSnappingEnabledAction):
     snapSettingsChanged = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(ProjectSnappingAction, self).__init__(parent)
+        super().__init__(parent)
         self.setCheckable(True)
 
         self._currentAction = SnappingModeAction(SnappingMode.CurrentLayer, self)
@@ -93,7 +93,7 @@ class ProjectSnappingAction(ProjectSnappingEnabledAction):
         self._toleranceAction.setInterface(iface)
 
     def unload(self):
-        super(ProjectSnappingAction, self).unload()
+        super().unload()
         self._currentAction.unload()
         self._allAction.unload()
         self._selectedAction.unload()

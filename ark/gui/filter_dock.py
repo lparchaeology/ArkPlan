@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import Qt, pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QListWidgetItem
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QListWidgetItem
 
 from ArkSpatial.ark.lib.gui import ToolDockWidget
 
@@ -54,7 +54,7 @@ class FilterDock(ToolDockWidget):
     exportFilterSetSelected = pyqtSignal(str, str)
 
     def __init__(self, parent=None):
-        super(FilterDock, self).__init__(FilterSetWidget(), parent)
+        super().__init__(FilterSetWidget(), parent)
 
         self.newFilterClauseWidget = None  # FilterClauseWidget()
 
@@ -70,7 +70,7 @@ class FilterDock(ToolDockWidget):
         self.setObjectName('FilterDock')
 
     def initGui(self, iface, location, menuAction):
-        super(FilterDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         self._zoomFilterAction = QAction(QIcon(':/plugins/ark/filter/zoomToFilterSet.svg'), "Zoom To Selection", self)
         self._zoomFilterAction.triggered.connect(self.zoomFilterSelected)

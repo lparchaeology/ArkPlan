@@ -36,7 +36,7 @@ from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext
 class FeatureAction(QAction):
 
     def __init__(self, name, feature, layer, action=-1, defaultAttr=-1, iface=None, parent=None):
-        super(FeatureAction, self).__init__(name, parent)
+        super().__init__(name, parent)
 
         self._layer = layer
         self._feature = feature

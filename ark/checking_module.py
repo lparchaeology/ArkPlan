@@ -40,7 +40,7 @@ from ArkSpatial.ark.gui import CheckingDock
 class CheckingModule(Module):
 
     def __init__(self, plugin):
-        super(CheckingModule, self).__init__(plugin)
+        super().__init__(plugin)
 
         # Internal variables
         self._editSchematic = False

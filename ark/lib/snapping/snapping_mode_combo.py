@@ -36,7 +36,7 @@ class SnappingModeCombo(QComboBox):
 
     def __init__(self, parent=None):
 
-        super(SnappingModeCombo, self).__init__(parent)
+        super().__init__(parent)
 
         self._snapMode = ''
         self._snapType = ''

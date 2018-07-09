@@ -38,7 +38,7 @@ class SelectItemWidget(QWidget, Ui_SelectItemWidget):
     itemIdEntered = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(SelectItemWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
     def initGui(self, plugin):

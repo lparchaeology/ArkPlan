@@ -35,7 +35,7 @@ from .ui.snapping_widget_base import Ui_SnappingWidget
 class SnappingWidget(QGroupBox, Ui_SnappingWidget):
 
     def __init__(self, parent=None):
-        super(SnappingWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.setEnabled(False)
 

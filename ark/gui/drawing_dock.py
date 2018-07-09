@@ -43,13 +43,13 @@ class DrawingDock(ToolDockWidget):
     mergeSelected = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(DrawingDock, self).__init__(DigitisingWidget(), parent)
+        super().__init__(DigitisingWidget(), parent)
 
         self.setWindowTitle('ARK Drawing')
         self.setObjectName('DrawingDock')
 
     def initGui(self, iface, location, menuAction):
-        super(DrawingDock, self).initGui(iface, location, menuAction)
+        super().initGui(iface, location, menuAction)
 
         # Init the toolbar
         self.toolbar.addAction(iface.actionPan())
@@ -76,7 +76,7 @@ class DrawingDock(ToolDockWidget):
 
     def unloadGui(self):
         self.widget.unloadGui()
-        super(DrawingDock, self).unloadGui()
+        super().unloadGui()
 
     # Load the project settings when project is loaded
     def loadProject(self, plugin):

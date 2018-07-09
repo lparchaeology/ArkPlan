@@ -23,8 +23,8 @@
 """
 
 from qgis.PyQt.QtCore import pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QToolButton
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QToolButton
 
 from ArkSpatial.ark.core.enum import DrawingAction, FilterAction, MapAction
 
@@ -37,7 +37,7 @@ class ActionSettingsTool(QToolButton):
     drawingActionChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(ActionSettingsTool, self).__init__(parent)
+        super().__init__(parent)
 
         self._mapActionGroup = QActionGroup(self)
         self._noMapAction = self._addMapAction(MapAction.NoMapAction, 'No map action')

@@ -35,7 +35,7 @@ from ArkSpatial.ark.lib.snapping import Snapping, SnappingUnit
 class GlobalPreferencesPage(QWizardPage):
 
     def __init__(self, parent=None):
-        super(GlobalPreferencesPage, self).__init__(parent)
+        super().__init__(parent)
 
     def initializePage(self, parent=None):
         self.registerField("forceDefaultCrs", self.wizard().forceCrsCheck)

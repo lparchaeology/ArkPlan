@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import QObject, Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QApplication
 
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPoint, QgsPointV2, QgsPolygonV2,
+from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsLineStringV2, QgsPointV2, QgsPointXY, QgsPolygonV2,
                        QgsVectorLayer)
 from qgis.gui import QgsVertexMarker
 
@@ -113,7 +113,7 @@ class GridModule(Module):
 
     # Close the project
     def closeProject(self):
-        self._vertexMarker.setCenter(QgsPoint())
+        self._vertexMarker.setCenter(QgsPointXY())
         self.collection().clearFilter()
         self._initialised = False
 
@@ -141,7 +141,7 @@ class GridModule(Module):
                 self.loadProject()
             self._vertexMarker.setCenter(geometry.toPoint(self.mapPoint()))
         else:
-            self._vertexMarker.setCenter(QgsPoint())
+            self._vertexMarker.setCenter(QgsPointXY())
 
     def collection(self):
         return self._plugin.project().collection('grid')

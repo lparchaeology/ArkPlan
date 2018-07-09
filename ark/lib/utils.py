@@ -24,7 +24,7 @@
 
 from qgis.PyQt.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointV2
+from qgis.core import NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPointXY, QgsPointV2
 
 safeChars = [
     " ",
@@ -84,8 +84,8 @@ def printable(val):
         return doublequote(val)
     if type(val) == QRectF:
         return 'QRectF(' + str(val.x()) + ', ' + str(val.y()) + ', ' + str(val.width()) + ', ' + str(val.height()) + ')'
-    if type(val) == QgsPoint:
-        return 'QgsPoint(' + str(val.x()) + ', ' + str(val.y()) + ')'
+    if type(val) == QgsPointXY:
+        return 'QgsPointXY(' + str(val.x()) + ', ' + str(val.y()) + ')'
     if type(val) == QgsPointV2:
         return 'QgsPointV2(' + str(val.x()) + ', ' + str(val.y()) + ')'
     if type(val) == QgsGeometry:

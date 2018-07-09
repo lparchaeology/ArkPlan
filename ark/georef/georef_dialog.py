@@ -166,7 +166,7 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         localY = gridLayer.fieldNameIndex(typ['local_y'])
         for feature in features:
             local = QPoint(feature.attributes()[localX], feature.attributes()[localY])
-            map = geometry.toPoint(feature.geometry().geometry())
+            map = feature.geometry().geometry()
             if local == local1:
                 self.gcpWidget1.setGeo(local, map)
             elif local == local2:

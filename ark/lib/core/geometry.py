@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from qgis.core import QgsFeature, QgsGeometry, QgsPoint, QgsPointV2
+from qgis.core import QgsFeature, QgsGeometry, QgsPointV2, QgsPointXY
 
 from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import polygonize, unary_union
@@ -121,5 +121,5 @@ def toMultiLineString(lineGeometry):
     return MultiLineString(lineList)
 
 
-def toPoint(pointV2):
-    return QgsPoint(pointV2.x(), pointV2.y())
+def toPointXY(point):
+    return QgsPointXY(point.x(), point.y())

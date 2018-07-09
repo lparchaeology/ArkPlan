@@ -27,7 +27,7 @@
 
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 
-from qgis.core import QgsPoint, QgsPointV2
+from qgis.core import QgsPointXY, QgsPointV2
 from qgis.gui import QgsVertexMarker
 
 from .map_tool_intractive import MapToolInteractive
@@ -46,7 +46,7 @@ class MapToolEmitPoint(MapToolInteractive):
         self._vertexMarker.setIconType(QgsVertexMarker.ICON_NONE)
 
     def deactivate(self):
-        self._vertexMarker.setCenter(QgsPoint())
+        self._vertexMarker.setCenter(QgsPointXY())
         super().deactivate()
 
     def canvasReleaseEvent(self, e):

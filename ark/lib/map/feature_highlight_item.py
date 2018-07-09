@@ -25,8 +25,8 @@
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QBrush, QPen
 
-from qgis.core import (QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayerV2, QgsSymbolLayerV2Utils,
-                       QgsSymbolV2)
+from qgis.core import (QgsFeature, QgsRectangle, QgsRenderContext, QgsSimpleMarkerSymbolLayer, QgsSymbol,
+                       QgsSymbolLayerUtils)
 from qgis.gui import QgsMapCanvasItem
 
 from ..application import Application
@@ -133,23 +133,23 @@ class FeatureHighlightItem(QgsMapCanvasItem):
                     symbolLayer.setColor(color)
                     symbolLayer.setOutlineColor(color)
                     symbolLayer.setFillColor(fillColor)
-                    if isinstance(symbolLayer, QgsSimpleMarkerSymbolLayerV2):
+                    if isinstance(symbolLayer, QgsSimpleMarkerSymbolLayer):
                         symbolLayer.setOutlineWidth(
-                            self._getSymbolWidth(context, symbolLayer.outlineWidth(), symbolLayer.outlineWidthUnit()))
-                    if symbolLayer.type() == QgsSymbolV2.Line:
+                            self._getSymbolWidth(context, symbolLayer.strokeWidth(), symbolLayer.strokeWidthUnit()))
+                    if symbolLayer.type() == QgsSymbol.Line:
                         symbolLayer.setWidth(
                             self._getSymbolWidth(context, symbolLayer.width(), symbolLayer.widthUnit()))
-                    if symbolLayer.type() == QgsSymbolV2.Fill:
+                    if symbolLayer.type() == QgsSymbol.Fill:
                         symbolLayer.setBorderWidth(
-                            self._getSymbolWidth(context, symbolLayer.borderWidth(), symbolLayer.outputUnit()))
+                            self._getSymbolWidth(context, symbolLayer.strokeWidth(), symbolLayer.outputUnit()))
                     symbolLayer.removeDataDefinedProperty('color')
                     symbolLayer.removeDataDefinedProperty('color_border')
 
     def _getSymbolWidth(self, context, width, unit):
         scale = 1.0
-        if unit == QgsSymbolV2.MapUnit:
-            scale = QgsSymbolLayerV2Utils.lineWidthScaleFactor(
-                context, QgsSymbolV2.MM) / QgsSymbolLayerV2Utils.lineWidthScaleFactor(context, QgsSymbolV2.MapUnit)
+        if unit == QgsSymbol.MapUnit:
+            scale = QgsSymbolLayerUtils.lineWidthScaleFactor(
+                context, QgsSymbol.MM) / QgsSymbolLayerUtils.lineWidthScaleFactor(context, QgsSymbol.MapUnit)
         width = max(width + 2 * self._buffer * scale, self._minWidth * scale)
         return width
 

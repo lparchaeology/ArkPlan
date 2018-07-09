@@ -27,7 +27,7 @@
 
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 
-from qgis.core import QgsPointXY, QgsPointV2
+from qgis.core import QgsPoint, QgsPointXY
 from qgis.gui import QgsVertexMarker
 
 from .map_tool_intractive import MapToolInteractive
@@ -37,7 +37,7 @@ class MapToolEmitPoint(MapToolInteractive):
 
     """Tool to emit mouse clicks as map points."""
 
-    canvasClicked = pyqtSignal(QgsPointV2, Qt.MouseButton)
+    canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
 
     def __init__(self, canvas):
         super().__init__(canvas)

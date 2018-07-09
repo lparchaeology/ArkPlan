@@ -28,7 +28,7 @@
 from qgis.PyQt.QtCore import QRect, Qt
 from qgis.PyQt.QtGui import QColor, QCursor
 
-from qgis.core import Qgis, QgsGeometry, QgsPointXY, QgsPointV2, QgsProject, QgsRectangle
+from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsProject, QgsRectangle
 from qgis.gui import QgsMapCanvasSnapper, QgsMapTool, QgsRubberBand, QgsVertexMarker
 
 from ..gui import CapturePointCursor
@@ -190,12 +190,12 @@ class MapToolInteractive(QgsMapTool):
         res, snapResults = self._snapper.snapToBackgroundLayers(cursorPoint)
         if (res != 0 or len(snapResults) < 1):
             clicked = self.toMapCoordinates(cursorPoint)
-            clickedV2 = QgsPointV2(clicked)
+            clickedV2 = QgsPoint(clicked)
             return clicked, clickedV2, False
         else:
             # Take a copy as QGIS will delete the result!
             snapped = QgsPointXY(snapResults[0].snappedVertex)
-            snappedV2 = QgsPointV2(snapped)
+            snappedV2 = QgsPoint(snapped)
             return snapped, snappedV2, True
 
     def _createSnappingMarker(self, snapPoint):

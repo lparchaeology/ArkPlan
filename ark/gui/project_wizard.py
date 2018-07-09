@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import QDir, QFileInfo
 from qgis.PyQt.QtWidgets import QWizard
 
-from qgis.core import QgsPointV2
+from qgis.core import QgsPoint
 
 from .ui.project_wizard_base import Ui_ProjectWizard
 
@@ -50,5 +50,5 @@ class ProjectWizard(QWizard, Ui_ProjectWizard):
 
     def projectLocation(self):
         if self.field('locationEasting') and self.field('locationNorthing'):
-            return QgsPointV2(float(self.field('locationEasting')), float(self.field('locationNorthing')))
-        return QgsPointV2()
+            return QgsPoint(float(self.field('locationEasting')), float(self.field('locationNorthing')))
+        return QgsPoint()

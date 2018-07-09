@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtWidgets import QWidget
 
-from qgis.core import QgsPointV2
+from qgis.core import QgsPoint
 
 from .ui.grid_widget_base import Ui_GridWidget
 
@@ -82,14 +82,14 @@ class GridWidget(QWidget, Ui_GridWidget):
             self.gridCombo.addItem(name[0] + ' / ' + name[1], name)
 
     def mapPoint(self):
-        return QgsPointV2(self.mapEastingSpin.value(), self.mapNorthingSpin.value())
+        return QgsPoint(self.mapEastingSpin.value(), self.mapNorthingSpin.value())
 
     def setMapPoint(self, point):
         self.mapEastingSpin.setValue(point.x())
         self.mapNorthingSpin.setValue(point.y())
 
     def localPoint(self):
-        return QgsPointV2(self.localEastingSpin.value(), self.localNorthingSpin.value())
+        return QgsPoint(self.localEastingSpin.value(), self.localNorthingSpin.value())
 
     def setLocalPoint(self, point):
         self.localEastingSpin.setValue(point.x())

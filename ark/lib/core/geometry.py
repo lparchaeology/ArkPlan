@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-from qgis.core import QgsFeature, QgsGeometry, QgsPointV2, QgsPointXY
+from qgis.core import QgsFeature, QgsGeometry, QgsPoint, QgsPointXY
 
 from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import polygonize, unary_union
@@ -75,12 +75,12 @@ def dissolveFeatures(features, fields=None, attributes=None):
 def perpendicularPoint(lineGeometry, point):
     """Returns a point on the given line that is perpendicular to the given point."""
     if lineGeometry is None or lineGeometry.isEmpty() or point is None:
-        return QgsPointV2()
+        return QgsPoint()
     return lineGeometry.nearestPoint(point)
     # In 2.14 use QgsGeometry.nearestPoint()
     line = toMultiLineString(lineGeometry)
     perp = line.interpolate(line.project(Point(point)))
-    return QgsPointV2(perp.x, perp.y)
+    return QgsPoint(perp.x, perp.y)
 
 
 def clipLine(lineGeometry, pt1, pt2):
@@ -107,7 +107,7 @@ def clipLine(lineGeometry, pt1, pt2):
         pt = Point(coord)
         dp = line.project(pt)
         if dp > ds and dp < de:
-            clip.append(QgsPointV2(pt.x, pt.y))
+            clip.append(QgsPoint(pt.x, pt.y))
     clip.append(end)
     return QgsGeometry.fromPolyline(clip)
 

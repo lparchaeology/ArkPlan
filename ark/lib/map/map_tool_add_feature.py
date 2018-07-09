@@ -28,8 +28,7 @@
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import QInputDialog
 
-from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider,
-                       QgsWkbTypes)
+from qgis.core import QgsFeature, QgsGeometry, QgsMapLayer, QgsMapLayerRegistry, QgsVectorDataProvider, QgsWkbTypes
 from qgis.gui import QgsMessageBar
 
 from .. import utils
@@ -155,7 +154,7 @@ class MapToolAddFeature(MapToolCapture):
                 QgsMessageBar.CRITICAL)
             return False
 
-        multiType = Qgis.isMultiType(layer.wkbType())
+        multiType = QgsWkbTypes.isMultiType(layer.wkbType())
         layerPoints = self._layerPoints(mapPointList, layer)
         feature = QgsFeature(layer.pendingFields(), 0)
         geometry = None

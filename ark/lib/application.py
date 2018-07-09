@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import QFile, QSettings
 from qgis.PyQt.QtGui import QColor, QIcon
 
-from qgis.core import NULL, Qgis, QgsApplication, QgsCoordinateReferenceSystem, QgsCRSCache
+from qgis.core import NULL, Qgis, QgsApplication, QgsCoordinateReferenceSystem
 
 from . import utils
 
@@ -59,7 +59,7 @@ class Application:
 
     @staticmethod
     def projectDefaultCrs():
-        return QgsCRSCache.instance().crsByOgcWmsCrs(Application.projectDefaultCrsAuthid())
+        return QgsCoordinateReferenceSystem.fromOgcWmsCrs(Application.projectDefaultCrsAuthid())
 
     @staticmethod
     def projectDefaultCrsAuthid():
@@ -71,7 +71,7 @@ class Application:
 
     @staticmethod
     def layerDefaultCrs():
-        return QgsCRSCache.instance().crsByOgcWmsCrs(Application.layerDefaultCrsAuthid())
+        return QgsCoordinateReferenceSystem.fromOgcWmsCrs(Application.layerDefaultCrsAuthid())
 
     @staticmethod
     def layerDefaultCrsAuthid():

@@ -17,7 +17,7 @@
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QBrush, QColor, QPainterPath, QPen, QPolygonF
 
-from qgis.core import Qgis, QgsGeometry, QgsRectangle
+from qgis.core import QgsGeometry, QgsRectangle, QgsWkbTypes
 from qgis.gui import QgsMapCanvasItem
 
 from ..application import Application
@@ -74,19 +74,19 @@ class GeometryHighlightItem(QgsMapCanvasItem):
         painter.setBrush(self._brush)
 
         wkbType = self._geometry.wkbType()
-        if wkbType == Qgis.WKBPoint or wkbType == Qgis.WKBPoint25D:
+        if wkbType == QgsWkbTypes.Point or wkbType == QgsWkbTypes.Point25D:
             self._paintPoint(painter, self._geometry.geometry())
-        elif wkbType == Qgis.WKBMultiPoint or wkbType == Qgis.WKBMultiPoint25D:
+        elif wkbType == QgsWkbTypes.MultiPoint or wkbType == QgsWkbTypes.MultiPoint25D:
             for point in self._geometry.geometry():
                 self._paintPoint(painter, point)
-        elif wkbType == Qgis.WKBLineString or wkbType == Qgis.WKBLineString25D:
+        elif wkbType == QgsWkbTypes.LineString or wkbType == QgsWkbTypes.LineString25D:
             self._paintLine(painter, self._geometry.geometry())
-        elif wkbType == Qgis.WKBMultiLineString or wkbType == Qgis.WKBMultiLineString25D:
+        elif wkbType == QgsWkbTypes.MultiLineString or wkbType == QgsWkbTypes.MultiLineString25D:
             for line in self._geometry.geometry():
                 self._paintLine(painter, line)
-        elif wkbType == Qgis.WKBPolygon or wkbType == Qgis.WKBPolygon25D:
+        elif wkbType == QgsWkbTypes.Polygon or wkbType == QgsWkbTypes.Polygon25D:
             self._paintPolygon(painter, self._geometry.geometry())
-        elif wkbType == Qgis.WKBMultiPolygon or wkbType == Qgis.WKBMultiPolygon25D:
+        elif wkbType == QgsWkbTypes.MultiPolygon or wkbType == QgsWkbTypes.MultiPolygon25D:
             for polygon in self._geometry.geometry():
                 self._paintPolygon(painter, polygon)
 

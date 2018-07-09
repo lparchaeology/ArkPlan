@@ -33,30 +33,30 @@ from qgis.core import (NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsField, QgsL
 from .. import utils
 
 geometryType = {
-    QgsWkbTypes.PointGeometry: Qgis.WKBPoint25D,
-    QgsWkbTypes.LineGeometry: Qgis.WKBLineString25D,
-    QgsWkbTypes.PolygonGeometry: Qgis.WKBPolygon25D
+    QgsWkbTypes.PointGeometry: QgsWkbTypes.Point25D,
+    QgsWkbTypes.LineGeometry: QgsWkbTypes.LineString25D,
+    QgsWkbTypes.PolygonGeometry: QgsWkbTypes.Polygon25D
 }
 
 geometryMultiType = {
-    QgsWkbTypes.PointGeometry: Qgis.WKBMultiPoint25D,
-    QgsWkbTypes.LineGeometry: Qgis.WKBMultiLineString25D,
-    QgsWkbTypes.PolygonGeometry: Qgis.WKBMultiPolygon25D
+    QgsWkbTypes.PointGeometry: QgsWkbTypes.MultiPoint25D,
+    QgsWkbTypes.LineGeometry: QgsWkbTypes.MultiLineString25D,
+    QgsWkbTypes.PolygonGeometry: QgsWkbTypes.MultiPolygon25D
 }
 
 wkbMemoryType = {
-    Qgis.WKBPoint: 'point',
-    Qgis.WKBLineString: 'linestring',
-    Qgis.WKBPolygon: 'polygon',
-    Qgis.WKBMultiPoint: 'multipoint',
-    Qgis.WKBMultiLineString: 'multilinestring',
-    Qgis.WKBMultiPolygon: 'multipolygon',
-    Qgis.WKBPoint25D: 'point',
-    Qgis.WKBLineString25D: 'linestring',
-    Qgis.WKBPolygon25D: 'polygon',
-    Qgis.WKBMultiPoint25D: 'multipoint',
-    Qgis.WKBMultiLineString25D: 'multilinestring',
-    Qgis.WKBMultiPolygon25D: 'multipolygon'
+    QgsWkbTypes.Point: 'point',
+    QgsWkbTypes.LineString: 'linestring',
+    QgsWkbTypes.Polygon: 'polygon',
+    QgsWkbTypes.MultiPoint: 'multipoint',
+    QgsWkbTypes.MultiLineString: 'multilinestring',
+    QgsWkbTypes.MultiPolygon: 'multipolygon',
+    QgsWkbTypes.Point25D: 'point',
+    QgsWkbTypes.LineString25D: 'linestring',
+    QgsWkbTypes.Polygon25D: 'polygon',
+    QgsWkbTypes.MultiPoint25D: 'multipoint',
+    QgsWkbTypes.MultiLineString25D: 'multilinestring',
+    QgsWkbTypes.MultiPolygon25D: 'multipolygon'
 }
 
 

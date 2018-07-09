@@ -25,7 +25,7 @@
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtWidgets import QAction, QMenu
 
-from qgis.core import Qgis
+from qgis.core import QgsUnitTypes
 
 from ArkSpatial.ark.lib.gui import ClipboardAction
 
@@ -141,11 +141,11 @@ class IdentifyItemAction(QAction):
                 tot += a
             units = self._iface.mapCanvas().mapUnits()
             suffix = ''
-            if units == Qgis.Meters:
+            if units == QgsUnitTypes.DistanceMeters:
                 suffix = ' m²'
-            elif units == Qgis.Feet:
+            elif units == QgsUnitTypes.DistanceFeet:
                 suffix = ' ft²'
-            elif units == Qgis.NauticalMiles:
+            elif units == QgsUnitTypes.DistanceNauticalMiles:
                 suffix = ' NM²'
             menu.addAction(ClipboardAction('Area: ', '%.3f' % tot + suffix, parent))
         self.setMenu(menu)

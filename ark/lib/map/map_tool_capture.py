@@ -28,7 +28,7 @@
 from qgis.PyQt.QtCore import QSettings, Qt, pyqtSignal
 from qgis.PyQt.QtGui import QColor
 
-from qgis.core import Qgis, QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPoint
+from qgis.core import QgsGeometry, QgsGeometryValidator, QgsMapLayer, QgsPoint, QgsWkbTypes
 from qgis.gui import QgsRubberBand, QgsVertexMarker
 
 from ..gui.cursors import CapturePointCursor
@@ -41,7 +41,7 @@ class MapToolCapture(MapToolInteractive):
 
     canvasClicked = pyqtSignal(QgsPoint, Qt.MouseButton)
 
-    def __init__(self, iface, geometryType=Qgis.UnknownGeometry):
+    def __init__(self, iface, geometryType=QgsWkbTypes.UnknownGeometry):
         super().__init__(iface.mapCanvas())
 
         self._iface = iface
@@ -55,7 +55,7 @@ class MapToolCapture(MapToolInteractive):
         self._geometryErrors = []  # QList<QgsGeometry.Error>
         self._geometryErrorMarkers = []  # QList<QgsVertexMarker>
 
-        if (geometryType == Qgis.UnknownGeometry):
+        if (geometryType == QgsWkbTypes.UnknownGeometry):
             self._useCurrentLayerGeometry = True
         self.setCursor(CapturePointCursor)
 
@@ -142,7 +142,7 @@ class MapToolCapture(MapToolInteractive):
         if (moveBand):
             myAlpha = myAlpha * float(settings.value('/qgis/digitizing/line_color_alpha_scale', 0.75))
             rb.setLineStyle(Qt.DotLine)
-        if (geometryType == Qgis.Polygon):
+        if (geometryType == QgsWkbTypes.PolygonGeometry):
             color.setAlphaF(myAlpha)
         color.setAlphaF(myAlpha)
         rb.setColor(color)
@@ -161,7 +161,7 @@ class MapToolCapture(MapToolInteractive):
             return
         geometryType = self.geometryType()
         self._moveRubberBand.reset(geometryType)
-        if (geometryType == Qgis.Polygon):
+        if (geometryType == QgsWkbTypes.PolygonGeometry):
             self._moveRubberBand.addPoint(self._rubberBand.getPoint(0, 0), False)
             self._moveRubberBand.movePoint(mapPoint, False)
         self._moveRubberBand.addPoint(mapPoint)
@@ -209,9 +209,9 @@ class MapToolCapture(MapToolInteractive):
 
     def _validateGeometry(self):
         geometryType = self.geometryType()
-        if (geometryType == Qgis.Point
-                or geometryType == Qgis.UnknownGeometry
-                or geometryType == Qgis.NoGeometry
+        if (geometryType == QgsWkbTypes.PointGeometry
+                or geometryType == QgsWkbTypes.UnknownGeometry
+                or geometryType == QgsWkbTypes.NullGeometry
                 or len(self._mapPointList) < 2):
             return
 
@@ -223,9 +223,9 @@ class MapToolCapture(MapToolInteractive):
 
         geometry = None  # QgsGeometry()
 
-        if (geometryType == Qgis.Line):
+        if (geometryType == QgsWkbTypes.LineGeometry):
             geometry = QgsGeometry.fromPolyline(self._mapPointList)
-        elif (geometryType == Qgis.Polygon):
+        elif (geometryType == QgsWkbTypes.PolygonGeometry):
             if (len(self._mapPointList) < 3):
                 return
             closed = list(self._mapPointList)

@@ -28,20 +28,20 @@ from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
 from qgis.PyQt.QtXml import QDomDocument
 
 from qgis.core import (NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
-                       QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer)
+                       QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsWkbTypes)
 
 from .. import utils
 
 geometryType = {
-    Qgis.Point: Qgis.WKBPoint25D,
-    Qgis.Line: Qgis.WKBLineString25D,
-    Qgis.Polygon: Qgis.WKBPolygon25D
+    QgsWkbTypes.PointGeometry: Qgis.WKBPoint25D,
+    QgsWkbTypes.LineGeometry: Qgis.WKBLineString25D,
+    QgsWkbTypes.PolygonGeometry: Qgis.WKBPolygon25D
 }
 
 geometryMultiType = {
-    Qgis.Point: Qgis.WKBMultiPoint25D,
-    Qgis.Line: Qgis.WKBMultiLineString25D,
-    Qgis.Polygon: Qgis.WKBMultiPolygon25D
+    QgsWkbTypes.PointGeometry: Qgis.WKBMultiPoint25D,
+    QgsWkbTypes.LineGeometry: Qgis.WKBMultiLineString25D,
+    QgsWkbTypes.PolygonGeometry: Qgis.WKBMultiPolygon25D
 }
 
 wkbMemoryType = {
@@ -62,8 +62,8 @@ wkbMemoryType = {
 
 def geometryToWkbType(geometry, multi=True):
     if multi:
-        return geometryMultiType.get(geometry, Qgis.UnknownGeometry)
-    return geometryType.get(geometry, Qgis.UnknownGeometry)
+        return geometryMultiType.get(geometry, QgsWkbTypes.UnknownGeometry)
+    return geometryType.get(geometry, QgsWkbTypes.UnknownGeometry)
 
 
 def wkbToMemoryType(wkbType):

@@ -26,7 +26,7 @@ import os
 
 from qgis.PyQt.QtCore import QVariant
 
-from qgis.core import Qgis
+from qgis.core import QgsWkbTypes
 
 from ArkSpatial.ark.lib.core import Collection, CollectionSettings, FeatureType, layers
 
@@ -297,19 +297,19 @@ class Config:
             'layers': [
                 {
                     'layer': 'points',
-                    'geometry': Qgis.Point,
+                    'geometry': QgsWkbTypes.PointGeometry,
                     'name': 'plan_pt',
                     'label': 'Plan Points',
                 },
                 {
                     'layer': 'lines',
-                    'geometry': Qgis.Line,
+                    'geometry': QgsWkbTypes.LineGeometry,
                     'name': 'plan_pl',
                     'label': 'Plan Lines',
                 },
                 {
                     'layer': 'polygons',
-                    'geometry': Qgis.Polygon,
+                    'geometry': QgsWkbTypes.PolygonGeometry,
                     'name': 'plan_pg',
                     'label': 'Plan Polygons',
                 },
@@ -329,19 +329,19 @@ class Config:
             'layers': [
                 {
                     'layer': 'points',
-                    'geometry': Qgis.Point,
+                    'geometry': QgsWkbTypes.PointGeometry,
                     'name': 'section_pt',
                     'label': 'Section Points',
                 },
                 {
                     'layer': 'lines',
-                    'geometry': Qgis.Line,
+                    'geometry': QgsWkbTypes.LineGeometry,
                     'name': 'section_pl',
                     'label': 'Section Lines',
                 },
                 {
                     'layer': 'polygons',
-                    'geometry': Qgis.Polygon,
+                    'geometry': QgsWkbTypes.PolygonGeometry,
                     'name': 'section_pg',
                     'label': 'Section Polygons',
                 },
@@ -361,19 +361,19 @@ class Config:
             'layers': [
                 {
                     'layer': 'points',
-                    'geometry': Qgis.Point,
+                    'geometry': QgsWkbTypes.PointGeometry,
                     'name': 'site_pt',
                     'label': 'Site Points',
                 },
                 {
                     'layer': 'lines',
-                    'geometry': Qgis.Line,
+                    'geometry': QgsWkbTypes.LineGeometry,
                     'name': 'site_pl',
                     'label': 'Site Lines',
                 },
                 {
                     'layer': 'polygons',
-                    'geometry': Qgis.Polygon,
+                    'geometry': QgsWkbTypes.PolygonGeometry,
                     'name': 'site_pg',
                     'label': 'Site Polygons',
                 },
@@ -393,19 +393,19 @@ class Config:
             'layers': [
                 {
                     'layer': 'points',
-                    'geometry': Qgis.Point,
+                    'geometry': QgsWkbTypes.PointGeometry,
                     'name': 'grid_pt',
                     'label': 'Grid Points',
                 },
                 {
                     'layer': 'lines',
-                    'geometry': Qgis.Line,
+                    'geometry': QgsWkbTypes.LineGeometry,
                     'name': 'grid_pl',
                     'label': 'Grid Lines',
                 },
                 {
                     'layer': 'polygons',
-                    'geometry': Qgis.Polygon,
+                    'geometry': QgsWkbTypes.PolygonGeometry,
                     'name': 'grid_pg',
                     'label': 'Grid Polygons',
                 },

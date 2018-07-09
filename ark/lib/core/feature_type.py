@@ -24,7 +24,7 @@
 
 from enum import Enum
 
-from qgis.core import Qgis
+from qgis.core import QgsWkbTypes
 
 
 class FeatureType(Enum):
@@ -39,9 +39,9 @@ class FeatureType(Enum):
     @staticmethod
     def toGeometryType(featureType):
         if featureType == FeatureType.Point or featureType == FeatureType.Elevation:
-            return Qgis.Point
+            return QgsWkbTypes.PointGeometry
         elif (featureType == FeatureType.Line or featureType == FeatureType.Segment):
-            return Qgis.Line
+            return QgsWkbTypes.LineGeometry
         elif featureType == FeatureType.Polygon:
-            return Qgis.Polygon
-        return Qgis.UnknownGeometry
+            return QgsWkbTypes.PolygonGeometry
+        return QgsWkbTypes.UnknownGeometry

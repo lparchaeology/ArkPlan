@@ -28,7 +28,7 @@
 from qgis.PyQt.QtCore import QRect, Qt
 from qgis.PyQt.QtGui import QColor, QCursor
 
-from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsProject, QgsRectangle
+from qgis.core import QgsGeometry, QgsPoint, QgsPointXY, QgsProject, QgsRectangle, QgsWkbTypes
 from qgis.gui import QgsMapCanvasSnapper, QgsMapTool, QgsRubberBand, QgsVertexMarker
 
 from ..gui import CapturePointCursor
@@ -129,7 +129,7 @@ class MapToolInteractive(QgsMapTool):
             if not self._dragging:
                 self._dragging = True
                 self.setCursor(QCursor(Qt.ClosedHandCursor))
-                self._zoomRubberBand = QgsRubberBand(self.canvas(), Qgis.Polygon)
+                self._zoomRubberBand = QgsRubberBand(self.canvas(), QgsWkbTypes.PolygonGeometry)
                 color = QColor(Qt.blue)
                 color.setAlpha(63)
                 self._zoomRubberBand.setColor(color)

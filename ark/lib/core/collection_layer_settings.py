@@ -22,10 +22,9 @@
  ***************************************************************************/
 """
 
-from qgis.core import Qgis
+from qgis.core import QgsWkbTypes
 
 from ..project import Project
-
 from .collection_field_settings import CollectionFieldSettings
 
 
@@ -34,7 +33,7 @@ class CollectionLayerSettings:
     def __init__(self):
         self.layer = ''
         self.crs = ''
-        self.geometry = Qgis.NoGeometry
+        self.geometry = QgsWkbTypes.NullGeometry
         self.multi = False
         self.label = ''
         self.name = ''

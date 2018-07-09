@@ -242,7 +242,7 @@ class Plugin(QObject):
         self.iface.messageBar().pushMessage(text, level, duration)
 
     def showStatusMessage(self, text):
-        self.iface.mainWindow().statusBar().showMessage(text)
+        self.iface.statusBarIface().showMessage(text)
 
     # Project utilities
 

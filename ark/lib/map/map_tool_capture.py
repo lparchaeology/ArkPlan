@@ -240,7 +240,7 @@ class MapToolCapture(MapToolInteractive):
         self._validator.finished.connect(self.validationFinished)
         self._validator.start()
 
-        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation started.'))
+        self._iface.statusBarIface().showMessage(self.tr('Geometry validation started.'))
 
     def _addGeometryError(self, error):
         self._geometryErrors.append(error)
@@ -259,9 +259,9 @@ class MapToolCapture(MapToolInteractive):
             marker.setZValue(marker.zValue() + 1)
             self._geometryErrorMarkers.append(marker)
 
-        self._iface.mainWindow().statusBar().showMessage(error.what())
+        self._iface.statusBarIface().showMessage(error.what())
         if (self._tip != ''):
-            self._iface.mainWindow().statusBar().setToolTip(self._tip)
+            self._iface.statusBarIface().setToolTip(self._tip)
 
     def validationFinished(self):
-        self._iface.mainWindow().statusBar().showMessage(self.tr('Geometry validation finished.'))
+        self._iface.statusBarIface().showMessage(self.tr('Geometry validation finished.'))

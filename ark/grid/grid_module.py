@@ -303,10 +303,10 @@ class GridModule(Module):
 
     def _attributes(self, layer, site, name):
         attributes = {}
-        attributes[layer.fieldNameIndex('site')] = site
-        attributes[layer.fieldNameIndex('id')] = name
-        attributes[layer.fieldNameIndex('created')] = utils.timestamp()
-        attributes[layer.fieldNameIndex('creator')] = 'ARK Grid Tool'
+        attributes[layer.lookupField('site')] = site
+        attributes[layer.lookupField('id')] = name
+        attributes[layer.lookupField('created')] = utils.timestamp()
+        attributes[layer.lookupField('creator')] = 'ARK Grid Tool'
         return attributes
 
     def _setAttributes(self, feature, attributes):
@@ -441,18 +441,18 @@ class GridModule(Module):
         map_x = 'map_x'
         map_y = 'map_y'
         if layer.startEditing():
-            if layer.fieldNameIndex(local_x) < 0:
+            if layer.lookupField(local_x) < 0:
                 layer.dataProvider().addAttributes([self._plugin.field('local_x')])
-            if layer.fieldNameIndex(local_y) < 0:
+            if layer.lookupField(local_y) < 0:
                 layer.dataProvider().addAttributes([self._plugin.field('local_y')])
-            if (createMapFields and layer.fieldNameIndex(map_x) < 0):
+            if (createMapFields and layer.lookupField(map_x) < 0):
                 layer.dataProvider().addAttributes([self._plugin.field('map_x')])
-            if (createMapFields and layer.fieldNameIndex(map_y) < 0):
+            if (createMapFields and layer.lookupField(map_y) < 0):
                 layer.dataProvider().addAttributes([self._plugin.field('map_y')])
-            local_x_idx = layer.fieldNameIndex(local_x)
-            local_y_idx = layer.fieldNameIndex(local_y)
-            map_x_idx = layer.fieldNameIndex(map_x)
-            map_y_idx = layer.fieldNameIndex(map_y)
+            local_x_idx = layer.lookupField(local_x)
+            local_y_idx = layer.lookupField(local_y)
+            map_x_idx = layer.lookupField(map_x)
+            map_y_idx = layer.lookupField(map_y)
             if updateGeometry:
                 for feature in layer.getFeatures():
                     localPoint = QgsPoint(feature.attribute(local_x), feature.attribute(local_y))

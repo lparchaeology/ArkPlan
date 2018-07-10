@@ -162,8 +162,8 @@ class GeorefDialog(QDialog, Ui_GeorefDialogBase):
         typ = self._type()
         gridLayer = typ['grid']
         features = gridLayer.getFeatures()
-        localX = gridLayer.fieldNameIndex(typ['local_x'])
-        localY = gridLayer.fieldNameIndex(typ['local_y'])
+        localX = gridLayer.lookupField(typ['local_x'])
+        localY = gridLayer.lookupField(typ['local_y'])
         for feature in features:
             local = QPoint(feature.attributes()[localX], feature.attributes()[localY])
             map = feature.geometry().geometry()

@@ -589,10 +589,10 @@ class ProjectModule(Module):
         return errors
 
     def _preMergeBufferUpdate(self, layer, timestamp, user):
-        createdIdx = layer.fieldNameIndex('created')
-        creatorIdx = layer.fieldNameIndex('creator')
-        modifiedIdx = layer.fieldNameIndex('modified')
-        modifierIdx = layer.fieldNameIndex('modifier')
+        createdIdx = layer.lookupField('created')
+        creatorIdx = layer.lookupField('creator')
+        modifiedIdx = layer.lookupField('modified')
+        modifierIdx = layer.lookupField('modifier')
         for feature in layer.getFeatures():
             if utils.isEmpty(feature.attribute('created')):
                 layer.changeAttributeValue(feature.id(), createdIdx, timestamp)

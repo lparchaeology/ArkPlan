@@ -573,7 +573,7 @@ def applySelectionRequest(layer, request):
 def uniqueValues(layer, fieldName):
     res = set()
     if layer and layer.isValid():
-        values = layer.uniqueValues(layer.fieldNameIndex(fieldName))
+        values = layer.uniqueValues(layer.lookupField(fieldName))
         for val in values:
             if val != NULL:
                 res.add(val)
@@ -581,7 +581,7 @@ def uniqueValues(layer, fieldName):
 
 
 def updateAttribute(layer, attribute, value, expression=None):
-    idx = layer.fieldNameIndex(attribute)
+    idx = layer.lookupField(attribute)
     fit = None
     if expression is None or expression == '':
         fit = layer.getFeatures()

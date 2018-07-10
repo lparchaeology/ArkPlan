@@ -82,9 +82,9 @@ class MapToolAddBaseline(MapToolAddFeature):
 
     def _addPointFeature(self, mapPointList):
         for i in range(0, len(mapPointList)):
-            idx = self._pointLayer.pendingFields().fieldNameIndex(self._idFieldName)
+            idx = self._pointLayer.pendingFields().lookupField(self._idFieldName)
             self._pointAttributes[idx] = 'SSS' + '.' + str(i + 1)
             if self._pointQueryField:
-                idx = self._pointLayer.pendingFields().fieldNameIndex(self._pointQueryField.name())
+                idx = self._pointLayer.pendingFields().lookupField(self._pointQueryField.name())
                 self._pointAttributes[idx] = self._pointQueryValues[i]
             self.addAnyFeature(FeatureType.Point, [mapPointList[i]], self._pointLayer)

@@ -60,7 +60,7 @@ class Ui_FilterExportDialog(object):
         self.schematicColorLabel = QtGui.QLabel(FilterExportDialog)
         self.schematicColorLabel.setObjectName(_fromUtf8("schematicColorLabel"))
         self.horizontalLayout.addWidget(self.schematicColorLabel)
-        self.schematicColorTool = QgsColorButtonV2(FilterExportDialog)
+        self.schematicColorTool = QgsColorButton(FilterExportDialog)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -98,4 +98,4 @@ class Ui_FilterExportDialog(object):
         self.exportNameLabel.setText(_translate("FilterExportDialog", "Export Name:", None))
         self.exportDataButton.setText(_translate("FilterExportDialog", "Export selected Plan Data to scratch layers", None))
 
-from qgis.gui import QgsColorButtonV2
+from qgis.gui import QgsColorButton

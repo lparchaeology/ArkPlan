@@ -34,7 +34,7 @@ class FilterExportDialog(QDialog, Ui_FilterExportDialog):
         super().__init__(parent)
 
         self.setupUi(self)
-        self.schematicColorTool.setAllowAlpha(True)
+        self.schematicColorTool.setAllowOpacity(True)
         self.schematicColorTool.setColorDialogTitle('Choose Schematic Color')
         self.schematicColorTool.setDefaultColor(QColor(165, 191, 221, 102))
         self.schematicColorTool.setToDefaultColor()

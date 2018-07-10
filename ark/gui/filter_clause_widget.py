@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtGui import QIcon, QPixmap
 from qgis.PyQt.QtWidgets import QAction, QActionGroup, QMenu, QWidget, QWidgetAction
 
-from qgis.gui import QgsColorButtonV2
+from qgis.gui import QgsColorButton
 
 from ArkSpatial.ark.lib import Application
 
@@ -93,8 +93,8 @@ class FilterClauseWidget(QWidget, Ui_FilterClauseWidget):
         self._typeActionGroup.addAction(self._selectAction)
         self._typeActionGroup.addAction(self._highlightAction)
 
-        self._colorTool = QgsColorButtonV2(self)
-        self._colorTool.setAllowAlpha(True)
+        self._colorTool = QgsColorButton(self)
+        self._colorTool.setAllowOpacity(True)
         self._colorTool.setColorDialogTitle('Choose Highlight Color')
         self._colorTool.setContext('Choose Highlight Color')
         self._colorTool.setDefaultColor(Application.highlightFillColor())

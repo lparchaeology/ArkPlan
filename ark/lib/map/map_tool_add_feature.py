@@ -178,7 +178,7 @@ class MapToolAddFeature(MapToolCapture):
             self.messageEmitted.emit(self.tr('Cannot add feature. Unknown geometry type'), QgsMessageBar.CRITICAL)
             return False
 
-        if (geometry is None):
+        if (geometry is None or geometry.isEmpty()):
             self.messageEmitted.emit(self.tr('Cannot add feature. Invalid geometry'), QgsMessageBar.CRITICAL)
             return False
         feature.setGeometry(geometry)

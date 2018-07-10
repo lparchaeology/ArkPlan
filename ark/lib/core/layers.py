@@ -302,7 +302,7 @@ def addFeatures(features, layer, undoMessage='Add features to layer', log=False,
             ft += 1
             if log:
                 logFeature = QgsFeature(logLayer.fields())
-                if feature.geometry():
+                if feature.hasGeometry():
                     logFeature.setGeometry(feature.geometry())
                 for field in layer.fields():
                     logFeature.setAttribute(field.name(), feature.attribute(field.name()))
@@ -376,7 +376,7 @@ def copyFeatureRequest(featureRequest,
             ft += 1
             if log:
                 logFeature = QgsFeature(logLayer.fields())
-                if feature.geometry():
+                if feature.hasGeometry():
                     logFeature.setGeometry(feature.geometry())
                 for field in fromLayer.fields():
                     logFeature.setAttribute(field.name(), feature.attribute(field.name()))
@@ -448,7 +448,7 @@ def deleteFeatureRequest(featureRequest, layer, undoMessage='Delete feature', lo
             ft += 1
             if log:
                 logFeature = QgsFeature(logLayer.fields())
-                if feature.geometry():
+                if feature.hasGeometry():
                     logFeature.setGeometry(feature.geometry())
                 for field in layer.fields():
                     logFeature.setAttribute(field.name(), feature.attribute(field.name()))

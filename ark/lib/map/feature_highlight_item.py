@@ -50,7 +50,7 @@ class FeatureHighlightItem(QgsMapCanvasItem):
         if (not layer
                 or not feature
                 or not isinstance(feature, QgsFeature)
-                or not feature.geometry()
+                or not feature.hasGeometry()
                 or feature.geometry().isEmpty()
                 or not feature.geometry().isGeosValid()):
             return
@@ -108,7 +108,7 @@ class FeatureHighlightItem(QgsMapCanvasItem):
             renderer.stopRender(context)
 
     def updateRect(self):
-        if self._feature and self._feature.constGeometry():
+        if self._feature and self._feature.hasGeometry():
             m2p = self._mapCanvas.mapSettings().mapToPixel()
             topLeft = m2p.toMapPoint(0, 0)
             res = m2p.mapUnitsPerPixel()

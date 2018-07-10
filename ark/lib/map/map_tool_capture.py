@@ -232,7 +232,7 @@ class MapToolCapture(MapToolInteractive):
             closed.append(self._mapPointList[0])
             geometry = QgsGeometry.fromPolygon([closed])
 
-        if (geometry is None):
+        if (geometry is None or geometry.isEmpty()):
             return
 
         self._validator = QgsGeometryValidator(geometry)

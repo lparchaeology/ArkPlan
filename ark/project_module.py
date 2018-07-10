@@ -526,7 +526,7 @@ class ProjectModule(Module):
                 errors.append(copy.deepcopy(error))
             # Geometry must be valid
             error.field = 'geometry'
-            if feature.geometry() is None:
+            if !feature.hasGeometry():
                 error.message = 'No Geometry'
                 errors.append(copy.deepcopy(error))
             elif feature.geometry().isEmpty():

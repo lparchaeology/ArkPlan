@@ -40,7 +40,7 @@ class MapToolSectionSchematic(MapToolAddFeature):
 
     def addAnyFeature(self, featureType, mapPointList, attributes, layer):
         if featureType == FeatureType.Segment:
-            if len(mapPointList) != 2 or self._sectionGeometry is None:
+            if len(mapPointList) != 2 or self._sectionGeometry is None or self._sectionGeometry.isEmpty():
                 return False
             sectionPointList = []
             for point in mapPointList:

@@ -60,9 +60,11 @@ class FeatureAction(QAction):
 
         myDa = QgsDistanceArea()
 
-        myDa.setSourceCrs(self._layer.crs())
-        myDa.setEllipsoidalMode(self._iface.mapCanvas().mapSettings().hasCrsTransformEnabled())
-        myDa.setEllipsoid(QgsProject.instance().readEntry('Measure', '/Ellipsoid', GEO_NONE)[0])
+        myDa.setSourceCrs(self._layer.crs(), QgsProject.instance().transformContext())
+        ellipsoid = 'NONE'
+        if self._iface.mapCanvas().mapSettings().hasCrsTransformEnabled():
+            ellipsoid = QgsProject.instance().readEntry('Measure', '/Ellipsoid', GEO_NONE)[0]
+        myDa.setEllipsoid(ellipsoid)
 
         context.setDistanceArea(myDa)
         context.setVectorLayerTools(self._iface.vectorLayerTools())

@@ -29,7 +29,7 @@ from qgis.PyQt.QtCore import QSettings, Qt
 from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsDistanceArea, QgsFeature, QgsProject, QgsVectorLayer
-from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext
+from qgis.gui import QgsAttributeDialog, QgsAttributeEditorContext, QgsAttributeForm
 
 
 # TODO Clean up this and fix dialog problems
@@ -104,7 +104,7 @@ class FeatureAction(QAction):
         dialog = self._newDialog(False)
 
         if (not self._feature.isValid()):
-            dialog.setIsAddDialog(True)
+            dialog.setMode(QgsAttributeForm.AddFeatureMode)
 
         if (showModal):
             dialog.setAttribute(Qt.WA_DeleteOnClose)
@@ -156,7 +156,7 @@ class FeatureAction(QAction):
                 self._layer.destroyEditCommand()
         else:
             dialog = self._newDialog(False)
-            dialog.setIsAddDialog(True)
+            dialog.setMode(QgsAttributeForm.AddFeatureMode)
             dialog.setEditCommandMessage(self.text())
 
             attributeForm = dialog.attributeForm()

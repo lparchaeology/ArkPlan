@@ -447,7 +447,10 @@ class FilterModule(Module):
                 self._plugin.iface, Config.filterSetGroupName, Config.projectGroupName)
         layer = self.collection().layer('polygons')
         mem = layers.cloneAsMemoryLayer(layer, name, 'DefaultStyle')
-        mem.rendererV2().symbols()[0].setColor(schematicColor)
+
+        mapSettings = self._plugin.mapCanvas().mapSettings()
+        context = QgsRenderContext.fromMapSettings(mapSettings)
+        mem.renderer().symbols(context)[0].setColor(schematicColor)
         mem.startEditing()
         fi = layer.getFeatures()
         for feature in fi:

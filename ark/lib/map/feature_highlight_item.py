@@ -103,7 +103,6 @@ class FeatureHighlightItem(QgsMapCanvasItem):
 
         if renderer:
             context.setPainter(painter)
-            renderer.startRender(context, self._layer.fields())
             renderer.renderFeature(self._feature, context)
             renderer.stopRender(context)
 
@@ -155,9 +154,9 @@ class FeatureHighlightItem(QgsMapCanvasItem):
 
     def _getRenderer(self, context, color, fillColor):
         renderer = None
-        if self._layer and self._layer.rendererV2():
-            renderer = self._layer.rendererV2().clone()
+        if self._layer and self._layer.renderer():
+            renderer = self._layer.renderer().clone()
         if renderer:
-            for symbol in renderer.symbols2(context):
+            for symbol in renderer.symbols(context):
                 self._setSymbol(symbol, context, color, fillColor)
         return renderer

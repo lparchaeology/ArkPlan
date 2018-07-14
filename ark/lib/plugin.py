@@ -29,7 +29,7 @@ from qgis.PyQt.QtCore import QCoreApplication, QObject, QSettings, Qt, QTranslat
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
-from qgis.core import QgsMessageLog
+from qgis.core import Qgis, QgsMessageLog
 from qgis.gui import QgsMessageBar
 
 from .project import Project
@@ -218,15 +218,15 @@ class Plugin(QObject):
     # Convenience logging functions
 
     def logCriticalMessage(self, text):
-        self.logMessage(text, QgsMessageLog.CRITICAL)
+        self.logMessage(text, Qgis.Critical)
 
     def logWarningMessage(self, text):
-        self.logMessage(text, QgsMessageLog.WARNING)
+        self.logMessage(text, Qgis.Warning)
 
     def logInfoMessage(self, text):
-        self.logMessage(text, QgsMessageLog.INFO)
+        self.logMessage(text, Qgis.Info)
 
-    def logMessage(self, text, level=QgsMessageLog.INFO):
+    def logMessage(self, text, level=Qgis.Info):
         QgsMessageLog.logMessage(text, self.pluginName, level)
 
     def showCriticalMessage(self, text, duration=5):

@@ -24,7 +24,7 @@
 
 from qgis.PyQt.QtCore import QDateTime, QRectF, QRegExp, Qt
 
-from qgis.core import (NULL, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointXY,
+from qgis.core import (NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsMessageLog, QgsPoint, QgsPointXY,
                        QgsUnitTypes)
 
 safeChars = [
@@ -200,9 +200,9 @@ def listToRegExp(lst):
 
 def debug(msg, group='Debug'):
     if isinstance(msg, str):
-        QgsMessageLog.logMessage(msg, group, QgsMessageLog.INFO)
+        QgsMessageLog.logMessage(msg, group, Qgis.Info)
     else:
-        QgsMessageLog.logMessage(printable(msg), group, QgsMessageLog.INFO)
+        QgsMessageLog.logMessage(printable(msg), group, Qgis.Info)
 
 
 def dump(msg, group='Debug'):

@@ -90,7 +90,7 @@ def printable(val):
     if type(val) == QgsPoint:
         return 'QgsPoint(' + str(val.x()) + ', ' + str(val.y()) + ')'
     if type(val) == QgsGeometry:
-        return 'QgsGeometry(' + val.exportToGeoJSON() + ')'
+        return 'QgsGeometry(' + val.asJson() + ')'
     if type(val) == QgsFeature:
         return 'QgsFeature(' + str(val.id()) + ')'
     if type(val) == QgsFeatureRequest:

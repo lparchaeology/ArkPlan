@@ -185,7 +185,7 @@ class GridModule(Module):
         self.convertMapPoint()
 
     def transformPoints(self, feature):
-        mapPoint = feature.geometry().geometry()
+        mapPoint = feature.geometry().get()
         localX = feature.attribute('local_x')
         localY = feature.attribute('local_y')
         localPoint = QgsPoint(localX, localY)
@@ -243,14 +243,14 @@ class GridModule(Module):
                     self._plugin.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
-                mp2 = axisGeometry.interpolate(yInterval).geometry()
+                mp2 = axisGeometry.interpolate(yInterval).get()
                 lp2 = QgsPoint(lp1.x(), lp1.y() + yInterval)
             else:
                 if axisGeometry.length() < xInterval:
                     self._plugin.showCriticalMessage(
                         'Cannot create grid: Input axis must be longer than local interval')
                     return False
-                mp2 = axisGeometry.interpolate(xInterval).geometry()
+                mp2 = axisGeometry.interpolate(xInterval).get()
                 lp2 = QgsPoint(lp1.x() + xInterval, lp1.y())
         if self.createGrid(self.gridWizard.siteCode(), self.gridWizard.gridName(),
                            mp1, lp1, mp2, lp2,
@@ -459,7 +459,7 @@ class GridModule(Module):
                     mapPoint = self.localTransformer.map(localPoint)
                     layer.changeGeometry(feature.id(), QgsGeometry(mapPoint))
             for feature in layer.getFeatures():
-                mapPoint = feature.geometry().geometry()
+                mapPoint = feature.geometry().get()
                 localPoint = self.mapTransformer.map(mapPoint)
                 layer.changeAttributeValue(feature.id(), local_x_idx, localPoint.x())
                 layer.changeAttributeValue(feature.id(), local_y_idx, localPoint.y())
@@ -528,7 +528,7 @@ class GridModule(Module):
 
     def setMapPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QgsWkbTypes.PointGeometry and geom.isGeosValid()):
-            self.setMapPoint(geom.geometry())
+            self.setMapPoint(geom.get())
 
     def setMapPointFromWkt(self, wkt):
         self.setMapPointFromGeometry(QgsGeometry.fromWkt(wkt))
@@ -555,7 +555,7 @@ class GridModule(Module):
 
     def setLocalPointFromGeometry(self, geom):
         if (geom is not None and geom.type() == QgsWkbTypes.PointGeometry and geom.isGeosValid()):
-            self.setLocalPoint(geom.geometry())
+            self.setLocalPoint(geom.get())
 
     def setLocalPointFromWkt(self, wkt):
         self.setLocalPointFromGeometry(QgsGeometry.fromWkt(wkt))

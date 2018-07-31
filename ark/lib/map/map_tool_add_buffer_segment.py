@@ -44,10 +44,10 @@ class MapToolAddBufferSegment(MapToolAddFeature):
         if featureType == FeatureType.Segment:
             if len(mapPointList) != 2:
                 return False
-            lineGeom = QgsGeometry.fromPolyline(mapPointList)
+            lineGeom = QgsGeometry.fromPolylineXY(mapPointList)
             polyGeom = lineGeom.buffer(self._bufferDistance, 0, 2, 2, 5.0)
             if polyGeom and polyGeom.isGeosValid():
-                mapPointList = polyGeom.geometry()[0]
+                mapPointList = polyGeom.get()[0]
             else:
                 mapPointList = []
             featureType = FeatureType.Polygon

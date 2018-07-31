@@ -36,9 +36,9 @@ def polygonizeFeatures(features, fields=None):
         if inGeom is None or inGeom.isEmpty():
             pass
         elif inGeom.isMultipart():
-            lineList.extend(inGeom.geometry())
+            lineList.extend(inGeom.get())
         else:
-            lineList.append(inGeom.geometry())
+            lineList.append(inGeom.get())
     allLines = MultiLineString(lineList)
     allLines = unary_union(allLines)
     polygons = list(polygonize([allLines]))
@@ -88,7 +88,7 @@ def clipLine(lineGeometry, pt1, pt2):
     # Assumes pt1, pt2 lie on line
     if lineGeometry is None or lineGeometry.isEmpty() or pt1 is None or pt2 is None:
         return QgsGeometry()
-    line = LineString(lineGeometry.geometry())
+    line = LineString(lineGeometry.get())
     d1 = line.project(Point(pt1))
     d2 = line.project(Point(pt2))
     if d1 < d2:
@@ -115,9 +115,9 @@ def clipLine(lineGeometry, pt1, pt2):
 def toMultiLineString(lineGeometry):
     lineList = []
     if lineGeometry.isMultipart():
-        lineList.extend(lineGeometry.geometry())
+        lineList.extend(lineGeometry.get())
     else:
-        lineList.append(lineGeometry.geometry())
+        lineList.append(lineGeometry.get())
     return MultiLineString(lineList)
 
 

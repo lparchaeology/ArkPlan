@@ -48,7 +48,7 @@ class MapToolSectionSchematic(MapToolAddFeature):
             lineGeom = geometry.clipLine(self._sectionGeometry, sectionPointList[0], sectionPointList[1])
             polyGeom = lineGeom.buffer(0.1, 0, 2, 2, 5.0)
             if polyGeom and polyGeom.isGeosValid():
-                mapPointList = polyGeom.geometry()[0]
+                mapPointList = polyGeom.get()[0]
             else:
                 mapPointList = []
             featureType = FeatureType.Polygon

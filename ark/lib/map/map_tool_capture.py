@@ -224,13 +224,13 @@ class MapToolCapture(MapToolInteractive):
         geometry = None  # QgsGeometry()
 
         if (geometryType == QgsWkbTypes.LineGeometry):
-            geometry = QgsGeometry.fromPolyline(self._mapPointList)
+            geometry = QgsGeometry.fromPolylineXY(self._mapPointList)
         elif (geometryType == QgsWkbTypes.PolygonGeometry):
             if (len(self._mapPointList) < 3):
                 return
             closed = list(self._mapPointList)
             closed.append(self._mapPointList[0])
-            geometry = QgsGeometry.fromPolygon([closed])
+            geometry = QgsGeometry.fromPolygonXY([closed])
 
         if (geometry is None or geometry.isEmpty()):
             return

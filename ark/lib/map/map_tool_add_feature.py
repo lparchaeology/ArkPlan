@@ -161,19 +161,19 @@ class MapToolAddFeature(MapToolCapture):
 
         if (geometryType == QgsWkbTypes.PointGeometry):
             if multiType:
-                geometry = QgsGeometry.fromMultiPoint([layerPoints[0]])
+                geometry = QgsGeometry.fromMultiPointXY([layerPoints[0]])
             else:
                 geometry = QgsGeometry(layerPoints[0])
         elif (geometryType == QgsWkbTypes.LineGeometry):
             if multiType:
-                geometry = QgsGeometry.fromMultiPolyline([layerPoints])
+                geometry = QgsGeometry.fromMultiPolylineXY([layerPoints])
             else:
-                geometry = QgsGeometry.fromPolyline(layerPoints)
+                geometry = QgsGeometry.fromPolylineXY(layerPoints)
         elif (geometryType == QgsWkbTypes.PolygonGeometry):
             if multiType:
-                geometry = QgsGeometry.fromMultiPolygon([layerPoints])
+                geometry = QgsGeometry.fromMultiPolygonXY([layerPoints])
             else:
-                geometry = QgsGeometry.fromPolygon([layerPoints])
+                geometry = QgsGeometry.fromPolygonXY([layerPoints])
         else:
             self.messageEmitted.emit(self.tr('Cannot add feature. Unknown geometry type'), QgsMessageBar.CRITICAL)
             return False
@@ -185,7 +185,7 @@ class MapToolAddFeature(MapToolCapture):
 
         if (geometryType == QgsWkbTypes.PolygonGeometry):
 
-            avoidIntersectionsReturn = feature.geometry().avoidIntersections()
+            avoidIntersectionsReturn = feature.geometry().avoidIntersections(QgsProject.instance().avoidIntersectionsLayers())
             if (avoidIntersectionsReturn == 1):
                 # not a polygon type. Impossible to get there
                 pass

@@ -97,7 +97,6 @@ class ProjectModule(Module):
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeRename, False)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
         self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowLegendChangeState)
-        self.projectLayerModel.setFlag(QgsLayerTreeModel.AllowSymbologyChangeState)
         self.projectLayerModel.setAutoCollapseLegendNodes(-1)
         self.projectLayerView.setModel(self.projectLayerModel)
         menuProvider = LayerTreeMenu(self, self.projectLayerView)

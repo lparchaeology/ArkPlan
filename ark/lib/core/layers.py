@@ -28,7 +28,8 @@ from qgis.PyQt.QtCore import QFile, QFileInfo, QVariant
 from qgis.PyQt.QtXml import QDomDocument
 
 from qgis.core import (NULL, Qgis, QgsFeature, QgsFeatureRequest, QgsField, QgsLayerTreeGroup, QgsMapLayer,
-                       QgsMapLayerRegistry, QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsWkbTypes)
+                       QgsMapLayerRegistry, QgsProject, QgsReadWriteContext, QgsVectorFileWriter, QgsVectorLayer,
+                       QgsWkbTypes)
 
 from .. import utils
 
@@ -194,7 +195,7 @@ def loadStyle(layer, styleURI=None, symbology=None, fromLayer=None):
         if styleURI:
             layer.loadNamedStyle(styleURI)
         elif symbology:
-            layer.readSymbology(symbology, '')
+            layer.readSymbology(symbology, '', QgsReadWriteContext())
         elif fromLayer and fromLayer.isValid() and fromLayer.type() == QgsMapLayer.VectorLayer:
             copySymbology(fromLayer, layer)
 
@@ -206,12 +207,12 @@ def getSymbology(source):
     rootNode = doc.createElement('qgis')
     rootNode.setAttribute('version', str(Qgis.QGIS_VERSION))
     doc.appendChild(rootNode)
-    source.writeSymbology(rootNode, doc, '')
+    source.writeSymbology(rootNode, doc, '', QgsReadWriteContext())
     return rootNode
 
 
 def copySymbology(source, dest):
-    dest.readSymbology(getSymbology(source), '')
+    dest.readSymbology(getSymbology(source), '', QgsReadWriteContext())
 
 
 def getGroupIndex(iface, groupName):
